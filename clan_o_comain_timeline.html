@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clan Ó Comáin — A Timeline</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #B8975A;
+    --gold-light: #D4B483;
+    --gold-pale: #F5ECD8;
+    --ink: #1C1A17;
+    --ink-mid: #3D3A33;
+    --ink-muted: #7A7468;
+    --ink-faint: #B0A89A;
+    --bg: #FAF8F4;
+    --bg-card: #FFFFFF;
+    --border: rgba(184,151,90,0.2);
+    --border-strong: rgba(184,151,90,0.5);
+
+    --prehistoric: #3B8BD4;
+    --royal: #7F77DD;
+    --munster: #D85A30;
+    --saints: #EF9F27;
+    --chiefdom: #1D9E75;
+    --fall: #E24B4A;
+    --endures: #639922;
+    --modern: #BA7517;
+    --today: #534AB7;
+  }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Header */
+  .header {
+    background: var(--ink);
+    color: var(--gold-pale);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .header-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+
+  .header h1 {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 400;
+    color: var(--gold-pale);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: var(--gold-light);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  /* Filters */
+  .filter-section {
+    background: var(--ink-mid);
+    padding: 1rem 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .filter-section::-webkit-scrollbar { display: none; }
+
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    min-width: max-content;
+    margin: 0 auto;
+    max-width: 860px;
+  }
+
+  .filter-btn {
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(184,151,90,0.3);
+    background: transparent;
+    color: var(--gold-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold-pale);
+  }
+
+  .filter-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Main layout */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 160px;
+  }
+
+  @media (max-width: 600px) {
+    .timeline { padding-left: 0; }
+  }
+
+  .tl-spine {
+    position: absolute;
+    left: 148px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--gold) 5%, var(--gold) 95%, transparent);
+    opacity: 0.4;
+  }
+
+  @media (max-width: 600px) {
+    .tl-spine { display: none; }
+  }
+
+  /* Era groups */
+  .era-group {
+    margin-bottom: 2.5rem;
+  }
+
+  .era-group.hidden { display: none; }
+
+  .era-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+    margin-left: -160px;
+  }
+
+  @media (max-width: 600px) {
+    .era-heading { margin-left: 0; }
+  }
+
+  .era-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    width: 140px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    .era-label { display: none; }
+  }
+
+  .era-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Timeline items */
+  .tl-item {
+    position: relative;
+    padding: 0 0 1.5rem 28px;
+    cursor: pointer;
+  }
+
+  .tl-item:last-child { padding-bottom: 0; }
+
+  .tl-dot {
+    position: absolute;
+    left: -6px;
+    top: 5px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 2;
+  }
+
+  .tl-item:hover .tl-dot {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 3px rgba(184,151,90,0.2);
+  }
+
+  .tl-item.open .tl-dot {
+    transform: scale(1.4);
+    box-shadow: 0 0 0 4px rgba(184,151,90,0.25);
+  }
+
+  /* Era colours */
+  [data-era="prehistoric"] .tl-dot { background: var(--prehistoric); }
+  [data-era="royal"] .tl-dot { background: var(--royal); }
+  [data-era="munster"] .tl-dot { background: var(--munster); }
+  [data-era="saints"] .tl-dot { background: var(--saints); }
+  [data-era="chiefdom"] .tl-dot { background: var(--chiefdom); }
+  [data-era="fall"] .tl-dot { background: var(--fall); }
+  [data-era="endures"] .tl-dot { background: var(--endures); }
+  [data-era="modern"] .tl-dot { background: var(--modern); }
+  [data-era="today"] .tl-dot { background: var(--today); }
+
+  .tl-date {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .tl-title {
+    font-family: 'EB Garamond', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .tl-text {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink-mid);
+    font-weight: 300;
+    display: none;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .tl-item.open .tl-text { display: block; }
+
+  .tl-toggle {
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 5px;
+    display: inline-block;
+    transition: color 0.15s;
+  }
+
+  .tl-item:hover .tl-toggle { color: var(--gold); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .count-badge {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-align: right;
+    margin-bottom: 1rem;
+    font-weight: 300;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-faint);
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Since c. 3000 BC</div>
+  <h1>Clan Ó Comáin</h1>
+  <p>A timeline of one of Ireland's most ancient Gaelic lineages</p>
+</div>
+
+<div class="filter-section">
+  <div class="filter-row" id="filters">
+    <button class="filter-btn active" data-era="all" onclick="filterEra('all', this)">All eras</button>
+    <button class="filter-btn" data-era="prehistoric" onclick="filterEra('prehistoric', this)">Prehistoric</button>
+    <button class="filter-btn" data-era="royal" onclick="filterEra('royal', this)">Royal ancestry</button>
+    <button class="filter-btn" data-era="munster" onclick="filterEra('munster', this)">Munster kings</button>
+    <button class="filter-btn" data-era="saints" onclick="filterEra('saints', this)">Saints &amp; scholars</button>
+    <button class="filter-btn" data-era="chiefdom" onclick="filterEra('chiefdom', this)">The chiefdom</button>
+    <button class="filter-btn" data-era="fall" onclick="filterEra('fall', this)">The fall</button>
+    <button class="filter-btn" data-era="endures" onclick="filterEra('endures', this)">Name endures</button>
+    <button class="filter-btn" data-era="modern" onclick="filterEra('modern', this)">Modern record</button>
+    <button class="filter-btn" data-era="today" onclick="filterEra('today', this)">Today</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--prehistoric)"></span>Prehistoric</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--royal)"></span>Royal ancestry</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--munster)"></span>Munster kings</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--saints)"></span>Saints &amp; scholars</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--chiefdom)"></span>The chiefdom</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--fall)"></span>The fall</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--endures)"></span>Name endures</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--modern)"></span>Modern record</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--today)"></span>Today</div>
+  </div>
+
+  <div class="count-badge" id="count-badge">Showing all 26 entries — click any entry to expand</div>
+
+  <div class="timeline" id="timeline">
+    <div class="tl-spine"></div>
+    <div id="tl-content"></div>
+  </div>
+</div>
+
+<div class="footer">Clan Ó Comáin · Officially recognised by Clans of Ireland 2025 · clans of ireland</div>
+
+<script>
+const eras = [
+  { key: "prehistoric", label: "Prehistoric" },
+  { key: "royal", label: "Royal ancestry" },
+  { key: "munster", label: "Munster kings" },
+  { key: "saints", label: "Saints & scholars" },
+  { key: "chiefdom", label: "The chiefdom" },
+  { key: "fall", label: "The fall" },
+  { key: "endures", label: "Name endures" },
+  { key: "modern", label: "Modern record" },
+  { key: "today", label: "Today" }
+];
+
+const events = [
+  {
+    date: "c. 3000–2500 BC",
+    title: "Ancient origins — 4,000 years in Ireland",
+    text: "The direct male ancestors of Clan Ó Comáin arrive in Ireland as part of the Bronze Age Atlantic Celtic population, carrying the Y-DNA haplogroup R-L21 — confirmed by Big-Y DNA testing. This places the unbroken male line in Ireland for over 4,000 years, among the oldest continuously documented male lineages on the island.",
+    era: "prehistoric"
+  },
+  {
+    date: "c. 357 AD",
+    title: "Kingdom of Uí Maine founded",
+    text: "Máine Mór mac Eochaidh establishes the Kingdom of Uí Maine in Connacht, centred on what is now east Galway and south Roscommon. This ancient kingdom becomes the ancestral royal house from which the O'Hart pedigree traces the Commane descent, recorded in the Book of Lecan and Book of Leinster.",
+    era: "royal"
+  },
+  {
+    date: "c. 556 AD",
+    title: "Cairbre Crom — 11th King of Uí Maine",
+    text: "Cairbre Crom, 11th King of Uí Maine, flourishes. He is the critical ancestral figure from whom almost all subsequent Uí Maine dynasties descend, and through whom the Commane family shares common ancestry with the Clancy, Kelly, Madden, Tracy, Hannan, Kenny, Colman, Egan and Larkin families.",
+    era: "royal"
+  },
+  {
+    date: "597 or 601 AD",
+    title: "Death of Breanan Dall — first named direct ancestor",
+    text: "Death of Breanan Dall, 12th King of Uí Maine, recorded in the Annals of Ulster — the earliest individually named direct ancestor of the Commane family documented in a primary historical source. He is the father of Coman, from whom the surname Ó Comáin derives.",
+    era: "royal"
+  },
+  {
+    date: "c. 620–650 AD",
+    title: "Coman mac Breanan Dall — the name-giver",
+    text: "Coman mac Breanan Dall flourishes — the person from whom the surname Ó Comáin ('descendant of Coman') directly derives. He is the name-giver of the entire family and the ancestral link between the royal line of Uí Maine and all subsequent generations of the clan.",
+    era: "royal"
+  },
+  {
+    date: "658 AD",
+    title: "Suibne mac Comáin — King of Déisi Munster",
+    text: "Suibne mac Comáin dies as king of the Déisi Munster — one of the earliest historical figures bearing the Comáin name recorded in the annals, and evidence of the family's deep Munster royal roots. His son Congal mac Suibne succeeds him as king of the Déisi.",
+    era: "munster"
+  },
+  {
+    date: "701 AD",
+    title: "Congal mac Suibne — king of the Déisi",
+    text: "Death of Congal mac Suibne, king of the Déisi Munster — son of Suibne mac Comáin, continuing the royal Munster line of the family into the 8th century.",
+    era: "munster"
+  },
+  {
+    date: "705 AD",
+    title: "Célechair mac Comáin — killed in Clare",
+    text: "Célechair mac Comáin is killed in battle in County Clare, recorded in the Annals of Ulster — one of the earliest confirmed annalistic references placing the Comáin name in Clare itself, in the territory that would become the Chiefdom of Tulach Commáin.",
+    era: "munster"
+  },
+  {
+    date: "c. 747 AD",
+    title: "Death of Saint Commán",
+    text: "Death of Saint Commán, founder of Roscommon (Ros Commáin — 'Commán's Wood') and the ancient church at Kinvara in County Galway, on the southern edge of the Burren — recorded in the Annals of Ulster. His foundations preserve the Comáin name in two of Ireland's most significant ecclesiastical sites.",
+    era: "saints"
+  },
+  {
+    date: "751 AD",
+    title: "Colmán mac Comáin — sage of Ireland",
+    text: "Death of Colmán mac Comáin on the Aran Islands, recorded in the Annals of Inisfallen — called one of the four sages of Ireland. His death on the Aran Islands, within sight of the Burren and Tulach Commáin territory, reflects the family's geographical reach across the western seaboard.",
+    era: "saints"
+  },
+  {
+    date: "8th–9th century",
+    title: "Chiefdom of Tulach Commáin at its height",
+    text: "The Chiefdom of Tulach Commáin flourishes in the Burren, County Clare. The great triple ring stone fort of Cahercommaun — regarded as one of the most important ancient sites in Munster — is built in the 9th century as the ceremonial capital and inauguration site of the chiefdom, just a few miles from Newhall. The inner wall alone used 16,500 tons of stone.",
+    era: "chiefdom"
+  },
+  {
+    date: "c. 10th century",
+    title: "Cahercommaun abandoned",
+    text: "Cahercommaun is abandoned. Archaeological evidence shows no signs of occupation past the 10th century. The Chiefdom of Tulach Commáin fades from the historical record, though the family name remains embedded in the Clare landscape through the place names Tulach Commáin and Cahercommaun.",
+    era: "chiefdom"
+  },
+  {
+    date: "c. 1072 AD",
+    title: "Gilla Cómáin — celebrated medieval Irish poet",
+    text: "Gilla Cómáin mac Gilla Samthainde flourishes — a celebrated medieval Irish poet whose works were incorporated into the Lebor Gabála Érenn (Book of Invasions), one of the great manuscripts of Irish literature.",
+    era: "saints"
+  },
+  {
+    date: "1169 AD",
+    title: "Anglo-Norman invasion — heraldry arrives in Ireland",
+    text: "The Anglo-Norman invasion of Ireland begins. The heraldic system — coats of arms — arrives in Ireland with the Normans for the first time. The Gaelic Ó Comáin family, whose chiefdom had already faded from the record two centuries earlier, has no engagement with this new tradition.",
+    era: "fall"
+  },
+  {
+    date: "1225 AD",
+    title: "The fall of a chieftain line",
+    text: "Conall O'Comain — the last recorded head of the family in the O'Hart pedigree — is dispossessed of the family's ancestral patrimony when King Henry III grants the Lordship of Connacht to the Anglo-Norman De Burc (Burke) family. This marks the formal end of the O'Comain territorial authority, recorded in John O'Hart's Irish Pedigrees (1892).",
+    era: "fall"
+  },
+  {
+    date: "c. 1440 AD",
+    title: "Comyns of Kilcorney — in the Burren heartland",
+    text: "A family of Comyn is recorded in Limerick, with Sir William Comyn knight documented as ancestor of the Comyns of Corcomroe and Kilcorney — in the very heartland of the ancient Chiefdom of Tulach Commáin. Their presence confirms the continuity of the name in its ancestral territory across two centuries of Anglo-Norman dominance.",
+    era: "endures"
+  },
+  {
+    date: "1585 AD",
+    title: "'Tullagh Coman' named in Elizabethan deed",
+    text: "A deed of Queen Elizabeth I references 'Tullagh Coman' — the ancient Chiefdom of Tulach Commáin — by name, confirming the persistence of the Comáin place name in the Burren landscape into the Elizabethan period.",
+    era: "endures"
+  },
+  {
+    date: "1619 AD",
+    title: "James Comyn receives Doonbeg Castle",
+    text: "James Comyn receives Doonbeg Castle from Daniel O'Brien — evidence that a family bearing the Comyn/Commane name retained sufficient standing in Clare in the early 17th century to receive a castle from the O'Brien lordship, nearly 400 years after the formal dispossession of 1225.",
+    era: "endures"
+  },
+  {
+    date: "1659 AD",
+    title: "First post-medieval census record in Clare",
+    text: "'Comane &c' — 11 persons recorded in the Barony of Tulla, County Clare in Pender's Census — the first confirmed post-medieval population record placing the family in Clare following the centuries-long documentary gap after the 1225 dispossession.",
+    era: "modern"
+  },
+  {
+    date: "1748 AD",
+    title: "Comyns of Kilcorney registered with Ulster King of Arms",
+    text: "A pedigree of the Comyns of Kilcorney — seated in the Barony of Corcomroe in the Burren — is registered with the Ulster King of Arms, confirming the continued presence of a family bearing the Comyn/Ó Comáin name in the ancestral heartland of the chiefdom.",
+    era: "modern"
+  },
+  {
+    date: "1828 AD",
+    title: "John Commane — Ballyea, Killone, County Clare",
+    text: "John Commane is recorded as a tenant in Ballyea townland, Killone parish, County Clare in the Tithe Applotment Book — the earliest specifically identified individual in the documented modern Commane line. His neighbour in the same townland is Mich'l Hehir — a remarkable echo of two ancient Clare families sharing territory across more than a millennium.",
+    era: "modern"
+  },
+  {
+    date: "1892 AD",
+    title: "O'Hart publishes Irish Pedigrees",
+    text: "John O'Hart publishes Irish Pedigrees — recording the O'Comain pedigree from the Book of Lecan and Book of Leinster, tracing the family's royal descent from the Kings of Uí Maine and documenting Conall O'Comain as the last recorded head of the family at the time of the 1225 dispossession.",
+    era: "modern"
+  },
+  {
+    date: "1934 AD",
+    title: "Harvard expedition excavates Cahercommaun",
+    text: "The Third Harvard Archaeological Expedition, led by Hugh O'Neill Hencken, excavates Cahercommaun in the Burren — establishing for the first time the archaeological significance of the site as the capital of an early medieval chiefdom. A silver brooch found in the souterrain, now in the National Museum of Ireland, confirms 9th century occupation.",
+    era: "modern"
+  },
+  {
+    date: "2012 AD",
+    title: "Gibson publishes From Chiefdom to State in Early Ireland",
+    text: "David Blair Gibson publishes From Chiefdom to State in Early Ireland (Cambridge University Press) — providing the most detailed modern scholarly analysis of the Chiefdom of Tulach Commáin and Cahercommaun, establishing the site as a major early medieval political centre.",
+    era: "modern"
+  },
+  {
+    date: "2025 AD",
+    title: "Clan Ó Comáin officially recognised by Clans of Ireland",
+    text: "Clan Ó Comáin is officially recognised by Clans of Ireland — the national body for Irish clan recognition — providing formal acknowledgement of the clan's ancient Gaelic heritage and its place among the historic families of Ireland.",
+    era: "today"
+  },
+  {
+    date: "2025 AD — ongoing",
+    title: "Petition for grant of arms — Chief Herald of Ireland",
+    text: "Clan Ó Comáin petitions the Office of the Chief Herald of Ireland for a new grant of arms — the first formal heraldic identity for the ancient Gaelic sept, grounded in one of the most thoroughly researched Gaelic pedigrees presented to the Chief Herald's office in the modern period. When granted, the arms will be published on this website and made available to all members of Clan Ó Comáin worldwide.",
+    era: "today"
+  }
+];
+
+let currentEra = 'all';
+let openItems = new Set();
+
+function filterEra(era, btn) {
+  currentEra = era;
+  openItems = new Set();
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTimeline();
+}
+
+function toggleItem(id) {
+  if (openItems.has(id)) {
+    openItems.delete(id);
+  } else {
+    openItems.add(id);
+  }
+  const el = document.getElementById('tl-item-' + id);
+  el.classList.toggle('open', openItems.has(id));
+  const toggle = el.querySelector('.tl-toggle');
+  toggle.textContent = openItems.has(id) ? '− close' : '+ read more';
+}
+
+function renderTimeline() {
+  const container = document.getElementById('tl-content');
+  const filtered = currentEra === 'all' ? events : events.filter(e => e.era === currentEra);
+
+  const badge = document.getElementById('count-badge');
+  badge.textContent = `Showing ${filtered.length} entr${filtered.length === 1 ? 'y' : 'ies'} — click any entry to expand`;
+
+  const grouped = {};
+  eras.forEach(e => grouped[e.key] = []);
+  filtered.forEach((ev, i) => {
+    if (grouped[ev.era]) grouped[ev.era].push({ ev, i });
+  });
+
+  let html = '';
+  eras.forEach(era => {
+    const items = grouped[era.key];
+    if (!items.length) return;
+    const eraInfo = eras.find(e => e.key === era.key);
+    html += `<div class="era-group" data-era-group="${era.key}">`;
+    html += `<div class="era-heading">`;
+    html += `<span class="era-label">${eraInfo.label}</span>`;
+    html += `<div class="era-rule"></div>`;
+    html += `</div>`;
+    items.forEach(({ ev, i }) => {
+      const isOpen = openItems.has(i);
+      html += `
+        <div class="tl-item ${isOpen ? 'open' : ''}" data-era="${ev.era}" id="tl-item-${i}" onclick="toggleItem(${i})">
+          <div class="tl-dot"></div>
+          <span class="tl-date">${ev.date}</span>
+          <div class="tl-title">${ev.title}</div>
+          <div class="tl-text">${ev.text}</div>
+          <span class="tl-toggle">${isOpen ? '− close' : '+ read more'}</span>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+renderTimeline();
+</script>
+</body>
+</html>
