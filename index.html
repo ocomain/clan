@@ -96,8 +96,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .card-text{font-size:13px;font-weight:300;line-height:1.8;color:var(--ink-soft)}
 
 /* CHIEF'S LETTER */
-.letter-section{background:var(--cream-dark);padding:84px 0}
-.letter-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:start}
+.letter-section{background:var(--cream-mid);padding:84px 0}
+.letter-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start}
 .letter-card{background:var(--white);border:1px solid var(--border-strong);padding:52px;position:relative}
 .letter-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
 .letter-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px}
@@ -358,50 +358,31 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 <section class="letter-section" id="chief">
   <div class="si">
     <div class="letter-grid">
-      <div class="letter-card">
-        <div class="letter-header">
-          <div class="letter-from-col" style="text-align:right;width:100%">
-            <div class="letter-from-label">From the desk of the chief</div>
-            <div class="letter-from-addr">Newhall House, County Clare, Ireland</div>
-          </div>
-        </div>
-        <img src="chief_letter.png" alt="Letter from Fergus Commane, Chief of Ó Comáin" style="width:100%;display:block;margin-bottom:0">
-        <div style="display:none"><p class="letter-salutation">CÉAD MÍLE FÁILTE and welcome to <strong>Clan Ó Comáin</strong>!</p>
-        <p class="lp">Our name — <strong>Commane, Coman, Commons, Comyne, Cummane, Cummins, Hurley, Kimmons, MacSkimmins</strong>, and more — carries a history that unites us across centuries.</p>
-        <p class="lp">From the <em>Chiefdom of Tulach Commáin</em> in early medieval Clare, our clan rises, authenticated and officially recognised by <em>Clans of Ireland</em> under the patronage of Michael D. Higgins, <strong>President of Ireland</strong>. Their committee verified the antiquity of our Irish Gaelic name and clan.</p>
-        <p class="lp">Our lineage includes Suibine Commain, <strong>King of Déisi Munster</strong>, and luminaries <em>Colman Commán</em>, <strong>one of the four sages of Ireland</strong>, and <strong>Saint Commán</strong>, founder of Roscommon, binding us to Ireland's ecclesiastical heritage. Despite dispossession in the 13th century, our spirit endures.</p>
-        <p class="lp">As <em>Taoiseach</em> successor, consecrated by <em>derbhfine</em> under Brehon law, I, Fergus, am inspired to lead and invite all who cherish Gaelic music and culture — whether bearing our name, its variants, or simply our passion for tradition — to join us. Through festivals and historical tours at our clan seat, <strong>Newhall House, Co Clare</strong>, and our ancestral capital, <em>Cahercommane</em>, we celebrate our Irish roots and forge new bonds.</p>
-        <p class="lp">Join this joyous revival. Register to remember and honour our ancestors, while shaping a bold future together.</p>
-        </div><div class="letter-close-section">
-          <p class="letter-valediction">Go raibh míle maith agaibh,</p>
-          <div class="letter-sig">Commane</div>
-          <div class="letter-rule"></div>
-          <div class="letter-signatory">
-            <strong>Fergus Commane</strong>
-            Chief of Ó Comáin<br>
-            Custodian of Killone Abbey and the Holy Well of St John the Baptist
-          </div>
+
+      <!-- Left: Fergus photo + caption -->
+      <div>
+        <div class="eyebrow">The chief</div>
+        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.2">Fergus — Chief of Ó Comáin</h2>
+        <img src="fergus_at_killone.png" alt="Fergus Commane, Chief of Ó Comáin, at Killone Abbey" style="width:100%;border-radius:2px;border:1px solid var(--border);display:block;margin-bottom:10px;object-fit:cover;max-height:460px">
+        <div class="img-cap">Fergus Commane at Killone Abbey — Newhall Estate, Co. Clare</div>
+        <div style="margin-top:20px">
+          <img src="clans_event_1.jpg" alt="The Commanes — Fergus and Maria Kinfauns" style="width:100%;border-radius:2px;border:1px solid var(--border);display:block;margin-bottom:8px;object-fit:cover;max-height:260px;object-position:center top">
+          <div class="img-cap">The Commanes — Fergus &amp; Maria Kinfauns</div>
         </div>
       </div>
 
-      <div>
-        <div class="eyebrow">A word from the chief</div>
-        <h2 class="sidebar-title">Fergus Commane — Chief of Ó Comáin</h2>
-        <!-- Chief photo — Fergus and Maria in black tie -->
-        <div class="chief-photo-wrap">
-          <img class="chief-photo" src="fergus_and_maria.png" alt="Fergus Commane, Chief of Ó Comáin, with Maria Commane" loading="lazy">
-          <div class="chief-photo-caption">Fergus and Maria Commane at a formal clan occasion</div>
-        </div>
-        <p class="sidebar-text">As Taoiseach successor consecrated under Brehon law, Fergus Commane leads the revival of one of Ireland's most ancient Gaelic clans — welcoming all who carry the name, its many variants, or simply a passion for Gaelic culture and tradition.</p>
-        <p class="sidebar-text">The clan seat is Newhall House in County Clare, within sight of Killone Abbey — a 12th century Augustinian priory — and the Holy Well of St John the Baptist, of which Fergus is custodian.</p>
-        <div class="sidebar-img-wrap">
-          <img class="sidebar-img" style="height:160px" src="newhall_dusk.png" alt="Newhall House at dusk" loading="lazy">
-          <div class="img-cap" style="margin-top:6px">Newhall House & Estate at dusk — clan seat, Co. Clare</div>
-        </div>
+      <!-- Right: Letter image only, with shadow, no surrounding text -->
+      <div style="display:flex;align-items:flex-start;justify-content:flex-end">
+        <img src="chief_letter.png"
+          alt="Letter from Fergus Commane, Chief of Ó Comáin"
+          style="width:100%;max-width:520px;display:block;box-shadow:6px 6px 28px rgba(15,31,15,.18);border:1px solid var(--border-strong)">
       </div>
+
     </div>
   </div>
 </section>
+
+
 
 <!-- VIDEOS -->
 <section class="video-section" id="videos">
