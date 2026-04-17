@@ -219,6 +219,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   .letter-card{padding:28px 20px}
 }
 </style>
+<link rel="stylesheet" href="shared.css">
 </head>
 <body>
 
@@ -359,20 +360,19 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
     <div class="letter-grid">
       <div class="letter-card">
         <div class="letter-header">
-          <img class="letter-crest" src="https://lh3.googleusercontent.com/sitesv/AA5AbUAL_YKmN4_pd5BS5RFmCbzfmFGZhxtvhBVvSaj3npRobupx_7edaIVpKeds_JJB5Kb8oDGmd0Jnn2aSQP0jPc3qa9K396el_SkjjyVa52PVgGKZKi690auO5puMkzEXi0h0HoHG0Q78ByctvdtMFojpmQSpaUuXU0st_9TGc9Oyyubsljqzq-2AJcSsejMM4FgK18nyoPUAl2QGAOtJBbXfrKcix_m7sz_2i0I=w1280" alt="Clan crest">
-          <div class="letter-from-col">
+          <div class="letter-from-col" style="text-align:right;width:100%">
             <div class="letter-from-label">From the desk of the chief</div>
             <div class="letter-from-addr">Newhall House, County Clare, Ireland</div>
           </div>
         </div>
-        <hr class="letter-divider">
-        <p class="letter-salutation">CÉAD MÍLE FÁILTE and welcome to <strong>Clan Ó Comáin</strong>!</p>
+        <img src="chief_letter.png" alt="Letter from Fergus Commane, Chief of Ó Comáin" style="width:100%;display:block;margin-bottom:0">
+        <div style="display:none"><p class="letter-salutation">CÉAD MÍLE FÁILTE and welcome to <strong>Clan Ó Comáin</strong>!</p>
         <p class="lp">Our name — <strong>Commane, Coman, Commons, Comyne, Cummane, Cummins, Hurley, Kimmons, MacSkimmins</strong>, and more — carries a history that unites us across centuries.</p>
         <p class="lp">From the <em>Chiefdom of Tulach Commáin</em> in early medieval Clare, our clan rises, authenticated and officially recognised by <em>Clans of Ireland</em> under the patronage of Michael D. Higgins, <strong>President of Ireland</strong>. Their committee verified the antiquity of our Irish Gaelic name and clan.</p>
         <p class="lp">Our lineage includes Suibine Commain, <strong>King of Déisi Munster</strong>, and luminaries <em>Colman Commán</em>, <strong>one of the four sages of Ireland</strong>, and <strong>Saint Commán</strong>, founder of Roscommon, binding us to Ireland's ecclesiastical heritage. Despite dispossession in the 13th century, our spirit endures.</p>
         <p class="lp">As <em>Taoiseach</em> successor, consecrated by <em>derbhfine</em> under Brehon law, I, Fergus, am inspired to lead and invite all who cherish Gaelic music and culture — whether bearing our name, its variants, or simply our passion for tradition — to join us. Through festivals and historical tours at our clan seat, <strong>Newhall House, Co Clare</strong>, and our ancestral capital, <em>Cahercommane</em>, we celebrate our Irish roots and forge new bonds.</p>
         <p class="lp">Join this joyous revival. Register to remember and honour our ancestors, while shaping a bold future together.</p>
-        <div class="letter-close-section">
+        </div><div class="letter-close-section">
           <p class="letter-valediction">Go raibh míle maith agaibh,</p>
           <div class="letter-sig">Commane</div>
           <div class="letter-rule"></div>
@@ -499,20 +499,20 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
         <div class="gallery-cap">Newhall House — clan seat</div>
       </div>
       <div class="gallery-item">
-        <img class="gallery-img" src="newhall_gates.png" alt="Gate lodges Newhall" loading="lazy">
+        <img class="gallery-img" src="newhall_gates_wide.png" alt="Gate lodges, Newhall Estate at sunset" loading="lazy">
         <div class="gallery-cap">Gate lodges, Newhall Estate</div>
       </div>
       <div class="gallery-item">
-        <img class="gallery-img" src="antoin_dublin.png" alt="Antoin Commane in Dublin" loading="lazy">
-        <div class="gallery-cap">Antoin Commane — Clan Tanist, Dublin</div>
+        <img class="gallery-img" src="clans_event_1.jpg" alt="Clan Ó Comáin formal dinner, Dublin" loading="lazy">
+        <div class="gallery-cap">Clan Ó Comáin — formal dinner, Dublin</div>
       </div>
       <div class="gallery-item">
-        <img class="gallery-img" src="clans_dublin.jpg" alt="Clans of Ireland procession" loading="lazy">
-        <div class="gallery-cap">Clans of Ireland procession, Dublin 2026</div>
+        <img class="gallery-img" src="clans_event_2.jpg" alt="Clans of Ireland event" loading="lazy">
+        <div class="gallery-cap">Clan gathering — Dublin 2026</div>
       </div>
       <div class="gallery-item">
-        <img class="gallery-img" src="fergus_and_maria.png" alt="Fergus and Maria Commane" loading="lazy">
-        <div class="gallery-cap">Fergus and Maria Commane</div>
+        <img class="gallery-img" src="clans_event_3.jpg" alt="Clans of Ireland formal event" loading="lazy">
+        <div class="gallery-cap">Clans of Ireland — formal gathering</div>
       </div>
     </div>
   </div>
@@ -520,7 +520,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 
 <!-- GATES FULL BLEED — join CTA -->
 <section class="gates-section">
-  <img class="gates-img" src="newhall_gates.png" alt="Gate lodges of Newhall Estate at sunset">
+  <img class="gates-img" src="newhall_gates_wide.png" alt="Gate lodges of Newhall Estate at sunset">
   <div class="gates-overlay"></div>
   <div class="gates-content">
     <h2 class="gates-title">The gates of Newhall are open to all</h2>
@@ -542,7 +542,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
         <a href="https://tally.so/r/jaZdgx" class="btn-p">Apply for membership</a>
       </div>
       <div class="crest-img-wrap">
-        <img class="crest-img" src="https://lh3.googleusercontent.com/sitesv/AA5AbUAL_YKmN4_pd5BS5RFmCbzfmFGZhxtvhBVvSaj3npRobupx_7edaIVpKeds_JJB5Kb8oDGmd0Jnn2aSQP0jPc3qa9K396el_SkjjyVa52PVgGKZKi690auO5puMkzEXi0h0HoHG0Q78ByctvdtMFojpmQSpaUuXU0st_9TGc9Oyyubsljqzq-2AJcSsejMM4FgK18nyoPUAl2QGAOtJBbXfrKcix_m7sz_2i0I=w1280" alt="Clan Ó Comáin coat of arms" loading="lazy">
+        <img class="crest-img" src="coat_of_arms.png" alt="Clan Ó Comáin coat of arms" loading="lazy">
         <div class="crest-cap">Commane of Newhall — coat of arms</div>
       </div>
     </div>
