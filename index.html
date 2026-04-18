@@ -566,11 +566,7 @@ function toggleMenu(){
             </div>
           </div>
         </div>
-        <div id="videoPlayer" style="display:none">
-          <video controls autoplay style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
-            <source src="chief_recognition_compress.mp4" type="video/mp4">
-          </video>
-        </div>
+
         <p style="font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin-top:8px">Chief of Ó Comáin greeted by the Chairman of Clans of Ireland, 2025</p>
       </div>
 
@@ -590,8 +586,29 @@ function toggleMenu(){
     </div>
   </div>
 </section>
-<script>function playVideo(){document.getElementById("videoContainer").style.display="none";document.getElementById("videoPlayer").style.display="block";}</script>
-<script>function playVideo(){document.getElementById("videoContainer").style.display="none";document.getElementById("videoPlayer").style.display="block";}</script>
+<!-- VIDEO MODAL -->
+<div id="videoModal" onclick="closeModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
+  <div style="position:relative;width:100%;max-width:680px" onclick="event.stopPropagation()">
+    <button onclick="closeModal()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:rgba(184,151,90,.7);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:4px 0">✕ Close</button>
+    <video id="modalVideo" controls style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
+      <source src="chief_recognition_compress.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+<script>
+function playVideo(){
+  const m=document.getElementById('videoModal');
+  m.style.display='flex';
+  document.getElementById('modalVideo').play();
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('videoModal'))return;
+  document.getElementById('videoModal').style.display='none';
+  const v=document.getElementById('modalVideo');
+  v.pause();v.currentTime=0;
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal({target:document.getElementById('videoModal')});});
+</script>
 
 <!-- CLANS OF IRELAND RECOGNITION -->
 <section class="clans-section">
