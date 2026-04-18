@@ -224,7 +224,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="#" class="nav-brand">Irish Clan <em>Ó Comáin</em></a>
+    <a href="#" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:36px;width:auto;display:inline-block;vertical-align:middle;margin-right:10px;filter:brightness(0) invert(1)">Irish Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="index.html" class="nav-link">Home</a>
       <a href="surname-variants.html" class="nav-link">Variants</a>
@@ -278,18 +278,26 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 </div>
 
 <!-- HERITAGE -->
-<section class="letter-section" id="chief">
+<section class="heritage-section" id="heritage">
   <div class="si">
-    <div style="display:grid;grid-template-columns:320px 1fr;gap:48px;align-items:start">
+    <div class="two-col">
       <div>
-        <div class="eyebrow">The chief</div>
-        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,30px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Chief of Ó Comáin</h2>
-        <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-bottom:18px">A New Chapter in an Ancient Legacy</p>
-        <img src="fergus_at_killone.png" alt="Fergus Commane, Chief of Ó Comáin, at Killone Abbey" style="width:100%;border-radius:2px;border:1px solid var(--border);display:block;object-fit:cover;object-position:center top;max-height:400px">
-        <div class="img-cap" style="margin-top:8px">Fergus Commane at Killone Abbey, Newhall Estate</div>
+        <div class="eyebrow">Our heritage</div>
+        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:10px">An ancient royal house in the Gaelic nobility of Ireland</h2>
+        <div class="gold-rule"></div>
+        <p class="body-text" style="margin-bottom:18px">Clan Ó Comáin is an ancient royal house in the Gaelic nobility of Ireland — one of the oldest documented families in the land. Their ancestral capital, Cahercommane in the Burren, a triple ring stone fort regarded as one of the most important ancient sites in Munster, was a ceremonial inauguration site of the Chiefdom of Tulach Commáin.</p>
+        <p class="body-text" style="margin-bottom:18px">Their lineage extends through the kings of Déisi Munster, the royal dynasty of Uí Maine in Connacht, and the spiritual legacy of Saint Commán — founder of Roscommon and the ancient church at Kinvara. A direct male line confirmed by DNA stretches unbroken in Ireland for over 4,000 years.</p>
+        <div class="pull-quote">
+          <p>"From the Chiefdom of Tulach Commáin in early medieval Clare, our clan rises — authenticated and officially recognised by Clans of Ireland under the patronage of the President of Ireland."</p>
+          <cite>Fergus Commane — Chief of Ó Comáin</cite>
+        </div>
+        <p class="body-text">The name today extends far beyond Ireland. A Commane Road in Baldwinsville, New York, testifies to Famine-era emigration to America. The name appears in France and across the world — carried by families who kept the flame of their Irish identity alive across generations of exile and distance.</p>
       </div>
       <div>
-        <img src="chief_letter.png" alt="Letter from Fergus Commane, Chief of Ó Comáin of Newhall" style="width:100%;display:block;box-shadow:8px 8px 36px rgba(15,31,15,.16);border:1px solid var(--border-strong)">
+        <img class="heritage-img" style="height:300px;margin-bottom:10px" src="newhall_house.png" alt="Newhall House, County Clare — clan seat" loading="lazy">
+        <div class="img-cap">Newhall House — clan seat, Co. Clare</div>
+        <img class="heritage-img" style="height:190px;margin-top:20px;margin-bottom:8px" src="newhall_gates_wide.png" alt="Gate lodges, Newhall Estate" loading="lazy">
+        <div class="img-cap">Gate lodges, Newhall Estate</div>
       </div>
     </div>
   </div>
@@ -302,7 +310,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   <div class="cahir-content">
     <div class="cahir-eyebrow">8th–9th century AD</div>
     <h2 class="cahir-title">Cahercommane — the ancestral capital</h2>
-    <p class="cahir-text">A 3D remodel of Cahercommane as it stood at the height of the Chiefdom of Tulach Commáin — a triple ring stone fort on the cliff edge of the Burren, County Clare. The inner wall alone used 16,500 tons of stone. Regarded by historians as one of the most important ancient sites in Munster.</p>
+    <p class="cahir-text">A 3D reconstruction of Cahercommane as it stood at the height of the Chiefdom of Tulach Commáin — a triple ring stone fort on the cliff edge of the Burren, County Clare. The inner wall alone used 16,500 tons of stone. Regarded by historians as one of the most important ancient sites in Munster.</p>
     <a href="timeline.html" target="_blank" class="btn-g">Explore the full timeline</a>
   </div>
 </section>
@@ -348,26 +356,18 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 </section>
 
 <!-- CHIEF'S LETTER -->
-<section class="heritage-section" id="heritage">
+<section class="letter-section" id="chief">
   <div class="si">
-    <div class="two-col">
+    <div style="display:grid;grid-template-columns:320px 1fr;gap:48px;align-items:start">
       <div>
-        <div class="eyebrow">Our heritage</div>
-        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:10px">An ancient royal house in the Gaelic nobility of Ireland</h2>
-        <div class="gold-rule"></div>
-        <p class="body-text" style="margin-bottom:18px">Clan Ó Comáin is an ancient royal house in the Gaelic nobility of Ireland — one of the oldest documented families in the land. Their ancestral capital, Cahercommane in the Burren, a triple ring stone fort regarded as one of the most important ancient sites in Munster, was a ceremonial inauguration site of the Chiefdom of Tulach Commáin.</p>
-        <p class="body-text" style="margin-bottom:18px">Their lineage extends through the kings of Déisi Munster, the royal dynasty of Uí Maine in Connacht, and the spiritual legacy of Saint Commán — founder of Roscommon and the ancient church at Kinvara. A direct male line confirmed by DNA stretches unbroken in Ireland for over 4,000 years.</p>
-        <div class="pull-quote">
-          <p>"From the Chiefdom of Tulach Commáin in early medieval Clare, our clan rises — authenticated and officially recognised by Clans of Ireland under the patronage of the President of Ireland."</p>
-          <cite>Fergus Commane — Chief of Ó Comáin</cite>
-        </div>
-        <p class="body-text">The name today extends far beyond Ireland. A Commane Road in Baldwinsville, New York, testifies to Famine-era emigration to America. The name appears in France and across the world — carried by families who kept the flame of their Irish identity alive across generations of exile and distance.</p>
+        <div class="eyebrow">The chief</div>
+        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,30px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Chief of Ó Comáin</h2>
+        <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-bottom:18px">A New Chapter in an Ancient Legacy</p>
+        <img src="fergus_at_killone.png" alt="Fergus Commane, Chief of Ó Comáin, at Killone Abbey" style="width:100%;border-radius:2px;border:1px solid var(--border);display:block;object-fit:cover;object-position:center top;max-height:400px">
+        <div class="img-cap" style="margin-top:8px">Fergus Commane at Killone Abbey, Newhall Estate</div>
       </div>
       <div>
-        <img class="heritage-img" style="height:300px;margin-bottom:10px" src="newhall_house.png" alt="Newhall House, County Clare — clan seat" loading="lazy">
-        <div class="img-cap">Newhall House — clan seat, Co. Clare</div>
-        <img class="heritage-img" style="height:190px;margin-top:20px;margin-bottom:8px" src="newhall_gates_wide.png" alt="Gate lodges, Newhall Estate" loading="lazy">
-        <div class="img-cap">Gate lodges, Newhall Estate</div>
+        <img src="chief_letter.png" alt="Letter from Fergus Commane, Chief of Ó Comáin of Newhall" style="width:100%;display:block;box-shadow:8px 8px 36px rgba(15,31,15,.16);border:1px solid var(--border-strong)">
       </div>
     </div>
   </div>
