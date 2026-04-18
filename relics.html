@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clan Relics & Regalia — Clan Ó Comáin</title>
+  <meta name="description" content="The sacred objects and instruments of authority of Clan Ó Comáin — the White Rod of the Chief, and the ancient regalia of Gaelic chieftainship.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="/clan/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/clan/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/clan/favicon-16x16.png">
+  <link rel="icon" href="/clan/favicon.ico">
+  <style>
+    /* HERO */
+    .relics-hero{background:var(--ink);padding:80px 0 56px;border-bottom:2px solid var(--gold)}
+
+    /* ROD FEATURE SECTION */
+    .rod-section{padding:84px 0;background:var(--cream)}
+    .rod-grid{display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:start}
+    .rod-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .rod-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:12px}
+    .rod-irish{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-muted);margin-bottom:20px}
+    .rod-rule{width:48px;height:2px;background:var(--gold);margin-bottom:28px}
+    .rod-body p{font-family:'EB Garamond',serif;font-size:17px;line-height:1.8;color:var(--ink-soft);margin-bottom:18px}
+    .rod-body p:last-child{margin-bottom:0}
+
+    /* PULL QUOTE */
+    .rod-quote{border-left:4px solid var(--gold);padding:18px 24px;margin:28px 0;background:var(--cream-mid)}
+    .rod-quote p{font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.6;margin:0}
+
+    /* IMAGE PANEL */
+    .rod-img-panel{position:sticky;top:100px}
+    .rod-img{width:100%;display:block;border-radius:2px;border:1px solid var(--border)}
+    .rod-img-cap{font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:var(--ink-muted);letter-spacing:.06em;margin-top:10px;text-align:center}
+
+    /* INAUGURATION SECTION */
+    .inaug-info{background:var(--ink);padding:80px 0}
+    .inaug-info-inner{max-width:860px;margin:0 auto}
+    .inaug-info-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--gold-pale);margin-bottom:10px;line-height:1.2}
+    .inaug-info-body p{font-family:'EB Garamond',serif;font-size:16px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:16px}
+    .inaug-info-body p:last-child{margin-bottom:0}
+    .inaug-highlight{border-left:3px solid var(--gold);background:rgba(184,151,90,.1);padding:20px 24px;margin:28px 0;border-radius:0 2px 2px 0}
+    .inaug-highlight p{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.9);line-height:1.7;margin:0}
+
+    /* FUTURE RELICS */
+    .future-section{background:var(--cream-dark);padding:72px 0;border-top:1px solid var(--border)}
+
+    @media(max-width:900px){
+      .rod-grid{grid-template-columns:1fr}
+      .rod-img-panel{position:static;margin-top:0}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="surname-variants.html" class="nav-link">Variants</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="timeline.html" class="nav-link">Timeline</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="relics.html" class="nav-link active">Relics</a>
+      <a href="coat-of-arms.html" class="nav-link">Crest</a>
+      <a href="patrons.html" class="nav-link">Patrons</a>
+      <a href="privy-council.html" class="nav-link">Council</a>
+    </div>
+    <a href="https://tally.so/r/jaZdgx" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="index.html" class="nav-mobile-link">Home</a>
+  <a href="surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="relics.html" class="nav-mobile-link active">Relics</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="https://tally.so/r/jaZdgx" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>function toggleMenu(){const m=document.getElementById('mobile-menu');m.classList.toggle('open')}</script>
+
+<!-- HERO -->
+<div class="relics-hero">
+  <div class="si">
+    <div class="eyebrow" style="color:var(--gold)">The sacred objects</div>
+    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(32px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:12px">Clan Relics &amp; Regalia</h1>
+    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">The sacred objects of Clan Ó Comáin</p>
+  </div>
+</div>
+
+<!-- THE WHITE ROD -->
+<section class="rod-section">
+  <div class="si">
+    <div class="rod-grid">
+
+      <!-- LEFT: TEXT -->
+      <div>
+        <div class="rod-eyebrow">The chief's instrument of authority</div>
+        <h2 class="rod-title">The White Rod</h2>
+        <p class="rod-irish">An Slat Bhán — Rod of Sovereignty</p>
+        <div class="rod-rule"></div>
+
+        <div class="rod-body">
+          <p>The White Rod — <em>An Slat Bhán</em> — is the most ancient and most sacred of the clan's physical objects of authority. In the Gaelic chieftainly tradition, the rod of sovereignty was one of the defining instruments of inauguration, passed to a newly consecrated chief as a physical embodiment of the transfer of power and the blessing of the land.</p>
+
+          <p>In early Irish kingship tradition, the <em>slat na ríghe</em> — the rod of kingship — was presented to the inaugurated king or chief at the moment of consecration. White hazel and ash rods, often tipped with crystal or precious stone, were among the most sacred objects in the Gaelic world. The white colour signified purity of lineage, the legitimacy of authority, and the sacred bond between the chief and the territory he was consecrated to serve.</p>
+
+          <div class="rod-quote">
+            <p>"The rod was not merely a symbol — it was the physical meeting point between the chief, his people, and the land itself. To hold it was to accept its obligations."</p>
+          </div>
+
+          <p>The clan's White Rod is made from white wood wrapped in hand-tooled leather cord in a traditional Celtic lattice pattern, tipped with a faceted crystal point. The crystal in Celtic and early Irish tradition was associated with clarity of vision, spiritual authority, and the power of the otherworld — qualities expected of a chief who must see truly and judge justly on behalf of his people.</p>
+
+          <p>The rod is held by the Chief of Ó Comáin and carried at formal clan ceremonies, inaugurations and gatherings. It is presented at the consecration of the Chief, symbolising the continuity of the ancient chieftainly tradition of the Ó Comáin from Cahercommane to Newhall.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: IMAGE -->
+      <div class="rod-img-panel">
+        <img src="white_rod.png" alt="The White Rod of Clan Ó Comáin — An Slat Bhán, rod of sovereignty" class="rod-img" loading="lazy">
+        <div class="rod-img-cap">The White Rod of Clan Ó Comáin · An Slat Bhán<br>Crystal-tipped · leather-bound · rod of sovereignty</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- INAUGURATION CONTEXT -->
+<section class="inaug-info">
+  <div class="si">
+    <div class="inaug-info-inner">
+      <div class="eyebrow" style="color:var(--gold)">The ritual of consecration</div>
+      <h2 class="inaug-info-title">The Chief's Inauguration &amp; the Rod in Brehon Tradition</h2>
+      <div style="width:48px;height:2px;background:var(--gold);margin:14px 0 28px"></div>
+      <div class="inaug-info-body">
+        <p>Under Brehon law, the inauguration of a Gaelic chief was not merely a political event — it was a sacred rite, conducted at the clan's inauguration site by the assembled derbhfine. At Cahercommane, the great triple-ring stone fort of the Burren, the Chiefs of Ó Comáin were consecrated in a ceremony that bound the new chief to the land, the ancestors, and the living clan.</p>
+
+        <p>The inauguration ceremony in the Gaelic tradition typically involved several elements: the assembly of the derbhfine at the sacred inauguration site; the presentation of the rod of sovereignty by the chief's designated officer; the three ritual circuits of the fort or mound; and the proclamation of the new chief's name, genealogy and obligations by the Seanchaí — the hereditary historian and storyteller of the clan.</p>
+
+        <div class="inaug-highlight">
+          <p>The rod was presented at the moment of consecration — placed in the hands of the new Chief by the outgoing chief or the senior officer of the derbhfine — signifying the formal transfer of the authority of the clan. To receive the rod was to receive the trust and sovereignty of the people.</p>
+        </div>
+
+        <p>The crystal tip of the Ó Comáin White Rod carries additional significance rooted in the pre-Christian sacred landscape of the Burren. Quartz and crystal were placed at the entrances of sacred sites across Ireland — most famously at the entrance to Newgrange — as objects believed to channel light, power and the presence of the otherworld. A crystal-tipped rod in the hands of a chief is therefore not merely decorative: it is a physical connection to the deepest spiritual traditions of the Gaelic world.</p>
+
+        <p>Today, the White Rod is carried by the Chief of Ó Comáin at formal clan occasions — at the clan's recognition by Clans of Ireland, at clan gatherings at Newhall and Cahercommane, and at any ceremony requiring the formal presence and authority of the clan. It will be presented at each future inauguration of a Chief of Ó Comáin, as the derbhfine gathers to select the most able-bodied to lead the clan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUTURE RELICS -->
+<section class="future-section">
+  <div class="si" style="max-width:720px">
+    <div class="eyebrow">Growing the collection</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Further Relics of the Clan</h2>
+    <div class="gold-rule"></div>
+    <p class="body-text" style="margin-bottom:16px">The White Rod is the first of the clan's formal regalia. As the clan continues its revival, further objects of authority and ceremony will be added to the collection — the clan banner, the ceremonial sword carried by the Marshall and Standard Bearer, the seal of the Chief, and other instruments of the clan's formal life.</p>
+    <p class="body-text">Each relic will be commissioned or consecrated in accordance with the ancient traditions of the Gaelic world, grounded in the scholarship that has guided the clan's revival. Members of the clan wishing to contribute to the creation of the clan's regalia are invited to contact the Chief directly.</p>
+    <a href="mailto:clan@ocomain.org" class="btn-p" style="margin-top:24px;display:inline-block">Contact the Chief</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="surname-variants.html">Variants</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="timeline.html">Timeline</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="relics.html">Relics</a></li>
+          <li><a href="coat-of-arms.html">Crest</a></li>
+          <li><a href="patrons.html">Patrons</a></li>
+          <li><a href="privy-council.html">Privy Council</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="https://tally.so/r/jaZdgx" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="#">Newhall House, County Clare</a></li>
+          <li><a href="#">Ireland</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · All rights reserved · www.ocomain.org</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
