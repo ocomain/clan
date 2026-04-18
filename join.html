@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Clan Ó Comáin — Guardians of an Ancient Gaelic Heritage</title>
+  <meta name="description" content="Join Clan Ó Comáin — open to all who love Ireland and wish to protect its ancient Gaelic culture. Cummins, Commons, Hurley, Commane and all who feel the call of Ireland are welcome.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="/clan/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/clan/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/clan/favicon-16x16.png">
+  <link rel="icon" href="/clan/favicon.ico">
+  <style>
+    /* HERO */
+    .join-hero{position:relative;min-height:88vh;display:flex;align-items:center;background:var(--ink);overflow:hidden}
+    .join-hero-bg{position:absolute;inset:0;background:url('newhall_dusk.png') center/cover no-repeat;opacity:.22}
+    .join-hero-content{position:relative;z-index:2;max-width:820px}
+    .join-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+    .join-hero-title{font-family:'EB Garamond',serif;font-size:clamp(36px,6vw,72px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:20px}
+    .join-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,22px);font-style:italic;color:rgba(160,210,160,.75);margin-bottom:36px;line-height:1.6;max-width:640px}
+    .join-hero-btns{display:flex;gap:16px;flex-wrap:wrap}
+
+    /* WHO SECTION */
+    .who-section{background:var(--cream);padding:84px 0;border-bottom:1px solid var(--border)}
+    .who-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+    .who-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,46px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:16px}
+    .who-body p{font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:var(--ink-soft);margin-bottom:18px}
+    .who-body p:last-child{margin-bottom:0}
+    .who-pull{border-left:4px solid var(--gold);padding:20px 28px;background:var(--cream-mid);margin:28px 0}
+    .who-pull p{font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.6;margin:0}
+    .who-right{position:sticky;top:100px}
+    .who-img{width:100%;display:block;border-radius:2px;border:1px solid var(--border);margin-bottom:10px}
+
+    /* VARIANTS STRIP */
+    .variants-strip{background:var(--ink);padding:36px 0;border-top:2px solid var(--gold);border-bottom:2px solid var(--gold)}
+    .variants-strip-inner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+    .vs-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.8;margin-right:8px}
+    .vs-name{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.85);padding:4px 14px;border:1px solid rgba(184,151,90,.25);border-radius:1px}
+    .vs-name.big{font-size:20px;color:var(--gold-pale);border-color:rgba(184,151,90,.5)}
+    .vs-dot{color:var(--gold);opacity:.4;font-size:18px}
+
+    /* CULTURE SECTION */
+    .culture-section{background:var(--ink-mid);padding:84px 0}
+    .culture-inner{max-width:860px;margin:0 auto;text-align:center}
+    .culture-title{font-family:'EB Garamond',serif;font-size:clamp(26px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:20px}
+    .culture-sub{font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,20px);color:rgba(215,235,215,.8);line-height:1.8;margin-bottom:0;font-style:italic}
+    .culture-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px;text-align:left}
+    .culture-card{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.2);border-top:2px solid var(--gold);padding:28px}
+    .culture-card-icon{font-size:28px;margin-bottom:14px}
+    .culture-card-title{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale);margin-bottom:10px;font-weight:400}
+    .culture-card-text{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.72);line-height:1.75}
+
+    /* FESTIVALS */
+    .festival-section{background:var(--cream-mid);padding:84px 0;border-top:1px solid var(--border)}
+    .festival-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+    .festival-img-stack img{width:100%;display:block;border-radius:2px;border:1px solid var(--border);margin-bottom:12px}
+
+    /* BENEFITS */
+    .benefits-section{background:var(--cream);padding:84px 0;border-top:2px solid var(--gold)}
+    .benefits-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+    .benefit-item{display:flex;gap:14px;align-items:start}
+    .benefit-num{font-family:'EB Garamond',serif;font-size:32px;color:var(--gold);opacity:.6;line-height:1;flex-shrink:0;width:36px}
+    .benefit-title{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+    .benefit-text{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.7}
+
+    /* APPLY SECTION */
+    .apply-section{background:var(--ink);padding:100px 0}
+    .apply-inner{max-width:700px;margin:0 auto;text-align:center}
+    .apply-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px}
+    .apply-sub{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:36px;line-height:1.6}
+    .apply-note{font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:rgba(184,151,90,.6);letter-spacing:.08em;margin-top:20px}
+
+    @media(max-width:900px){
+      .who-grid,.festival-grid,.culture-cards,.benefits-grid{grid-template-columns:1fr}
+      .who-right{position:static}
+      .join-hero{min-height:70vh}
+    }
+    @media(max-width:600px){.variants-strip-inner{gap:8px}}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="surname-variants.html" class="nav-link">Variants</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="timeline.html" class="nav-link">Timeline</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="relics.html" class="nav-link">Relics</a>
+      <a href="coat-of-arms.html" class="nav-link">Crest</a>
+      <a href="patrons.html" class="nav-link">Patrons</a>
+      <a href="privy-council.html" class="nav-link">Council</a>
+    </div>
+    <a href="join.html" class="nav-cta active">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="index.html" class="nav-mobile-link">Home</a>
+  <a href="surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="relics.html" class="nav-mobile-link">Relics</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="join.html" class="nav-mobile-link active">Join the clan</a>
+</div>
+<script>function toggleMenu(){const m=document.getElementById('mobile-menu');m.classList.toggle('open')}</script>
+
+<!-- HERO -->
+<section class="join-hero">
+  <div class="join-hero-bg"></div>
+  <div class="si">
+    <div class="join-hero-content">
+      <div class="join-hero-eyebrow">Clan Ó Comáin · County Clare, Ireland</div>
+      <h1 class="join-hero-title">In a world that has forgotten where it came from, this clan remembers.</h1>
+      <p class="join-hero-sub">Open to all who love Ireland and wish to protect its ancient Gaelic culture — whatever name you carry.</p>
+      <div class="join-hero-btns">
+        <a href="https://tally.so/r/jaZdgx" class="btn-p" style="font-size:12px;padding:16px 40px">Apply for membership</a>
+        <a href="#who" class="btn-g" style="font-size:12px;padding:16px 40px">Learn more</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VARIANTS STRIP -->
+<div class="variants-strip">
+  <div class="si">
+    <div class="variants-strip-inner">
+      <span class="vs-label">Name variants</span>
+      <span class="vs-name big">Cummins</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name big">Commons</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name big">Hurley</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name">Commins</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name">Commane</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name">Cummane</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name">Comyn</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name">Coman</span>
+      <span class="vs-dot">·</span>
+      <span class="vs-name" style="font-style:italic;opacity:.7">and all who love Ireland</span>
+    </div>
+  </div>
+</div>
+
+<!-- WHO IS THIS FOR -->
+<section class="who-section" id="who">
+  <div class="si">
+    <div class="who-grid">
+      <div class="who-body">
+        <div class="eyebrow">Who is this for</div>
+        <h2 class="who-title">You don't need the name. You need the call.</h2>
+        <div class="gold-rule"></div>
+        <p>Clan Ó Comáin is open to everyone who loves Ireland — its ancient landscape, its language, its music, its 4,000-year story. This is a clan for those who feel that something precious and irreplaceable is worth protecting. A culture. A lineage. A way of being in the world rooted in a place and a people.</p>
+        <div class="who-pull">
+          <p>"Gaelic Ireland is not a relic. It is a living heritage — and this clan exists to keep it alive."</p>
+        </div>
+        <p>Whether your name is Cummins, Commons, Hurley, Commane or something entirely different, if the call of Gaelic Ireland moves you — the Burren, the ancient stone forts, the language, the music of Clare — there is a place here for you. In Brehon law, clans were always bigger than any single spelling. Membership was granted to those who shared the values, the land, and the commitment to the kin group.</p>
+        <p>The Irish diaspora is estimated at 70 million worldwide. Most have lost the thread. This clan is a way back to it — not as a tourist, but as a member of a living Gaelic community, rooted in one of the oldest and most thoroughly documented lineages in Ireland.</p>
+        <a href="https://tally.so/r/jaZdgx" class="btn-p" style="margin-top:8px;display:inline-block">Apply for membership</a>
+      </div>
+      <div class="who-right">
+        <img src="cahercommane_aerial.png" alt="Cahercommane — ancestral capital of Clan Ó Comáin, the Burren" class="who-img" loading="lazy">
+        <div class="img-cap">Cahercommane, the Burren — where the Chiefs of Ó Comáin were consecrated for over a thousand years</div>
+        <img src="killone_abbey_lake.png" alt="Killone Abbey, Newhall Estate" class="who-img" style="margin-top:16px" loading="lazy">
+        <div class="img-cap">Killone Abbey, Newhall Estate — the clan's sacred seat in County Clare</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY THIS MATTERS — CULTURE -->
+<section class="culture-section">
+  <div class="si">
+    <div class="culture-inner">
+      <div class="eyebrow" style="color:var(--gold)">Why this matters</div>
+      <h2 class="culture-title">Gaelic Ireland is worth protecting.</h2>
+      <p class="culture-sub">Ancient cultures, ancient languages, ancient ways of living in and belonging to a place — these things do not survive on their own. They survive because people choose to remember, to gather, and to pass them on. Clan Ó Comáin is one of those choices.</p>
+      <div class="culture-cards">
+        <div class="culture-card">
+          <div class="culture-card-icon">🏔</div>
+          <div class="culture-card-title">A 4,000-year lineage</div>
+          <div class="culture-card-text">The clan's male line is confirmed by Big-Y DNA to stretch unbroken in Ireland for over 4,000 years — among the oldest continuously documented lineages on the island. The name is in the annals. The stone fort bears the clan's name. The story is real.</div>
+        </div>
+        <div class="culture-card">
+          <div class="culture-card-icon">📜</div>
+          <div class="culture-card-title">Brehon law and Gaelic governance</div>
+          <div class="culture-card-text">The clan is governed according to the spirit of Brehon law — the ancient legal system of Gaelic Ireland. A Chief consecrated for life. A Privy Council of officers. Tanistry, not primogeniture. This is not a re-enactment. It is a living tradition.</div>
+        </div>
+        <div class="culture-card">
+          <div class="culture-card-icon">🌍</div>
+          <div class="culture-card-title">A global Irish community</div>
+          <div class="culture-card-text">Clan members span Ireland, America, Australia, England and beyond. Irish-Americans, descendants of the diaspora, people who carry Ireland in their hearts wherever they were born. The clan is the thread that connects them — to each other, and to the land.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUMMER FESTIVALS -->
+<section class="festival-section">
+  <div class="si">
+    <div class="festival-grid">
+      <div>
+        <div class="eyebrow">The summer gathering</div>
+        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,42px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:12px">Come home to Newhall</h2>
+        <div class="gold-rule"></div>
+        <p class="body-text" style="margin-bottom:18px">Each summer, the clan gathers at Newhall Estate and Cahercommane in the Burren — one of the most ancient and spiritually charged landscapes in all of Ireland. Walking the same limestone plateau where the Chiefs of Ó Comáin were consecrated for over a thousand years. Music, history, the Holy Well of St John the Baptist, Killone Abbey, the great stone fort on the cliff edge of the Burren.</p>
+        <p class="body-text" style="margin-bottom:18px">This is not a heritage tour. It is a clan gathering — open to all registered members, wherever in the world they travel from. Irish-Americans, people of the diaspora, descendants of Cummins, Commons, Hurley and Commane families, and all who love Ireland.</p>
+        <p class="body-text" style="margin-bottom:28px">The gates of Newhall are open. The summer festivals are the heartbeat of the clan's revival — and every member is welcome at them.</p>
+        <a href="https://tally.so/r/jaZdgx" class="btn-p">Register your interest</a>
+      </div>
+      <div class="festival-img-stack">
+        <img src="newhall_dusk.png" alt="Newhall House at dusk — clan seat of Clan Ó Comáin" loading="lazy">
+        <div class="img-cap">Newhall House — the clan seat, County Clare</div>
+        <img src="newhall_gates_wide.png" alt="Gate lodges of Newhall Estate" style="margin-top:14px" loading="lazy">
+        <div class="img-cap">The gates of Newhall Estate — open to all clan members</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERSHIP BENEFITS -->
+<section class="benefits-section">
+  <div class="si">
+    <div class="eyebrow">What membership gives you</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.15">Seven reasons to join</h2>
+    <div class="gold-rule"></div>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <div class="benefit-num">I</div>
+        <div>
+          <div class="benefit-title">Summer festivals at Newhall</div>
+          <div class="benefit-text">Invitation to annual summer gatherings at Newhall Estate and Cahercommane in the Burren — the ancestral capital of the chiefdom, one of the most important ancient sites in Munster.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">II</div>
+        <div>
+          <div class="benefit-title">Certificate of membership</div>
+          <div class="benefit-text">A formal certificate of membership, signed by Fergus Kinfauns, The Commane — Chief of Ó Comáin — confirming your place in the Register of Clan Members.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">III</div>
+        <div>
+          <div class="benefit-title">Chief-approved use of the crest</div>
+          <div class="benefit-text">Registered members are approved by the Chief to use the clan crest and coat of arms on personal items, stationery, jewellery and ceremonial objects.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">IV</div>
+        <div>
+          <div class="benefit-title">The clan register</div>
+          <div class="benefit-text">Your name is entered into the Register of Clan Ó Comáin Members — a permanent record of the clan's living family, kept by the Chief at Newhall House.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">V</div>
+        <div>
+          <div class="benefit-title">Heritage access</div>
+          <div class="benefit-text">Access to the clan's full genealogical pedigree, DNA research and heritage archive — 4,000 years of documented Irish history, one of the most thoroughly researched Gaelic pedigrees in existence.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">VI</div>
+        <div>
+          <div class="benefit-title">Clan newsletter</div>
+          <div class="benefit-text">Regular updates on heritage research, new discoveries, clan news from Ireland and the diaspora, and early access to festivals and events.</div>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">VII</div>
+        <div>
+          <div class="benefit-title">A role in the revival</div>
+          <div class="benefit-text">The opportunity to take on a position within the clan's Privy Council — contributing to the revival of one of Ireland's most ancient and authentic Gaelic lineages.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPLY -->
+<section class="apply-section">
+  <div class="si">
+    <div class="apply-inner">
+      <div class="eyebrow" style="color:var(--gold)">Apply now</div>
+      <h2 class="apply-title">The clan is growing. Be part of it.</h2>
+      <p class="apply-sub">Whether your name is Cummins, Commons, Hurley or something entirely different — if Ireland calls to you, this clan is yours to join. The application takes less than two minutes.</p>
+      <a href="https://tally.so/r/jaZdgx" class="btn-p" style="font-size:12px;padding:18px 56px;display:inline-block">Apply for membership</a>
+      <div class="apply-note">Open to all who love Ireland · Approved by the Chief of Ó Comáin · Recognised by Clans of Ireland, 2025</div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="surname-variants.html">Variants</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="timeline.html">Timeline</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="relics.html">Relics</a></li>
+          <li><a href="coat-of-arms.html">Crest</a></li>
+          <li><a href="patrons.html">Patrons</a></li>
+          <li><a href="privy-council.html">Privy Council</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="join.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="#">Newhall House, County Clare</a></li>
+          <li><a href="#">Ireland</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · All rights reserved · www.ocomain.org</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
