@@ -24,6 +24,7 @@
 
 /* Property cards */
 .property-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:0}
+.hl-two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
 .prop-card{padding:56px 52px;border-bottom:1px solid var(--border)}
 .prop-card:nth-child(odd){border-right:1px solid var(--border)}
 .prop-card.light{background:var(--white)}
@@ -55,6 +56,7 @@
   .property-grid{grid-template-columns:1fr}
   .prop-card:nth-child(odd){border-right:none}
   .prop-card.dark{grid-column:span 1;grid-template-columns:1fr;display:block}
+  .hl-two-col{grid-template-columns:1fr !important}
   .prop-dark-img{height:240px}
   .prop-card{padding:40px 28px}
   .prop-card.dark .prop-dark-text{padding:40px 28px}
@@ -138,7 +140,7 @@ function toggleMenu(){
 <!-- CAHERCOMMANE REAL PHOTO -->
 <section style="background:var(--ink-deep);padding:48px 0 20px">
   <div class="si">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+    <div class="hl-two-col">
       <div>
         <img src="cahercommane_aerial.png"
              alt="Cahercommane — the ancestral capital of Clan Ó Comáin, Burren, County Clare"
@@ -274,7 +276,7 @@ function toggleMenu(){
     <div class="gold-rule"></div>
     <p class="body-text" style="max-width:720px;margin-bottom:48px">Place names are among the most durable evidence of a family's historical presence — they survive conquest, plantation and anglicisation, embedded in the landscape long after documents have been lost. The Ó Comáin name is preserved not only in County Clare but across the ancient province of Munster, from Kerry to Cork.</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+    <div class="hl-two-col">
 
       <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:40px">
         <div class="eyebrow">Kerry · Iveragh Barony</div>
