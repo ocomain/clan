@@ -202,8 +202,23 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .footer-copy{font-size:11px;color:rgba(100,140,100,.65);letter-spacing:.04em}
 .footer-rec{font-size:11px;color:rgba(100,140,100,.5);letter-spacing:.04em}
 
+/* HAMBURGER NAV */
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none}
+.nav .nav-cta{display:inline-block}
+.nav-hamburger span{display:block;width:22px;height:2px;background:rgba(184,151,90,.8);border-radius:1px;transition:all .3s}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-hamburger.open span:nth-child(2){opacity:0}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-mobile-menu{display:none;position:fixed;top:58px;left:0;right:0;background:var(--ink);border-top:1px solid rgba(184,151,90,.15);border-bottom:1px solid rgba(184,151,90,.15);z-index:99;flex-direction:column;padding:8px 0}
+.nav-mobile-menu.open{display:flex}
+.nav-mobile-link{font-size:12px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,210,160,.7);text-decoration:none;padding:14px 28px;border-bottom:1px solid rgba(184,151,90,.06);transition:color .2s}
+.nav-mobile-link:hover,.nav-mobile-link.active{color:var(--gold-light)}
+.nav-mobile-cta{margin:12px 20px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px;border-radius:1px;text-decoration:none;display:block}
+
 @media(max-width:900px){
   .nav-links{display:none}
+  .nav-hamburger{display:flex}
+  .nav .nav-cta{display:none}
   .two-col,.three-col,.letter-grid,.tl-grid,.crest-grid,.clans-grid,.video-grid,.footer-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:1fr 1fr}
   .mem-grid{grid-template-columns:1fr 1fr}
@@ -211,11 +226,21 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   .si{padding:0 24px}
   .hero{height:70vh}
   .cahir-section{height:380px}
+  /* Chief letter — full width on mobile */
+  .letter-section .si > div{grid-template-columns:1fr !important;gap:24px !important}
+  .letter-section img[src="chief_letter.png"]{width:100% !important;max-width:100% !important}
+  .letter-section img[src="fergus_at_killone.png"]{max-height:260px}
 }
 @media(max-width:540px){
   .stats,.mem-grid,.gallery-grid{grid-template-columns:1fr}
   .hero-eyebrow::before,.hero-eyebrow::after{display:none}
   .letter-card{padding:28px 20px}
+  /* Letter image full screen readable on mobile */
+  .letter-section img[src="chief_letter.png"]{
+    width:100vw !important;
+    margin-left:calc(-24px) !important;
+    max-width:none !important;
+  }
 }
 </style>
 <link rel="stylesheet" href="shared.css">
@@ -235,8 +260,31 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
       <a href="privy-council.html" class="nav-link">Council</a>
     </div>
     <a href="https://tally.so/r/jaZdgx" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="index.html" class="nav-mobile-link active">Home</a>
+  <a href="surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="https://tally.so/r/jaZdgx" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>
+function toggleMenu(){
+  var menu=document.getElementById('mobile-menu');
+  var btn=document.querySelector('.nav-hamburger');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+</script>
 
 <!-- HERO — Newhall at dusk, full bleed -->
 <section class="hero">
@@ -303,19 +351,6 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   </div>
 </section>
 
-<!-- CAHERCOMMAUN FULL BLEED -->
-<section class="cahir-section">
-  <img class="cahir-img" src="cahercommaun_3d.jpeg" alt="3D remodel of Cahercommane — ancestral capital of the Chiefdom of Tulach Commáin">
-  <div class="cahir-overlay"></div>
-  <div class="cahir-content">
-    <div class="cahir-eyebrow">8th–9th century AD</div>
-    <h2 class="cahir-title">Cahercommane — the ancestral capital</h2>
-    <p class="cahir-text">A 3D reconstruction of Cahercommane as it stood at the height of the Chiefdom of Tulach Commáin — a triple ring stone fort on the cliff edge of the Burren, County Clare. The inner wall alone used 16,500 tons of stone. Regarded by historians as one of the most important ancient sites in Munster.</p>
-    <a href="timeline.html" target="_blank" class="btn-g">Explore the full timeline</a>
-  </div>
-</section>
-
-<!-- STORY CARDS -->
 <section class="letter-section" id="chief">
   <div class="si">
     <div style="display:grid;grid-template-columns:320px 1fr;gap:48px;align-items:start">
@@ -330,6 +365,17 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
         <img src="chief_letter.png" alt="Letter from Fergus Commane, Chief of Ó Comáin of Newhall" style="width:100%;display:block;box-shadow:8px 8px 36px rgba(15,31,15,.16);border:1px solid var(--border-strong)">
       </div>
     </div>
+  </div>
+</section>
+
+<section class="cahir-section">
+  <img class="cahir-img" src="cahercommaun_3d.jpeg" alt="3D remodel of Cahercommane — ancestral capital of the Chiefdom of Tulach Commáin">
+  <div class="cahir-overlay"></div>
+  <div class="cahir-content">
+    <div class="cahir-eyebrow">The ancestral capital</div>
+    <h2 class="cahir-title">Cahercommane — 8th–9th century AD</h2>
+    <p class="cahir-text">A 3D reconstruction of Cahercommane as it stood at the height of the Chiefdom of Tulach Commáin — a triple ring stone fort on the cliff edge of the Burren, County Clare. The inner wall alone used 16,500 tons of stone. Regarded by historians as one of the most important ancient sites in Munster.</p>
+    <a href="timeline.html" target="_blank" class="btn-g">Explore the full timeline</a>
   </div>
 </section>
 
@@ -373,8 +419,6 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 </section>
 
 <!-- CHIEF'S LETTER -->
-<section class="letter-section" 
-
 
 
 <!-- VIDEOS -->

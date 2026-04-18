@@ -53,3 +53,19 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   .two-col,.three-col,.footer-grid{grid-template-columns:1fr}
   .si{padding:0 24px}
 }
+
+/* MOBILE HAMBURGER - applies to all pages */
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;margin-left:8px}
+.nav-hamburger span{display:block;width:22px;height:2px;background:rgba(184,151,90,.8);border-radius:1px;transition:all .3s}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-hamburger.open span:nth-child(2){opacity:0}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav-mobile-menu{display:none;position:fixed;top:58px;left:0;right:0;background:var(--ink);border-bottom:1px solid rgba(184,151,90,.15);z-index:99;flex-direction:column;padding:8px 0}
+.nav-mobile-menu.open{display:flex}
+.nav-mobile-link{font-size:12px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,210,160,.7);text-decoration:none;padding:14px 28px;border-bottom:1px solid rgba(184,151,90,.06)}
+.nav-mobile-link:hover,.nav-mobile-link.active{color:var(--gold-light)}
+.nav-mobile-cta{margin:12px 20px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px;border-radius:1px;text-decoration:none;display:block}
+@media(max-width:900px){
+  .nav-hamburger{display:flex}
+  .nav .nav-cta{display:none}
+}

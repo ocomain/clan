@@ -39,8 +39,30 @@
       <a href="privy-council.html" class="nav-link active">Council</a>
     </div>
     <a href="https://tally.so/r/jaZdgx" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="index.html" class="nav-mobile-link">Home</a>
+  <a href="surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link active">Council</a>
+  <a href="https://tally.so/r/jaZdgx" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>
+function toggleMenu(){
+  var menu=document.getElementById("mobile-menu");
+  var btn=document.querySelector(".nav-hamburger");
+  menu.classList.toggle("open");
+  btn.classList.toggle("open");
+}
+</script>
 
 <div style="background:var(--ink);padding:72px 0 56px;border-bottom:2px solid var(--gold)">
   <div class="si">
