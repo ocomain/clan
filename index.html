@@ -40,9 +40,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .nav-cta:hover{background:var(--gold-light)}
 
 /* HERO — full bleed dusk photo of Newhall */
-.hero{position:relative;height:92vh;min-height:580px;max-height:860px;display:flex;align-items:center;justify-content:center;text-align:center;border-bottom:2px solid var(--gold);overflow:hidden}
-.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,18,8,.52) 0%,rgba(8,18,8,.38) 50%,rgba(8,18,8,.72) 100%)}
+.hero{position:relative;height:92vh;min-height:580px;max-height:860px;display:flex;align-items:center;justify-content:center;text-align:center;border-bottom:2px solid var(--gold);overflow:hidden;background:#080F08}
+.hero-overlay{position:absolute;inset:0}
 .hero-inner{position:relative;z-index:2;max-width:760px;padding:0 32px}
 .hero-eyebrow{font-size:10px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;display:flex;align-items:center;justify-content:center;gap:16px}
 .hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:36px;height:1px;background:var(--gold-strong)}
@@ -288,8 +287,51 @@ function toggleMenu(){
 
 <!-- HERO — Newhall at dusk, full bleed -->
 <section class="hero">
-  <img class="hero-img" src="newhall_dusk.png" alt="Newhall House at dusk — clan seat of Clan Ó Comáin, County Clare">
-  <div class="hero-overlay"></div>
+  <div class="hero-overlay">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="position:absolute;inset:0">
+      <defs>
+        <pattern id="tartan" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+          <!-- Dark green base -->
+          <rect width="80" height="80" fill="#0A1A0A"/>
+          <!-- Gold thin stripes horizontal -->
+          <rect x="0" y="8" width="80" height="2" fill="#B8975A" opacity="0.35"/>
+          <rect x="0" y="24" width="80" height="1" fill="#B8975A" opacity="0.2"/>
+          <rect x="0" y="40" width="80" height="2" fill="#B8975A" opacity="0.35"/>
+          <rect x="0" y="56" width="80" height="1" fill="#B8975A" opacity="0.2"/>
+          <rect x="0" y="72" width="80" height="2" fill="#B8975A" opacity="0.35"/>
+          <!-- Medium green stripes horizontal -->
+          <rect x="0" y="16" width="80" height="6" fill="#142814" opacity="0.6"/>
+          <rect x="0" y="48" width="80" height="6" fill="#142814" opacity="0.6"/>
+          <!-- Gold thin stripes vertical -->
+          <rect x="8" y="0" width="2" height="80" fill="#B8975A" opacity="0.35"/>
+          <rect x="24" y="0" width="1" height="80" fill="#B8975A" opacity="0.2"/>
+          <rect x="40" y="0" width="2" height="80" fill="#B8975A" opacity="0.35"/>
+          <rect x="56" y="0" width="1" height="80" fill="#B8975A" opacity="0.2"/>
+          <rect x="72" y="0" width="2" height="80" fill="#B8975A" opacity="0.35"/>
+          <!-- Medium green stripes vertical -->
+          <rect x="16" y="0" width="6" height="80" fill="#142814" opacity="0.6"/>
+          <rect x="48" y="0" width="6" height="80" fill="#142814" opacity="0.6"/>
+          <!-- Intersection highlights (gold cross points) -->
+          <rect x="8" y="8" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+          <rect x="40" y="8" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+          <rect x="8" y="40" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+          <rect x="40" y="40" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+          <rect x="72" y="72" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+          <rect x="72" y="8" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+          <rect x="8" y="72" width="2" height="2" fill="#C9A040" opacity="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#tartan)"/>
+      <!-- Vignette overlay for depth -->
+      <rect width="100%" height="100%" fill="url(#vignette)"/>
+      <defs>
+        <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stop-color="#0A1A0A" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#040A04" stop-opacity="0.7"/>
+        </radialGradient>
+      </defs>
+    </svg>
+  </div>
   <div class="hero-inner">
     <div class="hero-eyebrow">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
     <h1 class="hero-title">Irish Clan <em>Ó Comáin</em></h1>
@@ -342,7 +384,7 @@ function toggleMenu(){
         <p class="body-text">The name today extends far beyond Ireland. A Commane Road in Baldwinsville, New York, testifies to Famine-era emigration to America. The name appears in France and across the world — carried by families who kept the flame of their Irish identity alive across generations of exile and distance.</p>
       </div>
       <div>
-        <img class="heritage-img" style="height:300px;margin-bottom:10px" src="newhall_house.png" alt="Newhall House, County Clare — clan seat" loading="lazy">
+        <img class="heritage-img" style="height:300px;margin-bottom:10px" src="newhall_dusk.png" alt="Newhall House at dusk — clan seat of Clan Ó Comáin, County Clare" loading="lazy">
         <div class="img-cap">Newhall House — clan seat, Co. Clare</div>
         <img class="heritage-img" style="height:190px;margin-top:20px;margin-bottom:8px" src="newhall_gates_wide.png" alt="Gate lodges, Newhall Estate" loading="lazy">
         <div class="img-cap">Gate lodges, Newhall Estate</div>
