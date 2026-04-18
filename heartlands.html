@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heartlands — Clan Ó Comáin</title>
+<meta name="description" content="The ancestral holdings and sacred lands of Clan Ó Comáin — Cahercommane, Newhall House, Killone Abbey, the Holy Well of St John the Baptist, Doonbeg Castle and Ballymacooda.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* HEARTLANDS PAGE */
+.hl-hero{background:var(--ink);padding:72px 0 56px;text-align:center;border-bottom:2px solid var(--gold)}
+
+/* Inauguration banner — full bleed, most prominent */
+.inaug-section{position:relative;padding:96px 0;background:var(--ink-mid)}
+.inaug-section::before{content:'';position:absolute;inset:0;background:url('cahercommaun_3d.jpeg') center/cover no-repeat;opacity:.18}
+.inaug-inner{position:relative;z-index:2;max-width:880px;margin:0 auto;padding:0 40px;text-align:center}
+.inaug-eyebrow{font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.inaug-title{font-family:'EB Garamond',serif;font-size:clamp(32px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:24px}
+.inaug-rule{width:60px;height:2px;background:var(--gold);margin:0 auto 28px;opacity:.6}
+.inaug-text{font-size:15px;font-weight:300;color:rgba(210,235,210,.82);line-height:1.95;margin-bottom:20px}
+.inaug-quote{font-family:'EB Garamond',serif;font-size:clamp(17px,2.2vw,22px);font-style:italic;color:var(--gold-pale);line-height:1.7;border-left:3px solid var(--gold);padding-left:24px;text-align:left;margin:36px 0;opacity:.9}
+
+/* Property cards */
+.property-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:0}
+.prop-card{padding:56px 52px;border-bottom:1px solid var(--border)}
+.prop-card:nth-child(odd){border-right:1px solid var(--border)}
+.prop-card.light{background:var(--white)}
+.prop-card.cream{background:var(--cream)}
+.prop-eyebrow{font-size:9.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.prop-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.8vw,32px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2}
+.prop-date{font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px}
+.prop-rule{width:36px;height:1px;background:var(--gold);margin-bottom:20px;opacity:.6}
+.prop-img{width:100%;height:220px;object-fit:cover;border-radius:2px;margin-bottom:20px;display:block;border:1px solid var(--border)}
+.prop-text{font-size:13.5px;font-weight:300;line-height:1.95;color:var(--ink-soft);margin-bottom:14px}
+.prop-link{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.3);padding-bottom:1px;transition:border-color .2s}
+.prop-link:hover{border-color:var(--gold)}
+
+/* Ballymacooda — dark feature card */
+.prop-card.dark{background:var(--ink);border-right:none;border-bottom:none;grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0}
+.prop-card.dark .prop-dark-text{padding:56px 52px}
+.prop-card.dark .prop-eyebrow{color:rgba(184,151,90,.8)}
+.prop-card.dark .prop-title{color:var(--gold-pale)}
+.prop-card.dark .prop-date{color:rgba(160,190,160,.6)}
+.prop-card.dark .prop-rule{opacity:.4}
+.prop-card.dark .prop-text{color:rgba(210,235,210,.72)}
+.prop-card.dark .prop-link{color:var(--gold-light);border-color:rgba(184,151,90,.25)}
+.prop-dark-img{width:100%;height:100%;min-height:320px;object-fit:cover;display:block}
+
+/* Section intro */
+.hl-intro{padding:72px 0 52px;background:var(--cream)}
+
+@media(max-width:900px){
+  .property-grid{grid-template-columns:1fr}
+  .prop-card:nth-child(odd){border-right:none}
+  .prop-card.dark{grid-column:span 1;grid-template-columns:1fr;display:block}
+  .prop-dark-img{height:240px}
+  .prop-card{padding:40px 28px}
+  .prop-card.dark .prop-dark-text{padding:40px 28px}
+  .inaug-inner{padding:0 24px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="surname-variants.html" class="nav-link">Variants</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="timeline.html" class="nav-link">Timeline</a>
+      <a href="coat-of-arms.html" class="nav-link">Crest</a>
+      <a href="patrons.html" class="nav-link">Patrons</a>
+      <a href="privy-council.html" class="nav-link">Council</a>
+      <a href="heartlands.html" class="nav-link active">Heartlands</a>
+    </div>
+    <a href="https://tally.so/r/jaZdgx" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="index.html" class="nav-mobile-link">Home</a>
+  <a href="surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="heartlands.html" class="nav-mobile-link active">Heartlands</a>
+  <a href="https://tally.so/r/jaZdgx" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>
+function toggleMenu(){
+  var menu=document.getElementById("mobile-menu");
+  var btn=document.querySelector(".nav-hamburger");
+  menu.classList.toggle("open");
+  btn.classList.toggle("open");
+}
+</script>
+
+<!-- HERO -->
+<div class="hl-hero">
+  <div class="si">
+    <div class="eyebrow">The clan territory</div>
+    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(32px,5vw,54px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:12px">Ancestral Holdings &amp; Sacred Lands<br>of the Clan</h1>
+    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.55)">County Clare, Ireland — from the Burren to the Atlantic</p>
+  </div>
+</div>
+
+<!-- INAUGURATION SITE — MOST SACRED, MOST PROMINENT -->
+<section class="inaug-section">
+  <div class="inaug-inner">
+    <div class="inaug-eyebrow">The inauguration site · Most sacred of all</div>
+    <h2 class="inaug-title">Cahercommane — where Chiefs were consecrated</h2>
+    <div class="inaug-rule"></div>
+    <p class="inaug-text">High on the limestone plateau of the Burren, on a cliff edge overlooking the valleys of north Clare, stands Cahercommane — the triple-ring stone fort that served as the ceremonial capital and inauguration site of the Chiefdom of Tulach Commáin. This is where the Chiefs of Ó Comáin were consecrated under Brehon law. It is one of the most spiritually charged sites in all of Munster.</p>
+    <div class="inaug-quote">
+      "The identification of Commán suggests a historical horizon for the construction and use of some of these forts at a particular period… Cahercommane most probably gained its name from a Uí Fidgeinti sub-king named Commán."<br>
+      <span style="font-size:12px;font-weight:400;letter-spacing:.06em;font-style:normal;color:rgba(184,151,90,.7);display:block;margin-top:10px">— Claire Cotter, Western Stone Forts Project, Discovery Programme monograph, Wordwell Ltd, 2012, p.90</span>
+    </div>
+    <p class="inaug-text">The inner wall alone used an estimated 16,500 tons of stone. The fort was constructed in the 8th–9th century AD at the height of the Chiefdom's power, excavated by the Harvard Archaeological Expedition in 1934 under Hugh O'Neill Hencken, and extensively studied by the Discovery Programme in 2012. Its triple concentric rings — each a sacred boundary — mark it as a site of exceptional political and ceremonial importance. Here, before the derbhfine, the new Chief was consecrated in a ritual of Brehon legitimacy stretching back over a millennium.</p>
+    <p class="inaug-text">Regarded by historians as one of the most important early medieval sites in Munster, Cahercommane is the spiritual heartland of Clan Ó Comáin. Its stones remember what the documents cannot fully record — the weight of ceremony, the voice of the assembled clan, the moment when a Chief became a Chief.</p>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section class="hl-intro">
+  <div class="si">
+    <div class="eyebrow">The ancestral territory</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Five holdings across County Clare</h2>
+    <div class="gold-rule"></div>
+    <p class="body-text" style="max-width:720px;margin-bottom:0">From the Augustinian ruins on the shores of Killone Lake to the Atlantic tower of Doonbeg, the clan's holdings span the breadth of County Clare — places of prayer, of power, of memory and of lineage. Each site carries its own chapter of the clan's history, inscribed in stone and water and sacred ground.</p>
+  </div>
+</section>
+
+<!-- PROPERTY GRID -->
+<div class="property-grid">
+
+  <!-- NEWHALL HOUSE -->
+  <div class="prop-card light">
+    <div class="prop-eyebrow">Clan seat · Active</div>
+    <h2 class="prop-title">Newhall House</h2>
+    <div class="prop-date">18th century · County Clare · Seat of the Chief</div>
+    <div class="prop-rule"></div>
+    <img class="prop-img" src="newhall_house.png" alt="Newhall House, County Clare — seat of Clan Ó Comáin" loading="lazy">
+    <p class="prop-text">Newhall House is the seat of Clan Ó Comáin and the residence of Fergus Kinfauns, The Commane — Chief of Ó Comáin. A handsome Georgian house set in mature demesne lands in the parish of Killone, County Clare, it stands within the wider landscape of the clan's ancient territory.</p>
+    <p class="prop-text">The estate encompasses Killone Abbey, the Holy Well of St John the Baptist, Killone Lake and extensive agricultural and woodland grounds. The estate has been in the Commane family for generations and is the administrative and spiritual centre of the clan's revival. The gate lodges and estate walls date to the same Georgian period as the house.</p>
+    <p class="prop-text">Clan gatherings, revival festivals and formal clan occasions are held on the estate, which is in active private use. Access to Killone Abbey is available with the owner's permission.</p>
+  </div>
+
+  <!-- KILLONE ABBEY -->
+  <div class="prop-card cream">
+    <div class="prop-eyebrow">Sacred site · National monument</div>
+    <h2 class="prop-title">Killone Abbey</h2>
+    <div class="prop-date">Founded 1190 AD · Augustinian · Cill Eoin</div>
+    <div class="prop-rule"></div>
+    <img class="prop-img" src="killone_abbey_lake.png" alt="Killone Abbey with Killone Lake, County Clare" loading="lazy">
+    <p class="prop-text">Killone Abbey — <em>Mainistir Chill Eoin</em>, the Church of John — was founded in 1190 by Donal Mór O'Brien, King of Thomond and Munster, for Augustinian canonesses. It was the first convent of Augustinian nuns in County Clare and one of only three cloistered nunneries remaining in Ireland. Its ruins stand on the northern shoreline of Killone Lake within the Newhall Estate.</p>
+    <p class="prop-text">The abbey became closely associated with the O'Brien dynasty — several abbesses were drawn from their ranks. Among them was Slaney O'Brien (d. 1260), daughter of the King of Thomond, described in the Annals of Inisfallen as "the most pious, most charitable, and most generous woman in all Munster." The abbey was suppressed in 1584 and recorded in ruins by 1617.</p>
+    <p class="prop-text">The Pilgrim's Path links Killone Abbey to Clare Abbey to the north. The site is protected under the National Monuments Acts, with guardianship vested in the Office of Public Works. It is privately owned by the Commane family — the custodians of its silence.</p>
+    <a href="https://heritageireland.ie/unguided-sites/killone-augustinian-abbey/" target="_blank" class="prop-link">Heritage Ireland — Killone Abbey ↗</a>
+  </div>
+
+  <!-- HOLY WELL -->
+  <div class="prop-card cream">
+    <div class="prop-eyebrow">Sacred well · Site of veneration</div>
+    <h2 class="prop-title">Holy Well of St John the Baptist</h2>
+    <div class="prop-date">Ancient · Inscriptions from 1600 · Newhall Estate</div>
+    <div class="prop-rule"></div>
+    <img class="prop-img" src="holy_well_newhall.png" alt="Holy Well of St John the Baptist, Newhall Estate" loading="lazy">
+    <p class="prop-text">Adjacent to Killone Abbey on the northern shore of Killone Lake stands the Holy Well of St John the Baptist — a site of continuous veneration since at least the 6th century. The well is adorned with inscriptions, some dating to 1600, left by pilgrims across the centuries. Lord Walter Fitzgerald documented its inscriptions for the Royal Society of Antiquaries of Ireland in 1899.</p>
+    <p class="prop-text">The well is the sacred heart of the Newhall landscape. An annual outdoor Mass is held at the well in June, continuing a tradition of pilgrimage that predates the Norman arrival in Ireland. It is deeply bound to the spiritual life of the clan's territory — the waters that sustained the nuns of Killone, the pilgrims of the Burren, and the people of the chiefdom before them.</p>
+    <p class="prop-text">The well, the abbey and the lake together form a sacred triangle within the estate — one of the most atmospherically complete early Christian landscapes in County Clare. The Commane family are its custodians.</p>
+  </div>
+
+  <!-- DOONBEG CASTLE -->
+  <div class="prop-card light">
+    <div class="prop-eyebrow">Historical holding · 1619 AD</div>
+    <h2 class="prop-title">Doonbeg Castle</h2>
+    <div class="prop-date">16th century · West Clare · Atlantic coast</div>
+    <div class="prop-rule"></div>
+    <img class="prop-img" src="rock_of_cashel.png" alt="Doonbeg Castle, County Clare — Comyn clan holding, 1619" loading="lazy" style="object-position:center 30%">
+    <p class="prop-text">Doonbeg Castle — <em>Dún Beag</em>, the small fort — is a four-storey 16th century tower house on the Atlantic coast of west Clare, overlooking the Doonbeg River and Doughmore Bay. In 1619, Daniel O'Brien, Earl of Thomond, conveyed Doonbeg Castle to <strong>James Comyn</strong> — a direct connection between the castle and the Ó Comáin / Comyn lineage documented in the historical record.</p>
+    <p class="prop-text">The castle's history reflects the turbulence of Gaelic Clare. Originally associated with the MacMahon lords of Corca Baiscinn, it was seized by Turlough MacMahon in 1585, reclaimed by the O'Briens in 1595 after a fierce siege, and granted to James Comyn in 1619. The Crown confiscated it in 1688 and it was sold in 1703. By the 19th century it had become a ruin, though local families continued to inhabit its floors into the 1930s.</p>
+    <p class="prop-text">The castle stands today as a ruin in the village of Doonbeg. Its connection to the Comyn name in 1619 is one of the clearest documentary links between the clan's lineage and a surviving Clare monument.</p>
+  </div>
+
+  <!-- BALLYMACOODA — FULL WIDTH DARK -->
+  <div class="prop-card dark">
+    <div class="prop-dark-text">
+      <div class="prop-eyebrow">Ancestral holding · Kilmaley</div>
+      <h2 class="prop-title" style="color:var(--gold-pale)">Ballymacooda</h2>
+      <div class="prop-date" style="color:rgba(160,190,160,.6)">Townland · Parish of Kilmaley · Barony of Islands · County Clare</div>
+      <div class="prop-rule"></div>
+      <p class="prop-text">Ballymacooda — <em>Baile Mhic Uada</em> — is a townland in the Civil Parish of Kilmaley, in the Barony of Islands, County Clare: the same barony as Newhall House and Killone Abbey. The townland of 510 acres lies in the heart of the clan's ancestral territory, in the landscape between Ennis and the Burren that the chiefdom called home.</p>
+      <p class="prop-text">The townland is recorded in the Landed Estates database of the University of Galway — a resource documenting the landholding history of Irish estates from the 17th to the 20th century. Its Irish name, <em>Baile Mhic Uada</em>, preserves the Gaelic form of a family association with this land across the centuries.</p>
+      <p class="prop-text">Ballymacooda sits within the Barony of Islands — the same administrative unit that encompasses Newhall, Killone, and the townland of Tullycommon (Tulach Commáin), in the landscape the clan held for over a millennium. It is part of the broader constellation of clan territory that the Ó Comáin family occupied across medieval Clare.</p>
+      <a href="https://landedestates.ie/property/1843" target="_blank" class="prop-link">Landed Estates database — Ballymacooda ↗</a>
+    </div>
+    <img class="prop-dark-img" src="newhall_estate_morning.png" alt="Newhall Estate morning — Barony of Islands, County Clare" loading="lazy">
+  </div>
+
+</div>
+
+<!-- CLOSING REFLECTION -->
+<section style="background:var(--cream-dark);padding:80px 0;border-top:1px solid var(--border)">
+  <div class="si" style="max-width:760px;margin:0 auto;text-align:center">
+    <div class="eyebrow">The living land</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,40px);font-weight:400;color:var(--ink);margin-bottom:16px;line-height:1.2">These places remember what documents cannot</h2>
+    <div class="gold-rule" style="margin:0 auto 28px"></div>
+    <p class="body-text" style="margin-bottom:20px">A triple-ring fort on a cliff edge. A lakeside abbey where O'Brien abbesses prayed. A holy well whose waters have run for a thousand years. A tower on the Atlantic coast held by a Comyn in 1619. These are not merely properties — they are the physical memory of the clan, the landscape that shaped it, and the territory it is called to reclaim.</p>
+    <p class="body-text" style="margin-bottom:36px">Clan Ó Comáin holds Newhall House and its demesne — the abbey, the well, the lake and the gate lodges — as a living inheritance. The revival of the clan is inseparable from the revival of these places as sites of pilgrimage, gathering and cultural memory for all who carry the name.</p>
+    <a href="https://tally.so/r/jaZdgx" class="btn-p">Join the clan</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="surname-variants.html">Variants</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="timeline.html">Timeline</a></li>
+          <li><a href="coat-of-arms.html">Crest</a></li>
+          <li><a href="patrons.html">Patrons</a></li>
+          <li><a href="privy-council.html">Privy Council</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li><a href="https://tally.so/r/jaZdgx">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">Clans of Ireland</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">Newhall Estate</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="#">Newhall House, County Clare</a></li>
+          <li><a href="#">Ireland</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · All rights reserved · www.ocomain.org</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
