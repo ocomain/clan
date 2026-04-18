@@ -552,34 +552,26 @@ function toggleMenu(){
 <!-- VIDEOS -->
 <section class="video-section" id="videos">
   <div class="si">
-    <div class="eyebrow" style="color:var(--gold)">In action</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,40px);font-weight:400;color:var(--gold-pale);margin-bottom:14px;line-height:1.15">Clan Ó Comáin — Clans of Ireland, Dublin 2026</h2>
-    <div class="gold-rule"></div>
-    <p style="font-size:14px;font-weight:300;color:rgba(210,235,210,.75);line-height:1.85;margin-bottom:36px;max-width:580px">Clan Ó Comáin represented at the official Clans of Ireland gathering in Dublin, April 2026 — the annual assembly of Ireland's recognised Gaelic clans, held under the patronage of the President of Ireland.</p>
-    <div class="video-grid">
-      <div class="video-card">
-        <img class="video-thumb" src="clans_dublin_2026.jpg" alt="Clans of Ireland Dublin 2026 gathering" loading="lazy">
-        <div class="video-overlay">
-          <div class="video-play">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-          <div class="video-label">Fergus Commane greeted by the Chairman of Clans of Ireland</div>
-          <div class="video-note">Upload video to replace this placeholder</div>
-        </div>
-      </div>
-      <div class="video-card">
-        <img class="video-thumb" src="clans_dublin.jpg" alt="Clans of Ireland procession Dublin" loading="lazy">
-        <div class="video-overlay">
-          <div class="video-play">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-          <div class="video-label">Clans of Ireland procession through Dublin with piper</div>
-          <div class="video-note">Upload video to replace this placeholder</div>
+    <div class="eyebrow" style="color:var(--gold)">Clan Ó Comáin recognised</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--gold-pale);margin-bottom:32px;line-height:1.2">Chief of Ó Comáin greeted by the Chairman of Clans of Ireland</h2>
+    <div id="videoContainer" style="position:relative;cursor:pointer;max-width:720px;margin:0 auto" onclick="playVideo()">
+      <img src="chief_recognition.jpg" alt="Chief of Ó Comáin greeted by the Chairman of Clans of Ireland" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)" loading="lazy">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
+        <div style="width:72px;height:72px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center;transition:background .2s" onmouseover="this.style.background='rgba(212,184,122,.95)'" onmouseout="this.style.background='rgba(184,151,90,.9)'">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
         </div>
       </div>
     </div>
+    <div id="videoPlayer" style="display:none;max-width:720px;margin:0 auto">
+      <video controls autoplay style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
+        <source src="chief_recognition_compress.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6);text-align:center;margin-top:12px;max-width:720px;margin-left:auto;margin-right:auto">The formal recognition of Clan Ó Comáin by the Chairman of Clans of Ireland, 2025 — under the patronage of the President of Ireland</p>
   </div>
 </section>
+<script>function playVideo(){document.getElementById("videoContainer").style.display="none";document.getElementById("videoPlayer").style.display="block";}</script>
 
 <!-- CLANS OF IRELAND RECOGNITION -->
 <section class="clans-section">

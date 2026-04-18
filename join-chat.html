@@ -117,24 +117,21 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
-  <a href="index.html" class="nav-brand">
-    <img src="coat_of_arms.png" alt="Clan Ó Comáin">
-    Clan <em style="font-style:italic">&nbsp;Ó Comáin</em>
-  </a>
-  <a href="join.html" class="nav-back">← Back to membership</a>
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-brand">
+      <img src="coat_of_arms.png" alt="Clan Ó Comáin" style="height:32px;width:auto;vertical-align:middle;margin-right:10px">
+      Clan <em style="font-style:italic">&nbsp;Ó Comáin</em>
+    </a>
+    <a href="join.html" class="nav-back">← Back to membership</a>
+  </div>
 </nav>
 
-<!-- CHAT -->
 <div class="chat-wrapper">
 
-  <!-- Header -->
   <div class="chat-header">
     <div class="ch-inner">
-      <div class="ch-avatar">
-        <img src="coat_of_arms.png" alt="Clan Herald">
-      </div>
+      <div class="ch-avatar"><img src="coat_of_arms.png" alt="Clan Herald"></div>
       <div>
         <div class="ch-name">The Clan Herald</div>
         <div class="ch-role">Arailt Clan Ó Comáin · County Clare, Ireland</div>
@@ -152,10 +149,8 @@
     </div>
   </div>
 
-  <!-- Messages -->
   <div class="messages" id="messages"></div>
 
-  <!-- Input -->
   <div class="input-area">
     <div class="input-row">
       <input class="input-field" id="userInput" type="text" placeholder="Type your response…" disabled autocomplete="off">
@@ -166,19 +161,14 @@
 
 </div>
 
-<!-- COMPLETION -->
 <div class="completion" id="completion">
   <div class="completion-inner">
-    <div class="completion-crest">
-      <img src="coat_of_arms.png" alt="Clan Ó Comáin">
-    </div>
+    <div class="completion-crest"><img src="coat_of_arms.png" alt="Clan Ó Comáin"></div>
     <div class="completion-eyebrow">Clan Ó Comáin · County Clare, Ireland</div>
     <h1 class="completion-title">Céad míle fáilte</h1>
     <div class="gold-rule"></div>
     <p class="completion-sub">A hundred thousand welcomes. Your membership application has been received. The Chief of Ó Comáin will be in touch at the email you provided.</p>
-    <div class="completion-card" id="completionCard">
-      <div class="completion-card-title">Your application</div>
-    </div>
+    <div class="completion-card" id="completionCard"></div>
     <div class="completion-btns">
       <a id="emailLink" href="#" class="btn-gold">Send to clan@ocomain.org</a>
       <a href="index.html" class="btn-outline">Return to the clan</a>
@@ -187,129 +177,117 @@
 </div>
 
 <script>
-const SYSTEM_PROMPT = `You are the Clan Herald of Clan Ó Comáin, an ancient Gaelic clan from County Clare, Ireland, officially recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland. The clan traces its roots to 658 AD and beyond — one of the oldest documented lineages in Ireland.
+// ── Scripted herald conversation ──
+// Collects all 5 fields through natural dialogue
+const STEPS = [
+  {
+    heraldMsg: "Dia dhuit — God be with you. I am the Clan Herald of Ó Comáin, keeper of the clan's register and voice of its ancient tradition. I am honoured to welcome you to Clan Ó Comáin — an ancient Gaelic royal house of County Clare, Ireland, recognised by Clans of Ireland in 2025.\n\nBefore I enter your name into the Register of Clan Members, I would ask a few questions. First — what is your full name?",
+    field: 'name',
+    placeholder: 'Your full name…'
+  },
+  {
+    heraldMsgFn: (prev) => `Welcome, ${prev}. It is a privilege to receive your application.\n\nTell me — what brings you to Clan Ó Comáin? Do you carry one of the clan's surname variants — Cummins, Commons, Hurley, Commane, Commins — or perhaps you simply feel the call of Ireland and its ancient Gaelic culture? All are welcome here, whatever name you bear.`,
+    field: 'connection',
+    placeholder: 'Your connection to Ireland or the clan…'
+  },
+  {
+    heraldMsgFn: (prev) => `That is a meaningful connection — thank you for sharing it. The clan's history stretches back over a thousand years in this same landscape, and every member adds a new chapter to it.\n\nWhere in the world do you live? The clan has members across Ireland, America, Australia and beyond.`,
+    field: 'country',
+    placeholder: 'Your country of residence…'
+  },
+  {
+    heraldMsgFn: (prev) => `${prev} — the clan's reach grows further still. When the Chief receives your application, he will write to you personally.\n\nWhat email address should I record for you in the clan register?`,
+    field: 'email',
+    placeholder: 'Your email address…',
+    validate: (v) => v.includes('@') && v.includes('.')
+  },
+  {
+    heraldMsgFn: (prev) => `I have noted that carefully. One final question — how did you come to find Clan Ó Comáin? Were you searching your family name, exploring Irish heritage, or did someone point you our way?`,
+    field: 'source',
+    placeholder: 'How you heard about us…'
+  }
+];
 
-Your role is to welcome prospective members and guide them through a warm, dignified membership application. You speak with the voice of someone deeply learned in Gaelic history — warm, welcoming, occasionally weaving in a relevant historical detail about the clan.
+const CLOSING_MSG = (data) =>
+  `${data.name} — your application is now complete. On behalf of Fergus Kinfauns, The Commane, Chief of Ó Comáin, and the assembled derbhfine of Clan Ó Comáin, it is my honour to welcome you.\n\nYour name will be entered into the Register of Clan Members at Newhall House. The Chief will be in touch at ${data.email} in due course.\n\nGo raibh míle maith agat — a thousand thanks. The clan is richer for your joining it.`;
 
-The clan is open to EVERYONE — not just those with Irish names or Irish ancestry. All who love ancient Gaelic culture, Celtic heritage, or simply feel called to protect and celebrate something ancient and irreplaceable are welcome. Be explicitly inclusive.
+let currentStep = 0;
+const collected = {};
 
-TASK: Collect these five pieces of information through natural conversation, one at a time:
-1. Full name
-2. Email address  
-3. Country of residence
-4. Their connection to the clan (surname variant such as Cummins, Commons, Hurley, Commane etc — or Irish/Celtic heritage — or simply love of Irish and Gaelic culture — or curiosity about the name Coman from Romania or elsewhere — ALL are welcome)
-5. How they heard about Clan Ó Comáin
-
-RULES:
-- Ask for ONE piece of information per message
-- Keep responses to 2-4 sentences — warm and concise
-- If they share a surname variant (Cummins, Commons, Hurley, Commane, Cummane, Comyn, Coman, Commons, Commins etc), acknowledge its historical connection to Ó Comáin warmly — these are all anglicised forms of the same ancient Gaelic name
-- If they mention Romania or Eastern Europe and the name Coman, welcome them warmly — the name may have different origins but all who feel called to ancient Celtic culture are welcome in this clan
-- If they have no Irish connection at all, welcome them just as warmly — the clan is for all who love this heritage
-- Begin by introducing yourself briefly and asking for their name
-- Speak with dignity and warmth — you are the voice of a 1,400-year-old tradition
-- When you have collected ALL FIVE pieces of information and said a warm final welcome, output this JSON on a new line at the very end of your final message, with no extra text after it:
-{"collected":true,"name":"[name]","email":"[email]","country":"[country]","connection":"[connection]","source":"[source]"}
-
-Do not output the JSON until you have all five pieces. Do not mention the JSON to the user.`;
-
-const conversationHistory = [];
-let applicationData = null;
-let step = 0;
-const totalSteps = 5;
-
-// Initialise
 window.addEventListener('load', () => {
   document.getElementById('userInput').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
-  startConversation();
+  // First herald message after short delay
+  setTimeout(() => {
+    typeHerald(STEPS[0].heraldMsg, () => enableInput(STEPS[0].placeholder));
+  }, 600);
 });
 
-async function startConversation() {
-  showThinking();
-  const response = await callHerald([]);
-  hideThinking();
-  if (response) {
-    addHeraldBubble(response);
-    enableInput();
-  }
-}
-
-async function sendMessage() {
+function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
   if (!text) return;
 
-  disableInput();
-  input.value = '';
-  addUserBubble(text);
-  conversationHistory.push({ role: 'user', content: text });
-
-  showThinking();
-  const response = await callHerald(conversationHistory);
-  hideThinking();
-
-  if (!response) {
-    addHeraldBubble('I apologise — something went amiss. Please try again, or write directly to clan@ocomain.org.');
-    enableInput();
+  const step = STEPS[currentStep];
+  if (step.validate && !step.validate(text)) {
+    // Shake the input
+    input.style.borderColor = '#c0392b';
+    setTimeout(() => input.style.borderColor = '', 800);
     return;
   }
 
-  // Check for JSON completion
-  const jsonMatch = response.match(/\{"collected"\s*:\s*true[\s\S]*?\}/);
-  if (jsonMatch) {
-    try {
-      applicationData = JSON.parse(jsonMatch[0]);
-      const cleanText = response.replace(jsonMatch[0], '').trim();
-      if (cleanText) addHeraldBubble(cleanText);
-      conversationHistory.push({ role: 'assistant', content: response });
-      updateProgress(5);
-      setTimeout(showCompletion, 1800);
-      return;
-    } catch(e) { /* fall through */ }
+  disableInput();
+  input.value = '';
+  addUserBubble(text);
+  collected[step.field] = text;
+
+  currentStep++;
+  updateProgress(currentStep);
+
+  if (currentStep >= STEPS.length) {
+    // All done — show closing message then completion screen
+    setTimeout(() => {
+      const msg = CLOSING_MSG(collected);
+      typeHerald(msg, () => {
+        setTimeout(showCompletion, 1200);
+      });
+    }, 500);
+  } else {
+    const nextStep = STEPS[currentStep];
+    const msg = nextStep.heraldMsgFn
+      ? nextStep.heraldMsgFn(text)
+      : nextStep.heraldMsg;
+    setTimeout(() => {
+      typeHerald(msg, () => enableInput(nextStep.placeholder));
+    }, 400);
   }
-
-  addHeraldBubble(response);
-  conversationHistory.push({ role: 'assistant', content: response });
-
-  // Estimate step
-  step = Math.min(step + 1, totalSteps - 1);
-  updateProgress(step);
-  enableInput();
 }
 
-async function callHerald(messages) {
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: messages.length ? messages : [{ role: 'user', content: '__START__' }]
-      })
-    });
-    const data = await resp.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return null;
-  } catch(e) { return null; }
+let typeTimer = null;
+function typeHerald(text, onDone) {
+  showThinking();
+  const delay = Math.min(800 + text.length * 4, 2200);
+  typeTimer = setTimeout(() => {
+    hideThinking();
+    // Replace \n with actual newlines for display
+    const display = text.replace(/\n/g, '\n');
+    addHeraldBubble(display);
+    if (onDone) onDone();
+  }, delay);
 }
 
 function addHeraldBubble(text) {
   const msgs = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'msg herald';
-  div.innerHTML = `
-    <div class="msg-avatar"><img src="coat_of_arms.png" alt="Herald"></div>
-    <div class="msg-bubble">${formatText(text)}</div>`;
+  const formatted = escHtml(text)
+    .replace(/\n\n/g, '</p><p style="margin-top:12px">')
+    .replace(/\n/g, '<br>');
+  div.innerHTML = `<div class="msg-avatar"><img src="coat_of_arms.png" alt="Herald"></div>
+    <div class="msg-bubble"><p>${formatted}</p></div>`;
   msgs.appendChild(div);
   scrollBottom();
-  // Track assistant messages for history
-  if (!conversationHistory.length || conversationHistory[conversationHistory.length-1].role !== 'assistant') {
-    conversationHistory.push({ role: 'assistant', content: text });
-  }
 }
 
 function addUserBubble(text) {
@@ -334,10 +312,12 @@ function showThinking() {
 }
 function hideThinking() { if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; } }
 
-function enableInput() {
-  document.getElementById('userInput').disabled = false;
+function enableInput(ph) {
+  const inp = document.getElementById('userInput');
+  inp.disabled = false;
+  inp.placeholder = ph || 'Type your response…';
   document.getElementById('sendBtn').disabled = false;
-  document.getElementById('userInput').focus();
+  inp.focus();
 }
 function disableInput() {
   document.getElementById('userInput').disabled = true;
@@ -346,41 +326,35 @@ function disableInput() {
 
 function scrollBottom() {
   const msgs = document.getElementById('messages');
-  setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+  setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 60);
 }
 
 function updateProgress(n) {
   for (let i = 1; i <= 5; i++) {
-    const dot = document.getElementById('dot' + i);
-    dot.className = 'ch-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    const d = document.getElementById('dot' + i);
+    d.className = 'ch-dot' + (i <= n ? ' done' : i === n + 1 ? ' active' : '');
   }
 }
 
-function formatText(t) {
-  return escHtml(t).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
-}
 function escHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function showCompletion() {
-  if (!applicationData) return;
-  const d = applicationData;
   const card = document.getElementById('completionCard');
   card.innerHTML = `
     <div class="completion-card-title">Your application · Clan Ó Comáin</div>
-    <div class="completion-row"><span class="completion-label">Name</span><span class="completion-value">${escHtml(d.name||'')}</span></div>
-    <div class="completion-row"><span class="completion-label">Email</span><span class="completion-value">${escHtml(d.email||'')}</span></div>
-    <div class="completion-row"><span class="completion-label">Country</span><span class="completion-value">${escHtml(d.country||'')}</span></div>
-    <div class="completion-row"><span class="completion-label">Connection</span><span class="completion-value">${escHtml(d.connection||'')}</span></div>
-    <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(d.source||'')}</span></div>`;
+    <div class="completion-row"><span class="completion-label">Name</span><span class="completion-value">${escHtml(collected.name||'')}</span></div>
+    <div class="completion-row"><span class="completion-label">Email</span><span class="completion-value">${escHtml(collected.email||'')}</span></div>
+    <div class="completion-row"><span class="completion-label">Country</span><span class="completion-value">${escHtml(collected.country||'')}</span></div>
+    <div class="completion-row"><span class="completion-label">Connection</span><span class="completion-value">${escHtml(collected.connection||'')}</span></div>
+    <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(collected.source||'')}</span></div>`;
 
   const body = encodeURIComponent(
-    `New membership application — Clan Ó Comáin\n\nName: ${d.name}\nEmail: ${d.email}\nCountry: ${d.country}\nConnection: ${d.connection}\nHeard via: ${d.source}\n\n---\nSubmitted via clan membership application`
+    `New membership application — Clan Ó Comáin\n\nName: ${collected.name}\nEmail: ${collected.email}\nCountry: ${collected.country}\nConnection: ${collected.connection}\nHeard via: ${collected.source}\n\n---\nSubmitted via clan membership application`
   );
-  const sub = encodeURIComponent(`Membership application — ${d.name}`);
+  const sub = encodeURIComponent(`Membership application — ${collected.name}`);
   document.getElementById('emailLink').href = `mailto:clan@ocomain.org?subject=${sub}&body=${body}`;
-
   document.getElementById('completion').classList.add('show');
 }
 </script>
