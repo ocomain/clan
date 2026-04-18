@@ -26,8 +26,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 
 /* NAV */
 .nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(184,151,90,.15)}
-.nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:#ffffff;letter-spacing:.03em;text-decoration:none}
-.nav-brand em{font-style:italic;color:var(--gold-light)}
+.nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none}
+.nav-brand em{font-style:italic}
 .nav-links{display:flex;gap:24px}
 .nav-link{font-size:10px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,210,160,.6);text-decoration:none;transition:color .2s}
 .nav-link:hover,.nav-link.active{color:var(--gold-light)}
