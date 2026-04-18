@@ -26,8 +26,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 
 /* NAV */
 .nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(184,151,90,.15)}
-.nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none}
-.nav-brand em{font-style:italic}
+.nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:#ffffff;letter-spacing:.03em;text-decoration:none}
+.nav-brand em{font-style:italic;color:var(--gold-light)}
 .nav-links{display:flex;gap:24px}
 .nav-link{font-size:10px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,210,160,.6);text-decoration:none;transition:color .2s}
 .nav-link:hover,.nav-link.active{color:var(--gold-light)}
@@ -37,7 +37,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 /* FOOTER */
 .footer{background:#080F08;padding:52px 0 36px;border-top:1px solid rgba(184,151,90,.1)}
 .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;margin-bottom:44px}
-.footer-brand{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-light);margin-bottom:12px;font-style:italic}
+.footer-brand{font-family:'EB Garamond',serif;font-size:24px;color:#ffffff;margin-bottom:12px;font-style:italic}
+.footer-brand em{color:var(--gold-light)}
 .footer-tagline{font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);line-height:1.75;max-width:260px}
 .footer-motto{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(120,160,120,.5);margin-top:14px}
 .footer-heading{font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
