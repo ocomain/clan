@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membership — Clan Ó Comáin</title>
+  <meta name="description" content="Join Clan Ó Comáin — individual and family membership tiers for those who love Ireland and wish to protect its ancient Gaelic culture. Signed by the Chief. Summer festivals at Newhall.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="icon" href="/clan/favicon.ico">
+  <style>
+
+    /* ── HERO ── */
+    .mem-hero{position:relative;min-height:72vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold)}
+    .mem-hero-bg{position:absolute;inset:0;background:url('killone_abbey_lake.png') center/cover no-repeat;opacity:.15;filter:saturate(.6)}
+    .mem-hero-content{position:relative;z-index:2;max-width:780px}
+    .mem-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
+    .mem-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,6vw,74px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
+    .mem-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:620px;margin-bottom:10px}
+    .mem-hero-note{font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-top:28px}
+
+    /* ── WHAT THIS FUNDS ── */
+    .funds-section{background:var(--ink-mid);padding:64px 0;border-bottom:1px solid var(--border)}
+    .funds-row{display:flex;gap:0;flex-wrap:wrap}
+    .fund-item{flex:1;min-width:200px;padding:28px 32px;border-right:1px solid var(--border);text-align:center}
+    .fund-item:last-child{border-right:none}
+    .fund-icon{font-size:22px;margin-bottom:10px}
+    .fund-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+    .fund-desc{font-family:'EB Garamond',serif;font-size:14px;color:rgba(215,235,215,.65);line-height:1.6}
+    @media(max-width:700px){.fund-item{border-right:none;border-bottom:1px solid var(--border)}}
+
+    /* ── TOGGLE ── */
+    .toggle-wrap{text-align:center;padding:52px 0 32px}
+    .toggle-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(184,151,90,.7);margin-bottom:18px}
+    .toggle{display:inline-flex;background:rgba(184,151,90,.08);border:1px solid var(--border);border-radius:2px;overflow:hidden}
+    .toggle-btn{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:11px 28px;border:none;cursor:pointer;background:none;color:rgba(184,151,90,.55);transition:all .2s}
+    .toggle-btn.active{background:var(--gold);color:var(--ink)}
+    .toggle-save{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6);margin-top:10px}
+
+    /* ── TIERS ── */
+    .tiers-section{background:var(--cream);padding:0 0 80px}
+    .tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border)}
+    .tier{padding:44px 36px 40px;border-right:1px solid var(--border);position:relative;transition:transform .2s}
+    .tier:last-child{border-right:none}
+    .tier.featured{background:var(--ink);border:2px solid var(--gold);margin:-2px;z-index:2}
+    .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:5px 16px;white-space:nowrap}
+    .tier-name{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .tier.featured .tier-name{color:var(--gold-pale)}
+    .tier-price{font-family:'EB Garamond',serif;font-size:52px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:4px}
+    .tier.featured .tier-price{color:var(--gold-pale)}
+    .tier-cadence{font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:var(--ink-muted);letter-spacing:.08em;margin-bottom:6px}
+    .tier.featured .tier-cadence{color:rgba(184,151,90,.6)}
+    .tier-family-price{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--gold);margin-bottom:20px;min-height:22px}
+    .tier-div{width:36px;height:1px;background:var(--gold);opacity:.4;margin:20px 0}
+    .tier-desc{font-family:'EB Garamond',serif;font-size:15px;line-height:1.75;color:var(--ink-soft);margin-bottom:24px}
+    .tier.featured .tier-desc{color:rgba(215,235,215,.78)}
+    .tier-perks{list-style:none;padding:0;margin:0 0 32px;display:flex;flex-direction:column;gap:10px}
+    .tier-perk{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);display:flex;gap:10px;align-items:start;line-height:1.5}
+    .tier.featured .tier-perk{color:rgba(215,235,215,.82)}
+    .perk-check{color:var(--gold);flex-shrink:0;margin-top:2px;font-size:13px}
+    .tier-cta{display:block;text-align:center;padding:14px 24px;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .2s}
+    .tier-cta.outline{border:1px solid var(--gold);color:var(--gold);background:none}
+    .tier-cta.outline:hover{background:rgba(184,151,90,.08)}
+    .tier-cta.solid{background:var(--gold);color:var(--ink);border:1px solid var(--gold)}
+    .tier-cta.solid:hover{background:var(--gold-pale)}
+    .tier-cta.dark{border:1px solid rgba(184,151,90,.4);color:rgba(184,151,90,.8);background:none}
+    .tier-cta.dark:hover{border-color:var(--gold);color:var(--gold)}
+
+    /* ── LIFE MEMBERSHIP ── */
+    .life-section{background:var(--ink-deep,#060E06);padding:80px 0;border-top:2px solid var(--gold)}
+    .life-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+    .life-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+    .life-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px}
+    .life-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.7);line-height:1.75;margin-bottom:28px}
+    .life-perks{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+    .life-perk{display:flex;gap:14px;align-items:start}
+    .life-perk-num{font-family:'EB Garamond',serif;font-size:22px;color:var(--gold);opacity:.5;line-height:1;flex-shrink:0;width:28px}
+    .life-perk-text{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.82);line-height:1.65}
+    .life-price-box{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-top:2px solid var(--gold);padding:32px;text-align:center}
+    .life-price{font-family:'EB Garamond',serif;font-size:64px;color:var(--gold-pale);line-height:1;margin-bottom:6px}
+    .life-price-note{font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-bottom:6px}
+    .life-family{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:28px}
+    .life-cta{display:block;background:var(--gold);color:var(--ink);padding:16px 32px;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
+    .life-cta:hover{background:var(--gold-pale)}
+    .life-cta-family{display:block;margin-top:10px;text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6);text-decoration:none}
+    .life-cta-family:hover{color:var(--gold)}
+
+    /* ── CHIEF SECTION ── */
+    .chief-section{background:var(--cream-mid);padding:80px 0;border-top:1px solid var(--border)}
+    .chief-grid{display:grid;grid-template-columns:380px 1fr;gap:56px;align-items:center}
+    .chief-img{width:100%;display:block;border-radius:2px;border:1px solid var(--border)}
+    .chief-quote{font-family:'EB Garamond',serif;font-size:clamp(20px,2.8vw,30px);font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:20px}
+    .chief-sig{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-muted)}
+    .chief-sig strong{color:var(--ink);font-weight:500}
+
+    /* ── FAQ ── */
+    .faq-section{background:var(--cream);padding:72px 0}
+    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+    .faq-item{border-top:1px solid var(--border);padding-top:20px}
+    .faq-q{font-family:'EB Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);margin-bottom:10px;line-height:1.35}
+    .faq-a{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.75}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .tiers-grid{grid-template-columns:1fr}
+      .tier{border-right:none;border-bottom:1px solid var(--border)}
+      .tier.featured{margin:0;border-width:2px 0}
+      .life-inner,.chief-grid,.faq-grid{grid-template-columns:1fr}
+    }
+
+    /* ── FAMILY PRICES (hidden by default, shown in family mode) ── */
+    .family-price{display:none}
+    .individual-price{display:block}
+    body.family-mode .family-price{display:block}
+    body.family-mode .individual-price{display:none}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="join.html" class="nav-link">Why join</a>
+    </div>
+    <a href="join-chat.html" class="nav-cta">Apply now</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="index.html" class="nav-mobile-link">Home</a>
+  <a href="join.html" class="nav-mobile-link">Why join</a>
+  <a href="join-chat.html" class="nav-mobile-link">Apply now</a>
+</div>
+<script>function toggleMenu(){document.getElementById('mobile-menu').classList.toggle('open')}</script>
+
+<!-- HERO -->
+<section class="mem-hero">
+  <div class="mem-hero-bg"></div>
+  <div class="si">
+    <div class="mem-hero-content">
+      <div class="mem-eyebrow">Clan Ó Comáin · Newhall House, County Clare</div>
+      <h1 class="mem-hero-title">Join the revival of an ancient Gaelic clan.</h1>
+      <p class="mem-hero-sub">Your membership directly funds the clan's revival — the summer festivals at Newhall, the petition to the Chief Herald for authentic arms, and the preservation of one of Ireland's oldest lineages for future generations.</p>
+      <div class="gold-rule"></div>
+      <p style="font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.75);line-height:1.75;max-width:600px">This is not a subscription. It is an act of cultural stewardship — a commitment to keep alive something ancient and irreplaceable that was almost lost to history.</p>
+      <div class="mem-hero-note">Recognised by Clans of Ireland · Under the patronage of the President of Ireland · Newhall House, County Clare</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOUR MEMBERSHIP FUNDS -->
+<section class="funds-section">
+  <div class="si">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="eyebrow" style="color:var(--gold)">What your membership funds</div>
+    </div>
+    <div class="funds-row">
+      <div class="fund-item">
+        <div class="fund-icon">🏰</div>
+        <div class="fund-label">Summer festivals</div>
+        <div class="fund-desc">Annual gatherings at Newhall Estate and Cahercommane in the Burren — open to all members</div>
+      </div>
+      <div class="fund-item">
+        <div class="fund-icon">⚜️</div>
+        <div class="fund-label">Heraldry petition</div>
+        <div class="fund-desc">The formal application to the Chief Herald of Ireland for authentic Gaelic arms</div>
+      </div>
+      <div class="fund-item">
+        <div class="fund-icon">📜</div>
+        <div class="fund-label">Genealogical research</div>
+        <div class="fund-desc">Ongoing scholarly research into the clan's pedigree, DNA and primary sources</div>
+      </div>
+      <div class="fund-item">
+        <div class="fund-icon">🪨</div>
+        <div class="fund-label">Cahercommane</div>
+        <div class="fund-desc">Preservation and promotion of the clan's ancestral capital in the Burren of County Clare</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOGGLE -->
+<section class="tiers-section">
+  <div class="si">
+    <div class="toggle-wrap">
+      <div class="toggle-label">Membership for</div>
+      <div class="toggle">
+        <button class="toggle-btn active" id="btnInd" onclick="setMode('individual')">Individual</button>
+        <button class="toggle-btn" id="btnFam" onclick="setMode('family')">Family</button>
+      </div>
+      <div class="toggle-save individual-price">&nbsp;</div>
+      <div class="toggle-save family-price">Family covers 2 adults &amp; all children under 18 — one certificate, one clan family</div>
+    </div>
+
+    <!-- THREE TIERS -->
+    <div class="tiers-grid">
+
+      <!-- CLAN MEMBER -->
+      <div class="tier">
+        <div class="tier-name">Clan Member</div>
+        <div class="tier-price individual-price">€49</div>
+        <div class="tier-price family-price">€79</div>
+        <div class="tier-cadence">per year</div>
+        <div class="tier-family-price individual-price">&nbsp;</div>
+        <div class="tier-family-price family-price">Family membership · 2 adults + children</div>
+        <div class="tier-div"></div>
+        <div class="tier-desc">For all who love Ireland and wish to belong to a living Gaelic clan. The foundation of the revival.</div>
+        <ul class="tier-perks">
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Digital certificate of membership — downloadable and printable</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Chief-approved use of the clan crest on personal items and stationery</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Priority booking for summer festivals at Newhall Estate and Cahercommane</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Your name entered in the Register of Clan Ó Comáin Members</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Clan newsletter — heritage research, events and news from Ireland</span></li>
+        </ul>
+        <a href="join-chat.html" class="tier-cta outline">Begin application</a>
+      </div>
+
+      <!-- GUARDIAN -->
+      <div class="tier featured">
+        <div class="tier-badge">Most popular</div>
+        <div class="tier-name">Guardian of the Clan</div>
+        <div class="tier-price individual-price">€150</div>
+        <div class="tier-price family-price">€220</div>
+        <div class="tier-cadence">per year</div>
+        <div class="tier-family-price individual-price">&nbsp;</div>
+        <div class="tier-family-price family-price">Family membership · 2 adults + children</div>
+        <div class="tier-div"></div>
+        <div class="tier-desc">For those who want to be genuinely part of the revival — not just receive it. The most complete clan experience.</div>
+        <ul class="tier-perks">
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Everything in Clan Member</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span><strong style="color:var(--gold-pale)">Physical certificate signed by Fergus Kinfauns, The Commane</strong> — posted to your home</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Name listed publicly on the <em>Guardians of Clan Ó Comáin</em> page — a permanent record of the revival</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Personal letter of thanks from the Chief, written on clan headed stationery</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span><strong style="color:var(--gold-pale)">Invitation to the private annual Guardians dinner at Newhall House</strong> — with the Chief and Privy Council</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>First right of refusal on open Privy Council positions as they arise</span></li>
+        </ul>
+        <a href="join-chat.html" class="tier-cta solid">Begin application</a>
+      </div>
+
+      <!-- PATRON -->
+      <div class="tier">
+        <div class="tier-name">Patron of the Clan</div>
+        <div class="tier-price individual-price">€350</div>
+        <div class="tier-price family-price">€480</div>
+        <div class="tier-cadence">per year</div>
+        <div class="tier-family-price individual-price">&nbsp;</div>
+        <div class="tier-family-price family-price">Family membership · 2 adults + children</div>
+        <div class="tier-div"></div>
+        <div class="tier-desc">The highest annual commitment — for those who wish to be counted among the great benefactors of the clan's revival.</div>
+        <ul class="tier-perks">
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Everything in Guardian of the Clan</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span><strong>Name inscribed on the Clan Patron Roll</strong> — displayed permanently at Newhall House</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Dedicated acknowledgement on the clan website with your story, connection and location</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Private call with the Chief — your heritage, your connection, your questions answered personally</span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span>Input into clan decisions via an annual Patrons advisory</span></li>
+        </ul>
+        <a href="join-chat.html" class="tier-cta outline">Begin application</a>
+      </div>
+
+    </div>
+
+    <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:20px">Payment processed securely via Stripe. Annual memberships renew each year — cancel anytime.</p>
+  </div>
+</section>
+
+<!-- LIFE MEMBERSHIP -->
+<section class="life-section">
+  <div class="si">
+    <div class="life-inner">
+      <div>
+        <div class="life-eyebrow">A permanent commitment</div>
+        <h2 class="life-title">Life Membership</h2>
+        <p class="life-sub">For those who wish to be part of Clan Ó Comáin not just for a year, but forever. A single investment that outlasts you — carrying your name into the clan's history.</p>
+        <div class="life-perks">
+          <div class="life-perk"><div class="life-perk-num">I</div><div class="life-perk-text">Everything in Guardian of the Clan — for life, with no annual renewal</div></div>
+          <div class="life-perk"><div class="life-perk-num">II</div><div class="life-perk-text"><strong style="color:var(--gold-pale)">Name engraved on the Clan Roll of Honour at Newhall House</strong> — a permanent physical record in the clan seat</div></div>
+          <div class="life-perk"><div class="life-perk-num">III</div><div class="life-perk-text">Clan heirloom pack — physical certificate, clan crest print, and personal welcome letter from the Chief, presented as a keepsake set</div></div>
+          <div class="life-perk"><div class="life-perk-num">IV</div><div class="life-perk-text">The knowledge that your name will remain in the Register of Clan Ó Comáin long after you — a gift to your children and grandchildren</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="life-price-box">
+          <div class="life-eyebrow" style="margin-bottom:16px">Life Membership</div>
+          <div class="life-price individual-price">€750</div>
+          <div class="life-price family-price">€1,100</div>
+          <div class="life-price-note">One-time payment · No renewal · For life</div>
+          <div class="life-family individual-price">Family life membership available — €1,100</div>
+          <div class="life-family family-price">Family rate — 2 adults + children, joint Roll of Honour</div>
+          <a href="join-chat.html" class="life-cta">Begin life membership application</a>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(184,151,90,.2)">
+            <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.55);line-height:1.6">"A name entered in the Register of Clan Ó Comáin is a name entered in the history of Gaelic Ireland."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHIEF'S WORD -->
+<section class="chief-section">
+  <div class="si">
+    <div class="chief-grid">
+      <div>
+        <img src="fergus_at_killone.png" alt="Fergus Kinfauns, The Commane — Chief of Ó Comáin" class="chief-img" loading="lazy">
+        <div class="img-cap" style="margin-top:8px">Fergus Kinfauns, The Commane — Chief of Ó Comáin · Killone Abbey, County Clare</div>
+      </div>
+      <div>
+        <div class="eyebrow">A word from the Chief</div>
+        <div class="gold-rule"></div>
+        <p class="chief-quote">"The clan was nearly lost to history — dispersed by conquest, famine and the long silence of the Penal years. Every member who joins today is an act of defiance against that erasure. You are not subscribing to a service. You are answering a call that has waited a very long time."</p>
+        <div class="chief-sig"><strong>Fergus Kinfauns, The Commane</strong><br>Chief of Ó Comáin · Newhall House, County Clare</div>
+        <div style="margin-top:28px">
+          <a href="join-chat.html" class="btn-p">Begin your application</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="si">
+    <div class="eyebrow">Common questions</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:4px;line-height:1.2">Everything you need to know</h2>
+    <div class="gold-rule"></div>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">Do I need to have an Irish surname to join?</div>
+        <div class="faq-a">No. Clan Ó Comáin is open to all who love Ireland and its ancient Gaelic culture — whatever name you carry. In Brehon law, clans always admitted members through shared values and commitment, not bloodline alone.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What does the physical certificate look like?</div>
+        <div class="faq-a">The certificate is a formal document on high-quality stock, bearing the clan crest and signed by Fergus Kinfauns, The Commane — Chief of Ó Comáin. It is a keepsake document designed to be framed and displayed.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">When are the summer festivals at Newhall?</div>
+        <div class="faq-a">Dates are announced to registered members first, ahead of any public announcement. Festivals take place at Newhall Estate and Cahercommane in the Burren — the clan's ancestral capital in County Clare.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What does family membership cover?</div>
+        <div class="faq-a">Family membership covers two named adults and all children under 18. Both adults are named on the certificate and the clan register. Children are included automatically and inherit the family's membership status.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I upgrade my membership tier later?</div>
+        <div class="faq-a">Yes. You can move to a higher tier at any time — simply apply again and the difference will be calculated. Life membership can be applied for at any point by existing annual members.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the Guardians dinner at Newhall?</div>
+        <div class="faq-a">An exclusive annual dinner for Guardian and Patron members at Newhall House — the seat of the Chief. Held in the estate with the Chief and members of the Privy Council. Numbers are strictly limited by the capacity of the house.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is payment secure?</div>
+        <div class="faq-a">Payment is processed via Stripe — the industry standard for secure online payments, used by millions of organisations worldwide. Your card details are never stored by the clan.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I want to cancel?</div>
+        <div class="faq-a">Annual memberships can be cancelled at any time before renewal. There are no penalties and no questions asked. Life memberships are non-refundable by their nature — they are a permanent commitment.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section style="background:var(--ink);padding:84px 0;border-top:2px solid var(--gold);text-align:center">
+  <div class="si" style="max-width:640px;margin:0 auto">
+    <div class="eyebrow" style="color:var(--gold)">The clan is growing</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px">In a world that has forgotten where it came from, this clan remembers.</h2>
+    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:36px;line-height:1.7">Your name belongs in this story. The application takes less than two minutes.</p>
+    <a href="join-chat.html" class="btn-p" style="font-size:12px;padding:18px 56px;display:inline-block">Begin your application</a>
+    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:20px">Open to all who love Ireland · Signed by the Chief · Recognised by Clans of Ireland</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="join.html">Why join</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="privy-council.html">Council</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Membership</div>
+        <ul class="footer-links">
+          <li><a href="membership.html">All tiers</a></li>
+          <li style="margin-top:8px"><a href="join-chat.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Apply now</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · All rights reserved</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function setMode(mode) {
+  if (mode === 'family') {
+    document.body.classList.add('family-mode');
+    document.getElementById('btnFam').classList.add('active');
+    document.getElementById('btnInd').classList.remove('active');
+  } else {
+    document.body.classList.remove('family-mode');
+    document.getElementById('btnInd').classList.add('active');
+    document.getElementById('btnFam').classList.remove('active');
+  }
+}
+</script>
+
+</body>
+</html>
