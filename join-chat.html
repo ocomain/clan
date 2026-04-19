@@ -170,11 +170,9 @@
     <div class="gold-rule"></div>
     <p class="completion-sub">A hundred thousand welcomes. Your application has been received. Please complete your payment below to confirm your membership — the Chief of Ó Comáin will be in touch once payment is confirmed.</p>
     <div class="completion-card" id="completionCard"></div>
-    <div class="completion-btns">
+    <div class="completion-btns" id="completionBtns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
-      <a href="/" class="btn-outline" style="margin-top:12px">Return to the clan</a>
-
-      <a href="/" class="btn-outline">Return to the clan</a>
+      <a id="chooseTierBtn" href="membership.html" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Choose your membership tier →</a>
     </div>
   </div>
 </div>
@@ -391,12 +389,10 @@ function showCompletion() {
   // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
   const chooseTierBtn = document.getElementById('chooseTierBtn');
-  const payNote = document.getElementById('payNote');
   if (tierInfo && payBtn) {
     payBtn.href = tierInfo.url;
     payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
-    if (payNote) payNote.style.display = 'block';
   } else if (chooseTierBtn) {
     chooseTierBtn.style.display = 'inline-block';
   }
