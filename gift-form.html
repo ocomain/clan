@@ -370,31 +370,9 @@ function submitForm() {
     connection: document.getElementById('connection').value.trim()
   };
 
-  // Send to clan email via mailto
-  const body = `CLAN Ó COMÁIN — GIFT MEMBERSHIP APPLICATION\n\n` +
-    `TIER: ${data.tier} (${data.price}) — ${data.family ? 'Family' : 'Individual'}\n\n` +
-    `GIVER\nName: ${data.giverName}\nEmail: ${data.giverEmail}\n\n` +
-    `RECIPIENT\nName: ${data.recipientName}${data.recipientName2 ? '\nSecond adult: ' + data.recipientName2 : ''}\n` +
-    `Email: ${data.recipientEmail}\nAddress: ${data.address}\n\n` +
-    (data.connection ? `CONNECTION: ${data.connection}\n\n` : '') +
-    (data.message ? `PERSONAL MESSAGE:\n"${data.message}"\n\n` : '') +
-    `---\nPayment to follow via Stripe.`;
-
-  const mailtoLink = `mailto:clan@ocomain.org?subject=${encodeURIComponent('Gift Membership — ' + data.recipientName + ' (' + data.tier + ')')}&body=${encodeURIComponent(body)}`;
-  window.open(mailtoLink);
-
   // Show payment step
-  document.getElementById('formStep').style.display = 'none';
-  const ps = document.getElementById('paymentStep');
-  ps.classList.add('show');
-
-  // Populate details
-  document.getElementById('paymentDetails').innerHTML =
-    `<div class="payment-detail-row"><span class="payment-detail-label">Gift tier</span><span>${data.tier} — ${data.price}</span></div>` +
-    `<div class="payment-detail-row"><span class="payment-detail-label">Recipient</span><span>${data.recipientName}</span></div>` +
-    `<div class="payment-detail-row"><span class="payment-detail-label">Delivering to</span><span>${data.address}</span></div>`;
-
-  document.getElementById('stripeBtn').href = STRIPE[currentTier][type];
+  // Go directly to Stripe payment
+  window.location.href = STRIPE[currentTier][type];
 }
 </script>
 
