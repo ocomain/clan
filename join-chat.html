@@ -171,12 +171,30 @@
     <div class="completion-card" id="completionCard"></div>
     <div class="completion-btns">
       <a id="emailLink" href="#" class="btn-gold">Send to clan@ocomain.org</a>
+      <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;background:#B8975A;margin-top:12px">Complete payment</a>
       <a href="/" class="btn-outline">Return to the clan</a>
     </div>
   </div>
 </div>
 
 <script>
+
+// ── Stripe links by tier ──
+const STRIPE_LINKS = {
+  'clan-ind':     { url: 'https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b', label: 'Clan Member (Individual) — €49/yr' },
+  'clan-fam':     { url: 'https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c', label: 'Clan Member (Family) — €79/yr' },
+  'guardian-ind': { url: 'https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d', label: 'Guardian of the Clan (Individual) — €150/yr' },
+  'guardian-fam': { url: 'https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e', label: 'Guardian of the Clan (Family) — €220/yr' },
+  'steward-ind':  { url: 'https://buy.stripe.com/7sY3cv2KQ5Mw7qZaJIeZ20f', label: 'Steward of the Clan (Individual) — €350/yr' },
+  'steward-fam':  { url: 'https://buy.stripe.com/dRmaEX85acaUfXv3hgeZ20g', label: 'Steward of the Clan (Family) — €480/yr' },
+  'life-ind':     { url: 'https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h', label: 'Life Member (Individual) — €750' },
+  'life-fam':     { url: 'https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i', label: 'Life Member (Family) — €1,100' },
+};
+
+// Read tier from URL param
+const urlTier = new URLSearchParams(window.location.search).get('tier');
+const tierInfo = STRIPE_LINKS[urlTier] || null;
+
 // ── Scripted herald conversation ──
 // Collects all 5 fields through natural dialogue
 const STEPS = [
@@ -186,7 +204,7 @@ const STEPS = [
     placeholder: 'Your full name…'
   },
   {
-    heraldMsgFn: (prev) => `Welcome, ${prev}. It is a privilege to receive your application.\n\nTell me — what brings you to Clan Ó Comáin? Do you carry one of the clan's surname variants — Cummins, Commons, Hurley, Commane, Commins — or perhaps you simply feel the call of Ireland and its ancient Gaelic culture? All are welcome here, whatever name you bear.`,
+    heraldMsgFn: (prev) => `Welcome, ${prev}. It is a privilege to receive your application${tierInfo ? ' for ' + tierInfo.label : ''}.\n\nTell me — what brings you to Clan Ó Comáin? Do you carry one of the clan's surname variants — Cummins, Commons, Hurley, Commane, Commins — or perhaps you simply feel the call of Ireland and its ancient Gaelic culture? All are welcome here, whatever name you bear.`,
     field: 'connection',
     placeholder: 'Your connection to Ireland or the clan…'
   },
@@ -342,8 +360,10 @@ function escHtml(t) {
 
 function showCompletion() {
   const card = document.getElementById('completionCard');
+  const tierLine = tierInfo ? `<div class="completion-row"><span class="completion-label">Membership</span><span class="completion-value">${escHtml(tierInfo.label)}</span></div>` : '';
   card.innerHTML = `
     <div class="completion-card-title">Your application · Clan Ó Comáin</div>
+    ${tierLine}
     <div class="completion-row"><span class="completion-label">Name</span><span class="completion-value">${escHtml(collected.name||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Email</span><span class="completion-value">${escHtml(collected.email||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Country</span><span class="completion-value">${escHtml(collected.country||'')}</span></div>
@@ -351,10 +371,19 @@ function showCompletion() {
     <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(collected.source||'')}</span></div>`;
 
   const body = encodeURIComponent(
-    `New membership application — Clan Ó Comáin\n\nName: ${collected.name}\nEmail: ${collected.email}\nCountry: ${collected.country}\nConnection: ${collected.connection}\nHeard via: ${collected.source}\n\n---\nSubmitted via clan membership application`
+    `New membership application — Clan Ó Comáin\n\nMembership: ${tierInfo ? tierInfo.label : 'Not specified'}\nName: ${collected.name}\nEmail: ${collected.email}\nCountry: ${collected.country}\nConnection: ${collected.connection}\nHeard via: ${collected.source}\n\n---\nSubmitted via clan membership application`
   );
   const sub = encodeURIComponent(`Membership application — ${collected.name}`);
   document.getElementById('emailLink').href = `mailto:clan@ocomain.org?subject=${sub}&body=${body}`;
+
+  // Show Stripe payment button if tier known
+  const payBtn = document.getElementById('stripePayBtn');
+  if (tierInfo && payBtn) {
+    payBtn.href = tierInfo.url;
+    payBtn.textContent = 'Complete payment — ' + tierInfo.label;
+    payBtn.style.display = 'inline-block';
+  }
+
   document.getElementById('completion').classList.add('show');
 }
 </script>
