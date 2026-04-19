@@ -172,7 +172,21 @@
     <div class="completion-card" id="completionCard"></div>
     <div class="completion-btns" id="completionBtns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
-      <a id="chooseTierBtn" href="membership.html" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Choose your membership tier →</a>
+    </div>
+
+    <!-- Inline tier picker when no tier pre-selected -->
+    <div id="tierPicker" style="display:none;margin-top:24px;text-align:left">
+      <p style="font-family:var(--font-serif);font-size:15px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:16px;text-align:center">Select your membership tier to complete payment:</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <a href="https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Clan Member — Individual</span><span>€49/yr</span></a>
+        <a href="https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Clan Member — Family</span><span>€79/yr</span></a>
+        <a href="https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Guardian of the Clan — Individual</span><span>€150/yr</span></a>
+        <a href="https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Guardian of the Clan — Family</span><span>€220/yr</span></a>
+        <a href="https://buy.stripe.com/7sY3cv2KQ5Mw7qZaJIeZ20f" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Steward of the Clan — Individual</span><span>€350/yr</span></a>
+        <a href="https://buy.stripe.com/dRmaEX85acaUfXv3hgeZ20g" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Steward of the Clan — Family</span><span>€480/yr</span></a>
+        <a href="https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.7)"><span>Life Member — Individual</span><span>€750 once</span></a>
+        <a href="https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.6)"><span>Life Member — Family</span><span>€1,100 once</span></a>
+      </div>
     </div>
   </div>
 </div>
@@ -388,13 +402,13 @@ function showCompletion() {
 
   // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
-  const chooseTierBtn = document.getElementById('chooseTierBtn');
   if (tierInfo && payBtn) {
     payBtn.href = tierInfo.url;
     payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
-  } else if (chooseTierBtn) {
-    chooseTierBtn.style.display = 'inline-block';
+  } else {
+    // Show inline tier picker
+    document.getElementById('tierPicker').style.display = 'block';
   }
 
   document.getElementById('completion').classList.add('show');
