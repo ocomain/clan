@@ -406,6 +406,14 @@ function showCompletion() {
     payBtn.href = tierInfo.url;
     payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
+    // Show cancel note for annual tiers only
+    const isLifeTier = urlTier === 'life-ind' || urlTier === 'life-fam';
+    if (!isLifeTier) {
+      const cancelNote = document.createElement('p');
+      cancelNote.textContent = 'Annual subscription · cancel anytime';
+      cancelNote.style.cssText = 'font-family:var(--font-sans);font-size:11px;font-weight:300;color:rgba(184,151,90,.45);letter-spacing:.08em;text-align:center;margin-top:8px';
+      payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
+    }
   } else {
     // Show inline tier picker
     document.getElementById('tierPicker').style.display = 'block';
