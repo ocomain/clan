@@ -270,7 +270,7 @@ function sendMessage() {
     setTimeout(() => {
       const msg = CLOSING_MSG(collected);
       typeHerald(msg, () => {
-        setTimeout(showCompletion, 3500);
+        setTimeout(showCompletion, 6000);
       });
     }, 500);
   } else {
@@ -372,12 +372,17 @@ function showCompletion() {
     <div class="completion-row"><span class="completion-label">Connection</span><span class="completion-value">${escHtml(collected.connection||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(collected.source||'')}</span></div>`;
 
-  // Show Stripe payment button if tier known
+  // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
+  const chooseTierBtn = document.getElementById('chooseTierBtn');
+  const payNote = document.getElementById('payNote');
   if (tierInfo && payBtn) {
     payBtn.href = tierInfo.url;
-    payBtn.textContent = 'Complete payment — ' + tierInfo.label;
+    payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
+    if (payNote) payNote.style.display = 'block';
+  } else if (chooseTierBtn) {
+    chooseTierBtn.style.display = 'inline-block';
   }
 
   document.getElementById('completion').classList.add('show');
