@@ -58,14 +58,36 @@ sup a:hover{text-decoration:underline}
 <style>
 #giftStrip{position:fixed;top:58px;left:0;right:0;z-index:97;background:#F8F4EC;border-bottom:2px solid #B8975A;padding:11px 0;box-shadow:0 3px 16px rgba(0,0,0,.15);transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #giftStrip.visible{transform:translateY(0);pointer-events:all}
+#mobileActions{display:none;position:fixed;top:58px;left:0;right:0;z-index:97;transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#mobileActions.visible{transform:translateY(0);pointer-events:all}
+@media(max-width:768px){
+  #giftStrip{display:none}
+  #mobileActions{display:block}
+}
 </style>
+
+<!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
     <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;text-decoration:none;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0">Gift a membership &#8594;</a>
   </div>
 </div>
-<script>(function(){var s=document.getElementById('giftStrip');window.addEventListener('scroll',function(){if(window.scrollY>500){s.classList.add('visible');}else{s.classList.remove('visible');}},{passive:true});})();</script>
+
+<!-- Mobile two-bar strip -->
+<div id="mobileActions">
+  <a href="membership.html" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;text-decoration:none;box-sizing:border-box">Join the clan &#8594;</a>
+  <a href="gift.html" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;text-decoration:none;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box">&#127873; Gift a clan membership &#8594;</a>
+</div>
+
+<script>(function(){
+  var s=document.getElementById('giftStrip');
+  var m=document.getElementById('mobileActions');
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>500){s.classList.add('visible');m.classList.add('visible');}
+    else{s.classList.remove('visible');m.classList.remove('visible');}
+  },{passive:true});
+})();</script>
 
 <div style="background:var(--ink);padding:72px 0 56px;border-bottom:2px solid var(--gold)">
   <div class="si">
