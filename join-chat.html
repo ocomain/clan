@@ -19,7 +19,7 @@
       --border:rgba(184,151,90,.2);--font-serif:'EB Garamond',serif;
       --font-sans:'Jost',sans-serif;
     }
-    html,body{height:100%;overflow:hidden}
+    html,body{height:100%}
     body{font-family:var(--font-sans);background:var(--ink);color:var(--cream);display:flex;flex-direction:column}
 
     /* NAV */
@@ -84,10 +84,10 @@
     .input-note{font-family:var(--font-sans);font-size:10px;color:rgba(184,151,90,.4);margin-top:8px;text-align:center;letter-spacing:.06em}
 
     /* COMPLETION OVERLAY */
-    .completion{position:fixed;inset:0;background:var(--ink);z-index:100;display:none;align-items:center;justify-content:center;padding:24px;animation:fadeIn .6s ease}
+    .completion{position:fixed;inset:0;background:var(--ink);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:40px 24px;animation:fadeIn .6s ease;overflow-y:auto}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     .completion.show{display:flex}
-    .completion-inner{max-width:580px;width:100%;text-align:center}
+    .completion-inner{max-width:580px;width:100%;text-align:center;padding-bottom:40px}
     .completion-crest{width:90px;height:90px;margin:0 auto 24px;border-radius:50%;border:2px solid var(--gold);padding:10px;display:flex;align-items:center;justify-content:center;background:var(--green-dark)}
     .completion-crest img{width:64px;height:64px;object-fit:contain}
     .completion-eyebrow{font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
@@ -171,8 +171,12 @@
     <p class="completion-sub">A hundred thousand welcomes. Your membership application has been received. The Chief of Ó Comáin will be in touch at the email you provided.</p>
     <div class="completion-card" id="completionCard"></div>
     <div class="completion-btns">
-      <a id="emailLink" href="#" class="btn-gold">Send to clan@ocomain.org</a>
-      <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;background:#B8975A;margin-top:12px">Complete payment</a>
+      <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
+      <a href="/" class="btn-outline" style="margin-top:12px">Return to the clan</a>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(184,151,90,.15)">
+        <p style="font-family:var(--font-serif);font-size:13px;font-style:italic;color:rgba(184,151,90,.4);margin-bottom:8px">Your application details have been recorded. To also send them directly to the clan:</p>
+        <a id="emailLink" href="#" style="font-family:var(--font-sans);font-size:10px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(184,151,90,.5);text-decoration:underline">Send copy to clan@ocomain.org</a>
+      </div>
       <a href="/" class="btn-outline">Return to the clan</a>
     </div>
   </div>
@@ -269,7 +273,7 @@ function sendMessage() {
     setTimeout(() => {
       const msg = CLOSING_MSG(collected);
       typeHerald(msg, () => {
-        setTimeout(showCompletion, 1200);
+        setTimeout(showCompletion, 3500);
       });
     }, 500);
   } else {
