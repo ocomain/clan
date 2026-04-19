@@ -126,19 +126,35 @@
       <a href="pedigree.html" class="nav-link">Pedigree</a>
       <a href="heartlands.html" class="nav-link">Heartlands</a>
       <a href="join.html" class="nav-link">Why join</a>
-      <a href="gift.html" class="nav-link">Gift</a>
     </div>
     <a href="join-chat.html" class="nav-cta">Apply now</a>
     <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
-<!-- GIFT STRIP — sticky below nav -->
-<div style="position:sticky;top:58px;z-index:99;background:rgba(8,20,8,.97);border-bottom:1px solid rgba(184,151,90,.3);backdrop-filter:blur(4px);padding:10px 0">
+<!-- GIFT STRIP — scroll triggered -->
+<div id="giftStrip" style="display:none;position:fixed;top:0;left:0;right:0;z-index:98;background:var(--cream);border-bottom:2px solid var(--gold);padding:11px 0;box-shadow:0 2px 16px rgba(0,0,0,.12);transform:translateY(-100%);transition:transform .35s ease">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:rgba(215,235,215,.6);margin:0">🎁 &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan — signed by the Chief, posted worldwide.</p>
-    <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);text-decoration:none;white-space:nowrap;border:1px solid rgba(184,151,90,.4);padding:8px 18px;border-radius:1px;flex-shrink:0">Gift a membership →</a>
+    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-soft);margin:0">🎁 &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan — signed by the Chief, posted worldwide.</p>
+    <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap;background:var(--gold);padding:9px 20px;border-radius:1px;flex-shrink:0">Gift a membership →</a>
   </div>
 </div>
+<script>
+(function(){
+  var strip=document.getElementById('giftStrip');
+  var shown=false;
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>500&&!shown){
+      strip.style.display='block';
+      setTimeout(function(){strip.style.transform='translateY(0)'},10);
+      shown=true;
+    } else if(window.scrollY<=500&&shown){
+      strip.style.transform='translateY(-100%)';
+      setTimeout(function(){strip.style.display='none'},360);
+      shown=false;
+    }
+  },{passive:true});
+})();
+</script>
 
 <div class="nav-mobile-menu" id="mobile-menu">
   <a href="/" class="nav-mobile-link">Home</a>
