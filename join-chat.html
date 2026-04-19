@@ -173,10 +173,7 @@
     <div class="completion-btns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
       <a href="/" class="btn-outline" style="margin-top:12px">Return to the clan</a>
-      <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(184,151,90,.15)">
-        <p style="font-family:var(--font-serif);font-size:13px;font-style:italic;color:rgba(184,151,90,.4);margin-bottom:8px">Your application details have been recorded. To also send them directly to the clan:</p>
-        <a id="emailLink" href="#" style="font-family:var(--font-sans);font-size:10px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(184,151,90,.5);text-decoration:underline">Send copy to clan@ocomain.org</a>
-      </div>
+
       <a href="/" class="btn-outline">Return to the clan</a>
     </div>
   </div>
@@ -374,12 +371,6 @@ function showCompletion() {
     <div class="completion-row"><span class="completion-label">Country</span><span class="completion-value">${escHtml(collected.country||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Connection</span><span class="completion-value">${escHtml(collected.connection||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(collected.source||'')}</span></div>`;
-
-  const body = encodeURIComponent(
-    `New membership application — Clan Ó Comáin\n\nMembership: ${tierInfo ? tierInfo.label : 'Not specified'}\nName: ${collected.name}\nEmail: ${collected.email}\nCountry: ${collected.country}\nConnection: ${collected.connection}\nHeard via: ${collected.source}\n\n---\nSubmitted via clan membership application`
-  );
-  const sub = encodeURIComponent(`Membership application — ${collected.name}`);
-  document.getElementById('emailLink').href = `mailto:clan@ocomain.org?subject=${sub}&body=${body}`;
 
   // Show Stripe payment button if tier known
   const payBtn = document.getElementById('stripePayBtn');
