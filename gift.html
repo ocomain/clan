@@ -85,7 +85,17 @@
       .gift-card.featured{transform:none}
     }
     @media(max-width:600px){.occasions{flex-direction:column}.occasion{border-right:none;border-bottom:1px solid rgba(184,151,90,.15)}}
-  </style>
+  
+    .toggle-wrap{text-align:center;padding:40px 0 24px}
+    .toggle-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(184,151,90,.7);margin-bottom:16px}
+    .toggle{display:inline-flex;background:rgba(184,151,90,.08);border:1px solid rgba(184,151,90,.25);border-radius:2px;overflow:hidden}
+    .toggle-btn{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:11px 28px;border:none;cursor:pointer;background:none;color:rgba(184,151,90,.55);transition:all .2s}
+    .toggle-btn.active{background:var(--gold);color:var(--ink)}
+    .toggle-save{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.5);margin-top:10px}
+    .ind-only{display:block}.fam-only{display:none}
+    body.fam-mode .ind-only{display:none}
+    body.fam-mode .fam-only{display:block}
+</style>
 </head>
 <body>
 
@@ -154,13 +164,25 @@
   <div class="si">
     <div class="eyebrow" style="color:var(--gold)">Choose a gift tier</div>
     <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:0">Three ways to give the gift of belonging</h2>
-    <div class="gift-grid">
+        <div class="toggle-wrap">
+      <div class="toggle-label">Gifting for</div>
+      <div class="toggle">
+        <button class="toggle-btn active" id="gBtnInd" onclick="gSetMode('individual')">Individual</button>
+        <button class="toggle-btn" id="gBtnFam" onclick="gSetMode('family')">Family</button>
+      </div>
+      <div class="toggle-save fam-only">Family covers 2 adults &amp; all children under 18</div>
+      <div class="toggle-save ind-only">&nbsp;</div>
+    </div>
+
+<div class="gift-grid">
 
       <!-- CLAN MEMBER -->
       <div class="gift-card">
         <div class="gift-tier-name">Clan Member</div>
-        <div class="gift-price">€49</div>
-        <div class="gift-cadence">annual membership gift</div>
+        <div class="gift-price ind-only">€49</div>
+        <div class="gift-price fam-only">€79</div>
+        <div class="gift-cadence ind-only">annual membership gift</div>
+        <div class="gift-cadence fam-only">annual family membership gift</div>
         <div class="gift-div"></div>
         <div class="gift-desc">A beautiful entry into the clan — everything they need to feel genuinely connected to one of Ireland's oldest lineages.</div>
         <ul class="gift-perks">
@@ -169,16 +191,18 @@
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Chief-approved use of the clan crest</span></li>
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Festival invitations &amp; clan newsletter</span></li>
         </ul>
-        <a href="gift-form.html" class="gift-btn">Gift Clan Member — €49</a>
-        <a href="gift-form.html" class="gift-btn" style="margin-top:8px">Gift Family — €79</a>
+        <a href="gift-form.html" class="gift-btn ind-only">Gift Clan Member — €49</a>
+        <a href="gift-form.html" class="gift-btn fam-only">Gift Family Clan Member — €79</a>
       </div>
 
       <!-- GUARDIAN -->
       <div class="gift-card featured">
         <div class="gift-badge">Most gifted</div>
         <div class="gift-tier-name">Guardian of the Clan</div>
-        <div class="gift-price">€150</div>
-        <div class="gift-cadence">annual membership gift</div>
+        <div class="gift-price ind-only">€150</div>
+        <div class="gift-price fam-only">€220</div>
+        <div class="gift-cadence ind-only">annual membership gift</div>
+        <div class="gift-cadence fam-only">annual family membership gift</div>
         <div class="gift-div"></div>
         <div class="gift-desc">The gift with the greatest impact — a physical signed certificate from the Chief, posted to their door. An heirloom they will keep for life.</div>
         <ul class="gift-perks">
@@ -188,15 +212,17 @@
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Listed on the Guardians of Clan Ó Comáin page</span></li>
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Invitation to summer festivals at Newhall</span></li>
         </ul>
-        <a href="gift-form.html" class="gift-btn solid">Gift Guardian — €150</a>
-        <a href="gift-form.html" class="gift-btn" style="margin-top:8px">Gift Family — €220</a>
+        <a href="gift-form.html" class="gift-btn solid ind-only">Gift Guardian — €150</a>
+        <a href="gift-form.html" class="gift-btn solid fam-only">Gift Family Guardian — €220</a>
       </div>
 
       <!-- LIFE MEMBER -->
       <div class="gift-card">
         <div class="gift-tier-name">Life Member</div>
-        <div class="gift-price">€750</div>
-        <div class="gift-cadence">permanent membership · one-time gift</div>
+        <div class="gift-price ind-only">€750</div>
+        <div class="gift-price fam-only">€1,100</div>
+        <div class="gift-cadence ind-only">permanent membership · one-time gift</div>
+        <div class="gift-cadence fam-only">permanent family membership · one-time gift</div>
         <div class="gift-div"></div>
         <div class="gift-desc">The ultimate gift — a permanent place in Clan Ó Comáin for life. Their name on the Roll of Honour at Newhall House. A legacy that outlasts both of you.</div>
         <ul class="gift-perks">
@@ -205,8 +231,8 @@
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Clan heirloom keepsake pack — certificate, crest print, Chief's letter</span></li>
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>A name in the Register of Clan Ó Comáin forever</span></li>
         </ul>
-        <a href="gift-form.html" class="gift-btn">Gift Life Member — €750</a>
-        <a href="gift-form.html" class="gift-btn" style="margin-top:8px">Gift Family — €1,100</a>
+        <a href="gift-form.html" class="gift-btn ind-only">Gift Life Member — €750</a>
+        <a href="gift-form.html" class="gift-btn fam-only">Gift Family Life Member — €1,100</a>
       </div>
 
     </div>
@@ -344,5 +370,18 @@
   </div>
 </footer>
 
+<script>
+function gSetMode(mode){
+  if(mode==='family'){
+    document.body.classList.add('fam-mode');
+    document.getElementById('gBtnFam').classList.add('active');
+    document.getElementById('gBtnInd').classList.remove('active');
+  } else {
+    document.body.classList.remove('fam-mode');
+    document.getElementById('gBtnInd').classList.add('active');
+    document.getElementById('gBtnFam').classList.remove('active');
+  }
+}
+</script>
 </body>
 </html>
