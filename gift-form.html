@@ -325,6 +325,10 @@ function updateSummary() {
   document.getElementById('summaryPrice').textContent = PRICES[currentTier][type];
   const name = document.getElementById('recipientName').value.trim();
   document.getElementById('summaryRecipient').textContent = name || '—';
+  // Update tier card prices
+  document.getElementById('price-clan').textContent = isFamily ? '€79' : '€49';
+  document.getElementById('price-guardian').textContent = isFamily ? '€220' : '€150';
+  document.getElementById('price-life').textContent = isFamily ? '€1,100' : '€750';
 }
 
 document.getElementById('recipientName').addEventListener('input', updateSummary);
