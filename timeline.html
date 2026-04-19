@@ -418,29 +418,17 @@
 </nav>
 
 <!-- GIFT STRIP — scroll triggered -->
-<div id="giftStrip" style="display:none;position:fixed;top:0;left:0;right:0;z-index:98;background:var(--cream);border-bottom:2px solid var(--gold);padding:11px 0;box-shadow:0 2px 16px rgba(0,0,0,.12);transform:translateY(-100%);transition:transform .35s ease">
+<style>
+#giftStrip{position:fixed;top:58px;left:0;right:0;z-index:97;background:#F8F4EC;border-bottom:2px solid #B8975A;padding:11px 0;box-shadow:0 3px 16px rgba(0,0,0,.15);transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#giftStrip.visible{transform:translateY(0);pointer-events:all}
+</style>
+<div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-soft);margin:0">🎁 &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan — signed by the Chief, posted worldwide.</p>
-    <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap;background:var(--gold);padding:9px 20px;border-radius:1px;flex-shrink:0">Gift a membership →</a>
+    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;text-decoration:none;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0">Gift a membership &#8594;</a>
   </div>
 </div>
-<script>
-(function(){
-  var strip=document.getElementById('giftStrip');
-  var shown=false;
-  window.addEventListener('scroll',function(){
-    if(window.scrollY>500&&!shown){
-      strip.style.display='block';
-      setTimeout(function(){strip.style.transform='translateY(0)'},10);
-      shown=true;
-    } else if(window.scrollY<=500&&shown){
-      strip.style.transform='translateY(-100%)';
-      setTimeout(function(){strip.style.display='none'},360);
-      shown=false;
-    }
-  },{passive:true});
-})();
-</script>
+<script>(function(){var s=document.getElementById('giftStrip');window.addEventListener('scroll',function(){if(window.scrollY>500){s.classList.add('visible');}else{s.classList.remove('visible');}},{passive:true});})();</script>
 
 <div class="nav-mobile-menu" id="mobile-menu">
   <a href="/" class="nav-mobile-link">Home</a>
