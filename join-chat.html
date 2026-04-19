@@ -372,6 +372,22 @@ function showCompletion() {
     <div class="completion-row"><span class="completion-label">Connection</span><span class="completion-value">${escHtml(collected.connection||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(collected.source||'')}</span></div>`;
 
+  // POST application data to Netlify function (background, non-blocking)
+  try {
+    fetch('/api/submit-application', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: collected.name,
+        email: collected.email,
+        country: collected.country,
+        connection: collected.connection,
+        source: collected.source,
+        tier: tierInfo ? tierInfo.label : 'Not selected'
+      })
+    });
+  } catch(e) { /* non-blocking */ }
+
   // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
   const chooseTierBtn = document.getElementById('chooseTierBtn');

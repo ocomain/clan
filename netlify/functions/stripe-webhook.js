@@ -1,0 +1,170 @@
+// netlify/functions/stripe-webhook.js
+// Triggered by Stripe when a payment completes
+// Sends welcome email via Resend
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+const CLAN_EMAIL = 'clan@ocomain.org';
+
+const TIER_NAMES = {
+  'Clan Member Individual':     { name: 'Clan Member',            benefits: ['Digital membership certificate', 'Chief-approved crest use', 'Festival priority booking', 'Clan newsletter', 'Place in the Register of Members'] },
+  'Clan Member Family':         { name: 'Clan Member (Family)',   benefits: ['Digital family certificate', 'Chief-approved crest use', 'Festival priority booking', 'Clan newsletter', 'Both names in the Register'] },
+  'Guardian Individual':        { name: 'Guardian of the Clan',  benefits: ['Physical certificate signed by the Chief — posted to you', 'Personal letter of welcome from the Chief', 'Listed on the Guardians page', 'Festival invitation', 'Priority on Privy Council openings'] },
+  'Guardian Family':            { name: 'Guardian of the Clan (Family)', benefits: ['Physical family certificate signed by the Chief', 'Both invited to Guardians dinner', 'Family listed on Guardians page', 'Festival invitations'] },
+  'Steward Individual':         { name: 'Steward of the Clan',   benefits: ['Everything in Guardian', 'Invitation to private annual dinner at Newhall House with the Chief', 'Name on Clan Roll of Honour at Newhall', 'Dedicated website acknowledgement', 'Private call with the Chief'] },
+  'Steward Family':             { name: 'Steward of the Clan (Family)', benefits: ['Everything in Guardian Family', 'Both invited to private dinner at Newhall', 'Family on Clan Roll of Honour'] },
+  'Life Member Individual':     { name: 'Life Member',           benefits: ['Guardian benefits for life', 'Name engraved on Roll of Honour at Newhall House', 'Clan heirloom keepsake pack', 'Your name in the Register forever'] },
+  'Life Member Family':         { name: 'Life Member (Family)',  benefits: ['Guardian Family benefits for life', 'Family on Roll of Honour at Newhall', 'Family heirloom keepsake pack'] },
+};
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
+
+  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  let stripeEvent;
+
+  try {
+    stripeEvent = stripe.webhooks.constructEvent(
+      event.body,
+      event.headers['stripe-signature'],
+      STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.error('Webhook signature failed:', err.message);
+    return { statusCode: 400, body: `Webhook Error: ${err.message}` };
+  }
+
+  if (stripeEvent.type === 'checkout.session.completed') {
+    const session = stripeEvent.data.object;
+    const customerEmail = session.customer_details?.email;
+    const customerName = session.customer_details?.name;
+    const productName = session.metadata?.product_name || 'Clan Membership';
+    const amount = (session.amount_total / 100).toFixed(2);
+    const currency = session.currency.toUpperCase();
+    const isGift = session.metadata?.is_gift === 'true';
+
+    if (isGift) {
+      await sendGiftConfirmations(session, customerEmail, customerName, productName, amount, currency);
+    } else {
+      await sendMemberWelcome(customerEmail, customerName, productName, amount, currency);
+    }
+
+    // Always notify the clan
+    await notifyClan(customerEmail, customerName, productName, amount, currency, isGift, session);
+  }
+
+  return { statusCode: 200, body: JSON.stringify({ received: true }) };
+};
+
+async function sendMemberWelcome(email, name, productName, amount, currency) {
+  const tier = TIER_NAMES[productName] || { name: productName, benefits: [] };
+  const firstName = name ? name.split(' ')[0] : 'friend';
+
+  const benefitsList = tier.benefits.map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
+<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
+
+  <!-- Header -->
+  <div style="background:#0C1A0C;padding:40px 40px 32px;text-align:center;border-bottom:2px solid #B8975A">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="72" height="72" alt="Clan Ó Comáin" style="border-radius:50%;border:2px solid #B8975A;margin-bottom:16px">
+    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Clan Ó Comáin · County Clare, Ireland</p>
+    <h1 style="font-family:'Georgia',serif;font-size:36px;font-weight:400;color:#D4B87A;margin:0;line-height:1.1">Céad míle fáilte</h1>
+    <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.7);margin:8px 0 0">A hundred thousand welcomes</p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:40px">
+    <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;line-height:1.75;margin:0 0 20px">Dear ${firstName},</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">On behalf of Fergus Kinfauns, The Commane — Chief of Ó Comáin — and the assembled derbhfine of Clan Ó Comáin, it is my honour to welcome you as a <strong>${tier.name}</strong> of one of Ireland's oldest and most thoroughly documented Gaelic lineages.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare, Ireland.</p>
+
+    <!-- Divider -->
+    <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
+
+    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">Your membership includes</p>
+    <ul style="margin:0 0 32px;padding-left:20px">
+      ${benefitsList}
+    </ul>
+
+    <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will be writing to you personally. If you have questions in the meantime, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>.</p>
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Go raibh míle maith agat — a thousand thanks for joining the revival of Clan Ó Comáin.</p>
+
+    <!-- CTA -->
+    <div style="text-align:center;margin-bottom:32px">
+      <a href="https://www.ocomain.org" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:1px">Visit the clan website</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="background:#0C1A0C;padding:24px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.6);margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:sans-serif;font-size:10px;color:rgba(184,151,90,.4);margin:0;letter-spacing:0.08em">Clan Ó Comáin · Newhall House · County Clare · Ireland · clan@ocomain.org</p>
+  </div>
+</div>
+</body>
+</html>`;
+
+  await sendEmail({
+    to: email,
+    subject: `Céad míle fáilte — Welcome to Clan Ó Comáin`,
+    html,
+  });
+}
+
+async function sendGiftConfirmations(session, buyerEmail, buyerName, productName, amount, currency) {
+  const tier = TIER_NAMES[productName] || { name: productName, benefits: [] };
+  // Notify buyer their gift is being arranged
+  const html = `<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#F8F4EC">
+<div style="max-width:580px;margin:0 auto">
+  <div style="background:#0C1A0C;padding:40px;text-align:center;border-bottom:2px solid #B8975A">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="64" alt="Clan Ó Comáin" style="border-radius:50%;border:2px solid #B8975A;margin-bottom:14px">
+    <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0">Gift confirmed</h1>
+  </div>
+  <div style="padding:40px">
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dear ${buyerName ? buyerName.split(' ')[0] : 'friend'},</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your gift of a <strong>${tier.name}</strong> membership of Clan Ó Comáin has been received and confirmed. The clan will be in touch with your recipient shortly — the Chief will write to them personally.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">If you have any questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>.</p>
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;margin:0">Go raibh míle maith agat.</p>
+  </div>
+  <div style="background:#0C1A0C;padding:20px 40px;text-align:center">
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Clan Ó Comáin · Newhall House · County Clare · Ireland</p>
+  </div>
+</div>
+</body></html>`;
+
+  await sendEmail({ to: buyerEmail, subject: 'Your gift membership of Clan Ó Comáin — confirmed', html });
+}
+
+async function notifyClan(email, name, product, amount, currency, isGift, session) {
+  const html = `<div style="font-family:sans-serif;max-width:480px">
+    <h2 style="color:#0C1A0C">New ${isGift ? 'GIFT ' : ''}membership — Clan Ó Comáin</h2>
+    <table style="border-collapse:collapse;width:100%">
+      <tr><td style="padding:8px;border:1px solid #ddd;color:#666">Name</td><td style="padding:8px;border:1px solid #ddd"><strong>${name || 'Not provided'}</strong></td></tr>
+      <tr><td style="padding:8px;border:1px solid #ddd;color:#666">Email</td><td style="padding:8px;border:1px solid #ddd">${email}</td></tr>
+      <tr><td style="padding:8px;border:1px solid #ddd;color:#666">Tier</td><td style="padding:8px;border:1px solid #ddd">${product}</td></tr>
+      <tr><td style="padding:8px;border:1px solid #ddd;color:#666">Amount</td><td style="padding:8px;border:1px solid #ddd"><strong>${currency} ${amount}</strong></td></tr>
+      <tr><td style="padding:8px;border:1px solid #ddd;color:#666">Gift?</td><td style="padding:8px;border:1px solid #ddd">${isGift ? 'YES — check gift form data' : 'No'}</td></tr>
+    </table>
+  </div>`;
+
+  await sendEmail({ to: CLAN_EMAIL, subject: `New member: ${name} — ${product} (${currency}${amount})`, html });
+}
+
+async function sendEmail({ to, subject, html }) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
+    body: JSON.stringify({ from: 'Clan Ó Comáin <herald@ocomain.org>', to, subject, html }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('Resend error:', err);
+  }
+}

@@ -337,7 +337,7 @@ document.getElementById('message').addEventListener('input', function() {
   document.getElementById('charCount').textContent = this.value.length + ' / 300';
 });
 
-function submitForm() {
+async function submitForm() {
   const required = ['giverName','giverEmail','recipientName','recipientEmail','address1','city','country'];
   for (const id of required) {
     const el = document.getElementById(id);
@@ -371,8 +371,16 @@ function submitForm() {
   };
 
   // Show payment step
-  // Go directly to Stripe payment
-  window.location.href = STRIPE[currentTier][type];
+  // POST gift data to Netlify function (background), then redirect to Stripe
+  const stripeUrl = STRIPE[currentTier][type];
+  try {
+    await fetch('/api/submit-gift', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) { /* non-blocking */ }
+  window.location.href = stripeUrl;
 }
 </script>
 
