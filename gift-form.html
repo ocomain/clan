@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gift a Clan Membership — Clan Ó Comáin</title>
+  <meta name="description" content="Give the gift of belonging to an ancient Irish clan. A membership certificate signed by the Chief — posted to their door.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--ink)}
+
+    .gift-form-wrap{max-width:680px;margin:0 auto;padding:0 24px 80px}
+
+    /* HERO STRIP */
+    .form-hero{background:var(--ink);padding:56px 0 40px;border-bottom:1px solid var(--border);margin-bottom:48px}
+    .form-hero-inner{max-width:680px;margin:0 auto;padding:0 24px}
+
+    /* TIER SELECTOR */
+    .tier-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px}
+    .tier-opt{border:1px solid rgba(184,151,90,.25);padding:18px 14px;cursor:pointer;text-align:center;transition:all .2s;position:relative}
+    .tier-opt:hover{border-color:rgba(184,151,90,.5)}
+    .tier-opt.selected{border-color:var(--gold);background:rgba(184,151,90,.08)}
+    .tier-opt.selected::after{content:'✓';position:absolute;top:8px;right:10px;font-size:11px;color:var(--gold)}
+    .tier-name{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+    .tier-price{font-family:'EB Garamond',serif;font-size:26px;color:var(--gold-pale);line-height:1;margin-bottom:2px}
+    .tier-cadence{font-family:'Jost',sans-serif;font-size:9px;font-weight:300;color:rgba(184,151,90,.5);letter-spacing:.06em}
+    .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px;white-space:nowrap}
+
+    /* FAMILY TOGGLE */
+    .family-toggle-wrap{margin-bottom:32px;display:flex;align-items:center;gap:14px}
+    .family-toggle-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.7)}
+    .toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
+    .toggle-switch input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:rgba(184,151,90,.15);border:1px solid rgba(184,151,90,.3);border-radius:12px;transition:.2s}
+    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:rgba(184,151,90,.5);border-radius:50%;transition:.2s}
+    input:checked+.toggle-slider{background:rgba(184,151,90,.2);border-color:var(--gold)}
+    input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--gold)}
+    .family-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6)}
+
+    /* FORM FIELDS */
+    .form-section{margin-bottom:32px}
+    .form-section-title{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(184,151,90,.2)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .form-row.full{grid-template-columns:1fr}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.65)}
+    .form-input{background:rgba(24,40,24,.6);border:1px solid rgba(184,151,90,.2);padding:12px 14px;color:var(--cream);font-family:'EB Garamond',serif;font-size:16px;outline:none;transition:border .2s;border-radius:1px}
+    .form-input:focus{border-color:rgba(184,151,90,.6)}
+    .form-input::placeholder{color:rgba(184,151,90,.25);font-style:italic}
+    select.form-input{cursor:pointer}
+    select.form-input option{background:#0C1A0C}
+    textarea.form-input{resize:vertical;min-height:80px;font-size:15px}
+
+    /* SUMMARY BOX */
+    .summary-box{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.2);border-top:2px solid var(--gold);padding:24px;margin-bottom:28px}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.8);margin-bottom:8px}
+    .summary-row:last-child{margin-bottom:0;padding-top:12px;border-top:1px solid rgba(184,151,90,.2);font-size:18px;color:var(--gold-pale)}
+    .summary-label{color:rgba(184,151,90,.6)}
+
+    /* SUBMIT */
+    .submit-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;padding:18px 24px;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:background .2s;margin-bottom:12px}
+    .submit-btn:hover{background:var(--gold-pale)}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+    .submit-note{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.5);text-align:center;line-height:1.6}
+
+    /* STEP 2 — payment redirect */
+    .payment-step{display:none;text-align:center;padding:48px 24px;animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .payment-step.show{display:block}
+    .payment-icon{font-size:48px;margin-bottom:20px}
+    .payment-title{font-family:'EB Garamond',serif;font-size:32px;color:var(--gold-pale);margin-bottom:12px}
+    .payment-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:32px;line-height:1.7}
+    .payment-btn{display:inline-block;background:var(--gold);color:var(--ink);padding:18px 48px;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
+    .payment-btn:hover{background:var(--gold-pale)}
+    .payment-details{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.2);padding:20px;margin:24px 0;text-align:left}
+    .payment-detail-row{display:flex;gap:8px;font-family:'EB Garamond',serif;font-size:14px;color:rgba(215,235,215,.75);margin-bottom:6px}
+    .payment-detail-row:last-child{margin-bottom:0}
+    .payment-detail-label{color:rgba(184,151,90,.6);min-width:100px}
+
+    @media(max-width:600px){
+      .tier-selector{grid-template-columns:1fr}
+      .form-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="gift.html" class="nav-back" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,151,90,.6);text-decoration:none;padding:8px 16px;border:1px solid rgba(184,151,90,.3);border-radius:1px">← Gift overview</a>
+  </div>
+</nav>
+
+<!-- HERO STRIP -->
+<div class="form-hero">
+  <div class="form-hero-inner">
+    <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Gift a clan membership</div>
+    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:12px">Give the gift of belonging.</h1>
+    <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.65);line-height:1.65;max-width:520px">Tell us who you're gifting and we'll take care of everything — the Chief will write to them personally.</p>
+  </div>
+</div>
+
+<div class="gift-form-wrap">
+
+  <!-- FORM STEP -->
+  <div id="formStep">
+
+    <!-- TIER SELECTOR -->
+    <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Choose a membership tier</div>
+    <div class="tier-selector">
+      <div class="tier-opt" id="tier-clan" onclick="selectTier('clan')">
+        <div class="tier-name">Clan Member</div>
+        <div class="tier-price" id="price-clan">€49</div>
+        <div class="tier-cadence">annual</div>
+      </div>
+      <div class="tier-opt selected" id="tier-guardian" onclick="selectTier('guardian')">
+        <div class="tier-badge">Most gifted</div>
+        <div class="tier-name">Guardian</div>
+        <div class="tier-price" id="price-guardian">€150</div>
+        <div class="tier-cadence">annual · signed certificate</div>
+      </div>
+      <div class="tier-opt" id="tier-life" onclick="selectTier('life')">
+        <div class="tier-name">Life Member</div>
+        <div class="tier-price" id="price-life">€750</div>
+        <div class="tier-cadence">permanent · one-time</div>
+      </div>
+    </div>
+
+    <!-- FAMILY TOGGLE -->
+    <div class="family-toggle-wrap">
+      <span class="family-toggle-label">Individual</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="familyToggle" onchange="updateFamily()">
+        <span class="toggle-slider"></span>
+      </label>
+      <span class="family-toggle-label">Family</span>
+      <span class="family-note" id="familyNote">&nbsp;</span>
+    </div>
+
+    <!-- GIVER DETAILS -->
+    <div class="form-section">
+      <div class="form-section-title">Your details — the giver</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Your full name *</label>
+          <input class="form-input" type="text" id="giverName" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your email *</label>
+          <input class="form-input" type="email" id="giverEmail" placeholder="your@email.com" required>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECIPIENT DETAILS -->
+    <div class="form-section">
+      <div class="form-section-title">Recipient details — who you're gifting</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Recipient's full name *</label>
+          <input class="form-input" type="text" id="recipientName" placeholder="Their full name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Recipient's email *</label>
+          <input class="form-input" type="email" id="recipientEmail" placeholder="their@email.com" required>
+        </div>
+      </div>
+      <div class="form-row full" id="familyNameRow" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Second adult's name (family membership) *</label>
+          <input class="form-input" type="text" id="recipientName2" placeholder="Second adult's full name">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Postal address for certificate *</label>
+          <input class="form-input" type="text" id="address1" placeholder="Address line 1" required style="margin-bottom:8px">
+          <input class="form-input" type="text" id="address2" placeholder="Address line 2 (optional)">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">City / Town *</label>
+          <input class="form-input" type="text" id="city" placeholder="City" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Postcode / ZIP</label>
+          <input class="form-input" type="text" id="postcode" placeholder="Postcode">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Country *</label>
+          <select class="form-input" id="country" required>
+            <option value="">Select country…</option>
+            <option>Ireland</option>
+            <option>United States</option>
+            <option>United Kingdom</option>
+            <option>Canada</option>
+            <option>Australia</option>
+            <option>New Zealand</option>
+            <option>France</option>
+            <option>Germany</option>
+            <option>Spain</option>
+            <option>Italy</option>
+            <option>Romania</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONAL MESSAGE -->
+    <div class="form-section">
+      <div class="form-section-title">Your personal message — optional</div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Message to the recipient (included with the certificate)</label>
+          <textarea class="form-input" id="message" placeholder="e.g. 'For Mum — who always carried Ireland with her…'" maxlength="300"></textarea>
+          <span style="font-family:'Jost',sans-serif;font-size:9px;color:rgba(184,151,90,.4);letter-spacing:.06em" id="charCount">0 / 300</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTION TO CLAN -->
+    <div class="form-section">
+      <div class="form-section-title">Their connection to Ireland — optional</div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label class="form-label">Surname, ancestry or connection (helps the Chief personalise his letter)</label>
+          <input class="form-input" type="text" id="connection" placeholder="e.g. Cummins family from Clare, or Irish-American heritage…">
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-box" id="summaryBox">
+      <div class="summary-row"><span class="summary-label">Tier</span><span id="summaryTier">Guardian of the Clan</span></div>
+      <div class="summary-row"><span class="summary-label">Type</span><span id="summaryType">Individual</span></div>
+      <div class="summary-row"><span class="summary-label">Recipient</span><span id="summaryRecipient">—</span></div>
+      <div class="summary-row"><span class="summary-label">Total</span><span id="summaryPrice">€150</span></div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">Continue to secure payment →</button>
+    <p class="submit-note">Your gift details are sent to the clan before payment. The Chief will write personally to your recipient once payment is confirmed.</p>
+
+  </div>
+
+  <!-- PAYMENT STEP -->
+  <div class="payment-step" id="paymentStep">
+    <div class="payment-icon">📜</div>
+    <h2 class="payment-title">Details received — thank you.</h2>
+    <p class="payment-sub">The clan has your gift details. Now complete your secure payment to confirm the membership — the Chief will be in touch with your recipient shortly after.</p>
+    <div class="payment-details" id="paymentDetails"></div>
+    <a href="#" class="payment-btn" id="stripeBtn">Complete payment →</a>
+    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:16px">Secure payment via Stripe · Your recipient will be welcomed by name by the Chief of Ó Comáin</p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+      </div>
+      <div>
+        <div class="footer-heading">Gift</div>
+        <ul class="footer-links">
+          <li><a href="gift.html">Gift overview</a></li>
+          <li><a href="membership.html">All membership tiers</a></li>
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · All rights reserved</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Stripe payment link map ──
+const STRIPE = {
+  clan:     { ind: 'https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b', fam: 'https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c' },
+  guardian: { ind: 'https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d', fam: 'https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e' },
+  life:     { ind: 'https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h', fam: 'https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i' }
+};
+
+const PRICES = {
+  clan:     { ind: '€49/yr',  fam: '€79/yr'   },
+  guardian: { ind: '€150/yr', fam: '€220/yr'  },
+  life:     { ind: '€750',    fam: '€1,100'   }
+};
+
+const TIER_NAMES = { clan: 'Clan Member', guardian: 'Guardian of the Clan', life: 'Life Member' };
+
+let currentTier = 'guardian';
+let isFamily = false;
+
+function selectTier(tier) {
+  currentTier = tier;
+  document.querySelectorAll('.tier-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('tier-' + tier).classList.add('selected');
+  updateSummary();
+}
+
+function updateFamily() {
+  isFamily = document.getElementById('familyToggle').checked;
+  document.getElementById('familyNote').textContent = isFamily ? '— covers 2 adults & children under 18' : '';
+  document.getElementById('familyNameRow').style.display = isFamily ? 'grid' : 'none';
+  updateSummary();
+}
+
+function updateSummary() {
+  const type = isFamily ? 'fam' : 'ind';
+  document.getElementById('summaryTier').textContent = TIER_NAMES[currentTier];
+  document.getElementById('summaryType').textContent = isFamily ? 'Family' : 'Individual';
+  document.getElementById('summaryPrice').textContent = PRICES[currentTier][type];
+  const name = document.getElementById('recipientName').value.trim();
+  document.getElementById('summaryRecipient').textContent = name || '—';
+}
+
+document.getElementById('recipientName').addEventListener('input', updateSummary);
+document.getElementById('message').addEventListener('input', function() {
+  document.getElementById('charCount').textContent = this.value.length + ' / 300';
+});
+
+function submitForm() {
+  const required = ['giverName','giverEmail','recipientName','recipientEmail','address1','city','country'];
+  for (const id of required) {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      el.style.borderColor = '#c0392b';
+      el.focus();
+      setTimeout(() => el.style.borderColor = '', 2000);
+      return;
+    }
+  }
+
+  const type = isFamily ? 'fam' : 'ind';
+  const data = {
+    tier: TIER_NAMES[currentTier],
+    price: PRICES[currentTier][type],
+    family: isFamily,
+    giverName: document.getElementById('giverName').value.trim(),
+    giverEmail: document.getElementById('giverEmail').value.trim(),
+    recipientName: document.getElementById('recipientName').value.trim(),
+    recipientName2: document.getElementById('recipientName2').value.trim(),
+    recipientEmail: document.getElementById('recipientEmail').value.trim(),
+    address: [
+      document.getElementById('address1').value.trim(),
+      document.getElementById('address2').value.trim(),
+      document.getElementById('city').value.trim(),
+      document.getElementById('postcode').value.trim(),
+      document.getElementById('country').value
+    ].filter(Boolean).join(', '),
+    message: document.getElementById('message').value.trim(),
+    connection: document.getElementById('connection').value.trim()
+  };
+
+  // Send to clan email via mailto
+  const body = `CLAN Ó COMÁIN — GIFT MEMBERSHIP APPLICATION\n\n` +
+    `TIER: ${data.tier} (${data.price}) — ${data.family ? 'Family' : 'Individual'}\n\n` +
+    `GIVER\nName: ${data.giverName}\nEmail: ${data.giverEmail}\n\n` +
+    `RECIPIENT\nName: ${data.recipientName}${data.recipientName2 ? '\nSecond adult: ' + data.recipientName2 : ''}\n` +
+    `Email: ${data.recipientEmail}\nAddress: ${data.address}\n\n` +
+    (data.connection ? `CONNECTION: ${data.connection}\n\n` : '') +
+    (data.message ? `PERSONAL MESSAGE:\n"${data.message}"\n\n` : '') +
+    `---\nPayment to follow via Stripe.`;
+
+  const mailtoLink = `mailto:clan@ocomain.org?subject=${encodeURIComponent('Gift Membership — ' + data.recipientName + ' (' + data.tier + ')')}&body=${encodeURIComponent(body)}`;
+  window.open(mailtoLink);
+
+  // Show payment step
+  document.getElementById('formStep').style.display = 'none';
+  const ps = document.getElementById('paymentStep');
+  ps.classList.add('show');
+
+  // Populate details
+  document.getElementById('paymentDetails').innerHTML =
+    `<div class="payment-detail-row"><span class="payment-detail-label">Gift tier</span><span>${data.tier} — ${data.price}</span></div>` +
+    `<div class="payment-detail-row"><span class="payment-detail-label">Recipient</span><span>${data.recipientName}</span></div>` +
+    `<div class="payment-detail-row"><span class="payment-detail-label">Delivering to</span><span>${data.address}</span></div>`;
+
+  document.getElementById('stripeBtn').href = STRIPE[currentTier][type];
+}
+</script>
+
+</body>
+</html>
