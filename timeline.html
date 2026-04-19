@@ -489,7 +489,7 @@ function toggleMenu(){
   </div>
 </div>
 
-<div class="footer">Clan Ó Comáin · Officially recognised by Clans of Ireland 2025 · clans of ireland</div>
+
 
 <script>
 const eras = [
@@ -736,47 +736,48 @@ function renderTimeline() {
 renderTimeline();
 </script>
 
-<footer class="footer" style="background:#080F08;padding:52px 0 36px;border-top:1px solid rgba(184,151,90,.1)">
-  <div style="max-width:1120px;margin:0 auto;padding:0 40px">
-    <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;margin-bottom:44px">
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
       <div>
-        <div style="font-family:'EB Garamond',serif;font-size:24px;color:#D4B483;margin-bottom:12px;font-style:italic">Clan Ó Comáin</div>
-        <p style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);line-height:1.75;max-width:260px">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
-        <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(120,160,120,.5);margin-top:14px">Caithfidh an stair a bheith i réim</p>
+        <div class="footer-brand">Clan Ó Comáin</div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
       </div>
       <div>
-        <div style="font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:16px">Pages</div>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
-          <li><a href="/" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Home</a></li>
-          <li><a href="surname-variants.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Variants</a></li>
-          <li><a href="pedigree.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Pedigree</a></li>
-          <li><a href="timeline.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Timeline</a></li>
-          <li><a href="heartlands.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Heartlands</a></li>
-          <li><a href="coat-of-arms.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Crest</a></li>
-          <li><a href="patrons.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Patrons</a></li>
-          <li><a href="privy-council.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Privy Council</a></li>
+        <div class="footer-heading">Pages</div>
+                        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="surname-variants.html">Variants</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="timeline.html">Timeline</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="relics.html">Relics</a></li>
+          <li><a href="coat-of-arms.html">Crest</a></li>
+          <li><a href="patrons.html">Patrons</a></li>
+          <li><a href="privy-council.html">Privy Council</a></li>
         </ul>
       </div>
       <div>
-        <div style="font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:16px">Clan</div>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
-          <li><a href="membership.html" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Clans of Ireland</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Newhall Estate</a></li>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="join.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
         </ul>
       </div>
       <div>
-        <div style="font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:16px">Contact</div>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:9px">
-          <li><a href="mailto:clan@ocomain.org" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">clan@ocomain.org</a></li>
-          <li><a href="#" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Newhall House, County Clare</a></li>
-          <li><a href="#" style="font-size:12.5px;font-weight:300;color:rgba(140,180,140,.75);text-decoration:none">Ireland</a></li>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="#">Newhall House, County Clare</a></li>
+          <li><a href="#">Ireland</a></li>
         </ul>
       </div>
     </div>
-    <div style="border-top:1px solid rgba(255,255,255,.04);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-      <div style="font-size:11px;color:rgba(100,140,100,.65);letter-spacing:.04em">© 2025–2026 Clan Ó Comáin · All rights reserved · www.ocomain.org</div>
-      <div style="font-size:11px;color:rgba(100,140,100,.5);letter-spacing:.04em">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · All rights reserved · www.ocomain.org</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
     </div>
   </div>
 </footer>
