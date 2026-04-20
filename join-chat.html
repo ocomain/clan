@@ -287,15 +287,16 @@ function sendMessage() {
   updateProgress(currentStep);
 
   if (currentStep >= STEPS.length) {
-    // All done — show closing message, then a "preparing" indicator, then transition
+    // All done — closing message, then a long "preparing" beat, then transition.
+    // Total time after CLOSING_MSG finishes typing ≈ 15s so older readers can
+    // comfortably take in the closing paragraph before the screen changes.
     setTimeout(() => {
       const msg = CLOSING_MSG(collected);
       typeHerald(msg, () => {
-        // Pause so the reader can take in the closing message
         setTimeout(() => {
           showPreparing('Sealing your scroll for the Office of the Private Secretary');
-          setTimeout(showCompletion, 6000);
-        }, 3500);
+          setTimeout(showCompletion, 10000);
+        }, 5000);
       });
     }, 500);
   } else {

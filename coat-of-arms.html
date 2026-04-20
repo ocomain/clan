@@ -227,8 +227,23 @@ function toggleMenu(){
     <div class="two-col" style="align-items:center;gap:80px">
       <div style="text-align:center">
         <img src="coat_of_arms.png" alt="Ó Comáin" style="max-width:320px;width:100%;display:inline-block">
-        <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-top:18px">Ó Comáin</div>
-        <div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:8px">The mermaid of Newhall Lake playing an Irish harp</div>
+        <div style="font-family:'EB Garamond',serif;font-size:clamp(32px,3.6vw,44px);font-weight:400;color:var(--gold);letter-spacing:.02em;margin-top:22px;line-height:1">Ó Comáin</div>
+        <!-- HERALDIC MOTTO BANNER -->
+        <svg viewBox="0 0 420 70" xmlns="http://www.w3.org/2000/svg" style="width:min(420px,94%);height:auto;display:block;margin:16px auto 0" aria-label="Caithfidh an stair a bheith i réim — History must prevail">
+          <defs>
+            <linearGradient id="bannerFillCrest" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#C9A668"/>
+              <stop offset="50%" stop-color="#B8975A"/>
+              <stop offset="100%" stop-color="#8F7340"/>
+            </linearGradient>
+          </defs>
+          <path d="M 18 44 Q 6 38 12 28 Q 18 22 30 24 L 30 48 Q 22 50 18 44 Z" fill="#8F7340" opacity=".55"/>
+          <path d="M 402 44 Q 414 38 408 28 Q 402 22 390 24 L 390 48 Q 398 50 402 44 Z" fill="#8F7340" opacity=".55"/>
+          <path d="M 30 24 Q 210 14 390 24 L 390 48 Q 210 60 30 48 Z" fill="url(#bannerFillCrest)" stroke="#6B5530" stroke-width="0.6"/>
+          <path d="M 40 29 Q 210 20 380 29 M 40 43 Q 210 54 380 43" fill="none" stroke="#6B5530" stroke-width="0.4" opacity=".35"/>
+          <text x="210" y="41" font-family="EB Garamond, serif" font-size="13.5" font-style="italic" fill="#2C1A0C" text-anchor="middle" letter-spacing="0.5">Caithfidh an stair a bheith i réim</text>
+        </svg>
+        <div style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:8px;letter-spacing:.04em">History must prevail</div>
       </div>
       <div>
         <div class="eyebrow">The arms of Clan Ó Comáin</div>
