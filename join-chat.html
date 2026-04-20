@@ -88,14 +88,14 @@
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     .completion.show{display:flex}
     .completion-inner{max-width:580px;width:100%;text-align:center;padding-bottom:40px}
-    .completion-crest{width:90px;height:90px;margin:0 auto 24px;border-radius:50%;border:2px solid var(--gold);padding:10px;display:flex;align-items:center;justify-content:center;background:var(--green-dark)}
-    .completion-crest img{width:64px;height:64px;object-fit:contain}
+    .completion-crest{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;border:2px solid var(--gold);padding:8px;display:flex;align-items:center;justify-content:center;background:var(--green-dark)}
+    .completion-crest img{width:44px;height:44px;object-fit:contain}
     .completion-eyebrow{font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
-    .completion-title{font-family:var(--font-serif);font-size:clamp(28px,5vw,42px);color:var(--gold-pale);line-height:1.1;margin-bottom:16px}
+    .completion-title{font-family:var(--font-serif);font-size:clamp(24px,4vw,34px);color:var(--gold-pale);line-height:1.1;margin-bottom:10px}
     .completion-sub{font-family:var(--font-serif);font-size:17px;font-style:italic;color:rgba(215,235,215,.7);line-height:1.7;margin-bottom:32px}
-    .completion-card{background:rgba(184,151,90,.07);border:1px solid var(--border);border-top:2px solid var(--gold);padding:24px;text-align:left;margin-bottom:28px;border-radius:2px}
+    .completion-card{background:rgba(184,151,90,.07);border:1px solid var(--border);border-top:2px solid var(--gold);padding:14px 20px;text-align:left;margin-bottom:16px;border-radius:2px}
     .completion-card-title{font-family:var(--font-sans);font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(184,151,90,.6);margin-bottom:12px}
-    .completion-row{display:flex;gap:8px;margin-bottom:8px;font-family:var(--font-serif);font-size:15px;color:rgba(215,235,215,.8)}
+    .completion-row{display:flex;gap:8px;margin-bottom:5px;font-family:var(--font-serif);font-size:14px;color:rgba(215,235,215,.8)}
     .completion-row:last-child{margin-bottom:0}
     .completion-label{color:rgba(184,151,90,.7);width:90px;flex-shrink:0}
     .completion-value{color:rgba(215,235,215,.9)}
@@ -168,11 +168,11 @@
     <div class="completion-eyebrow">Clan Ó Comáin · County Clare, Ireland</div>
     <h1 class="completion-title">Céad míle fáilte</h1>
     <div class="gold-rule"></div>
-    <p class="completion-sub">A hundred thousand welcomes. Your application has been received. Please complete your payment below to confirm your membership — the Chief of Ó Comáin will be in touch once payment is confirmed.</p>
-    <div class="completion-card" id="completionCard"></div>
+    <p class="completion-sub" style="font-size:15px;margin-bottom:16px">Your application has been received. Complete payment below to confirm your membership.</p>
     <div class="completion-btns" id="completionBtns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
     </div>
+    <div class="completion-card" id="completionCard" style="margin-top:16px"></div>
 
     <!-- Inline tier picker when no tier pre-selected -->
     <div id="tierPicker" style="display:none;margin-top:24px;text-align:left">
