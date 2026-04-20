@@ -109,7 +109,7 @@
 <style>
 #giftStrip{position:fixed;top:58px;left:0;right:0;z-index:97;background:#F8F4EC;border-bottom:2px solid #B8975A;padding:11px 0;box-shadow:0 3px 16px rgba(0,0,0,.15);transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #giftStrip.visible{transform:translateY(0);pointer-events:all}
-#giftStrip a,#mobileActions a{text-decoration:none!important;-webkit-text-decoration:none!important}
+#giftStrip a,#mobileActions a{text-decoration:none!important;color:inherit!important}
 #mobileActions{display:none;position:fixed;top:58px;left:0;right:0;z-index:97;transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #mobileActions.visible{transform:translateY(0);pointer-events:all}
 @media(max-width:768px){
@@ -122,7 +122,7 @@
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
     <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;text-decoration:none;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0">Gift a membership &#8594;</a>
+    <a href="gift.html" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C!important;text-decoration:none!important;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;display:inline-block">Gift a membership &#8594;</a>
   </div>
 </div>
 
