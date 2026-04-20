@@ -83,6 +83,32 @@ exports.handler = async (event) => {
     await notifyClan(customerEmail, customerName, productName, amount, currency, isGift, session);
   }
 
+  // ── ABANDONED CHECKOUT ──
+  // Stripe fires this event when a Checkout Session expires without being paid
+  // (default expiry: 24 hours). This is how we catch visitors who reached the
+  // payment page but abandoned before completing.
+  if (stripeEvent.type === 'checkout.session.expired') {
+    const session = stripeEvent.data.object;
+    const customerEmail = session.customer_details?.email || session.customer_email;
+
+    // Only send if we got an email. If the visitor never reached the card-entry
+    // step, Stripe won't have their email, and we can't recover them via this channel.
+    if (customerEmail) {
+      const customerName = session.customer_details?.name;
+      let productName = session.metadata?.product_name;
+      if (!productName) {
+        try {
+          const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1, expand: ['data.price.product'] });
+          productName = items.data?.[0]?.description
+                     || items.data?.[0]?.price?.product?.name
+                     || 'Clan Membership';
+        } catch (e) { productName = 'Clan Membership'; }
+      }
+      const tier = matchTier(productName);
+      await sendAbandonedReminder(customerEmail, customerName, tier.name);
+    }
+  }
+
   return { statusCode: 200, body: JSON.stringify({ received: true }) };
 };
 
@@ -185,6 +211,32 @@ async function sendGiftConfirmations(session, buyerEmail, buyerName, productName
   await sendEmail({ to: buyerEmail, subject: 'Your gift membership of Clan Ó Comáin — confirmed', html });
 }
 
+async function sendAbandonedReminder(email, name, tierName) {
+  const firstName = name ? name.split(' ')[0] : 'friend';
+  const html = `<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
+<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
+  <div style="background:#0C1A0C;padding:36px 40px;text-align:center;border-bottom:2px solid #B8975A">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0">Ó Comáin</p>
+  </div>
+  <div style="padding:40px">
+    <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${firstName},</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your application to Clan Ó Comáin was received — but your membership was not completed.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">A place is still held for you in the Register of Clan Members${tierName ? ` as <strong>${tierName}</strong>` : ''}. When you are ready, the door remains open.</p>
+    <div style="text-align:center;margin-bottom:32px">
+      <a href="https://www.ocomain.org/membership.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px">Complete your membership</a>
+    </div>
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If something went wrong with your payment or you have questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — we will be happy to help.</p>
+  </div>
+  <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Caithfidh an stair a bheith i réim</p>
+  </div>
+</div>
+</body></html>`;
+  await sendEmail({ to: email, subject: 'Your place in Clan Ó Comáin is still open', html });
+}
+
 async function notifyClan(email, name, product, amount, currency, isGift, session) {
   const html = `<div style="font-family:sans-serif;max-width:480px">
     <h2 style="color:#0C1A0C">New ${isGift ? 'GIFT ' : ''}membership — Clan Ó Comáin</h2>
@@ -201,10 +253,15 @@ async function notifyClan(email, name, product, amount, currency, isGift, sessio
 }
 
 async function sendEmail({ to, subject, html }) {
+  // Sender convention: 'Clan Ó Comáin <clan@ocomain.org>' while the Private
+  // Secretary position is vacant. When Linda Cryan (or the appointed officer)
+  // takes up the role, change the display name to e.g.
+  // 'Linda Cryan, Private Secretary to The Commane <clan@ocomain.org>'
+  // — all member-facing email will then carry the officer's name.
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: 'Ó Comáin Private Secretary <clan@ocomain.org>', to, subject, html }),
+    body: JSON.stringify({ from: 'Clan Ó Comáin <clan@ocomain.org>', to, subject, html }),
   });
   if (!res.ok) {
     const err = await res.text();

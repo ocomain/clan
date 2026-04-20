@@ -69,7 +69,7 @@ exports.handler = async (event) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({
-        from: 'Ó Comáin Herald <herald@ocomain.org>',
+        from: 'Clan Ó Comáin <clan@ocomain.org>',
         to: CLAN_EMAIL,
         subject: `Gift membership: ${recipientName} from ${giverName} — ${tier}`,
         html,
