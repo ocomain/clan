@@ -17,8 +17,8 @@
     .wel-hero{position:relative;min-height:62vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);text-align:center}
     .wel-hero-bg{position:absolute;inset:0;background:url('killone_abbey_lake.png') center/cover no-repeat;opacity:.13;filter:saturate(.5)}
     .wel-hero-inner{position:relative;z-index:2;max-width:720px;margin:0 auto;padding:60px 24px}
-    .wel-crest{width:84px;height:84px;margin:0 auto 22px;border-radius:50%;border:2px solid var(--gold);padding:10px;background:var(--ink-mid);display:flex;align-items:center;justify-content:center}
-    .wel-crest img{width:60px;height:60px;object-fit:contain}
+    .wel-crest{width:96px;margin:0 auto 18px;display:block}
+    .wel-crest img{width:96px;height:auto;display:block}
     .wel-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
     .wel-title{font-family:'EB Garamond',serif;font-size:clamp(40px,6vw,70px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:14px}
     .wel-translate{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:24px}
@@ -106,8 +106,8 @@
 <section class="wel-hero">
   <div class="wel-hero-bg"></div>
   <div class="wel-hero-inner">
-    <div class="wel-crest"><img src="coat_of_arms.png" alt="Clan Ó Comáin"></div>
-    <div class="wel-eyebrow" id="welEyebrow">Clan Ó Comáin · County Clare</div>
+    <div class="wel-crest"><img src="coat_of_arms.png" alt="Ó Comáin"></div>
+    <div class="wel-eyebrow" id="welEyebrow">Ó Comáin</div>
     <h1 class="wel-title">Céad míle fáilte</h1>
     <p class="wel-translate">A hundred thousand welcomes</p>
     <p class="wel-sub" id="welSub">Your application has been received and your place in the clan is confirmed.</p>
@@ -271,7 +271,7 @@
 
   // ── Eyebrow text ──
   if (isGift) {
-    document.getElementById('welEyebrow').textContent = 'Gift confirmed · Clan Ó Comáin';
+    document.getElementById('welEyebrow').textContent = 'Gift confirmed · Ó Comáin';
   }
 })();
 </script>
