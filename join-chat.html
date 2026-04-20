@@ -167,7 +167,7 @@
     <div class="completion-crest"><img src="coat_of_arms.png" alt="Ó Comáin"></div>
     <div class="completion-eyebrow">Ó Comáin</div>
     <div class="gold-rule" style="margin:10px auto 14px"></div>
-    <p class="completion-sub" style="font-size:17px;margin-bottom:20px">Your application has been received. Complete payment below to confirm your membership.</p>
+    <p class="completion-sub" style="font-size:17px;margin-bottom:20px">Complete payment below to confirm your membership.</p>
 
     <!-- Payment CTAs: either a single pre-selected tier button, or the full tier picker -->
     <div class="completion-btns" id="completionBtns">
@@ -254,7 +254,7 @@ const STEPS = [
 ];
 
 const CLOSING_MSG = (data) =>
-  `${data.name} — your application is now complete. On behalf of Fergus Kinfauns, The Commane, Chief of Ó Comáin, and the assembled derbhfine of Clan Ó Comáin, it is my honour to welcome you.\n\nYour name will be entered into the Register of Clan Members at Newhall House. The Chief will be in touch at ${data.email} in due course.\n\nGo raibh míle maith agat — a thousand thanks. The clan is richer for your joining it.`;
+  `${data.name} — your details are now recorded with this office. There remains one final step: completion of your membership on the next screen. Once your contribution is received, your name will be entered into the Register of Clan Members at Newhall House, and the Chief will write to you personally at ${data.email} in due course.`;
 
 let currentStep = 0;
 const collected = {};

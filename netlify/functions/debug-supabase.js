@@ -74,6 +74,30 @@ exports.handler = async () => {
     return { statusCode: 500, body: JSON.stringify(result, null, 2) };
   }
 
+  // Check 5: list recent real applications so user can verify their herald submissions actually landed
+  try {
+    const { data: recent, error: listErr } = await supabase
+      .from('applications')
+      .select('email, name, tier, status, submitted_at')
+      .order('submitted_at', { ascending: false })
+      .limit(10);
+    if (listErr) throw listErr;
+    result.checks.push({
+      name: 'recent_applications',
+      ok: true,
+      count: recent.length,
+      rows: recent.map(r => ({
+        email: r.email,
+        name: r.name,
+        tier: r.tier || '(no tier)',
+        status: r.status,
+        submitted_at: r.submitted_at,
+      })),
+    });
+  } catch (e) {
+    result.checks.push({ name: 'recent_applications', ok: false, error: e.message });
+  }
+
   result.summary = 'All checks passed. Supabase pipeline is healthy.';
   return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(result, null, 2) };
 };
