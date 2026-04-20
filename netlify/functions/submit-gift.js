@@ -1,6 +1,9 @@
 // netlify/functions/submit-gift.js
-// Called when gift form is submitted
-// Emails clan@ocomain.org with all gift details before Stripe redirect
+// Called when gift form is submitted.
+// (1) Writes the gift to public.gifts (pre-payment — marked 'pending_payment').
+// (2) Emails clan@ocomain.org with all gift details (existing behaviour).
+
+const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const CLAN_EMAIL = 'clan@ocomain.org';
@@ -30,6 +33,39 @@ exports.handler = async (event) => {
   const modeLabel = giftModeLabel || (giftMode === 'recurring' ? 'Renewing annually' : 'One-year gift');
   const modeColor = giftMode === 'recurring' ? '#A47A2C' : '#0C1A0C';
 
+  // ── 1. Persist the gift to Supabase ──────────────────────────────────────
+  try {
+    const clan_id = await clanId();
+    const tierInfo = normaliseTier(tier + (family ? ' family' : ''));
+    const { data: inserted, error } = await supa()
+      .from('gifts')
+      .insert({
+        clan_id,
+        buyer_email:       (giverEmail || '').toLowerCase().trim(),
+        buyer_name:        giverName,
+        recipient_email:   (recipientEmail || '').toLowerCase().trim(),
+        recipient_name:    [recipientName, recipientName2].filter(Boolean).join(' & '),
+        recipient_address: address,
+        tier:              tierInfo.tier,
+        tier_label:        tierInfo.label,
+        tier_family:       !!family,
+        gift_mode:         giftMode === 'recurring' ? 'recurring' : 'onetime',
+        personal_message:  message,
+        status:            'pending_payment',
+      })
+      .select('id')
+      .single();
+    if (error) {
+      console.error('gifts insert failed:', error.message);
+    } else {
+      await logEvent({ clan_id, event_type: 'gift_submitted', payload: { gift_id: inserted.id, tier: tierInfo.tier, buyer_email: giverEmail } });
+    }
+  } catch (e) {
+    console.error('submit-gift Supabase write failed:', e.message);
+    // Non-fatal — continue with email flow so buyer experience isn't blocked.
+  }
+
+  // ── 2. Notify clan inbox (existing behaviour) ────────────────────────────
   const html = `<div style="font-family:sans-serif;max-width:580px">
     <h2 style="color:#0C1A0C;border-bottom:2px solid #B8975A;padding-bottom:10px">
       🎁 Gift membership — Clan Ó Comáin

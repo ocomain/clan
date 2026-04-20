@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Clan Ó Comáin website and membership functions",
   "dependencies": {
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
+    "@supabase/supabase-js": "^2.45.0"
   }
 }

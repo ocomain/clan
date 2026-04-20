@@ -1,6 +1,10 @@
 // netlify/functions/submit-application.js
-// Called when herald conversation completes
-// Stores applicant data, sends notification to clan
+// Called when herald conversation completes.
+// (1) Writes a row to public.applications (status='pending') so the nightly
+//     sweep can email people who never reach Stripe.
+// (2) Emails the clan inbox with full applicant details (existing behaviour).
+
+const { supa, clanId, logEvent } = require('./lib/supabase');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const CLAN_EMAIL = 'clan@ocomain.org';
@@ -26,7 +30,38 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Name and email required' }) };
   }
 
-  // Notify clan with full details
+  // ── 1. Persist the application (pre-payment) ─────────────────────────────
+  // This is what makes abandoned-email recovery actually work: the email is
+  // captured here, *before* Stripe. Herald submitted → paid → application
+  // status flips to 'paid'. Herald submitted → never paid → nightly sweep
+  // catches it after 24h and emails the reminder.
+  try {
+    const clan_id = await clanId();
+    const { data: inserted, error } = await supa()
+      .from('applications')
+      .insert({
+        clan_id,
+        email: email.toLowerCase().trim(),
+        name,
+        tier,
+        country,
+        connection,
+        source,
+        status: 'pending',
+      })
+      .select('id')
+      .single();
+    if (error) {
+      console.error('applications insert failed:', error.message);
+    } else {
+      await logEvent({ clan_id, event_type: 'application_submitted', payload: { application_id: inserted.id, email, tier } });
+    }
+  } catch (e) {
+    console.error('submit-application Supabase write failed:', e.message);
+    // Don't block the user flow on DB failure — they've done their part.
+  }
+
+  // ── 2. Notify clan inbox (existing behaviour) ────────────────────────────
   const html = `<div style="font-family:sans-serif;max-width:500px">
     <h2 style="color:#0C1A0C;border-bottom:2px solid #B8975A;padding-bottom:10px">New membership application — Clan Ó Comáin</h2>
     <table style="border-collapse:collapse;width:100%;margin-bottom:20px">

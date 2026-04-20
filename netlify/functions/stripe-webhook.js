@@ -1,6 +1,8 @@
 // netlify/functions/stripe-webhook.js
 // Triggered by Stripe when a payment completes
-// Sends welcome email via Resend
+// Sends welcome email via Resend, records member in Supabase.
+
+const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -72,6 +74,83 @@ exports.handler = async (event) => {
     const amount = (session.amount_total / 100).toFixed(2);
     const currency = session.currency.toUpperCase();
     const isGift = session.metadata?.is_gift === 'true' || /gift/i.test(productName);
+
+    // ── Record in Supabase ──────────────────────────────────────────────────
+    // Upsert a member row (or a gift row), close the matching application,
+    // log the event. Failures here are logged but don't prevent the welcome
+    // email being sent — the DB is a parallel source of truth, not a gate.
+    try {
+      const clan_id = await clanId();
+      const tierInfo = normaliseTier(productName);
+      const isLife = tierInfo.tier.startsWith('life');
+
+      if (isGift) {
+        // Flip the matching gift record (if we have one) to paid.
+        const { data: existingGift } = await supa()
+          .from('gifts')
+          .select('id')
+          .eq('clan_id', clan_id)
+          .eq('buyer_email', (customerEmail || '').toLowerCase().trim())
+          .in('status', ['pending_payment'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (existingGift) {
+          await supa().from('gifts').update({ status: 'paid', stripe_session_id: session.id }).eq('id', existingGift.id);
+        } else {
+          // Gift came through without a pre-form submission — record it anyway.
+          await supa().from('gifts').insert({
+            clan_id,
+            buyer_email: (customerEmail || '').toLowerCase().trim(),
+            buyer_name: customerName,
+            tier: tierInfo.tier,
+            tier_label: tierInfo.label,
+            tier_family: tierInfo.tier_family,
+            gift_mode: 'onetime',
+            stripe_session_id: session.id,
+            status: 'paid',
+          });
+        }
+        await logEvent({ clan_id, event_type: 'gift_paid', payload: { email: customerEmail, tier: tierInfo.tier, amount } });
+      } else {
+        // Regular self-purchase: upsert member (unique on clan_id + lower(email)).
+        const now = new Date();
+        const expiresAt = isLife ? null : new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+        const { data: member, error: upsertErr } = await supa()
+          .from('members')
+          .upsert({
+            clan_id,
+            email:                  (customerEmail || '').toLowerCase().trim(),
+            name:                   customerName,
+            tier:                   tierInfo.tier,
+            tier_label:             tierInfo.label,
+            tier_family:            tierInfo.tier_family,
+            stripe_customer_id:     session.customer,
+            stripe_subscription_id: session.subscription || null,
+            status:                 'active',
+            joined_at:              now.toISOString(),
+            renewed_at:             now.toISOString(),
+            expires_at:             expiresAt ? expiresAt.toISOString() : null,
+          }, { onConflict: 'clan_id,email' })
+          .select('id')
+          .single();
+        if (upsertErr) {
+          console.error('member upsert failed:', upsertErr.message);
+        } else {
+          await logEvent({ clan_id, member_id: member.id, event_type: 'member_paid', payload: { tier: tierInfo.tier, amount, session_id: session.id } });
+
+          // Close any matching pending application for this email.
+          await supa()
+            .from('applications')
+            .update({ status: 'paid', member_id: member.id, stripe_session_id: session.id })
+            .eq('clan_id', clan_id)
+            .eq('email', (customerEmail || '').toLowerCase().trim())
+            .eq('status', 'pending');
+        }
+      }
+    } catch (e) {
+      console.error('Supabase write in stripe-webhook (non-fatal):', e.message);
+    }
 
     if (isGift) {
       await sendGiftConfirmations(session, customerEmail, customerName, productName, amount, currency);

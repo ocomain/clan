@@ -2,6 +2,12 @@
   publish = "."
   functions = "netlify/functions"
 
+# Scheduled functions — run daily to recover abandoned applications.
+# Cron is UTC. 14:00 UTC = 14:00 GMT / 15:00 BST / 15:00 IST (Ireland Standard).
+# Mid-afternoon lands in a reasonable inbox window across IE/UK/EU/US-East.
+[functions."daily-abandoned-sweep"]
+  schedule = "0 14 * * *"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
