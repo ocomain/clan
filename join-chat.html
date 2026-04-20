@@ -166,21 +166,16 @@
   <div class="completion-inner">
     <div class="completion-crest"><img src="coat_of_arms.png" alt="Ó Comáin"></div>
     <div class="completion-eyebrow">Ó Comáin</div>
-    <h1 class="completion-title">Céad míle fáilte</h1>
-    <div class="gold-rule" style="margin:10px auto 12px"></div>
-    <p class="completion-sub" style="font-size:17px;margin-bottom:14px">Your application has been received. Complete payment below to confirm your membership.</p>
+    <div class="gold-rule" style="margin:10px auto 14px"></div>
+    <p class="completion-sub" style="font-size:17px;margin-bottom:20px">Your application has been received. Complete payment below to confirm your membership.</p>
+
+    <!-- Payment CTAs: either a single pre-selected tier button, or the full tier picker -->
     <div class="completion-btns" id="completionBtns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
     </div>
-    <div class="completion-card" id="completionCard" style="margin-top:16px"></div>
-    <!-- TRUST BLOCK -->
-    <div class="trust-block on-dark" style="margin-top:14px">
-      <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" aria-hidden="true" style="flex-shrink:0;margin-top:3px;color:var(--gold)"><path d="M8 1a3 3 0 0 0-3 3v3H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1V4a3 3 0 0 0-3-3zm2 6H6V4a2 2 0 0 1 4 0v3z"/></svg>
-      <div>Payment processed by <strong>Stripe Ireland Ltd</strong>, regulated by the Central Bank of Ireland. Your card details are never seen or stored by the clan. SCA / 3D Secure authenticated end-to-end.</div>
-    </div>
 
     <!-- Inline tier picker when no tier pre-selected -->
-    <div id="tierPicker" style="display:none;margin-top:24px;text-align:left">
+    <div id="tierPicker" style="display:none;text-align:left">
       <p style="font-family:var(--font-serif);font-size:15px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:16px;text-align:center">Select your membership tier to complete payment:</p>
       <div style="display:flex;flex-direction:column;gap:4px">
         <a href="https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Clan Member — Individual</span><span>€49/yr</span></a>
@@ -196,6 +191,15 @@
         <a href="https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.6)"><span>Life Member — Family</span><span>€1,100 once</span></a>
         <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">One-time payment · No renewal · For life</p>
       </div>
+    </div>
+
+    <!-- Application details card — now BELOW the payment options -->
+    <div class="completion-card" id="completionCard" style="margin-top:28px"></div>
+
+    <!-- TRUST BLOCK -->
+    <div class="trust-block on-dark" style="margin-top:14px">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" aria-hidden="true" style="flex-shrink:0;margin-top:3px;color:var(--gold)"><path d="M8 1a3 3 0 0 0-3 3v3H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1V4a3 3 0 0 0-3-3zm2 6H6V4a2 2 0 0 1 4 0v3z"/></svg>
+      <div>Payment processed by <strong>Stripe Ireland Ltd</strong>, regulated by the Central Bank of Ireland. Your card details are never seen or stored by the clan. SCA / 3D Secure authenticated end-to-end.</div>
     </div>
   </div>
 </div>
