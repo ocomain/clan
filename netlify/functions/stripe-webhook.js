@@ -17,6 +17,21 @@ const TIER_NAMES = {
   'Life Member Family':         { name: 'Life Member (Family)',  benefits: ['Guardian Family benefits for life', 'Family on Roll of Honour at Newhall', 'Family heirloom keepsake pack'] },
 };
 
+// Match the Stripe product name to a tier, with fuzzy matching that survives
+// any reasonable variation in Stripe product naming.
+function matchTier(productName) {
+  const p = (productName || '').toLowerCase();
+  const isFamily = p.includes('family');
+  const suffix = isFamily ? ' Family' : ' Individual';
+
+  if (p.includes('life'))                              return TIER_NAMES['Life Member' + suffix];
+  if (p.includes('steward') || p.includes('patron'))   return TIER_NAMES['Steward' + suffix];
+  if (p.includes('guardian'))                          return TIER_NAMES['Guardian' + suffix];
+  if (p.includes('clan member'))                       return TIER_NAMES['Clan Member' + suffix];
+  // Sensible fallback so we never send a blank benefits list.
+  return TIER_NAMES[isFamily ? 'Clan Member Family' : 'Clan Member Individual'];
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
 
@@ -38,10 +53,25 @@ exports.handler = async (event) => {
     const session = stripeEvent.data.object;
     const customerEmail = session.customer_details?.email;
     const customerName = session.customer_details?.name;
-    const productName = session.metadata?.product_name || 'Clan Membership';
+
+    // Get the product name. Prefer metadata (if ever set), then fall back to
+    // fetching the actual line item description from Stripe.
+    let productName = session.metadata?.product_name;
+    if (!productName) {
+      try {
+        const items = await stripe.checkout.sessions.listLineItems(session.id, { limit: 1, expand: ['data.price.product'] });
+        productName = items.data?.[0]?.description
+                   || items.data?.[0]?.price?.product?.name
+                   || 'Clan Membership';
+      } catch (e) {
+        console.error('listLineItems failed:', e.message);
+        productName = 'Clan Membership';
+      }
+    }
+
     const amount = (session.amount_total / 100).toFixed(2);
     const currency = session.currency.toUpperCase();
-    const isGift = session.metadata?.is_gift === 'true';
+    const isGift = session.metadata?.is_gift === 'true' || /gift/i.test(productName);
 
     if (isGift) {
       await sendGiftConfirmations(session, customerEmail, customerName, productName, amount, currency);
@@ -57,7 +87,7 @@ exports.handler = async (event) => {
 };
 
 async function sendMemberWelcome(email, name, productName, amount, currency) {
-  const tier = TIER_NAMES[productName] || { name: productName, benefits: [] };
+  const tier = matchTier(productName);
   const firstName = name ? name.split(' ')[0] : 'friend';
 
   const benefitsList = tier.benefits.map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
@@ -70,8 +100,8 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
 
   <!-- Header -->
   <div style="background:#0C1A0C;padding:40px 40px 32px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="72" height="72" alt="Clan Ó Comáin" style="border-radius:50%;border:2px solid #B8975A;margin-bottom:16px">
-    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Clan Ó Comáin · County Clare, Ireland</p>
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 14px;height:auto">
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">Ó Comáin</p>
     <h1 style="font-family:'Georgia',serif;font-size:36px;font-weight:400;color:#D4B87A;margin:0;line-height:1.1">Céad míle fáilte</h1>
     <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.7);margin:8px 0 0">A hundred thousand welcomes</p>
   </div>
@@ -93,7 +123,14 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
-    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Go raibh míle maith agat — a thousand thanks for joining the revival of Clan Ó Comáin.</p>
+
+    <!-- Members area note -->
+    <div style="background:rgba(184,151,90,.08);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
+      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#B8975A;margin:0 0 8px">Coming soon — the Members' Area</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">The clan's private members' area is presently being constructed — your downloadable certificate, the Register of Members, and members-only resources will live there. You will be notified the moment it is ready.</p>
+    </div>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
 
     <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6;margin:0 0 4px">— <strong>The Office of the Private Secretary to The Commane</strong></p>
     <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 32px">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
@@ -127,7 +164,8 @@ async function sendGiftConfirmations(session, buyerEmail, buyerName, productName
 <html><body style="margin:0;padding:0;background:#F8F4EC">
 <div style="max-width:580px;margin:0 auto">
   <div style="background:#0C1A0C;padding:40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="64" alt="Clan Ó Comáin" style="border-radius:50%;border:2px solid #B8975A;margin-bottom:14px">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Ó Comáin</p>
     <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0">Gift confirmed</h1>
   </div>
   <div style="padding:40px">
@@ -166,7 +204,7 @@ async function sendEmail({ to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: 'Office of the Private Secretary, Clan Ó Comáin <herald@ocomain.org>', to, subject, html }),
+    body: JSON.stringify({ from: 'Ó Comáin Private Secretary <clan@ocomain.org>', to, subject, html }),
   });
   if (!res.ok) {
     const err = await res.text();

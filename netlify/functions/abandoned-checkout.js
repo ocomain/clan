@@ -26,7 +26,7 @@ exports.handler = async (event) => {
 <div style="max-width:580px;margin:0 auto">
 
   <div style="background:#0C1A0C;padding:36px 40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="60" alt="Clan Ó Comáin" style="border-radius:50%;border:2px solid #B8975A;margin-bottom:12px">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
     <p style="font-family:sans-serif;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#B8975A;margin:0">Clan Ó Comáin · County Clare, Ireland</p>
   </div>
 
@@ -56,7 +56,7 @@ exports.handler = async (event) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({
-        from: 'Clan Ó Comáin <herald@ocomain.org>',
+        from: 'Ó Comáin Private Secretary <clan@ocomain.org>',
         to: email,
         subject: 'Your place in Clan Ó Comáin is still open',
         html,
