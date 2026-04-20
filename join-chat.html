@@ -176,7 +176,6 @@
 
     <!-- Inline tier picker when no tier pre-selected -->
     <div id="tierPicker" style="display:none;text-align:left">
-      <p style="font-family:var(--font-serif);font-size:15px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:16px;text-align:center">Select your membership tier to complete payment:</p>
       <div style="display:flex;flex-direction:column;gap:4px">
         <a href="https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Clan Member — Individual</span><span>€49/yr</span></a>
         <a href="https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Clan Member — Family</span><span>€79/yr</span></a>
@@ -254,7 +253,7 @@ const STEPS = [
 ];
 
 const CLOSING_MSG = (data) =>
-  `${data.name} — your details are now recorded with this office. There remains one final step: completion of your membership on the next screen. Once your contribution is received, your name will be entered into the Register of Clan Members at Newhall House, and the Chief will write to you personally at ${data.email} in due course.`;
+  `${data.name} — your details have been received with thanks, and shall be conveyed to the Office of the Private Secretary to The Commane.\n\nOne final formality remains: the completion of your membership contribution on the next screen. Upon its receipt, it shall be the honour of Fergus Kinfauns, The Commane, Chief of Ó Comáin, to enter your name into the Register of Clan Members at Newhall House. The Office shall write to you personally at ${data.email} in due course.`;
 
 let currentStep = 0;
 const collected = {};
