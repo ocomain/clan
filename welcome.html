@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Céad míle fáilte — Clan Ó Comáin</title>
+  <meta name="description" content="Welcome to Clan Ó Comáin. Your application has been received and your place in the clan is confirmed.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* ── HERO ── */
+    .wel-hero{position:relative;min-height:62vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);text-align:center}
+    .wel-hero-bg{position:absolute;inset:0;background:url('killone_abbey_lake.png') center/cover no-repeat;opacity:.13;filter:saturate(.5)}
+    .wel-hero-inner{position:relative;z-index:2;max-width:720px;margin:0 auto;padding:60px 24px}
+    .wel-crest{width:84px;height:84px;margin:0 auto 22px;border-radius:50%;border:2px solid var(--gold);padding:10px;background:var(--ink-mid);display:flex;align-items:center;justify-content:center}
+    .wel-crest img{width:60px;height:60px;object-fit:contain}
+    .wel-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .wel-title{font-family:'EB Garamond',serif;font-size:clamp(40px,6vw,70px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:14px}
+    .wel-translate{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:24px}
+    .wel-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,21px);color:rgba(215,235,215,.85);line-height:1.65;max-width:560px;margin:0 auto}
+
+    /* ── CONFIRMATION CARD ── */
+    .wel-confirm{background:var(--cream);padding:72px 0;border-bottom:1px solid var(--border)}
+    .wel-confirm-card{max-width:680px;margin:0 auto;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:44px 48px;border-radius:2px;box-shadow:0 6px 28px rgba(12,26,12,.08)}
+    .wel-confirm-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
+    .wel-confirm-tier{font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,36px);font-weight:400;color:var(--ink);text-align:center;line-height:1.15;margin-bottom:10px}
+    .wel-confirm-tier em{color:var(--gold)}
+    .wel-confirm-rule{width:48px;height:1px;background:var(--gold);margin:18px auto 22px;opacity:.5}
+    .wel-confirm-body{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.75;text-align:center;margin-bottom:0}
+
+    /* ── NEXT STEPS ── */
+    .wel-next{background:var(--ink);padding:80px 0;color:var(--gold-pale)}
+    .wel-next-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
+    .wel-next-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:50px;text-align:center}
+    .wel-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1040px;margin:0 auto}
+    .wel-step{text-align:center;padding:0 12px}
+    .wel-step-num{font-family:'EB Garamond',serif;font-size:42px;font-weight:400;color:var(--gold);line-height:1;margin-bottom:14px;font-style:italic}
+    .wel-step-title{font-family:'EB Garamond',serif;font-size:21px;font-weight:400;color:var(--gold-pale);line-height:1.25;margin-bottom:12px}
+    .wel-step-desc{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.72);line-height:1.7}
+
+    /* ── PRIVATE SECRETARY SIGN-OFF ── */
+    .wel-sig{background:var(--cream-mid);padding:56px 0;text-align:center;border-bottom:1px solid var(--border)}
+    .wel-sig-text{max-width:560px;margin:0 auto 24px;font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-soft);line-height:1.7}
+    .wel-sig-line{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.5;margin-bottom:4px}
+    .wel-sig-line strong{font-weight:500}
+    .wel-sig-irish{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(60,42,26,.65)}
+
+    /* ── UPSELL / FORWARD-LOOKING ── */
+    .wel-look{background:var(--cream);padding:80px 0;border-bottom:1px solid var(--border)}
+    .wel-look-inner{max-width:1040px;margin:0 auto;padding:0 24px}
+    .wel-look-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
+    .wel-look-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,38px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:14px;text-align:center}
+    .wel-look-sub{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-soft);text-align:center;max-width:520px;margin:0 auto 48px;line-height:1.6}
+    .wel-look-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .wel-look-card{background:var(--white);border:1px solid var(--gold-border);padding:28px 24px;border-radius:2px;text-align:center;transition:border-color .2s,transform .15s}
+    .wel-look-card.live{cursor:pointer}
+    .wel-look-card.live:hover{border-color:var(--gold);transform:translateY(-2px)}
+    .wel-look-card-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .wel-look-card.coming .wel-look-card-eyebrow{color:rgba(184,151,90,.55)}
+    .wel-look-card-title{font-family:'EB Garamond',serif;font-size:19px;font-weight:400;color:var(--ink);margin-bottom:8px;line-height:1.3}
+    .wel-look-card-desc{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-soft);line-height:1.6}
+
+    /* ── FINAL CTA ── */
+    .wel-final{background:var(--ink);padding:64px 24px;text-align:center;border-bottom:1px solid var(--gold-border)}
+    .wel-final-text{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.75);max-width:520px;margin:0 auto 28px;line-height:1.7}
+    .wel-final-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:16px 38px;border-radius:1px;text-decoration:none;transition:background .2s}
+    .wel-final-btn:hover{background:var(--gold-light)}
+
+    @media(max-width:780px){
+      .wel-confirm-card{padding:32px 26px;margin:0 20px}
+      .wel-steps{grid-template-columns:1fr;gap:38px}
+      .wel-step{padding:0 8px}
+      .wel-look-grid{grid-template-columns:1fr;gap:14px}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="privy-council.html" class="nav-link">Privy Council</a>
+    </div>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="/" class="nav-mobile-link">Home</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="privy-council.html" class="nav-mobile-link">Privy Council</a>
+</div>
+<script>function toggleMenu(){document.getElementById('mobile-menu').classList.toggle('open')}</script>
+
+<!-- HERO -->
+<section class="wel-hero">
+  <div class="wel-hero-bg"></div>
+  <div class="wel-hero-inner">
+    <div class="wel-crest"><img src="coat_of_arms.png" alt="Clan Ó Comáin"></div>
+    <div class="wel-eyebrow" id="welEyebrow">Clan Ó Comáin · County Clare</div>
+    <h1 class="wel-title">Céad míle fáilte</h1>
+    <p class="wel-translate">A hundred thousand welcomes</p>
+    <p class="wel-sub" id="welSub">Your application has been received and your place in the clan is confirmed.</p>
+  </div>
+</section>
+
+<!-- CONFIRMATION CARD -->
+<section class="wel-confirm">
+  <div class="wel-confirm-card">
+    <div class="wel-confirm-eyebrow">Confirmed</div>
+    <h2 class="wel-confirm-tier" id="welTierName">Welcome to <em>Clan Ó Comáin</em></h2>
+    <div class="wel-confirm-rule"></div>
+    <p class="wel-confirm-body" id="welConfirmBody">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare. The Office of the Private Secretary will be in touch shortly.</p>
+  </div>
+</section>
+
+<!-- WHAT HAPPENS NEXT -->
+<section class="wel-next">
+  <div class="si">
+    <div class="wel-next-eyebrow">What happens next</div>
+    <h2 class="wel-next-title">Three things you can expect from this office</h2>
+    <div class="wel-steps">
+      <div class="wel-step">
+        <div class="wel-step-num">i.</div>
+        <div class="wel-step-title">A welcome from this office</div>
+        <div class="wel-step-desc">Within the next few minutes, an email from the Office of the Private Secretary will arrive in your inbox — your formal welcome to the clan, with the details of your membership. (If it has not arrived in 15 minutes, please check your spam folder.)</div>
+      </div>
+      <div class="wel-step">
+        <div class="wel-step-num">ii.</div>
+        <div class="wel-step-title" id="step2Title">A letter from the Chief</div>
+        <div class="wel-step-desc" id="step2Desc">In the weeks ahead, Fergus Kinfauns, The Commane, will write to you personally. The Chief writes to every new member of the clan — there is no template, and there is no haste.</div>
+      </div>
+      <div class="wel-step">
+        <div class="wel-step-num">iii.</div>
+        <div class="wel-step-title">Your place in the Register</div>
+        <div class="wel-step-desc">Your name has been entered in the Register of Clan Ó Comáin Members at Newhall House. You may now correspond with the clan at any time through this office, at <a href="mailto:clan@ocomain.org" style="color:var(--gold-light)">clan@ocomain.org</a>.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVATE SECRETARY SIGN-OFF -->
+<section class="wel-sig">
+  <div class="si">
+    <p class="wel-sig-text">As is the custom in the household of the Chief, all correspondence with the clan passes through this office. Direct access to the Chief is reserved — but you have been welcomed in his name, and your name now stands among those of the clan he leads.</p>
+    <p class="wel-sig-line">— <strong>The Office of the Private Secretary to The Commane</strong></p>
+    <p class="wel-sig-irish">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
+  </div>
+</section>
+
+<!-- WHILE YOU'RE HERE / UPSELL-READY -->
+<section class="wel-look">
+  <div class="wel-look-inner">
+    <div class="wel-look-eyebrow">While you're here</div>
+    <h2 class="wel-look-title">Continue exploring the clan</h2>
+    <p class="wel-look-sub">Your membership opens the doors. Here is some of what lies behind them.</p>
+    <div class="wel-look-grid">
+
+      <a href="pedigree.html" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block">
+        <div class="wel-look-card-eyebrow">Live · open now</div>
+        <div class="wel-look-card-title">The full clan pedigree</div>
+        <div class="wel-look-card-desc">Eight chapters tracing the Ó Comáin line back to the 7th century — with 45 footnotes from the primary sources.</div>
+      </a>
+
+      <a href="heartlands.html" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block">
+        <div class="wel-look-card-eyebrow">Live · open now</div>
+        <div class="wel-look-card-title">The clan's heartlands</div>
+        <div class="wel-look-card-desc">Cahercommane, Newhall House, Killone Abbey — the ancestral holdings and sacred sites of the chiefdom.</div>
+      </a>
+
+      <div class="wel-look-card coming">
+        <div class="wel-look-card-eyebrow">Coming soon · members</div>
+        <div class="wel-look-card-title">The clan tartan and crest</div>
+        <div class="wel-look-card-desc">Signet rings, ceremonial dress, official tartan — produced under the Chief's authority. Available to members first.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="wel-final">
+  <p class="wel-final-text"><em>Caithfidh an stair a bheith i réim</em> — History must prevail.</p>
+  <a href="/" class="wel-final-btn">Visit the clan website →</a>
+</section>
+
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="timeline.html">Timeline</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="coat-of-arms.html">Crest</a></li>
+          <li><a href="patrons.html">Patrons</a></li>
+          <li><a href="privy-council.html">Privy Council</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Clan Ó Comáin · Newhall House · County Clare · Ireland · clan@ocomain.org</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Personalise the page based on ?tier= and ?type= URL params from Stripe redirect.
+// Tier values mirror the join-chat URL convention:
+//   clan-ind, clan-fam, guardian-ind, guardian-fam, steward-ind, steward-fam, life-ind, life-fam
+// Optional &type=gift switches the messaging from self-purchase → gifter-perspective.
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const tier = (params.get('tier') || '').toLowerCase();
+  const isGift = params.get('type') === 'gift';
+
+  const TIER_NAMES = {
+    'clan-ind':     'Clan Member',
+    'clan-fam':     'Clan Member (Family)',
+    'guardian-ind': 'Guardian of the Clan',
+    'guardian-fam': 'Guardian of the Clan (Family)',
+    'steward-ind':  'Steward of the Clan',
+    'steward-fam':  'Steward of the Clan (Family)',
+    'life-ind':     'Life Member of the Clan',
+    'life-fam':     'Life Member of the Clan (Family)'
+  };
+
+  const tierDisplay = TIER_NAMES[tier] || null;
+
+  // ── Hero subtitle ──
+  const sub = document.getElementById('welSub');
+  if (isGift) {
+    sub.textContent = 'Your gift has been received. Your recipient will be welcomed to the clan in your name.';
+  } else if (tierDisplay) {
+    sub.textContent = 'Your application has been received and your place in the clan is confirmed.';
+  }
+
+  // ── Confirmation card heading ──
+  const tierName = document.getElementById('welTierName');
+  const confirmBody = document.getElementById('welConfirmBody');
+  if (isGift && tierDisplay) {
+    tierName.innerHTML = 'Your gift of <em>' + tierDisplay + '</em> is confirmed';
+    confirmBody.innerHTML = 'Your gift to the clan has been received and processed. The Office of the Private Secretary will write to your recipient shortly to welcome them in your name. They will receive their own welcome from this office, and the Chief will write to them personally in the weeks that follow.';
+  } else if (tierDisplay) {
+    tierName.innerHTML = 'Welcome, <em>' + tierDisplay + '</em>';
+    confirmBody.textContent = 'Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare. The Office of the Private Secretary will be in touch shortly with your formal welcome.';
+  }
+
+  // ── Step 2 (the Chief's letter) — different framing for gifts ──
+  if (isGift) {
+    document.getElementById('step2Title').textContent = 'A letter to your recipient';
+    document.getElementById('step2Desc').textContent = 'In the weeks ahead, Fergus Kinfauns, The Commane, will write personally to the recipient of your gift — welcoming them into the clan in your name. The Chief writes to every new member, and to every recipient of a gift membership.';
+  }
+
+  // ── Eyebrow text ──
+  if (isGift) {
+    document.getElementById('welEyebrow').textContent = 'Gift confirmed · Clan Ó Comáin';
+  }
+})();
+</script>
+
+</body>
+</html>
