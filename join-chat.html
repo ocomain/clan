@@ -87,10 +87,10 @@
     .completion{position:fixed;inset:0;background:var(--ink);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:40px 24px;animation:fadeIn .6s ease;overflow-y:auto}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     .completion.show{display:flex}
-    .completion-inner{max-width:580px;width:100%;text-align:center;padding-bottom:40px}
+    .completion-inner{max-width:580px;width:100%;text-align:center;padding:20px 0 40px}
     .completion-crest{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;border:2px solid var(--gold);padding:8px;display:flex;align-items:center;justify-content:center;background:var(--green-dark)}
     .completion-crest img{width:44px;height:44px;object-fit:contain}
-    .completion-eyebrow{font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .completion-eyebrow{font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
     .completion-title{font-family:var(--font-serif);font-size:clamp(24px,4vw,34px);color:var(--gold-pale);line-height:1.1;margin-bottom:10px}
     .completion-sub{font-family:var(--font-serif);font-size:17px;font-style:italic;color:rgba(215,235,215,.7);line-height:1.7;margin-bottom:32px}
     .completion-card{background:rgba(184,151,90,.07);border:1px solid var(--border);border-top:2px solid var(--gold);padding:14px 20px;text-align:left;margin-bottom:16px;border-radius:2px}
@@ -167,8 +167,8 @@
     <div class="completion-crest"><img src="coat_of_arms.png" alt="Clan Ó Comáin"></div>
     <div class="completion-eyebrow">Clan Ó Comáin · County Clare, Ireland</div>
     <h1 class="completion-title">Céad míle fáilte</h1>
-    <div class="gold-rule"></div>
-    <p class="completion-sub" style="font-size:15px;margin-bottom:16px">Your application has been received. Complete payment below to confirm your membership.</p>
+    <div class="gold-rule" style="margin:10px auto 12px"></div>
+    <p class="completion-sub" style="font-size:14px;margin-bottom:14px">Your application has been received. Complete payment below to confirm your membership.</p>
     <div class="completion-btns" id="completionBtns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
     </div>
