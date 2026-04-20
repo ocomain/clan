@@ -94,10 +94,10 @@
     .completion-title{font-family:var(--font-serif);font-size:clamp(24px,4vw,34px);color:var(--gold-pale);line-height:1.1;margin-bottom:10px}
     .completion-sub{font-family:var(--font-serif);font-size:17px;font-style:italic;color:rgba(215,235,215,.7);line-height:1.7;margin-bottom:32px}
     .completion-card{background:rgba(184,151,90,.07);border:1px solid var(--border);border-top:2px solid var(--gold);padding:14px 20px;text-align:left;margin-bottom:16px;border-radius:2px}
-    .completion-card-title{font-family:var(--font-sans);font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(184,151,90,.6);margin-bottom:12px}
-    .completion-row{display:flex;gap:8px;margin-bottom:5px;font-family:var(--font-serif);font-size:14px;color:rgba(215,235,215,.8)}
+    .completion-card-title{font-family:var(--font-sans);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(184,151,90,.7);margin-bottom:14px}
+    .completion-row{display:flex;gap:8px;margin-bottom:7px;font-family:var(--font-serif);font-size:16px;color:rgba(215,235,215,.85)}
     .completion-row:last-child{margin-bottom:0}
-    .completion-label{color:rgba(184,151,90,.7);width:90px;flex-shrink:0}
+    .completion-label{color:rgba(184,151,90,.75);width:110px;flex-shrink:0}
     .completion-value{color:rgba(215,235,215,.9)}
     .completion-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     .btn-gold{background:var(--gold);color:var(--ink);border:none;padding:14px 32px;font-family:var(--font-sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;border-radius:1px;transition:background .2s}
@@ -168,7 +168,7 @@
     <div class="completion-eyebrow">Clan Ó Comáin</div>
     <h1 class="completion-title">Céad míle fáilte</h1>
     <div class="gold-rule" style="margin:10px auto 12px"></div>
-    <p class="completion-sub" style="font-size:14px;margin-bottom:14px">Your application has been received. Complete payment below to confirm your membership.</p>
+    <p class="completion-sub" style="font-size:17px;margin-bottom:14px">Your application has been received. Complete payment below to confirm your membership.</p>
     <div class="completion-btns" id="completionBtns">
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
     </div>
@@ -282,11 +282,15 @@ function sendMessage() {
   updateProgress(currentStep);
 
   if (currentStep >= STEPS.length) {
-    // All done — show closing message then completion screen
+    // All done — show closing message, then a "preparing" indicator, then transition
     setTimeout(() => {
       const msg = CLOSING_MSG(collected);
       typeHerald(msg, () => {
-        setTimeout(showCompletion, 6000);
+        // Pause so the reader can take in the closing message
+        setTimeout(() => {
+          showPreparing('Sealing your scroll for the Office of the Private Secretary');
+          setTimeout(showCompletion, 6000);
+        }, 3500);
       });
     }, 500);
   } else {
@@ -348,6 +352,20 @@ function showThinking() {
 }
 function hideThinking() { if (thinkingEl) { thinkingEl.remove(); thinkingEl = null; } }
 
+function showPreparing(text) {
+  hideThinking();
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'msg herald';
+  div.innerHTML = `<div class="msg-avatar"><img src="coat_of_arms.png" alt="Herald"></div>
+    <div class="msg-bubble" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <span style="font-style:italic;color:rgba(215,235,215,.8)">${text}</span>
+      <span class="thinking" style="padding:0;flex-shrink:0"><span></span><span></span><span></span></span>
+    </div>`;
+  msgs.appendChild(div);
+  scrollBottom();
+}
+
 function enableInput(ph) {
   const inp = document.getElementById('userInput');
   inp.disabled = false;
@@ -407,7 +425,8 @@ function showCompletion() {
   // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
   if (tierInfo && payBtn) {
-    payBtn.href = tierInfo.url;
+    const stripeUrl = tierInfo.url + (collected.email ? (tierInfo.url.includes('?') ? '&' : '?') + 'prefilled_email=' + encodeURIComponent(collected.email) : '');
+    payBtn.href = stripeUrl;
     payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
     // Show cancel note for annual tiers only
@@ -415,7 +434,7 @@ function showCompletion() {
     if (!isLifeTier) {
       const cancelNote = document.createElement('p');
       cancelNote.textContent = 'Annual subscription · cancel anytime';
-      cancelNote.style.cssText = 'font-family:var(--font-sans);font-size:11px;font-weight:300;color:rgba(184,151,90,.45);letter-spacing:.08em;text-align:center;margin-top:8px';
+      cancelNote.style.cssText = 'font-family:var(--font-sans);font-size:14px;font-weight:400;color:rgba(184,151,90,.7);letter-spacing:.06em;text-align:center;margin-top:12px';
       payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
     }
   } else {

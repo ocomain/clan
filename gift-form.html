@@ -445,7 +445,9 @@ async function submitForm() {
     connection: document.getElementById('connection').value.trim()
   };
 
-  const stripeUrl = STRIPE[currentTier][modeForLookup][type];
+  const stripeBaseUrl = STRIPE[currentTier][modeForLookup][type];
+  const giverEmail = data.giverEmail;
+  const stripeUrl = stripeBaseUrl + (giverEmail ? (stripeBaseUrl.includes('?') ? '&' : '?') + 'prefilled_email=' + encodeURIComponent(giverEmail) : '');
   try {
     await fetch('/api/submit-gift', {
       method: 'POST',
