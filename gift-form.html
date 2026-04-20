@@ -67,6 +67,18 @@
     .submit-btn:disabled{opacity:.5;cursor:not-allowed}
     .submit-note{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.5);text-align:center;line-height:1.6}
 
+    /* Gift mode chooser — one-time vs renewing */
+    .gift-mode-wrap{margin-bottom:36px}
+    .gift-mode-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .gift-mode-opt{display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(184,151,90,.25);padding:18px 18px;cursor:pointer;transition:all .2s;margin-bottom:10px;border-radius:1px}
+    .gift-mode-opt:hover{border-color:rgba(184,151,90,.5)}
+    .gift-mode-opt.selected{border-color:var(--gold);background:rgba(184,151,90,.08)}
+    .gift-mode-opt input[type="radio"]{margin-top:5px;flex-shrink:0;accent-color:var(--gold);width:16px;height:16px;cursor:pointer}
+    .gift-mode-content{flex:1}
+    .gift-mode-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale);margin-bottom:6px;line-height:1.2}
+    .gift-mode-default{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;margin-left:8px;vertical-align:middle;border-radius:1px}
+    .gift-mode-desc{font-family:'EB Garamond',serif;font-size:14px;color:rgba(215,235,215,.72);line-height:1.5}
+
     /* STEP 2 — payment redirect */
     .payment-step{display:none;text-align:center;padding:48px 24px;animation:fadeIn .4s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -140,6 +152,25 @@
       </label>
       <span class="family-toggle-label">Family</span>
       <span class="family-note" id="familyNote">&nbsp;</span>
+    </div>
+
+    <!-- GIFT MODE — one-time default, recurring opt-in. Hidden when Life Member selected. -->
+    <div class="gift-mode-wrap" id="giftModeWrap">
+      <div class="gift-mode-eyebrow">How would you like to gift?</div>
+      <label class="gift-mode-opt selected" id="mode-onetime">
+        <input type="radio" name="giftMode" value="onetime" checked onchange="updateMode()">
+        <div class="gift-mode-content">
+          <div class="gift-mode-title">One-year gift <span class="gift-mode-default">recommended</span></div>
+          <div class="gift-mode-desc">Pay once today. Give them a full year of clan membership. Your card is never charged again — no auto-renewal, no commitment beyond this gift. The membership ends naturally after a year, and they choose for themselves whether to continue.</div>
+        </div>
+      </label>
+      <label class="gift-mode-opt" id="mode-recurring">
+        <input type="radio" name="giftMode" value="recurring" onchange="updateMode()">
+        <div class="gift-mode-content">
+          <div class="gift-mode-title">Renewing annual gift</div>
+          <div class="gift-mode-desc">Keep the gift going year after year. Your card is charged automatically on this date each year — perfect for gifts to a parent or relative you want to continue supporting. Cancel anytime from your Stripe receipt, no questions asked.</div>
+        </div>
+      </label>
     </div>
 
     <!-- GIVER DETAILS -->
@@ -242,8 +273,9 @@
     <div class="summary-box" id="summaryBox">
       <div class="summary-row"><span class="summary-label">Tier</span><span id="summaryTier">Guardian of the Clan</span></div>
       <div class="summary-row"><span class="summary-label">Type</span><span id="summaryType">Individual</span></div>
+      <div class="summary-row"><span class="summary-label">Gift</span><span id="summaryMode">One-year gift · no renewal</span></div>
       <div class="summary-row"><span class="summary-label">Recipient</span><span id="summaryRecipient">—</span></div>
-      <div class="summary-row"><span class="summary-label">Total</span><span id="summaryPrice">€150</span></div>
+      <div class="summary-row"><span class="summary-label">Total</span><span id="summaryPrice">€150 · one-year</span></div>
     </div>
 
     <button class="submit-btn" id="submitBtn" onclick="submitForm()">Continue to secure payment →</button>
@@ -288,27 +320,41 @@
 
 <script>
 // ── Stripe payment link map ──
+// Each tier has both one-time (1-year gift, no auto-renew) and recurring (annual subscription).
+// Life Member is permanent → mode toggle is hidden, only one link exists.
 const STRIPE = {
-  clan:     { ind: 'https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b', fam: 'https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c' },
-  guardian: { ind: 'https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d', fam: 'https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e' },
-  life:     { ind: 'https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h', fam: 'https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i' }
+  clan: {
+    onetime:   { ind: 'https://buy.stripe.com/28E5kD1GMgrah1z2dceZ20j', fam: 'https://buy.stripe.com/4gMbJ1ety8YIaDb5poeZ20k' },
+    recurring: { ind: 'https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b', fam: 'https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c' }
+  },
+  guardian: {
+    onetime:   { ind: 'https://buy.stripe.com/cNi7sLetyb6QeTreZYeZ20l', fam: 'https://buy.stripe.com/dRmcN599e5Mw6mV2dceZ20m' },
+    recurring: { ind: 'https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d', fam: 'https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e' }
+  },
+  life: {
+    onetime:   { ind: 'https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h', fam: 'https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i' }
+  }
 };
 
 const PRICES = {
-  clan:     { ind: '€49/yr',  fam: '€79/yr'   },
-  guardian: { ind: '€150/yr', fam: '€220/yr'  },
-  life:     { ind: '€750',    fam: '€1,100'   }
+  clan:     { ind: '€49',  fam: '€79'   },
+  guardian: { ind: '€150', fam: '€220'  },
+  life:     { ind: '€750', fam: '€1,100' }
 };
 
 const TIER_NAMES = { clan: 'Clan Member', guardian: 'Guardian of the Clan', life: 'Life Member' };
 
 let currentTier = 'guardian';
 let isFamily = false;
+let currentMode = 'onetime';   // one-time = default; toggleable for recurring tiers
 
 function selectTier(tier) {
   currentTier = tier;
   document.querySelectorAll('.tier-opt').forEach(el => el.classList.remove('selected'));
   document.getElementById('tier-' + tier).classList.add('selected');
+  // Hide mode chooser for Life Member (always one-time by nature)
+  document.getElementById('giftModeWrap').style.display = (tier === 'life') ? 'none' : 'block';
+  if (tier === 'life') currentMode = 'onetime';
   updateSummary();
 }
 
@@ -319,17 +365,40 @@ function updateFamily() {
   updateSummary();
 }
 
+function updateMode() {
+  currentMode = document.querySelector('input[name="giftMode"]:checked').value;
+  document.querySelectorAll('.gift-mode-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('mode-' + currentMode).classList.add('selected');
+  updateSummary();
+}
+
 function updateSummary() {
   const type = isFamily ? 'fam' : 'ind';
   document.getElementById('summaryTier').textContent = TIER_NAMES[currentTier];
   document.getElementById('summaryType').textContent = isFamily ? 'Family' : 'Individual';
-  document.getElementById('summaryPrice').textContent = PRICES[currentTier][type];
+
+  // Gift type row + price cadence depend on mode + tier
+  let modeLabel, priceCadence;
+  if (currentTier === 'life') {
+    modeLabel = 'Permanent · one-time';
+    priceCadence = '';
+  } else if (currentMode === 'onetime') {
+    modeLabel = 'One-year gift · no renewal';
+    priceCadence = ' · one-year';
+  } else {
+    modeLabel = 'Renewing annually · cancel anytime';
+    priceCadence = ' / year';
+  }
+  document.getElementById('summaryMode').textContent = modeLabel;
+  document.getElementById('summaryPrice').textContent = PRICES[currentTier][type] + priceCadence;
+
   const name = document.getElementById('recipientName').value.trim();
   document.getElementById('summaryRecipient').textContent = name || '—';
-  // Update tier card prices
-  document.getElementById('price-clan').textContent = isFamily ? '€79' : '€49';
-  document.getElementById('price-guardian').textContent = isFamily ? '€220' : '€150';
-  document.getElementById('price-life').textContent = isFamily ? '€1,100' : '€750';
+
+  // Tier card prices reflect Family toggle
+  document.getElementById('price-clan').textContent     = isFamily ? '€79'    : '€49';
+  document.getElementById('price-guardian').textContent = isFamily ? '€220'   : '€150';
+  document.getElementById('price-life').textContent     = isFamily ? '€1,100' : '€750';
 }
 
 document.getElementById('recipientName').addEventListener('input', updateSummary);
@@ -350,10 +419,16 @@ async function submitForm() {
   }
 
   const type = isFamily ? 'fam' : 'ind';
+  const modeForLookup = (currentTier === 'life') ? 'onetime' : currentMode;
+
   const data = {
     tier: TIER_NAMES[currentTier],
     price: PRICES[currentTier][type],
     family: isFamily,
+    giftMode: modeForLookup,                              // 'onetime' or 'recurring'
+    giftModeLabel: (modeForLookup === 'onetime')
+      ? (currentTier === 'life' ? 'Permanent (one-time)' : 'One-year gift (no renewal)')
+      : 'Renewing annually (cancel anytime)',
     giverName: document.getElementById('giverName').value.trim(),
     giverEmail: document.getElementById('giverEmail').value.trim(),
     recipientName: document.getElementById('recipientName').value.trim(),
@@ -370,9 +445,7 @@ async function submitForm() {
     connection: document.getElementById('connection').value.trim()
   };
 
-  // Show payment step
-  // POST gift data to Netlify function (background), then redirect to Stripe
-  const stripeUrl = STRIPE[currentTier][type];
+  const stripeUrl = STRIPE[currentTier][modeForLookup][type];
   try {
     await fetch('/api/submit-gift', {
       method: 'POST',

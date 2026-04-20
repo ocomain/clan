@@ -21,9 +21,14 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const { tier, price, family, giverName, giverEmail,
+  const { tier, price, family, giftMode, giftModeLabel,
+          giverName, giverEmail,
           recipientName, recipientName2, recipientEmail,
           address, message, connection } = data;
+
+  // Default fallbacks for older form submissions that don't include giftMode
+  const modeLabel = giftModeLabel || (giftMode === 'recurring' ? 'Renewing annually' : 'One-year gift');
+  const modeColor = giftMode === 'recurring' ? '#A47A2C' : '#0C1A0C';
 
   const html = `<div style="font-family:sans-serif;max-width:580px">
     <h2 style="color:#0C1A0C;border-bottom:2px solid #B8975A;padding-bottom:10px">
@@ -35,6 +40,7 @@ exports.handler = async (event) => {
       <tr><td style="padding:10px;border:1px solid #ddd;color:#666;width:130px">Tier</td><td style="padding:10px;border:1px solid #ddd"><strong>${tier}</strong></td></tr>
       <tr><td style="padding:10px;border:1px solid #ddd;color:#666">Price</td><td style="padding:10px;border:1px solid #ddd"><strong style="color:#B8975A">${price}</strong></td></tr>
       <tr><td style="padding:10px;border:1px solid #ddd;color:#666">Type</td><td style="padding:10px;border:1px solid #ddd">${family ? 'Family' : 'Individual'}</td></tr>
+      <tr><td style="padding:10px;border:1px solid #ddd;color:#666">Gift mode</td><td style="padding:10px;border:1px solid #ddd"><strong style="color:${modeColor}">${modeLabel}</strong></td></tr>
     </table>
 
     <h3 style="color:#B8975A;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600">From (Giver)</h3>
