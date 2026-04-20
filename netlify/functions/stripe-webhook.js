@@ -92,8 +92,11 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
 
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will be writing to you personally. If you have questions in the meantime, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>.</p>
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Go raibh míle maith agat — a thousand thanks for joining the revival of Clan Ó Comáin.</p>
+
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6;margin:0 0 4px">— <strong>The Office of the Private Secretary to The Commane</strong></p>
+    <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 32px">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
 
     <!-- CTA -->
     <div style="text-align:center;margin-bottom:32px">
@@ -129,9 +132,11 @@ async function sendGiftConfirmations(session, buyerEmail, buyerName, productName
   </div>
   <div style="padding:40px">
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dear ${buyerName ? buyerName.split(' ')[0] : 'friend'},</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your gift of a <strong>${tier.name}</strong> membership of Clan Ó Comáin has been received and confirmed. The clan will be in touch with your recipient shortly — the Chief will write to them personally.</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">If you have any questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>.</p>
-    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;margin:0">Go raibh míle maith agat.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">On behalf of Fergus Kinfauns, The Commane — Chief of Ó Comáin — your gift of a <strong>${tier.name}</strong> membership has been received and confirmed. This office will be in touch with your recipient shortly, and the Chief will write to them personally in the weeks that follow.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">If you have any questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and I will respond on behalf of the Chief.</p>
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;margin:0 0 24px">Go raibh míle maith agat.</p>
+    <p style="font-family:'Georgia',serif;font-size:14px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">— <strong>The Office of the Private Secretary to The Commane</strong></p>
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
   </div>
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center">
     <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Clan Ó Comáin · Newhall House · County Clare · Ireland</p>
@@ -161,7 +166,7 @@ async function sendEmail({ to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: 'Clan Ó Comáin <herald@ocomain.org>', to, subject, html }),
+    body: JSON.stringify({ from: 'Office of the Private Secretary, Clan Ó Comáin <herald@ocomain.org>', to, subject, html }),
   });
   if (!res.ok) {
     const err = await res.text();
