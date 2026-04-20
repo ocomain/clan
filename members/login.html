@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members' Area — Clan Ó Comáin</title>
+  <meta name="description" content="Members' area for Clan Ó Comáin. Sign in with the email address on your membership record.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+    .mlogin{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 24px 60px}
+    .mlogin-card{max-width:440px;width:100%;text-align:center}
+    .mlogin-crest{width:80px;margin:0 auto 14px;display:block}
+    .mlogin-crest img{width:80px;height:auto;display:block}
+    .mlogin-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+    .mlogin-title{font-family:'EB Garamond',serif;font-size:clamp(30px,4vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:14px}
+    .mlogin-sub{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:rgba(215,235,215,.65);line-height:1.7;margin-bottom:32px}
+    .mlogin-form{display:flex;flex-direction:column;gap:14px}
+    .mlogin-input{width:100%;padding:16px 18px;font-family:'EB Garamond',serif;font-size:17px;background:rgba(248,244,236,.05);border:1px solid rgba(184,151,90,.35);border-radius:2px;color:var(--gold-pale);outline:none;transition:border-color .2s;box-sizing:border-box}
+    .mlogin-input::placeholder{color:rgba(215,235,215,.4);font-style:italic}
+    .mlogin-input:focus{border-color:var(--gold)}
+    .mlogin-btn{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 28px;border:0;border-radius:1px;cursor:pointer;transition:background .2s}
+    .mlogin-btn:hover{background:var(--gold-light)}
+    .mlogin-btn:disabled{opacity:.6;cursor:wait}
+    .mlogin-status{font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;margin-top:24px;padding:16px 20px;border-radius:2px;display:none}
+    .mlogin-status.show{display:block}
+    .mlogin-status.success{background:rgba(160,210,160,.08);border:1px solid rgba(160,210,160,.25);color:rgba(215,235,215,.9)}
+    .mlogin-status.error{background:rgba(210,120,120,.08);border:1px solid rgba(210,120,120,.3);color:rgba(235,180,180,.9)}
+    .mlogin-help{font-family:'EB Garamond',serif;font-size:13px;color:rgba(215,235,215,.5);margin-top:28px;line-height:1.7}
+    .mlogin-help a{color:var(--gold-light);border-bottom:1px solid rgba(184,151,90,.25);text-decoration:none}
+  </style>
+</head>
+<body>
+
+<section class="mlogin">
+  <div class="mlogin-card">
+    <div class="mlogin-crest"><img src="/coat_of_arms.png" alt="Ó Comáin"></div>
+    <div class="mlogin-eyebrow">Ó Comáin</div>
+    <h1 class="mlogin-title">Members' Area</h1>
+    <p class="mlogin-sub">Enter the email address on your membership record. A one-time access link will be sent to your inbox.</p>
+
+    <form class="mlogin-form" id="loginForm" onsubmit="return false">
+      <input class="mlogin-input" type="email" id="email" placeholder="your.email@example.com" required autocomplete="email">
+      <button class="mlogin-btn" id="submitBtn" type="submit">Send me the link →</button>
+    </form>
+
+    <div class="mlogin-status" id="status"></div>
+
+    <p class="mlogin-help">Not yet a member? <a href="/membership.html">Apply for membership →</a><br>Questions? <a href="mailto:clan@ocomain.org">Write to the Office →</a></p>
+  </div>
+</section>
+
+<script type="module">
+  import { sendMagicLink, currentSession } from './auth.js';
+
+  // If already logged in, go straight to the dashboard.
+  (async () => {
+    const session = await currentSession();
+    if (session) window.location.href = '/members/';
+  })();
+
+  const form = document.getElementById('loginForm');
+  const emailInput = document.getElementById('email');
+  const submitBtn = document.getElementById('submitBtn');
+  const status = document.getElementById('status');
+
+  form.addEventListener('submit', async () => {
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    status.className = 'mlogin-status';
+
+    const { ok, error } = await sendMagicLink(email);
+
+    if (ok) {
+      status.className = 'mlogin-status show success';
+      status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link is on its way to <em>${email}</em>. It expires in one hour. If it doesn't arrive within a few minutes, check your spam folder.`;
+      submitBtn.textContent = 'Link sent ✓';
+      emailInput.disabled = true;
+    } else {
+      status.className = 'mlogin-status show error';
+      status.textContent = error || 'Something went wrong sending the link. Please try again, or write to clan@ocomain.org for assistance.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send me the link →';
+    }
+  });
+</script>
+
+</body>
+</html>
