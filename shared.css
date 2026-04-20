@@ -16,7 +16,7 @@ a{color:inherit;text-decoration:none}
 .btn-p{background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:14px 32px;border-radius:1px;text-decoration:none;display:inline-block;transition:background .2s}
 .btn-p:hover{background:var(--gold-light)}
 .btn-g{border:1px solid var(--gold-strong);color:var(--gold-light);font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;padding:14px 32px;border-radius:1px;text-decoration:none;display:inline-block;transition:all .2s}
-.btn-g:hover{border-color:var(--gold);color:var(--gold-pale);background:rgba(184,151,90,.06)}
+.btn-g:hover{border-color:var(--gold);background:rgba(184,151,90,.12)}
 .body-text{font-size:14px;font-weight:300;line-height:1.9;color:var(--ink-soft)}
 .img-cap{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-muted);margin-top:8px}
 .pull-quote{border-left:2px solid var(--gold);padding:20px 28px;margin:28px 0;background:rgba(15,31,15,.03)}
