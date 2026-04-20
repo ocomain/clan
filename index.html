@@ -783,27 +783,43 @@ function closeModal2(e){
       <div class="crest-img-wrap">
         <img class="crest-img" src="coat_of_arms.png" alt="Ó Comáin" loading="lazy">
         <div style="font-family:'EB Garamond',serif;font-size:clamp(30px,3.4vw,42px);font-weight:400;color:var(--gold);letter-spacing:.02em;margin-top:20px;line-height:1">Ó Comáin</div>
-        <!-- HERALDIC MOTTO BANNER -->
-        <svg viewBox="0 0 420 70" xmlns="http://www.w3.org/2000/svg" style="width:min(420px,94%);height:auto;display:block;margin:16px auto 0" aria-label="Caithfidh an stair a bheith i réim — History must prevail">
+        <!-- HERALDIC THREE-PANEL MOTTO SCROLL -->
+        <svg viewBox="0 0 540 150" xmlns="http://www.w3.org/2000/svg" style="width:min(460px,96%);height:auto;display:block;margin:14px auto 0" aria-label="History must prevail">
           <defs>
-            <linearGradient id="bannerFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#C9A668"/>
+            <linearGradient id="scrollFront" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#DBBE80"/>
               <stop offset="50%" stop-color="#B8975A"/>
-              <stop offset="100%" stop-color="#8F7340"/>
+              <stop offset="100%" stop-color="#8D7240"/>
+            </linearGradient>
+            <linearGradient id="scrollBack" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7C6133"/>
+              <stop offset="100%" stop-color="#4E3D1F"/>
             </linearGradient>
           </defs>
-          <!-- Left curl (under) -->
-          <path d="M 18 44 Q 6 38 12 28 Q 18 22 30 24 L 30 48 Q 22 50 18 44 Z" fill="#8F7340" opacity=".55"/>
-          <!-- Right curl (under) -->
-          <path d="M 402 44 Q 414 38 408 28 Q 402 22 390 24 L 390 48 Q 398 50 402 44 Z" fill="#8F7340" opacity=".55"/>
-          <!-- Main ribbon body — slight scroll curve -->
-          <path d="M 30 24 Q 210 14 390 24 L 390 48 Q 210 60 30 48 Z" fill="url(#bannerFill)" stroke="#6B5530" stroke-width="0.6"/>
-          <!-- Inner stitching line -->
-          <path d="M 40 29 Q 210 20 380 29 M 40 43 Q 210 54 380 43" fill="none" stroke="#6B5530" stroke-width="0.4" opacity=".35"/>
-          <!-- Motto text -->
-          <text x="210" y="41" font-family="EB Garamond, serif" font-size="13.5" font-style="italic" fill="#2C1A0C" text-anchor="middle" letter-spacing="0.5">Caithfidh an stair a bheith i réim</text>
+          <!-- LEFT CURL -->
+          <path d="M 30 50 C 10 50 6 34 18 24 C 30 15 42 22 42 34 L 42 56 C 40 60 34 62 32 58 C 28 55 34 50 30 50 Z" fill="url(#scrollBack)" stroke="#3D2F18" stroke-width="0.6"/>
+          <!-- LEFT PANEL (upper level) -->
+          <path d="M 42 22 Q 115 18 188 22 L 200 64 Q 115 67 42 64 Z" fill="url(#scrollFront)" stroke="#4E3D1F" stroke-width="0.6"/>
+          <!-- LEFT FOLD (shadow/underside — ribbon bending down) -->
+          <path d="M 188 22 L 210 26 L 218 78 L 200 64 Z" fill="url(#scrollBack)" stroke="#3D2F18" stroke-width="0.6"/>
+          <!-- CENTER PANEL (lower level) -->
+          <path d="M 200 80 Q 270 77 340 80 L 352 122 Q 270 125 188 122 Z" fill="url(#scrollFront)" stroke="#4E3D1F" stroke-width="0.6"/>
+          <!-- RIGHT FOLD (shadow/underside) -->
+          <path d="M 340 80 L 322 64 L 330 22 L 352 26 Z" fill="url(#scrollBack)" stroke="#3D2F18" stroke-width="0.6"/>
+          <!-- RIGHT PANEL (upper level) -->
+          <path d="M 352 22 Q 425 18 498 22 L 498 64 Q 425 67 340 64 Z" fill="url(#scrollFront)" stroke="#4E3D1F" stroke-width="0.6"/>
+          <!-- RIGHT CURL -->
+          <path d="M 510 50 C 530 50 534 34 522 24 C 510 15 498 22 498 34 L 498 56 C 500 60 506 62 508 58 C 512 55 506 50 510 50 Z" fill="url(#scrollBack)" stroke="#3D2F18" stroke-width="0.6"/>
+          <!-- SUBTLE STITCHING -->
+          <path d="M 52 32 Q 115 28 180 32 M 52 54 Q 115 58 180 54" fill="none" stroke="#6B5530" stroke-width="0.35" opacity=".4"/>
+          <path d="M 210 90 Q 270 87 330 90 M 210 112 Q 270 115 330 112" fill="none" stroke="#6B5530" stroke-width="0.35" opacity=".4"/>
+          <path d="M 360 32 Q 425 28 490 32 M 360 54 Q 425 58 490 54" fill="none" stroke="#6B5530" stroke-width="0.35" opacity=".4"/>
+          <!-- TEXT -->
+          <text x="118" y="50" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="18" font-weight="500" letter-spacing="3" fill="#1E0F05">HISTORY</text>
+          <text x="270" y="108" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="18" font-weight="500" letter-spacing="3" fill="#1E0F05">MUST</text>
+          <text x="430" y="50" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="18" font-weight="500" letter-spacing="3" fill="#1E0F05">PREVAIL</text>
         </svg>
-        <div style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:8px;letter-spacing:.04em">History must prevail</div>
+        <div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:10px;letter-spacing:.04em">Caithfidh an stair a bheith i réim</div>
       </div>
     </div>
   </div>
