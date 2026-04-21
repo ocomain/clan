@@ -19,6 +19,14 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
+# history.html consolidated into pedigree.html (Nov 2026). Preserve SEO value from
+# Google's existing index of /history.html + any external links by 301-ing permanently.
+[[redirects]]
+  from = "/history.html"
+  to = "/pedigree.html"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
