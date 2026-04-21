@@ -3,6 +3,7 @@
 // Sends welcome email via Resend, records member in Supabase.
 
 const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
+const { ensureCertificate, signCertUrl, ensureAuthUser, sanitizeFilename } = require('./lib/cert-service');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -79,6 +80,7 @@ exports.handler = async (event) => {
     // Upsert a member row (or a gift row), close the matching application,
     // log the event. Failures here are logged but don't prevent the welcome
     // email being sent — the DB is a parallel source of truth, not a gate.
+    let certDownloadUrl = null;
     try {
       const clan_id = await clanId();
       const tierInfo = normaliseTier(productName);
@@ -113,7 +115,7 @@ exports.handler = async (event) => {
         }
         await logEvent({ clan_id, event_type: 'gift_paid', payload: { email: customerEmail, tier: tierInfo.tier, amount } });
       } else {
-        // Regular self-purchase: upsert member (unique on clan_id + lower(email)).
+        // Regular self-purchase: upsert member (unique on clan_id + email).
         const now = new Date();
         const expiresAt = isLife ? null : new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
         const { data: member, error: upsertErr } = await supa()
@@ -132,7 +134,7 @@ exports.handler = async (event) => {
             renewed_at:             now.toISOString(),
             expires_at:             expiresAt ? expiresAt.toISOString() : null,
           }, { onConflict: 'clan_id,email' })
-          .select('id')
+          .select('id, email, name, tier, tier_label, tier_family, joined_at')
           .single();
         if (upsertErr) {
           console.error('member upsert failed:', upsertErr.message);
@@ -146,6 +148,24 @@ exports.handler = async (event) => {
             .eq('clan_id', clan_id)
             .eq('email', (customerEmail || '').toLowerCase().trim())
             .eq('status', 'pending');
+
+          // Pre-create Supabase auth user so first login is magic-link (not
+          // confirm-signup). Best-effort — doesn't block payment flow.
+          await ensureAuthUser(customerEmail, customerName);
+
+          // Generate + store cert immediately so it's ready when the welcome
+          // email arrives. Catch separately — if cert generation fails, the
+          // email still sends (without the download link), and the cert can
+          // be generated on-demand via the dashboard.
+          try {
+            const { storagePath } = await ensureCertificate(member, clan_id);
+            certDownloadUrl = await signCertUrl(storagePath, {
+              ttlSeconds: 60 * 60 * 24 * 7, // 7 days — gives members time to click from email
+              downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(member.name || customerEmail)}.pdf`,
+            });
+          } catch (certErr) {
+            console.error('cert generation in webhook (non-fatal):', certErr.message);
+          }
         }
       }
     } catch (e) {
@@ -155,7 +175,7 @@ exports.handler = async (event) => {
     if (isGift) {
       await sendGiftConfirmations(session, customerEmail, customerName, productName, amount, currency);
     } else {
-      await sendMemberWelcome(customerEmail, customerName, productName, amount, currency);
+      await sendMemberWelcome(customerEmail, customerName, productName, amount, currency, certDownloadUrl);
     }
 
     // Always notify the clan
@@ -191,11 +211,25 @@ exports.handler = async (event) => {
   return { statusCode: 200, body: JSON.stringify({ received: true }) };
 };
 
-async function sendMemberWelcome(email, name, productName, amount, currency) {
+async function sendMemberWelcome(email, name, productName, amount, currency, certDownloadUrl) {
   const tier = matchTier(productName);
   const firstName = name ? name.split(' ')[0] : 'friend';
 
   const benefitsList = tier.benefits.map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
+
+  // Certificate block — prominent CTA if cert was successfully generated.
+  // If generation failed, we silently omit this block and direct them to the
+  // Members' Area, where they can generate on-demand.
+  const certBlock = certDownloadUrl ? `
+    <!-- Certificate download CTA — emotional payoff -->
+    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
+      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Ready to download</p>
+      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Bearing the Chief's signature, issued in your name, entered in the Register at Newhall House.</p>
+      <a href="${certDownloadUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Download your certificate (PDF) →</a>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">This link is valid for seven days. Your certificate is also always available from your Members' Area, below.</p>
+    </div>
+  ` : '';
 
   const html = `<!DOCTYPE html>
 <html>
@@ -217,6 +251,8 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">On behalf of Fergus Kinfauns, The Commane — Chief of Ó Comáin — and the assembled derbhfine of Clan Ó Comáin, it is my honour to welcome you as a <strong>${tier.name}</strong> of one of Ireland's oldest and most thoroughly documented Gaelic lineages.</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare, Ireland.</p>
 
+    ${certBlock}
+
     <!-- Divider -->
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
@@ -231,9 +267,9 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
 
     <!-- Members area CTA -->
     <div style="background:rgba(184,151,90,.08);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0;text-align:center">
-      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area · now open</p>
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0 0 18px">Sign in to view your membership details, tier, and renewal date. Your digital certificate will be available there shortly.</p>
-      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border-radius:1px">Sign in to your Members' Area →</a>
+      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0 0 18px">Sign in any time to view your membership details, re-download your certificate, and access members-only content.</p>
+      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:transparent;color:#B8975A;border:1px solid #B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border-radius:1px">Sign in to your Members' Area →</a>
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:12px 0 0">A one-time access link will be sent to this email address. No password required.</p>
     </div>
 
