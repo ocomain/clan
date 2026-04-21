@@ -447,8 +447,15 @@ function showCompletion() {
       payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
     }
   } else {
-    // Show inline tier picker
-    document.getElementById('tierPicker').style.display = 'block';
+    // Show inline tier picker — inject herald-collected email into every tier button
+    const tierPicker = document.getElementById('tierPicker');
+    if (collected.email) {
+      tierPicker.querySelectorAll('a[href*="buy.stripe.com"]').forEach(a => {
+        const sep = a.href.includes('?') ? '&' : '?';
+        a.href = a.href + sep + 'prefilled_email=' + encodeURIComponent(collected.email);
+      });
+    }
+    tierPicker.style.display = 'block';
   }
 
   document.getElementById('completion').classList.add('show');
