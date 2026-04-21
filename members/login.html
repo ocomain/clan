@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="/shared.css">
   <link rel="icon" href="/favicon.ico">
   <style>
-    body{background:var(--ink);min-height:100vh;display:flex;flex-direction:column}
-    .mlogin{flex:1;display:flex;align-items:center;justify-content:center;padding:80px 24px 60px}
+    body{background:var(--ink);min-height:100vh;display:flex;flex-direction:column;margin:0}
+    .mlogin{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px}
     .mlogin-card{max-width:440px;width:100%;text-align:center}
     .mlogin-crest{width:80px;margin:0 auto 14px;display:block}
     .mlogin-crest img{width:80px;height:auto;display:block}
@@ -38,6 +38,43 @@
 </head>
 <body>
 
+<!-- SITE NAV (same as public pages) -->
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="/coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="/surname-variants.html" class="nav-link">Variants</a>
+      <a href="/pedigree.html" class="nav-link">Pedigree</a>
+      <a href="/timeline.html" class="nav-link">Timeline</a>
+      <a href="/heartlands.html" class="nav-link">Heartlands</a>
+      <a href="/relics.html" class="nav-link">Relics</a>
+      <a href="/coat-of-arms.html" class="nav-link">Crest</a>
+      <a href="/patrons.html" class="nav-link">Patrons</a>
+      <a href="/privy-council.html" class="nav-link">Council</a>
+      <a href="/members/" class="nav-link active">Members</a>
+    </div>
+    <a href="/join-chat.html" class="nav-cta">Apply now</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="/surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="/pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="/timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="/heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="/relics.html" class="nav-mobile-link">Relics</a>
+  <a href="/coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="/patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="/privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="/members/" class="nav-mobile-link active">Members</a>
+  <a href="/join-chat.html" class="nav-mobile-link" style="color:var(--gold)">Apply now</a>
+</div>
+<script>function toggleMenu(){document.getElementById('mobile-menu').classList.toggle('open')}</script>
+
+<!-- LOGIN CARD -->
 <section class="mlogin">
   <div class="mlogin-card">
     <div class="mlogin-crest"><img src="/coat_of_arms.png" alt="Ó Comáin"></div>
@@ -55,6 +92,52 @@
     <p class="mlogin-help">Not yet a member? <a href="/membership.html">Apply for membership →</a><br>Questions? <a href="mailto:clan@ocomain.org">Write to the Office →</a></p>
   </div>
 </section>
+
+<!-- SITE FOOTER -->
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+        <p class="footer-motto-en">History must prevail</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/surname-variants.html">Variants</a></li>
+          <li><a href="/pedigree.html">Pedigree</a></li>
+          <li><a href="/timeline.html">Timeline</a></li>
+          <li><a href="/heartlands.html">Heartlands</a></li>
+          <li><a href="/privy-council.html">Privy Council</a></li>
+          <li><a href="/members/">Members' Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="/join-chat.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Apply now</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li>Newhall House, County Clare</li>
+          <li>Ireland</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Tigh Uí Chomáin · House of Ó Comáin · All rights reserved</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
 
 <script type="module">
   import { sendMagicLink, currentSession } from './auth.js';

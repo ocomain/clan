@@ -251,7 +251,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
   <!-- Footer -->
   <div style="background:#0C1A0C;padding:24px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
     <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.6);margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:sans-serif;font-size:10px;color:rgba(184,151,90,.4);margin:0;letter-spacing:0.08em">Clan Ó Comáin</p>
+    <p style="font-family:sans-serif;font-size:10px;color:rgba(184,151,90,.4);margin:0;letter-spacing:0.08em">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
   </div>
 </div>
 </body>
@@ -284,7 +284,7 @@ async function sendGiftConfirmations(session, buyerEmail, buyerName, productName
     <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
   </div>
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center">
-    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Clan Ó Comáin</p>
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
   </div>
 </div>
 </body></html>`;
