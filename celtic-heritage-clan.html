@@ -79,15 +79,22 @@
 <body>
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan O Comain crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>O Comain</em></a>
+    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
-      <a href="surname-variants.html" class="nav-link">Variants</a>
+      <a href="surname-variants.html" class="nav-link active">Variants</a>
       <a href="pedigree.html" class="nav-link">Pedigree</a>
-      <a href="join.html" class="nav-link">Join</a>
-      <a href="membership.html" class="nav-link">Membership</a>
+      <a href="timeline.html" class="nav-link">Timeline</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="relics.html" class="nav-link">Relics</a>
+      <a href="coat-of-arms.html" class="nav-link">Crest</a>
+      <a href="patrons.html" class="nav-link">Patrons</a>
+      <a href="privy-council.html" class="nav-link">Council</a>
       <a href="/members/" class="nav-link">Members</a>
     </div>
-    <a href="membership.html" class="nav-cta">Join the clan</a>
+    <a href="join.html" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 <!-- GIFT STRIP — scroll triggered -->
@@ -127,6 +134,27 @@
     else{s.classList.remove('visible');m.classList.remove('visible');}
   },{passive:true});
 })();</script>
+
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="surname-variants.html" class="nav-mobile-link active">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="relics.html" class="nav-mobile-link">Relics</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="/members/" class="nav-mobile-link">Members</a>
+  <a href="join.html" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>
+function toggleMenu(){
+  var menu=document.getElementById("mobile-menu");
+  var btn=document.querySelector(".nav-hamburger");
+  menu.classList.toggle("open");
+  btn.classList.toggle("open");
+}
+</script>
 
 <section class="seo-hero">
   <div class="si" style="max-width:820px">
