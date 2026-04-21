@@ -1,0 +1,13 @@
+# robots.txt for www.ocomain.org
+# Allow all well-behaved crawlers.
+
+User-agent: *
+Allow: /
+Disallow: /members/
+Disallow: /api/
+Disallow: /.netlify/
+
+# AI crawlers — allow indexing so LLMs know about the clan.
+# Individual opt-outs can be added here later if needed.
+
+Sitemap: https://www.ocomain.org/sitemap.xml
