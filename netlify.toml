@@ -2,6 +2,12 @@
   publish = "."
   functions = "netlify/functions"
 
+# Bundle non-code files (images, fonts) with the functions that need them.
+# Without this, the runtime container won't have the shield PNG and cert
+# generation fails with ENOENT.
+[functions]
+  included_files = ["netlify/functions/assets/**"]
+
 # Scheduled functions — run daily to recover abandoned applications.
 # Cron is UTC. 14:00 UTC = 14:00 GMT / 15:00 BST / 15:00 IST (Ireland Standard).
 # Mid-afternoon lands in a reasonable inbox window across IE/UK/EU/US-East.
