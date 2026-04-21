@@ -3,7 +3,7 @@
 // Uses pdf-lib's built-in Times fonts + embedded shield PNG from the site.
 // No network calls, no external font files. Safe to invoke on every request.
 
-const { PDFDocument, StandardFonts, rgb, PageSizes } = require('pdf-lib');
+const { PDFDocument, rgb, PageSizes } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
 
@@ -29,6 +29,14 @@ const C_CREAM  = rgb(0.973, 0.957, 0.925);  // #F8F4EC
  * @returns {Promise<Uint8Array>}  PDF bytes
  */
 async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng }) {
+  // Sanitize all string inputs to WinAnsi-safe characters since pdf-lib's
+  // standard fonts only speak WinAnsi. Replaces typographic quotes/dashes
+  // that might arrive via copy-paste; unknown chars are dropped rather than
+  // crashing the whole PDF.
+  name       = sanitizeWinAnsi(name       || 'Member of the Clan');
+  tierLabel  = sanitizeWinAnsi(tierLabel  || 'Clan Member');
+  certNumber = sanitizeWinAnsi(certNumber || 'OC-UNKNOWN');
+
   const doc = await PDFDocument.create();
   doc.setTitle(`Certificate of Membership — ${name}`);
   doc.setAuthor('Clan Ó Comáin');
@@ -37,12 +45,12 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
 
   const page = doc.addPage([W, H]);
 
-  // Fonts — built-in Times family + Helvetica for eyebrows
-  const fontSerif       = await doc.embedFont(StandardFonts.TimesRoman);
-  const fontSerifItalic = await doc.embedFont(StandardFonts.TimesItalic);
-  const fontSerifBold   = await doc.embedFont(StandardFonts.TimesBold);
-  const fontSans        = await doc.embedFont(StandardFonts.Helvetica);
-  const fontSansBold    = await doc.embedFont(StandardFonts.HelveticaBold);
+  // Fonts — built-in PDF Standard 14, hardcoded by name to avoid any issue
+  // with StandardFonts enum availability across pdf-lib versions.
+  const fontSerif       = await doc.embedFont('Times-Roman');
+  const fontSerifItalic = await doc.embedFont('Times-Italic');
+  const fontSans        = await doc.embedFont('Helvetica');
+  const fontSansBold    = await doc.embedFont('Helvetica-Bold');
 
   // Cream background fill
   page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: C_CREAM });
@@ -215,7 +223,7 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
 
   // Cert metadata footer
   const issuedDate = new Date(joinedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  const footerText = `Issued ${issuedDate}   ·   Certificate № ${certNumber}`;
+  const footerText = `Issued ${issuedDate}   ·   Cert No. ${certNumber}`;
   drawCentered(page, footerText, fontSans, 8, C_MUTED, margin + 48, W/2);
 
   // Small gold dot at top of the cert between inner borders — quiet heraldic flourish
@@ -240,6 +248,22 @@ function drawSpacedText(page, { text, font, size, color, y, centerX, letterSpaci
     page.drawText(c, { x, y, size, font, color });
     x += charWidths[i] + letterSpacing;
   });
+}
+
+// Helper: strip / normalise characters that WinAnsi can't encode, so member
+// names with unexpected unicode (e.g. copy-pasted curly quotes, weird symbols,
+// CJK) don't crash cert generation. Common typographic replacements first,
+// then anything outside Latin-1 gets dropped.
+function sanitizeWinAnsi(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/[\u2018\u2019]/g, "'")      // curly single quotes → straight
+    .replace(/[\u201C\u201D]/g, '"')      // curly double quotes → straight
+    .replace(/\u2013/g, '-')              // en dash → hyphen
+    .replace(/\u2014/g, '-')              // em dash → hyphen (WinAnsi has it, but safer)
+    .replace(/\u2026/g, '...')            // ellipsis → three dots
+    .replace(/\u2116/g, 'No.')            // numero sign → No.
+    .replace(/[^\x20-\x7E\xA0-\xFF]/g, ''); // drop anything outside Latin-1
 }
 
 module.exports = { generateCertificate };
