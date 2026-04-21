@@ -229,10 +229,12 @@ async function sendMemberWelcome(email, name, productName, amount, currency) {
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
 
-    <!-- Members area note -->
-    <div style="background:rgba(184,151,90,.08);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
-      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#B8975A;margin:0 0 8px">Coming soon — the Members' Area</p>
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">The clan's private members' area is presently being constructed — your downloadable certificate, the Register of Members, and members-only resources will live there. You will be notified the moment it is ready.</p>
+    <!-- Members area CTA -->
+    <div style="background:rgba(184,151,90,.08);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0;text-align:center">
+      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area · now open</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0 0 18px">Sign in to view your membership details, tier, and renewal date. Your digital certificate will be available there shortly.</p>
+      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border-radius:1px">Sign in to your Members' Area →</a>
+      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:12px 0 0">A one-time access link will be sent to this email address. No password required.</p>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
