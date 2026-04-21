@@ -167,11 +167,12 @@
       </section>
 
       <section class="mactions">
-        <div class="maction coming">
-          <div class="maction-eyebrow">Coming soon</div>
-          <div class="maction-title">Digital certificate</div>
-          <div class="maction-desc">Your downloadable certificate, bearing the Chief's seal. Generation arriving this week.</div>
-          <button class="maction-btn" disabled>Download (soon)</button>
+        <div class="maction live">
+          <div class="maction-eyebrow">Available</div>
+          <div class="maction-title">Your certificate</div>
+          <div class="maction-desc">Your official Certificate of Membership, bearing the Chief's signature — in PDF form for printing, framing, or sharing.</div>
+          <button class="maction-btn" id="certBtn">Prepare my certificate →</button>
+          <div id="certStatus" style="margin-top:10px;font-family:'EB Garamond',serif;font-size:12px;color:var(--ink-soft);font-style:italic;min-height:18px"></div>
         </div>
         <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/pedigree.html">
           <div class="maction-eyebrow">Live · open</div>
@@ -189,6 +190,56 @@
     `;
     loading.style.display = 'none';
     dashboard.style.display = 'block';
+
+    // Wire up the certificate download button (rendered dynamically above)
+    const certBtn = document.getElementById('certBtn');
+    const certStatus = document.getElementById('certStatus');
+    let certUrlCache = null;
+
+    certBtn.addEventListener('click', async () => {
+      certBtn.disabled = true;
+      certBtn.textContent = certUrlCache ? 'Preparing fresh link…' : 'Preparing your certificate…';
+      certStatus.textContent = 'This may take a few seconds on first generation.';
+
+      try {
+        const session = await currentSession();
+        if (!session) {
+          window.location.href = '/members/login.html';
+          return;
+        }
+
+        const res = await fetch('/api/generate-certificate', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          throw new Error(errBody.error || `Request failed (${res.status})`);
+        }
+
+        const { url } = await res.json();
+        certUrlCache = url;
+
+        // Trigger the download — opens the signed URL which has a download=
+        // filename hint so browsers save instead of opening inline
+        window.location.href = url;
+
+        // Give the browser a moment to start the download, then restore button state
+        setTimeout(() => {
+          certBtn.disabled = false;
+          certBtn.textContent = 'Download again →';
+          certStatus.textContent = 'Your certificate is on the way. Click again for another copy.';
+        }, 800);
+
+      } catch (e) {
+        console.error('certificate error:', e);
+        certBtn.disabled = false;
+        certBtn.textContent = 'Try again →';
+        certStatus.style.color = 'var(--ink)';
+        certStatus.innerHTML = `Something went wrong — <em>${escHtml(e.message)}</em>. If this persists, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>.`;
+      }
+    });
   }
 
   function escHtml(t) {

@@ -4,6 +4,7 @@
   "description": "Clan Ó Comáin website and membership functions",
   "dependencies": {
     "stripe": "^14.0.0",
-    "@supabase/supabase-js": "^2.45.0"
+    "@supabase/supabase-js": "^2.45.0",
+    "pdf-lib": "^1.17.1"
   }
 }
