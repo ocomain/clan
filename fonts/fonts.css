@@ -1,0 +1,61 @@
+/* Self-hosted fonts for Clan Ó Comáin
+ * Replaces the Google Fonts CDN dependency.
+ * font-display:swap so text renders in fallback fonts first, then swaps in
+ * (same behaviour as the previous Google Fonts loader).
+ */
+
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/EBGaramond-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/EBGaramond-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/EBGaramond-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/Jost-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Jost-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/Jost-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Jost';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/Jost-SemiBold.ttf') format('truetype');
+}

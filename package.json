@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Clan Ó Comáin website and membership functions",
   "dependencies": {
-    "stripe": "^14.0.0",
+    "@pdf-lib/fontkit": "^1.1.1",
     "@supabase/supabase-js": "^2.45.0",
-    "pdf-lib": "^1.17.1"
+    "pdf-lib": "^1.17.1",
+    "stripe": "^14.0.0"
   }
 }

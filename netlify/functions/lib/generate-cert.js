@@ -1,9 +1,10 @@
 // netlify/functions/lib/generate-cert.js
 // Pure function: takes member/recipient data, returns a PDF buffer.
-// Uses pdf-lib's built-in Times fonts + embedded shield PNG from the site.
-// No network calls, no external font files. Safe to invoke on every request.
+// Uses self-hosted EB Garamond + Jost (embedded TTF) via @pdf-lib/fontkit.
+// No network calls. Safe to invoke on every request.
 
 const { PDFDocument, rgb, PageSizes } = require('pdf-lib');
+const fontkit = require('@pdf-lib/fontkit');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,6 +19,24 @@ const C_GOLD_L = rgb(0.831, 0.722, 0.478);  // #D4B87A
 const C_MUTED  = rgb(0.424, 0.353, 0.290);  // #6C5A4A
 const C_CREAM  = rgb(0.973, 0.957, 0.925);  // #F8F4EC
 
+// Font files live at /fonts/ in the repo root. bundle them with the
+// function via netlify.toml [functions] included_files pattern.
+// Cached at module scope so repeated invocations share the same Buffer.
+const FONTS_DIR = path.join(__dirname, '..', '..', '..', 'fonts');
+let _fontCache = null;
+function loadFontBuffers() {
+  if (_fontCache) return _fontCache;
+  _fontCache = {
+    serifRegular: fs.readFileSync(path.join(FONTS_DIR, 'EBGaramond-Regular.ttf')),
+    serifItalic:  fs.readFileSync(path.join(FONTS_DIR, 'EBGaramond-Italic.ttf')),
+    serifMedium:  fs.readFileSync(path.join(FONTS_DIR, 'EBGaramond-Medium.ttf')),
+    sansRegular:  fs.readFileSync(path.join(FONTS_DIR, 'Jost-Regular.ttf')),
+    sansMedium:   fs.readFileSync(path.join(FONTS_DIR, 'Jost-Medium.ttf')),
+    sansSemiBold: fs.readFileSync(path.join(FONTS_DIR, 'Jost-SemiBold.ttf')),
+  };
+  return _fontCache;
+}
+
 /**
  * Generate a member certificate PDF.
  * @param {Object} opts
@@ -30,15 +49,16 @@ const C_CREAM  = rgb(0.973, 0.957, 0.925);  // #F8F4EC
  * @returns {Promise<Uint8Array>}  PDF bytes
  */
 async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng, signaturePng }) {
-  // Sanitize all string inputs to WinAnsi-safe characters since pdf-lib's
-  // standard fonts only speak WinAnsi. Replaces typographic quotes/dashes
-  // that might arrive via copy-paste; unknown chars are dropped rather than
-  // crashing the whole PDF.
-  name       = sanitizeWinAnsi(name       || 'Member of the Clan');
-  tierLabel  = sanitizeWinAnsi(tierLabel  || 'Clan Member');
-  certNumber = sanitizeWinAnsi(certNumber || 'OC-UNKNOWN');
+  // With real Unicode fonts, we don't need WinAnsi sanitization — EB Garamond
+  // covers the full Latin Extended-A range including Irish acute accents (á é
+  // í ó ú) and typographic punctuation. Keep the name exactly as the member
+  // typed it.
+  name       = name       || 'Member of the Clan';
+  tierLabel  = tierLabel  || 'Clan Member';
+  certNumber = certNumber || 'OC-UNKNOWN';
 
   const doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
   doc.setTitle(`Certificate of Membership — ${name}`);
   doc.setAuthor('Clan Ó Comáin');
   doc.setSubject('Clan Ó Comáin Membership Certificate');
@@ -46,12 +66,19 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
 
   const page = doc.addPage([W, H]);
 
-  // Fonts — built-in PDF Standard 14, hardcoded by name to avoid any issue
-  // with StandardFonts enum availability across pdf-lib versions.
-  const fontSerif       = await doc.embedFont('Times-Roman');
-  const fontSerifItalic = await doc.embedFont('Times-Italic');
-  const fontSans        = await doc.embedFont('Helvetica');
-  const fontSansBold    = await doc.embedFont('Helvetica-Bold');
+  // Load and embed the site's actual typefaces (EB Garamond for serifs,
+  // Jost for sans). The cert now typographically matches ocomain.org.
+  // Note: subset:false (full embed) — pdf-lib's subsetter can't predict
+  // which glyphs will be drawn after the embed call, so subsetting produced
+  // empty-glyph certificates. The six TTFs total ~1.8MB uncompressed but
+  // pdf-lib gzips them; full-embed cert is only ~680KB in practice.
+  const fb = loadFontBuffers();
+  const fontSerif       = await doc.embedFont(fb.serifRegular,  { subset: false });
+  const fontSerifItalic = await doc.embedFont(fb.serifItalic,   { subset: false });
+  const fontSerifMedium = await doc.embedFont(fb.serifMedium,   { subset: false });
+  const fontSans        = await doc.embedFont(fb.sansRegular,   { subset: false });
+  const fontSansMedium  = await doc.embedFont(fb.sansMedium,    { subset: false });
+  const fontSansBold    = await doc.embedFont(fb.sansSemiBold,  { subset: false });
 
   // Cream background fill
   page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: C_CREAM });
@@ -110,15 +137,18 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
     color: C_GOLD,
   });
 
-  // Certificate Title
-  const title = 'Certificate of Membership';
+  // Certificate Title — use Medium weight (500) for slightly firmer presence.
+  // The fi-pair rendering gap in EB Garamond + pdf-lib is bypassed by using
+  // the Unicode precomposed ligature (U+FB01 ﬁ) instead of "fi" — pdf-lib
+  // renders the single glyph without the broken kerning interpretation.
+  const title = 'Certi\uFB01cate of Membership';
   const titleSize = 24;
-  const titleWidth = fontSerif.widthOfTextAtSize(title, titleSize);
+  const titleWidth = fontSerifMedium.widthOfTextAtSize(title, titleSize);
   page.drawText(title, {
     x: (W - titleWidth) / 2,
     y: ruleY - 38,
     size: titleSize,
-    font: fontSerif,
+    font: fontSerifMedium,
     color: C_INK,
   });
 
@@ -261,22 +291,6 @@ function drawSpacedText(page, { text, font, size, color, y, centerX, letterSpaci
     page.drawText(c, { x, y, size, font, color });
     x += charWidths[i] + letterSpacing;
   });
-}
-
-// Helper: strip / normalise characters that WinAnsi can't encode, so member
-// names with unexpected unicode (e.g. copy-pasted curly quotes, weird symbols,
-// CJK) don't crash cert generation. Common typographic replacements first,
-// then anything outside Latin-1 gets dropped.
-function sanitizeWinAnsi(s) {
-  if (!s) return '';
-  return String(s)
-    .replace(/[\u2018\u2019]/g, "'")      // curly single quotes → straight
-    .replace(/[\u201C\u201D]/g, '"')      // curly double quotes → straight
-    .replace(/\u2013/g, '-')              // en dash → hyphen
-    .replace(/\u2014/g, '-')              // em dash → hyphen (WinAnsi has it, but safer)
-    .replace(/\u2026/g, '...')            // ellipsis → three dots
-    .replace(/\u2116/g, 'No.')            // numero sign → No.
-    .replace(/[^\x20-\x7E\xA0-\xFF]/g, ''); // drop anything outside Latin-1
 }
 
 module.exports = { generateCertificate };

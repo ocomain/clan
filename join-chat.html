@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apply for Membership — Clan Ó Comáin</title>
   <meta name="description" content="Begin your membership application for Clan Ó Comáin — speak with the Clan Herald and join one of Ireland's most ancient Gaelic lineages.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="icon" href="/favicon.ico">
@@ -114,7 +113,8 @@
       .msg.user .msg-bubble{font-size:16px}
       .input-field{font-size:17px;padding:15px 16px}
       .send-btn{padding:15px 18px;font-size:11px}
-      .input-note{font-size:11px;margin-top:10px;letter-spacing:.02em}
+      .input-note{font-size:13px;margin-top:10px}
+      .desktop-only{display:none}
       .completion-title{font-size:26px}
     }
   </style>
@@ -171,7 +171,7 @@
       <input class="input-field" id="userInput" type="text" placeholder="Type your response…" disabled autocomplete="off">
       <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>Send</button>
     </div>
-    <div class="input-note">Press Enter to send · Your application is handled with care by the clan</div>
+    <div class="input-note"><span class="desktop-only">Press Enter to send · </span>Handled with care by the clan</div>
   </div>
 
 </div>
