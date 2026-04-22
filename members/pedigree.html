@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Pedigree — Members' Edition · Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh}
+
+    /* Header — shared with other members pages */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    /* Main container */
+    .pd-wrap{max-width:1100px;margin:0 auto;padding:48px 24px 80px}
+
+    /* Masthead */
+    .pd-mast{text-align:center;margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--gold)}
+    .pd-mast-crest{width:54px;height:auto;display:block;margin:0 auto 14px;opacity:.85}
+    .pd-mast-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .pd-mast-title{font-family:'EB Garamond',serif;font-size:clamp(32px,4.5vw,48px);font-weight:400;color:var(--ink);line-height:1.05;margin-bottom:10px}
+    .pd-mast-title em{color:var(--gold);font-style:italic}
+    .pd-mast-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.7;max-width:640px;margin:0 auto}
+
+    /* Your Connection panel */
+    .pd-connect{background:var(--white);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:32px 36px;border-radius:2px;margin-bottom:48px;box-shadow:0 6px 24px rgba(12,26,12,.04);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+    @media(max-width:700px){.pd-connect{grid-template-columns:1fr;text-align:center}}
+    .pd-connect-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+    .pd-connect-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);line-height:1.2;margin-bottom:6px}
+    .pd-connect-title em{color:var(--gold);font-style:italic}
+    .pd-connect-body{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.75;margin:0}
+    .pd-connect-btn{display:inline-block;background:var(--gold);color:var(--ink);padding:14px 28px;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s;white-space:nowrap}
+    .pd-connect-btn:hover{background:var(--gold-pale)}
+
+    /* Era heading — the in-between labels between chapter groups */
+    .pd-era{position:relative;padding:32px 0 12px;margin-left:40px}
+    .pd-era::before{content:'';position:absolute;left:-40px;top:0;bottom:0;width:2px;background:var(--gold);opacity:.3}
+    .pd-era-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+    .pd-era-title{font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.2;margin-bottom:6px}
+    .pd-era-sub{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic}
+
+    /* Chapter node — a card on the spine */
+    .pd-node{position:relative;padding:22px 0 24px;margin-left:40px}
+    .pd-node::before{content:'';position:absolute;left:-40px;top:0;bottom:0;width:2px;background:var(--gold);opacity:.3}
+    .pd-node::after{content:'';position:absolute;left:-47px;top:34px;width:16px;height:16px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);box-shadow:0 0 0 3px var(--cream);transition:all .25s}
+    .pd-node:hover::after{background:var(--gold);transform:scale(1.15)}
+
+    .pd-node-card{background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:24px 28px 22px;border-radius:2px;transition:all .25s;text-decoration:none;color:inherit;display:block;box-shadow:0 4px 14px rgba(12,26,12,.04)}
+    .pd-node-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(12,26,12,.1);border-color:var(--gold)}
+    .pd-node-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:10px;flex-wrap:wrap}
+    .pd-node-num{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+    .pd-node-date{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;color:var(--ink-muted);white-space:nowrap;text-transform:uppercase}
+    .pd-node-title{font-family:'EB Garamond',serif;font-size:clamp(20px,2.6vw,24px);font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:4px}
+    .pd-node-title em{color:var(--gold);font-style:italic}
+    .pd-node-sub{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--gold-strong);margin-bottom:14px}
+    .pd-node-teaser{font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.75;color:var(--ink-soft);margin-bottom:14px}
+    .pd-node-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-strong);margin-top:6px}
+    .pd-node-card:hover .pd-node-cta{color:var(--ink)}
+    .pd-node-cta::after{content:' →';transition:margin-left .2s;display:inline-block;margin-left:2px}
+    .pd-node-card:hover .pd-node-cta::after{margin-left:6px}
+
+    /* Chip row — key people / places mentioned, if we want to surface them */
+    .pd-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+    .pd-chip{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.1em;color:var(--ink-muted);background:var(--cream-mid);padding:4px 9px;border-radius:20px;border:1px solid var(--border)}
+
+    /* Special dark node for the DNA chapter */
+    .pd-node.dark .pd-node-card{background:var(--ink);border-color:var(--gold);color:var(--gold-pale)}
+    .pd-node.dark .pd-node-title{color:var(--gold-pale)}
+    .pd-node.dark .pd-node-title em{color:var(--gold-light)}
+    .pd-node.dark .pd-node-sub{color:rgba(160,210,160,.65)}
+    .pd-node.dark .pd-node-teaser{color:rgba(215,235,215,.82)}
+    .pd-node.dark .pd-node-num{color:var(--gold-light)}
+    .pd-node.dark .pd-node-date{color:rgba(215,235,215,.5)}
+    .pd-node.dark .pd-node-cta{color:var(--gold-light)}
+    .pd-node.dark .pd-chip{background:rgba(184,151,90,.08);border-color:rgba(184,151,90,.25);color:rgba(215,235,215,.7)}
+
+    /* Spine end-marker — an arrowhead closing the line */
+    .pd-spine-end{position:relative;margin-left:40px;height:40px}
+    .pd-spine-end::before{content:'';position:absolute;left:-40px;top:0;width:2px;height:20px;background:var(--gold);opacity:.3}
+    .pd-spine-end::after{content:'';position:absolute;left:-45px;top:16px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid var(--gold);opacity:.4}
+
+    /* Footer actions */
+    .pd-foot{margin-top:56px;padding-top:40px;border-top:2px solid var(--gold);text-align:center}
+    .pd-foot-title{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:10px}
+    .pd-foot-title em{color:var(--gold);font-style:italic}
+    .pd-foot-body{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-soft);max-width:540px;margin:0 auto 22px;line-height:1.7}
+    .pd-foot-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .pd-foot-btn{display:inline-block;padding:13px 26px;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .2s}
+    .pd-foot-btn.solid{background:var(--gold);color:var(--ink)}
+    .pd-foot-btn.solid:hover{background:var(--gold-pale)}
+    .pd-foot-btn.outline{border:1px solid var(--gold);color:var(--gold-strong);background:transparent}
+    .pd-foot-btn.outline:hover{background:rgba(184,151,90,.08)}
+
+    @media(max-width:560px){
+      .pd-wrap{padding:36px 16px 60px}
+      .pd-connect{padding:24px 22px}
+      .pd-node, .pd-era{margin-left:30px}
+      .pd-node::before, .pd-era::before{left:-30px}
+      .pd-node::after{left:-37px}
+      .pd-spine-end{margin-left:30px}
+      .pd-spine-end::before{left:-30px}
+      .pd-spine-end::after{left:-35px}
+      .pd-node-card{padding:20px 20px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin coat of arms">
+      <div class="mhdr-brand-text">Clan <em>Ó Comáin</em></div>
+    </a>
+    <nav class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <a href="/members/library.html">Library</a>
+      <a href="/members/contact.html">Council</a>
+      <button class="mhdr-signout" id="signoutBtn">Sign out</button>
+    </nav>
+  </div>
+</header>
+
+<main class="pd-wrap">
+
+  <!-- MASTHEAD -->
+  <div class="pd-mast">
+    <img class="pd-mast-crest" src="/coat_of_arms.png" alt="">
+    <div class="pd-mast-eyebrow">Members' Edition · Pedigree</div>
+    <h1 class="pd-mast-title">The <em>line</em> of Ó Comáin</h1>
+    <p class="pd-mast-sub">Eleven chapters of the clan line, from Bronze Age Ireland to today — each a doorway into the full pedigree. Your members' edition lets you navigate by era, follow the spine of the line, and — when you are ready — connect your own place to it.</p>
+  </div>
+
+  <!-- YOUR CONNECTION PANEL -->
+  <section class="pd-connect">
+    <div>
+      <div class="pd-connect-eyebrow">Your place in the line</div>
+      <h2 class="pd-connect-title">How does your <em>line</em> join the clan?</h2>
+      <p class="pd-connect-body">Eleven chapters trace the documented main line of Clan Ó Comáin. Your own line can be recorded alongside it — however little you know, whatever variant of the name has come down to you. The Office of the Private Secretary receives every submission; confirmed lines are entered into the master pedigree by the Craoibhscríobhaí.</p>
+    </div>
+    <a class="pd-connect-btn" href="/members/your-line.html">Submit your line →</a>
+  </section>
+
+  <!-- ERA · PREHISTORY -->
+  <div class="pd-era">
+    <div class="pd-era-eyebrow">Era I · Prehistory</div>
+    <div class="pd-era-title">Before the record</div>
+    <div class="pd-era-sub">c. 2000 BC — c. 350 AD · The Bronze Age origins of the Irish male line</div>
+  </div>
+
+  <!-- I — Origins -->
+  <a class="pd-node-card" href="/pedigree.html#origins" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter I</div>
+          <h3 class="pd-node-title"><em>Ancient</em> origins</h3>
+        </div>
+        <div class="pd-node-date">c. 2000 BC —</div>
+      </div>
+      <div class="pd-node-sub">4,000 years in Ireland</div>
+      <div class="pd-chips">
+        <span class="pd-chip">R-L21</span>
+        <span class="pd-chip">R-L1066</span>
+        <span class="pd-chip">Atlantic Celtic</span>
+        <span class="pd-chip">Dál Cais</span>
+      </div>
+      <p class="pd-node-teaser">Big-Y DNA confirms the male line in the Bronze Age population that settled western Ireland. The clan's haplogroup signature places it within the shared Atlantic Celtic ancestry of Ireland, Scotland, Wales and Brittany — and connects, at a deep prehistoric level, to the line from which Brian Boru's Dál Cais dynasty also descends.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- ERA · GAELIC ROYALTY -->
+  <div class="pd-era">
+    <div class="pd-era-eyebrow">Era II · Gaelic Royalty</div>
+    <div class="pd-era-title">The kings</div>
+    <div class="pd-era-sub">c. 350 — c. 650 AD · The Uí Maine of Connacht and the Déisi Muman of Munster</div>
+  </div>
+
+  <!-- II — Royal pedigree -->
+  <a class="pd-node-card" href="/pedigree.html#royal" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter II</div>
+          <h3 class="pd-node-title">The royal <em>pedigree</em></h3>
+        </div>
+        <div class="pd-node-date">c. 357 — 1225 AD</div>
+      </div>
+      <div class="pd-node-sub">Kings of Uí Maine · the Connacht royal line</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Máine Mór</span>
+        <span class="pd-chip">Cairbre Crom</span>
+        <span class="pd-chip">Breanan Dall</span>
+        <span class="pd-chip">Coman mac Breanan Dall</span>
+      </div>
+      <p class="pd-node-teaser">The O'Hart pedigree, drawn from the Books of Lecan and Leinster, traces the clan's royal descent through the kings of Uí Maine. Breanan Dall (d. 597/601 AD) is the earliest individually named direct ancestor in a primary historical source; his son Coman is the name-giver from whom "Ó Comáin" — <em>descendant of Coman</em> — derives.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- III — Munster -->
+  <a class="pd-node-card" href="/pedigree.html#munster" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter III</div>
+          <h3 class="pd-node-title">Kings of <em>Déisi Muman</em></h3>
+        </div>
+        <div class="pd-node-date">7th — 8th c.</div>
+      </div>
+      <div class="pd-node-sub">The Munster royal line and the coming to Clare</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Indarba na nDéisi</span>
+        <span class="pd-chip">Suibne mac Comáin</span>
+        <span class="pd-chip">Congal mac Suibne</span>
+        <span class="pd-chip">Eóganachta alliance</span>
+      </div>
+      <p class="pd-node-teaser">The <em>Expulsion of the Déisi</em> — one of the oldest surviving Old Irish prose texts — records the kindred's flight from Leinster and their settlement in Munster under alliance with the Eóganachta. This is the political geography in which Suibne mac Comáin's kingship, and the Munster side of the Ó Comáin line, unfolded.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- ERA · CHRISTIAN & CHIEFDOM -->
+  <div class="pd-era">
+    <div class="pd-era-eyebrow">Era III · Saints &amp; Chiefdom</div>
+    <div class="pd-era-title">The Christian age</div>
+    <div class="pd-era-sub">7th — 13th c. · Saint Commán, the Chiefdom of Tulach Commáin, and Cahercommane</div>
+  </div>
+
+  <!-- IV — Saints -->
+  <a class="pd-node-card" href="/pedigree.html#saints" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter IV</div>
+          <h3 class="pd-node-title">Saints and <em>scholars</em></h3>
+        </div>
+        <div class="pd-node-date">7th — 10th c.</div>
+      </div>
+      <div class="pd-node-sub">The ecclesiastical heritage of the Comáin name</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Saint Commán of Roscommon</span>
+        <span class="pd-chip">Kinvara foundation</span>
+        <span class="pd-chip">Holy Well, Newhall</span>
+      </div>
+      <p class="pd-node-teaser">Saint Commán of Roscommon, whose foundation at Kinvara sits on the southern edge of the Burren within sight of the ancestral capital at Cahercommane, gives the county of Roscommon its name — one of the most geographically enduring of all Irish saints and the clan's patronal saint.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- V — Chiefdom -->
+  <a class="pd-node-card" href="/pedigree.html#chiefdom" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter V</div>
+          <h3 class="pd-node-title">The Chiefdom of <em>Tulach Commáin</em></h3>
+        </div>
+        <div class="pd-node-date">8th — 13th c.</div>
+      </div>
+      <div class="pd-node-sub">An ancient Gaelic chieftain line in the Burren</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Uí Chuinn</span>
+        <span class="pd-chip">Kingdom of Cashel</span>
+        <span class="pd-chip">Gibson 1990</span>
+        <span class="pd-chip">CUP 2012</span>
+      </div>
+      <p class="pd-node-teaser">Identified by Gibson (UCLA 1990; Cambridge University Press 2012) as the ruling lineage of the chiefdom, the Uí Chuinn — the medieval form of the name — held Cahercommane and large parts of the Burren in the 8th and 9th centuries within the wider political landscape of the Kingdom of Cashel.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- VI — Cahercommane -->
+  <a class="pd-node-card" href="/pedigree.html#cahercommaun" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter VI</div>
+          <h3 class="pd-node-title"><em>Cahercommane</em></h3>
+        </div>
+        <div class="pd-node-date">c. 800 AD</div>
+      </div>
+      <div class="pd-node-sub">The ancestral capital — archaeology and place-name</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Tri-vallate stone fort</span>
+        <span class="pd-chip">Hencken 1934</span>
+        <span class="pd-chip">Cotter 1999</span>
+        <span class="pd-chip">Burren plateau</span>
+      </div>
+      <p class="pd-node-teaser">The tri-vallate stone fort on the edge of the Burren plateau — excavated by Hencken in 1934, reassessed by Cotter in 1999 — is the inauguration site and ancestral capital of the chiefdom. Its very name, <em>Cathair Chomáin</em>, preserves the Comáin identity in stone.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- ERA · DECLINE & SURVIVAL -->
+  <div class="pd-era">
+    <div class="pd-era-eyebrow">Era IV · Decline &amp; Survival</div>
+    <div class="pd-era-title">After the dispossession</div>
+    <div class="pd-era-sub">1225 — 1800 · The fall of the chieftain line, and the name's persistence through the silent centuries</div>
+  </div>
+
+  <!-- VII — Fall -->
+  <a class="pd-node-card" href="/pedigree.html#fall" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter VII</div>
+          <h3 class="pd-node-title">The fall of a <em>chieftain line</em></h3>
+        </div>
+        <div class="pd-node-date">1225 — 1585</div>
+      </div>
+      <div class="pd-node-sub">Dispossession and the documentary gap</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Conall O'Comain, 1225</span>
+        <span class="pd-chip">Anglo-Norman dispossession</span>
+        <span class="pd-chip">Inauguration site</span>
+      </div>
+      <p class="pd-node-teaser">Conall O'Comain, last recorded head of the clan in the O'Hart pedigree, marks the end of territorial authority under the Anglo-Norman dispossession of 1225. The clan's formal inauguration site at Tulach Commáin confirms this was no ordinary noble family — it was a genuine Gaelic chieftain line whose fall closed an ancient Clare order.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- VIII — Endures -->
+  <a class="pd-node-card" href="/pedigree.html#endures" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter VIII</div>
+          <h3 class="pd-node-title">The name <em>endures</em></h3>
+        </div>
+        <div class="pd-node-date">1585 — 1800</div>
+      </div>
+      <div class="pd-node-sub">Documentary traces across five centuries</div>
+      <div class="pd-chips">
+        <span class="pd-chip">"Tullagh Coman" 1585</span>
+        <span class="pd-chip">Elizabethan deeds</span>
+        <span class="pd-chip">Killone parish</span>
+      </div>
+      <p class="pd-node-teaser">An Elizabethan deed of 1585 preserves "Tullagh Coman" as a townland name in the English administrative record — four centuries after the dispossession, the chiefdom's name still walks through the legal paperwork of Clare, carrying the memory forward through the silent centuries.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- ERA · MODERN -->
+  <div class="pd-era">
+    <div class="pd-era-eyebrow">Era V · Modern</div>
+    <div class="pd-era-title">The modern record and the DNA</div>
+    <div class="pd-era-sub">1800 — present · From the Tithe Books and Famine emigration, to full haplogroup confirmation</div>
+  </div>
+
+  <!-- IX — Modern record -->
+  <a class="pd-node-card" href="/pedigree.html#modern" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter IX</div>
+          <h3 class="pd-node-title">The <em>modern</em> record</h3>
+        </div>
+        <div class="pd-node-date">1800 — present</div>
+      </div>
+      <div class="pd-node-sub">From the Tithe Books to the present day</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Tithe Applotment</span>
+        <span class="pd-chip">Griffith's Valuation</span>
+        <span class="pd-chip">Famine emigration</span>
+        <span class="pd-chip">Commane Rd, Baldwinsville NY</span>
+      </div>
+      <p class="pd-node-teaser">The Tithe Books, Griffith's Valuation, and Famine-era emigration records trace the family's journey from the parish of Killone into the Atlantic diaspora — including a Commane Road in Baldwinsville, New York, where the name was written into the American landscape by the generations who crossed during the Famine.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- X — DNA (dark styling) -->
+  <a class="pd-node-card" href="/pedigree.html#dna" style="display:block">
+    <div class="pd-node dark">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter X</div>
+          <h3 class="pd-node-title"><em>DNA</em> — 4,000 years confirmed</h3>
+        </div>
+        <div class="pd-node-date">Today</div>
+      </div>
+      <div class="pd-node-sub">The genetic record of the Ó Comáin male line</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Big-Y 700</span>
+        <span class="pd-chip">R-BY14247 terminal</span>
+        <span class="pd-chip">Irish Type III</span>
+        <span class="pd-chip">FamilyTreeDNA</span>
+      </div>
+      <p class="pd-node-teaser">The full confirmed haplogroup chain — from R-M269 down through R-L21, R-Z253, and R-L1066 to the terminal R-BY14247 — places the clan's male line precisely in the Irish Type III genetic context, with a living DNA match in Co. Clare. This is the rung at which archaeology, documentary record, and genetics finally meet.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- ERA · REVIVAL -->
+  <div class="pd-era">
+    <div class="pd-era-eyebrow">Era VI · Revival</div>
+    <div class="pd-era-title">A new chapter opens</div>
+    <div class="pd-era-sub">2025 — · The clan recognised, constituted, and alive again</div>
+  </div>
+
+  <!-- XI — Revival -->
+  <a class="pd-node-card" href="/pedigree.html#revival" style="display:block">
+    <div class="pd-node">
+      <div class="pd-node-head">
+        <div>
+          <div class="pd-node-num">Chapter XI</div>
+          <h3 class="pd-node-title">The clan <em>revival</em></h3>
+        </div>
+        <div class="pd-node-date">2025 —</div>
+      </div>
+      <div class="pd-node-sub">A new chapter in an ancient story</div>
+      <div class="pd-chips">
+        <span class="pd-chip">Fergus Kinfauns, The Commane</span>
+        <span class="pd-chip">Derbhfine consecration</span>
+        <span class="pd-chip">Clans of Ireland</span>
+        <span class="pd-chip">In memory of Ronan</span>
+      </div>
+      <p class="pd-node-teaser">The clan revival of 2025, consecrated under the Brehon <em>derbhfine</em> and recognised by Clans of Ireland under Presidential patronage, opens the eleventh chapter. Inspired by the memory of Ronan James Patrick Commane (1989–2023), it carries the line forward into a new century — and every new member's name adds to it.</p>
+      <span class="pd-node-cta">Read the full chapter</span>
+    </div>
+  </a>
+
+  <!-- Spine terminator -->
+  <div class="pd-spine-end"></div>
+
+  <!-- FOOT -->
+  <div class="pd-foot">
+    <div class="pd-foot-title">This is the <em>line</em> you belong to</div>
+    <p class="pd-foot-body">Eleven chapters, forty-five sources, four thousand years. Your connection to it — however it joins — is what makes the pedigree a living thing rather than a historical document.</p>
+    <div class="pd-foot-btns">
+      <a class="pd-foot-btn solid" href="/members/your-line.html">Submit your line</a>
+      <a class="pd-foot-btn outline" href="/pedigree.html">Read the full pedigree →</a>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '/members/auth.js';
+
+  // Sign-out wiring
+  const signoutBtn = document.getElementById('signoutBtn');
+  if (signoutBtn) {
+    signoutBtn.addEventListener('click', async () => {
+      await signOut();
+      window.location.href = '/members/login.html';
+    });
+  }
+
+  // Require a session
+  const session = await currentSession();
+  if (!session) {
+    window.location.href = '/members/login.html?next=/members/pedigree.html';
+  }
+</script>
+
+</body>
+</html>
