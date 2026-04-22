@@ -243,13 +243,16 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   if (signaturePng) {
     try {
       const sigImg = await doc.embedPng(signaturePng);
-      // Target signature width — fits comfortably within the gold line below
-      const sigDrawWidth = 180;
+      // Target signature width — larger than strictly required by the gold
+      // line beneath, because real hand-signed documents always overflow the
+      // line rather than sit inside it. A tighter fit reads as a printed
+      // label, not a signature.
+      const sigDrawWidth = 260;
       const aspectRatio = sigImg.height / sigImg.width;
       const sigDrawHeight = sigDrawWidth * aspectRatio;
       page.drawImage(sigImg, {
         x: sigCenterX - sigDrawWidth / 2,
-        y: sigY + 32,                 // sits just above the gold line
+        y: sigY + 28,                 // overlaps the gold line naturally
         width: sigDrawWidth,
         height: sigDrawHeight,
       });
