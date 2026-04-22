@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your line in the clan — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh}
+
+    /* Header — shared with other members pages */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .mmain{max-width:780px;margin:0 auto;padding:56px 24px 80px}
+
+    /* Hero */
+    .yl-hero{text-align:center;margin-bottom:40px}
+    .yl-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .yl-title{font-family:'EB Garamond',serif;font-size:clamp(30px,4.5vw,46px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:14px}
+    .yl-title em{color:var(--gold);font-style:italic}
+    .yl-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);max-width:620px;margin:0 auto;line-height:1.7}
+
+    /* Intro panel */
+    .yl-intro{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.8;max-width:660px;margin:0 auto 44px;padding:22px 28px;background:var(--cream-mid);border-left:2px solid var(--gold);border-radius:2px}
+    .yl-intro em{font-style:italic;color:var(--ink)}
+    .yl-intro strong{font-weight:600;color:var(--ink)}
+
+    /* Form card */
+    .yl-form{background:var(--white);border:1px solid var(--gold-border);padding:0;border-radius:2px;box-shadow:0 6px 24px rgba(12,26,12,.05);overflow:hidden}
+
+    /* Section bands inside the form */
+    .yl-band{padding:28px 36px 26px;border-bottom:1px solid var(--border)}
+    .yl-band:last-of-type{border-bottom:none}
+    .yl-band-head{margin-bottom:18px}
+    .yl-band-num{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+    .yl-band-title{font-family:'EB Garamond',serif;font-size:21px;color:var(--ink);line-height:1.2}
+    .yl-band-title em{color:var(--gold);font-style:italic}
+    .yl-band-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);margin-top:6px;line-height:1.6}
+
+    /* Fields */
+    .yl-field{margin-bottom:16px}
+    .yl-field:last-child{margin-bottom:0}
+    .yl-label{display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:7px}
+    .yl-input, .yl-textarea, .yl-select{width:100%;padding:12px 14px;background:var(--cream);border:1px solid var(--border);border-radius:1px;font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);outline:none;transition:border .2s}
+    .yl-input:focus, .yl-textarea:focus, .yl-select:focus{border-color:var(--gold);background:var(--white)}
+    .yl-textarea{resize:vertical;min-height:90px;line-height:1.6}
+    .yl-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23888'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+    .yl-help{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:5px;line-height:1.5}
+
+    /* Generation — a compact row of name / place / year */
+    .yl-gen{display:grid;grid-template-columns:1.5fr 1.5fr 0.8fr;gap:10px;margin-bottom:12px}
+    .yl-gen:last-child{margin-bottom:0}
+    .yl-gen input{padding:10px 12px;font-size:15px;background:var(--cream);border:1px solid var(--border);border-radius:1px;font-family:'EB Garamond',serif;color:var(--ink);outline:none;transition:border .2s}
+    .yl-gen input:focus{border-color:var(--gold);background:var(--white)}
+    .yl-gen-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:7px;display:block}
+    @media(max-width:560px){
+      .yl-gen{grid-template-columns:1fr;gap:6px;margin-bottom:18px}
+    }
+
+    /* Submit band */
+    .yl-submit-band{padding:28px 36px 32px;background:var(--cream-mid);text-align:center}
+    .yl-submit{display:inline-block;background:var(--gold);color:var(--ink);border:none;padding:15px 36px;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:background .2s}
+    .yl-submit:hover{background:var(--gold-pale)}
+    .yl-submit:disabled{opacity:.5;cursor:not-allowed}
+    .yl-status{margin-top:14px;font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-soft);min-height:22px;line-height:1.7}
+    .yl-status.ok{color:#556B1F}
+    .yl-status.err{color:#A64318}
+
+    /* Honest-scope disclosure at bottom */
+    .yl-scope{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);max-width:620px;margin:32px auto 0;line-height:1.7;text-align:center;padding:0 16px}
+
+    @media(max-width:560px){
+      .mmain{padding:40px 16px 60px}
+      .yl-band, .yl-submit-band{padding:22px 20px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin coat of arms">
+      <div class="mhdr-brand-text">Clan <em>Ó Comáin</em></div>
+    </a>
+    <nav class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <a href="/members/library.html">Library</a>
+      <a href="/members/contact.html">Council</a>
+      <button class="mhdr-signout" id="signoutBtn">Sign out</button>
+    </nav>
+  </div>
+</header>
+
+<main class="mmain">
+
+  <div class="yl-hero">
+    <div class="yl-eyebrow">Members · Bloodline</div>
+    <h1 class="yl-title">Your <em>line in the clan</em></h1>
+    <p class="yl-sub">Record what you know of your line for the Craoibhscríobhaí, the keeper of the branches.</p>
+  </div>
+
+  <p class="yl-intro">Every member's line is recorded and held by the <em>Craoibhscríobhaí</em> — pending the appointment of this office, submissions are received and triaged by the Office of the Private Secretary. Fill in <strong>whatever you know</strong>, however little. A single name is enough to begin. Gaps, uncertainties, and family stories are welcome — the Office will work with what you can give and write back with any follow-up questions.</p>
+
+  <form id="lineForm" class="yl-form" novalidate>
+
+    <!-- BAND 1 — You -->
+    <div class="yl-band">
+      <div class="yl-band-head">
+        <div class="yl-band-num">I · You</div>
+        <div class="yl-band-title">Who you <em>are</em></div>
+      </div>
+      <div class="yl-field" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="yl-label" for="yl-name">Your full name</label>
+          <input class="yl-input" type="text" id="yl-name" name="name" required autocomplete="name">
+        </div>
+        <div>
+          <label class="yl-label" for="yl-email">Email for reply</label>
+          <input class="yl-input" type="email" id="yl-email" name="email" required autocomplete="email">
+        </div>
+      </div>
+      <div class="yl-field">
+        <label class="yl-label" for="yl-surname">Surname or variant you hold</label>
+        <input class="yl-input" type="text" id="yl-surname" name="surname" placeholder="e.g. Cummins, Commane, Commins, Commons, Hurley, Comyn">
+        <div class="yl-help">Whichever form of the name has come down your line.</div>
+      </div>
+      <div class="yl-field">
+        <label class="yl-label" for="yl-country">Where you live</label>
+        <input class="yl-input" type="text" id="yl-country" name="country" placeholder="e.g. Boston, Massachusetts · Perth, Western Australia · Dublin">
+      </div>
+    </div>
+
+    <!-- BAND 2 — Generations back -->
+    <div class="yl-band">
+      <div class="yl-band-head">
+        <div class="yl-band-num">II · Your line back</div>
+        <div class="yl-band-title">What you <em>know</em></div>
+        <div class="yl-band-note">Fill in each row as far as you can — skip any you don't know. Place can be as exact or as approximate as you have (townland, parish, county, country).</div>
+      </div>
+
+      <label class="yl-gen-label">Parents</label>
+      <div class="yl-gen">
+        <input type="text" name="p_name" placeholder="Name(s) — e.g. Mary Ann Cummins">
+        <input type="text" name="p_place" placeholder="Place of birth / origin">
+        <input type="text" name="p_year" placeholder="Year">
+      </div>
+
+      <label class="yl-gen-label" style="margin-top:18px">Grandparents (paternal)</label>
+      <div class="yl-gen">
+        <input type="text" name="gpp_name" placeholder="Name(s)">
+        <input type="text" name="gpp_place" placeholder="Place">
+        <input type="text" name="gpp_year" placeholder="Year">
+      </div>
+
+      <label class="yl-gen-label" style="margin-top:14px">Grandparents (maternal)</label>
+      <div class="yl-gen">
+        <input type="text" name="gpm_name" placeholder="Name(s)">
+        <input type="text" name="gpm_place" placeholder="Place">
+        <input type="text" name="gpm_year" placeholder="Year">
+      </div>
+
+      <label class="yl-gen-label" style="margin-top:18px">Great-grandparents — if known</label>
+      <div class="yl-gen">
+        <input type="text" name="ggp_name" placeholder="Name(s)">
+        <input type="text" name="ggp_place" placeholder="Place">
+        <input type="text" name="ggp_year" placeholder="Year">
+      </div>
+
+      <div class="yl-field" style="margin-top:22px">
+        <label class="yl-label" for="yl-earliest">Earliest Ó Comáin ancestor you can trace</label>
+        <textarea class="yl-textarea" id="yl-earliest" name="earliest" placeholder="e.g. John Cummins, born c. 1810 in Kilfearagh, Co. Clare. Emigrated to Ellis Island 1851. Son of Michael (unknown dates)."></textarea>
+        <div class="yl-help">The deepest verifiable name on your line, with whatever dates, places, and links to records you have.</div>
+      </div>
+    </div>
+
+    <!-- BAND 3 — DNA & sources -->
+    <div class="yl-band">
+      <div class="yl-band-head">
+        <div class="yl-band-num">III · DNA &amp; sources</div>
+        <div class="yl-band-title">The <em>evidence</em></div>
+      </div>
+      <div class="yl-field">
+        <label class="yl-label" for="yl-dna">Y-DNA status</label>
+        <select class="yl-select" id="yl-dna" name="dna_status">
+          <option value="">— select —</option>
+          <option value="none">Not tested</option>
+          <option value="ancestry">Autosomal only (Ancestry, 23andMe, MyHeritage)</option>
+          <option value="ydna-37">Y-DNA short (FTDNA Y-37 / Y-67 / Y-111)</option>
+          <option value="bigy">Big-Y 500 or Big-Y 700</option>
+          <option value="other">Other / not sure</option>
+        </select>
+        <div class="yl-help">Y-DNA applies to the paternal line. If you are female or joining the clan through a non-paternal line, a male relative's test (father, brother, paternal uncle or cousin) is what carries the line's signature.</div>
+      </div>
+      <div class="yl-field">
+        <label class="yl-label" for="yl-sources">Documents, heirlooms, or family records you hold</label>
+        <textarea class="yl-textarea" id="yl-sources" name="sources" placeholder="e.g. birth/baptism certificates, church registers, passenger lists, family bibles, old letters or photographs, an Ancestry tree URL you'd like to share."></textarea>
+      </div>
+    </div>
+
+    <!-- BAND 4 — Stories and notes -->
+    <div class="yl-band">
+      <div class="yl-band-head">
+        <div class="yl-band-num">IV · Stories</div>
+        <div class="yl-band-title">Family <em>lore</em></div>
+        <div class="yl-band-note">The parts of your line that aren't on a certificate — stories passed down, places mentioned in family memory, heirlooms, traditions.</div>
+      </div>
+      <div class="yl-field">
+        <label class="yl-label" for="yl-stories">What has come down to you</label>
+        <textarea class="yl-textarea" id="yl-stories" name="stories" placeholder="Anything the Office should know — family stories, place names passed down, notable ancestors or traditions, things you'd like to know more about."></textarea>
+      </div>
+      <div class="yl-field">
+        <label class="yl-label" for="yl-notes">Notes to the Craoibhscríobhaí</label>
+        <textarea class="yl-textarea" id="yl-notes" name="notes" placeholder="Questions, context, anything else."></textarea>
+      </div>
+    </div>
+
+    <div class="yl-submit-band">
+      <button type="submit" class="yl-submit" id="lineSubmit">Submit my line →</button>
+      <div class="yl-status" id="lineStatus"></div>
+    </div>
+  </form>
+
+  <p class="yl-scope">Submissions are held in confidence by the Office of the Private Secretary, reviewed by the Craoibhscríobhaí once appointed, and — where the connection to the clan line is clear — entered into the master pedigree of Clan Ó Comáin. You will be written to before anything bearing your name is published.</p>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '/members/auth.js';
+
+  // Sign-out wiring
+  const signoutBtn = document.getElementById('signoutBtn');
+  if (signoutBtn) {
+    signoutBtn.addEventListener('click', async () => {
+      await signOut();
+      window.location.href = '/members/login.html';
+    });
+  }
+
+  // Require a session
+  const session = await currentSession();
+  if (!session) {
+    window.location.href = '/members/login.html?next=/members/your-line.html';
+  }
+
+  // Pre-fill email from session
+  const userEmail = session?.user?.email || '';
+  if (userEmail) document.getElementById('yl-email').value = userEmail;
+
+  // Submit handler
+  const form = document.getElementById('lineForm');
+  const submitBtn = document.getElementById('lineSubmit');
+  const statusEl = document.getElementById('lineStatus');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const fd = new FormData(form);
+    const payload = {};
+    for (const [k, v] of fd.entries()) payload[k] = String(v).trim();
+
+    if (!payload.name || !payload.email) {
+      statusEl.className = 'yl-status err';
+      statusEl.textContent = 'Please include your name and email so the Office can write back.';
+      return;
+    }
+
+    // Gentle check — we want at least SOME genealogical content, otherwise this
+    // is just an empty form submission that wastes Linda's time
+    const genealogyFields = ['p_name', 'gpp_name', 'gpm_name', 'ggp_name', 'earliest', 'stories', 'sources'];
+    const hasContent = genealogyFields.some(k => payload[k] && payload[k].length > 0);
+    if (!hasContent) {
+      statusEl.className = 'yl-status err';
+      statusEl.textContent = 'Please fill in at least one line of ancestry, an earliest ancestor, a source, or a family story — so the Office has something to work with.';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    statusEl.className = 'yl-status';
+    statusEl.textContent = '';
+
+    try {
+      const res = await fetch('/api/submit-your-line', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Submit failed (${res.status})`);
+
+      statusEl.className = 'yl-status ok';
+      statusEl.innerHTML = 'Thank you — your line has been sent to the Office of the Private Secretary, and will be reviewed by the Craoibhscríobhaí. You will receive a reply to <strong>' + payload.email + '</strong> within a few days.';
+      submitBtn.textContent = 'Submitted ✓';
+      // Leave the form data visible — the member may want to note what they sent
+    } catch (err) {
+      console.error('your-line submit failed:', err);
+      statusEl.className = 'yl-status err';
+      statusEl.innerHTML = 'Something went wrong sending your submission. Please try again, or write directly to <a href="mailto:clan@ocomain.org" style="color:var(--gold-strong)">clan@ocomain.org</a>.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Try again →';
+    }
+  });
+</script>
+
+</body>
+</html>
