@@ -304,16 +304,12 @@ function sendMessage() {
   updateProgress(currentStep);
 
   if (currentStep >= STEPS.length) {
-    // All done — closing message, then a long "preparing" beat, then transition.
-    // Total time after CLOSING_MSG finishes typing ≈ 15s so older readers can
-    // comfortably take in the closing paragraph before the screen changes.
+    // All done — closing message, then a Continue button (or 30s auto-advance) so
+    // readers have full manual control over when to proceed to membership options.
     setTimeout(() => {
       const msg = CLOSING_MSG(collected);
       typeHerald(msg, () => {
-        setTimeout(() => {
-          showPreparing('Sealing your scroll for the Office of the Private Secretary');
-          setTimeout(showCompletion, 10000);
-        }, 5000);
+        showContinueButton();
       });
     }, 500);
   } else {
@@ -387,6 +383,31 @@ function showPreparing(text) {
     </div>`;
   msgs.appendChild(div);
   scrollBottom();
+}
+
+// Continue button — appears after the closing message finishes typing, giving
+// readers full manual control over when to proceed. Auto-advances at 30s as a
+// fallback for users who don't scroll back to tap it.
+function showContinueButton() {
+  const msgs = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;justify-content:center;margin:24px 0 12px;animation:fadeIn 1.2s ease';
+  wrap.innerHTML = `<button id="continueBtn" class="btn-gold" style="padding:16px 36px;font-size:12px;letter-spacing:.14em">Continue to membership options →</button>`;
+  msgs.appendChild(wrap);
+  scrollBottom();
+
+  const proceed = () => {
+    if (!wrap.parentNode) return; // already triggered
+    wrap.remove();
+    clearTimeout(autoTimer);
+    showPreparing('Sealing your scroll for the Office of the Private Secretary');
+    setTimeout(showCompletion, 2000);
+  };
+
+  document.getElementById('continueBtn').addEventListener('click', proceed);
+  // Fallback auto-advance after 30s — long enough for slower readers to absorb
+  // the closing message; still moves them along if they walk away.
+  const autoTimer = setTimeout(proceed, 30000);
 }
 
 function enableInput(ph) {

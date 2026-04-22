@@ -273,10 +273,21 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:12px 0 0">A one-time access link will be sent to this email address. No password required.</p>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
 
-    <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6;margin:0 0 4px">— <strong>The Office of the Private Secretary to The Commane</strong></p>
-    <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 32px">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
+    <!-- Signatory block with round portrait -->
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;width:100%">
+      <tr>
+        <td style="vertical-align:middle;padding-right:18px;width:90px">
+          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
+        </td>
+        <td style="vertical-align:middle">
+          <p style="font-family:'Georgia',serif;font-size:17px;color:#0C1A0C;line-height:1.3;margin:0 0 5px"><strong>Linda Commane Cryan</strong></p>
+          <p style="font-family:'Georgia',serif;font-size:14px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Private Secretary to the Chief</p>
+          <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Rúnaí Príobháideach an Taoisigh · Newhall House, Co. Clare</p>
+        </td>
+      </tr>
+    </table>
 
     <!-- CTA -->
     <div style="text-align:center;margin-bottom:32px">
@@ -316,8 +327,18 @@ async function sendGiftConfirmations(session, buyerEmail, buyerName, productName
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">On behalf of Fergus Kinfauns, The Commane — Chief of Ó Comáin — your gift of a <strong>${tier.name}</strong> membership has been received and confirmed. This office will be in touch with your recipient shortly, and the Chief will write to them personally in the weeks that follow.</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">If you have any questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and I will respond on behalf of the Chief.</p>
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;margin:0 0 24px">Go raibh míle maith agat.</p>
-    <p style="font-family:'Georgia',serif;font-size:14px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">— <strong>The Office of the Private Secretary to The Commane</strong></p>
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
+      <tr>
+        <td style="vertical-align:middle;padding-right:18px;width:84px">
+          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
+        </td>
+        <td style="vertical-align:middle">
+          <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Linda Commane Cryan</strong></p>
+          <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Private Secretary to the Chief</p>
+          <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Rúnaí Príobháideach an Taoisigh · Newhall House, Co. Clare</p>
+        </td>
+      </tr>
+    </table>
   </div>
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center">
     <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
