@@ -17,10 +17,10 @@ const CLAN_EMAIL = 'clan@ocomain.org';
 // Map the office <select> values to human-readable labels for the email
 const OFFICE_LABELS = {
   '': 'Office of the Private Secretary (for triage)',
-  'chief': 'The Chief — Fergus Commane Kinfauns',
+  'chief': 'The Chief — Fergus Kinfauns',
   'tanaiste': 'The Tánaiste — Antoin Commane',
   'chancellor': 'Chancellor & Treasurer — Maria Kinfauns',
-  'secretary': 'Private Secretary — Linda Commane Cryan',
+  'secretary': 'Private Secretary — Linda Cryan',
   'keeper': 'Keeper of the Seat — Jessica-Lily Commane',
   'marshall': 'Marshall & Standard Bearer — Michael Commane',
   'seanchai': 'Seanchaí — Paddy Commane, Ballymacooda',
@@ -106,7 +106,7 @@ exports.handler = async (event) => {
   let subject, html;
 
   if (form_type === 'lineage') {
-    const { surname = '', origin = '', dna_status = '' } = data;
+    const { origin = '', dna_status = '' } = data;
     subject = `🌿 Lineage query — ${name} (Craoibhscríobhaí)`;
     html = `<div style="font-family:Georgia,serif;max-width:620px;color:#3C2A1A">
       <h2 style="color:#0C1A0C;border-bottom:2px solid #B8975A;padding-bottom:10px;margin:0 0 18px">Lineage &amp; DNA query — Clan Ó Comáin</h2>
@@ -116,7 +116,6 @@ exports.handler = async (event) => {
         <tr><td style="padding:8px 10px;border:1px solid #e5dcc8;color:#6C5A4A;font-size:12px">Reply to</td><td style="padding:8px 10px;border:1px solid #e5dcc8"><a href="mailto:${esc(email)}" style="color:#B8975A">${esc(email)}</a></td></tr>
         <tr><td style="padding:8px 10px;border:1px solid #e5dcc8;color:#6C5A4A;font-size:12px">Signed-in as</td><td style="padding:8px 10px;border:1px solid #e5dcc8">${esc(memberEmail)}</td></tr>
         ${memberContext}
-        <tr><td style="padding:8px 10px;border:1px solid #e5dcc8;color:#6C5A4A;font-size:12px">Surname / variant</td><td style="padding:8px 10px;border:1px solid #e5dcc8">${esc(surname) || '—'}</td></tr>
         <tr><td style="padding:8px 10px;border:1px solid #e5dcc8;color:#6C5A4A;font-size:12px">Earliest ancestor</td><td style="padding:8px 10px;border:1px solid #e5dcc8">${esc(origin) || '—'}</td></tr>
         <tr><td style="padding:8px 10px;border:1px solid #e5dcc8;color:#6C5A4A;font-size:12px">Y-DNA status</td><td style="padding:8px 10px;border:1px solid #e5dcc8">${esc(DNA_LABELS[dna_status] || dna_status || '—')}</td></tr>
       </table>

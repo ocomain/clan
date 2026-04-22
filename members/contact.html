@@ -74,6 +74,18 @@
     .ch-intro{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.8;text-align:center;max-width:660px;margin:0 auto 36px;padding:22px 28px;background:var(--cream-mid);border-left:2px solid var(--gold);border-radius:2px}
     .ch-intro em{font-style:italic;color:var(--ink)}
 
+    /* Accordion — both forms collapsed by default so users see both options at a glance */
+    .ch-card-header{cursor:pointer}
+    .ch-card-open-btn{display:flex;align-items:center;justify-content:space-between;width:100%;background:transparent;border:1px solid var(--gold);color:var(--gold);padding:12px 18px;border-radius:1px;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:14px}
+    .ch-card-open-btn:hover{background:rgba(184,151,90,.08);color:var(--ink)}
+    .ch-chevron{display:inline-block;transition:transform .35s ease;font-size:14px}
+    .ch-card.open .ch-chevron{transform:rotate(180deg)}
+    .ch-card-close-label{display:none}
+    .ch-card.open .ch-card-open-label{display:none}
+    .ch-card.open .ch-card-close-label{display:inline}
+    .ch-card-content{max-height:0;overflow:hidden;transition:max-height .45s ease, margin-top .45s ease, padding-top .45s ease;margin-top:0}
+    .ch-card.open .ch-card-content{max-height:2200px;margin-top:8px;padding-top:18px;border-top:1px solid var(--border)}
+
     @media(max-width:560px){
       .mmain{padding:40px 16px 60px}
       .ch-card{padding:28px 22px}
@@ -106,100 +118,112 @@
     <p class="ch-sub">Queries, lineage questions, and correspondence with the offices of the clan.</p>
   </div>
 
-  <p class="ch-intro">All correspondence with the Council passes through the <em>Office of the Private Secretary</em>, Linda Commane Cryan at Newhall, who brings each query to the right office and answers where she can herself. Please allow a few days for a reply.</p>
+  <p class="ch-intro">All correspondence with the Council passes through the <em>Office of the Private Secretary</em>, Linda Cryan, who brings each query to the right office and answers where she can herself. Please allow a few days for a reply.</p>
+
+  <p style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:-14px auto 28px;max-width:520px">Choose which you'd like to send — both forms can be opened below.</p>
 
   <!-- LINEAGE / DNA FORM — priority, persona-A conversion target -->
   <div class="ch-card priority" id="lineageCard">
-    <div class="ch-card-eyebrow">Office of the Craoibhscríobhaí · Bloodline</div>
-    <div class="ch-card-title">Lineage &amp; <em>DNA query</em></div>
-    <p class="ch-card-sub">Questions about your line, the clan pedigree, surname variants, or Y-DNA testing through the Ó Comáin Surname Project. Answered by the Office of the Private Secretary pending the appointment of the clan Craoibhscríobhaí.</p>
-
-    <form id="lineageForm" novalidate>
-      <div class="ch-row-2">
-        <div class="ch-field">
-          <label class="ch-label" for="lin-name">Your name</label>
-          <input class="ch-input" type="text" id="lin-name" name="name" required autocomplete="name">
+    <div class="ch-card-header">
+      <div class="ch-card-eyebrow">Office of the Craoibhscríobhaí · Bloodline</div>
+      <div class="ch-card-title">Lineage &amp; <em>DNA query</em></div>
+      <p class="ch-card-sub">Questions about your line, the clan pedigree, surname variants, or Y-DNA testing through the Ó Comáin Surname Project. Answered by the Office of the Private Secretary pending the appointment of the clan Craoibhscríobhaí.</p>
+      <button type="button" class="ch-card-open-btn" data-toggle="lineageCard" aria-expanded="false" aria-controls="lineageContent">
+        <span><span class="ch-card-open-label">Open this form</span><span class="ch-card-close-label">Close</span></span>
+        <span class="ch-chevron">↓</span>
+      </button>
+    </div>
+    <div class="ch-card-content" id="lineageContent">
+      <form id="lineageForm" novalidate>
+        <div class="ch-row-2">
+          <div class="ch-field">
+            <label class="ch-label" for="lin-name">Your name</label>
+            <input class="ch-input" type="text" id="lin-name" name="name" required autocomplete="name">
+          </div>
+          <div class="ch-field">
+            <label class="ch-label" for="lin-email">Email for reply</label>
+            <input class="ch-input" type="email" id="lin-email" name="email" required autocomplete="email">
+          </div>
         </div>
         <div class="ch-field">
-          <label class="ch-label" for="lin-email">Email for reply</label>
-          <input class="ch-input" type="email" id="lin-email" name="email" required autocomplete="email">
+          <label class="ch-label" for="lin-origin">Earliest known ancestor &amp; place</label>
+          <input class="ch-input" type="text" id="lin-origin" name="origin" placeholder="e.g. John Cummins, born 1872 Co. Clare">
+          <div class="ch-help">Names, dates, and places you already know — however little. The Office will work with whatever you have.</div>
         </div>
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="lin-surname">Surname or name variant you hold</label>
-        <input class="ch-input" type="text" id="lin-surname" name="surname" placeholder="e.g. Commane, Cummins, Hammond, MacComain, Coman">
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="lin-origin">Earliest known ancestor &amp; place</label>
-        <input class="ch-input" type="text" id="lin-origin" name="origin" placeholder="e.g. John Cummins, born 1872 Co. Clare">
-        <div class="ch-help">Names, dates, and places you already know — however little. The Office will work with whatever you have.</div>
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="lin-dna">Y-DNA status</label>
-        <select class="ch-select" id="lin-dna" name="dna_status">
-          <option value="">— select —</option>
-          <option value="none">Not tested</option>
-          <option value="ancestry">Autosomal only (Ancestry, 23andMe, MyHeritage)</option>
-          <option value="ydna-37">Y-DNA short (FTDNA Y-37 / Y-67 / Y-111)</option>
-          <option value="bigy">Big-Y 500 or Big-Y 700</option>
-          <option value="other">Other / not sure</option>
-        </select>
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="lin-msg">Your question</label>
-        <textarea class="ch-textarea" id="lin-msg" name="message" required placeholder="What you'd like to know, what you've already researched, or what you'd like the Office to help you work out."></textarea>
-      </div>
-      <button type="submit" class="ch-submit" id="lineageSubmit">Send to the Office →</button>
-      <div class="ch-status" id="lineageStatus"></div>
-    </form>
+        <div class="ch-field">
+          <label class="ch-label" for="lin-dna">Y-DNA status</label>
+          <select class="ch-select" id="lin-dna" name="dna_status">
+            <option value="">— select —</option>
+            <option value="none">Not tested</option>
+            <option value="ancestry">Autosomal only (Ancestry, 23andMe, MyHeritage)</option>
+            <option value="ydna-37">Y-DNA short (FTDNA Y-37 / Y-67 / Y-111)</option>
+            <option value="bigy">Big-Y 500 or Big-Y 700</option>
+            <option value="other">Other / not sure</option>
+          </select>
+        </div>
+        <div class="ch-field">
+          <label class="ch-label" for="lin-msg">Your question</label>
+          <textarea class="ch-textarea" id="lin-msg" name="message" required placeholder="What you'd like to know, what you've already researched, or what you'd like the Office to help you work out."></textarea>
+        </div>
+        <button type="submit" class="ch-submit" id="lineageSubmit">Send to the Office →</button>
+        <div class="ch-status" id="lineageStatus"></div>
+      </form>
+    </div>
   </div>
 
   <!-- GENERAL CORRESPONDENCE -->
-  <div class="ch-card">
-    <div class="ch-card-eyebrow">General correspondence</div>
-    <div class="ch-card-title">Write to the <em>Council</em></div>
-    <p class="ch-card-sub">Any other message — general queries, heritage research suggestions, offers of help, or notes for a specific office. Addressed to the Office of the Private Secretary for triage.</p>
-
-    <form id="generalForm" novalidate>
-      <div class="ch-row-2">
-        <div class="ch-field">
-          <label class="ch-label" for="gen-name">Your name</label>
-          <input class="ch-input" type="text" id="gen-name" name="name" required autocomplete="name">
+  <div class="ch-card" id="generalCard">
+    <div class="ch-card-header">
+      <div class="ch-card-eyebrow">General correspondence</div>
+      <div class="ch-card-title">Write to the <em>Council</em></div>
+      <p class="ch-card-sub">Any other message — general queries, heritage research suggestions, offers of help, or notes for a specific office. Addressed to the Office of the Private Secretary for triage.</p>
+      <button type="button" class="ch-card-open-btn" data-toggle="generalCard" aria-expanded="false" aria-controls="generalContent">
+        <span><span class="ch-card-open-label">Open this form</span><span class="ch-card-close-label">Close</span></span>
+        <span class="ch-chevron">↓</span>
+      </button>
+    </div>
+    <div class="ch-card-content" id="generalContent">
+      <form id="generalForm" novalidate>
+        <div class="ch-row-2">
+          <div class="ch-field">
+            <label class="ch-label" for="gen-name">Your name</label>
+            <input class="ch-input" type="text" id="gen-name" name="name" required autocomplete="name">
+          </div>
+          <div class="ch-field">
+            <label class="ch-label" for="gen-email">Email for reply</label>
+            <input class="ch-input" type="email" id="gen-email" name="email" required autocomplete="email">
+          </div>
         </div>
         <div class="ch-field">
-          <label class="ch-label" for="gen-email">Email for reply</label>
-          <input class="ch-input" type="email" id="gen-email" name="email" required autocomplete="email">
+          <label class="ch-label" for="gen-office">Intended office (if any)</label>
+          <select class="ch-select" id="gen-office" name="office">
+            <option value="">— Office of the Private Secretary (triage) —</option>
+            <option value="chief">The Chief (Fergus Kinfauns)</option>
+            <option value="tanaiste">The Tánaiste (Antoin Commane)</option>
+            <option value="chancellor">Chancellor &amp; Treasurer (Maria Kinfauns)</option>
+            <option value="secretary">Private Secretary (Linda Cryan)</option>
+            <option value="keeper">Keeper of the Seat (Jessica-Lily Commane)</option>
+            <option value="marshall">Marshall &amp; Standard Bearer (Michael Commane)</option>
+            <option value="seanchai">Seanchaí (Paddy Commane, Ballymacooda)</option>
+            <option value="bard">Clan Bard (Paddy Commane, Rockmount)</option>
+            <option value="chaplain">Clan Chaplain (role open)</option>
+            <option value="anam-cara">Anam Cara · Counsellor (role open)</option>
+            <option value="ollamh-leighis">Ollamh Leighis · Health Advisor (role open)</option>
+          </select>
+          <div class="ch-help">Correspondence with offices held by Council members is triaged and forwarded by the Office of the Private Secretary. Please do not send urgent or clinical matters — see the note on the Anam Cara and Ollamh Leighis cards on the Council page.</div>
         </div>
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="gen-office">Intended office (if any)</label>
-        <select class="ch-select" id="gen-office" name="office">
-          <option value="">— Office of the Private Secretary (triage) —</option>
-          <option value="chief">The Chief (Fergus Commane Kinfauns)</option>
-          <option value="tanaiste">The Tánaiste (Antoin Commane)</option>
-          <option value="chancellor">Chancellor &amp; Treasurer (Maria Kinfauns)</option>
-          <option value="secretary">Private Secretary (Linda Commane Cryan)</option>
-          <option value="keeper">Keeper of the Seat (Jessica-Lily Commane)</option>
-          <option value="marshall">Marshall &amp; Standard Bearer (Michael Commane)</option>
-          <option value="seanchai">Seanchaí (Paddy Commane, Ballymacooda)</option>
-          <option value="bard">Clan Bard (Paddy Commane, Rockmount)</option>
-          <option value="chaplain">Clan Chaplain (role open)</option>
-          <option value="anam-cara">Anam Cara · Counsellor (role open)</option>
-          <option value="ollamh-leighis">Ollamh Leighis · Health Advisor (role open)</option>
-        </select>
-        <div class="ch-help">Correspondence with offices held by Council members is triaged and forwarded by the Office of the Private Secretary. Please do not send urgent or clinical matters — see the note on the Anam Cara and Ollamh Leighis cards on the Council page.</div>
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="gen-subject">Subject</label>
-        <input class="ch-input" type="text" id="gen-subject" name="subject" required>
-      </div>
-      <div class="ch-field">
-        <label class="ch-label" for="gen-msg">Message</label>
-        <textarea class="ch-textarea" id="gen-msg" name="message" required></textarea>
-      </div>
-      <button type="submit" class="ch-submit" id="generalSubmit">Send to the Council →</button>
-      <div class="ch-status" id="generalStatus"></div>
-    </form>
+        <div class="ch-field">
+          <label class="ch-label" for="gen-subject">Subject</label>
+          <input class="ch-input" type="text" id="gen-subject" name="subject" required>
+        </div>
+        <div class="ch-field">
+          <label class="ch-label" for="gen-msg">Message</label>
+          <textarea class="ch-textarea" id="gen-msg" name="message" required></textarea>
+        </div>
+        <button type="submit" class="ch-submit" id="generalSubmit">Send to the Council →</button>
+        <div class="ch-status" id="generalStatus"></div>
+      </form>
+    </div>
   </div>
 
   <!-- APPLY TO JOIN THE COUNCIL -->
@@ -306,6 +330,32 @@
       labels: { sending: 'Sending…', sent: 'Sent ✓', retry: 'Try again →' },
     });
   });
+
+  // ── Accordion toggle — both cards closed by default, either can be opened ─
+  document.querySelectorAll('[data-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = document.getElementById(btn.dataset.toggle);
+      const willOpen = !card.classList.contains('open');
+      card.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(willOpen));
+      // Scroll the card into view when opening, so the form fields are visible
+      if (willOpen) {
+        setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+      }
+    });
+  });
+
+  // ── Deep-link support: #lineage or #general in the URL auto-opens that form
+  const hash = (window.location.hash || '').replace('#', '');
+  if (hash === 'lineage' || hash === 'general') {
+    const targetCard = document.getElementById(hash + 'Card');
+    if (targetCard) {
+      targetCard.classList.add('open');
+      const btn = targetCard.querySelector('[data-toggle]');
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+      setTimeout(() => targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    }
+  }
 </script>
 
 </body>
