@@ -306,7 +306,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
 
   await sendEmail({
     to: email,
-    subject: `Céad míle fáilte — Welcome to Clan Ó Comáin`,
+    subject: `Spirit, mind, body, bloodline — your place in Clan Ó Comáin`,
     html,
   });
 }
