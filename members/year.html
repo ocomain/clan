@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Year So Far — Clan Ó Comáin · Members' Chronicle 2026</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh}
+
+    /* Header — shared with other members pages */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .mmain{max-width:760px;margin:0 auto;padding:56px 24px 80px}
+
+    /* Masthead — evokes an old Irish newsletter */
+    .ch-masthead{text-align:center;margin-bottom:48px;padding-bottom:32px;border-bottom:2px solid var(--gold);position:relative}
+    .ch-mast-crest{width:58px;height:auto;display:block;margin:0 auto 16px;opacity:.85}
+    .ch-mast-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .ch-mast-title{font-family:'EB Garamond',serif;font-size:clamp(34px,5vw,54px);font-weight:400;color:var(--ink);line-height:1.05;margin-bottom:12px}
+    .ch-mast-title em{color:var(--gold);font-style:italic}
+    .ch-mast-irish{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--gold-strong);margin-bottom:20px}
+    .ch-mast-dateline{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-muted)}
+
+    /* Opening — from the Chief */
+    .ch-opening{background:var(--cream-mid);border-left:3px solid var(--gold);padding:28px 32px;margin-bottom:48px;border-radius:2px}
+    .ch-opening-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .ch-opening-body{font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:var(--ink);font-style:italic;margin-bottom:18px}
+    .ch-opening-body:last-child{margin-bottom:0}
+    .ch-opening-signoff{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);text-align:right;margin-top:20px}
+    .ch-opening-signoff em{font-style:italic;color:var(--ink-muted)}
+
+    /* Story sections */
+    .ch-story{margin-bottom:52px}
+    .ch-story:last-of-type{margin-bottom:36px}
+    .ch-story-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:12px}
+    .ch-story-eyebrow::after{content:'';flex:1;height:1px;background:rgba(184,151,90,.25)}
+    .ch-story-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3.5vw,32px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:10px}
+    .ch-story-title em{color:var(--gold);font-style:italic}
+    .ch-story-sub{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);margin-bottom:20px;line-height:1.6}
+    .ch-story-body{font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:var(--ink-soft)}
+    .ch-story-body p{margin:0 0 16px}
+    .ch-story-body p:last-child{margin-bottom:0}
+    .ch-story-body em{font-style:italic;color:var(--ink)}
+    .ch-story-body strong{font-weight:600;color:var(--ink)}
+    .ch-story-body a{color:var(--gold-strong);text-decoration:underline;text-decoration-color:rgba(184,151,90,.4);text-underline-offset:3px}
+    .ch-story-body a:hover{text-decoration-color:var(--gold)}
+
+    .ch-story-img{width:100%;height:auto;border-radius:2px;border:1px solid var(--border);margin:8px 0 20px;display:block}
+
+    /* Roll — a simple listy block for council appointments, scholarship */
+    .ch-roll{list-style:none;padding:0;margin:0}
+    .ch-roll li{padding:14px 0;border-bottom:1px solid var(--border);font-family:'EB Garamond',serif;font-size:16px;line-height:1.65;color:var(--ink-soft)}
+    .ch-roll li:last-child{border-bottom:none}
+    .ch-roll li strong{color:var(--ink);font-weight:600;display:block;margin-bottom:2px}
+    .ch-roll li em{color:var(--gold-strong);font-style:italic;font-size:13px;letter-spacing:.02em;display:block;margin-top:3px}
+
+    /* Footer — closing blessing + CTA back to dashboard */
+    .ch-foot{text-align:center;margin-top:52px;padding-top:32px;border-top:2px solid var(--gold)}
+    .ch-foot-irish{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--gold-strong);margin-bottom:8px}
+    .ch-foot-eng{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-muted);font-style:italic;margin-bottom:24px}
+    .ch-foot-btn{display:inline-block;background:var(--gold);color:var(--ink);border:none;padding:13px 28px;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
+    .ch-foot-btn:hover{background:var(--gold-pale)}
+
+    @media(max-width:560px){
+      .mmain{padding:40px 16px 60px}
+      .ch-opening{padding:22px 20px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin coat of arms">
+      <div class="mhdr-brand-text">Clan <em>Ó Comáin</em></div>
+    </a>
+    <nav class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <a href="/members/library.html">Library</a>
+      <a href="/members/contact.html">Council</a>
+      <button class="mhdr-signout" id="signoutBtn">Sign out</button>
+    </nav>
+  </div>
+</header>
+
+<main class="mmain">
+
+  <!-- MASTHEAD -->
+  <div class="ch-masthead">
+    <img class="ch-mast-crest" src="/coat_of_arms.png" alt="">
+    <div class="ch-mast-eyebrow">Members' Chronicle · 2026</div>
+    <h1 class="ch-mast-title">The <em>year so far</em></h1>
+    <p class="ch-mast-irish">Scéala an Chláin — tidings of the clan</p>
+    <div class="ch-mast-dateline">Compiled at Newhall · April 2026</div>
+  </div>
+
+  <!-- A WORD FROM THE CHIEF -->
+  <div class="ch-opening">
+    <div class="ch-opening-eyebrow">From the Chief</div>
+    <p class="ch-opening-body">A year ago, Clan Ó Comáin had been nearly lost to the record. Today there is a constituted clan, a recognised Chief, a Privy Council taking shape, a pedigree being written, and members scattered across Ireland and the wider world whose names are being added to the Register. What had been silent for generations speaks again.</p>
+    <p class="ch-opening-body">To every member who joined in the first year of the revival: thank you. Your name is part of the clan's return. This is the first of what will be a yearly chronicle — what has happened, what is taking shape, and the direction the next twelve months are pointing.</p>
+    <div class="ch-opening-signoff">— <strong>Fergus Kinfauns</strong>, <em>The Commane</em><br>Newhall House, Co. Clare</div>
+  </div>
+
+  <!-- RECOGNITION -->
+  <article class="ch-story">
+    <div class="ch-story-eyebrow">Recognition</div>
+    <h2 class="ch-story-title">A <em>clan</em> in the Irish record again</h2>
+    <p class="ch-story-sub">Clans of Ireland · Under the patronage of the President of Ireland</p>
+    <div class="ch-story-body">
+      <p>The revival of Clan Ó Comáin in 2025 was <strong>recognised by Clans of Ireland</strong>, under the patronage of the President of Ireland. This is the formal mark of recognition that puts the clan back onto the Irish heritage-body record after generations of silence — and places Clan Ó Comáin alongside the other named clans of Ireland in the national register.</p>
+      <p>The Chief was consecrated under the old Gaelic <em>derbhfine</em> ceremony of Brehon succession — the first such consecration in the family's line for many generations.</p>
+    </div>
+  </article>
+
+  <!-- THE COUNCIL TAKING SHAPE -->
+  <article class="ch-story">
+    <div class="ch-story-eyebrow">The Privy Council</div>
+    <h2 class="ch-story-title">The <em>Council</em> takes shape</h2>
+    <p class="ch-story-sub">Appointments of 2025–2026 — with thirteen offices still open</p>
+    <div class="ch-story-body">
+      <p>Through the first year of the revival, the Chief has been constituting the Privy Council — the small body of named officers who serve the clan and hold its traditional offices. The following appointments have been made:</p>
+      <ul class="ch-roll">
+        <li><strong>Antoin Commane</strong>Tánaiste — heir designate under the Brehon tradition of tanistry<em>Appointed 2025 · represented the clan at Clans of Ireland gathering, Dublin 2026</em></li>
+        <li><strong>Maria Kinfauns</strong>Chancellor &amp; Treasurer<em>Newhall House</em></li>
+        <li><strong>Linda Cryan</strong>Private Secretary to the Chief — the Office through which clan correspondence passes<em>Appointed 2026</em></li>
+        <li><strong>Jessica-Lily Commane</strong>Keeper of the Seat</li>
+        <li><strong>Michael Commane</strong>Marshall &amp; Standard Bearer<em>Cape Cod, Massachusetts</em></li>
+        <li><strong>Paddy Commane (Ballymacooda)</strong>Seanchaí — keeper of clan lore and oral tradition</li>
+        <li><strong>Paddy Commane (Rockmount)</strong>Clan Bard — musician and singer of the clan</li>
+      </ul>
+      <p style="margin-top:22px">Beyond those confirmed, <strong>thirteen offices are currently open to the right person</strong> — including the pastoral offices of the <em>Anam Cara</em> (mind), the <em>Ollamh Leighis</em> (body), and the <em>Craoibhscríobhaí</em> (bloodline), alongside the <em>Clan Chaplain</em> (spirit), the <em>Clan Herald</em>, the <em>Gaelic Officer</em>, multiple <em>Clan Ambassador</em> positions for the diaspora, and the operational offices of Chronicler of Legends, Heritage Archivist, Diaspora Liaison, PR Officer, and Membership Officer. Members who feel they have the skill, time, and affinity for any of these offices are invited to write to the Chief. See the <a href="/privy-council.html">Council page</a> for the full list.</p>
+    </div>
+  </article>
+
+  <!-- THE CLANS OF IRELAND GATHERING -->
+  <article class="ch-story">
+    <div class="ch-story-eyebrow">Dublin · March 2026</div>
+    <h2 class="ch-story-title">The <em>Clans of Ireland</em> gathering</h2>
+    <p class="ch-story-sub">Antoin Commane represents the clan · Merrion Square</p>
+    <div class="ch-story-body">
+      <img class="ch-story-img" src="/clans_dublin_thumbnail.jpg" alt="Clans of Ireland gathering, Dublin, March 2026">
+      <p>In March 2026, Antoin Commane represented Clan Ó Comáin at the Clans of Ireland annual gathering in Dublin — the first time an Ó Comáin officer has stood at the gathering in the revived clan's own name. This year's event brought together the named clans of Ireland for ceremonial proceedings and a chance to meet the wider family of recognised Irish clans.</p>
+      <p>It is one of the visible markers of the revival — the clan present, named, and standing alongside the others.</p>
+    </div>
+  </article>
+
+  <!-- SCHOLARSHIP ADDED -->
+  <article class="ch-story">
+    <div class="ch-story-eyebrow">Scholarship</div>
+    <h2 class="ch-story-title">The <em>clan library</em> begins</h2>
+    <p class="ch-story-sub">Three primary sources added in the first year</p>
+    <div class="ch-story-body">
+      <p>The members' <a href="/members/library.html">clan library</a> is the clan's scholarly archive — primary sources that establish the historical record of Ó Comáin. In the first year of the revival, three foundational documents have been added:</p>
+      <ul class="ch-roll">
+        <li><strong>Gibson, 1990</strong><em>Tulach Commáin: A View of an Irish Chiefdom</em> — doctoral dissertation, University of California, Los Angeles. 456 pages reconstructing the clan's chiefdom centred on Cahercommaun in the Burren. The foundational academic work on the clan.</li>
+        <li><strong>Gibson, 2008</strong>Revisit of the Tulach Commáin findings — <em>Journal of Anthropological Archaeology</em>, peer-reviewed, with expanded analysis of early medieval Irish land tenure.</li>
+        <li><strong>Cotter, 1999</strong>Three key pages from her reassessment of the 1934 Cahercommaun excavation (Royal Irish Academy, Discovery Programme) — including the Uí Chormaic / Commáin discussion.</li>
+      </ul>
+      <p style="margin-top:22px">These are the first three documents. The library is expected to grow — place-name studies, genealogical records, heraldic sources, and Irish-ancestry hereditary-health material are planned for addition through the Craoibhscríobhaí and Ollamh Leighis offices once filled. If you hold a scholarly source on the clan not in the library and would like it considered, <a href="/members/contact.html">write to the Office</a>.</p>
+    </div>
+  </article>
+
+  <!-- THE PEDIGREE -->
+  <article class="ch-story">
+    <div class="ch-story-eyebrow">Bloodline</div>
+    <h2 class="ch-story-title">The <em>pedigree</em> being written</h2>
+    <p class="ch-story-sub">Eight chapters of the clan line traced to the seventh century — and the work ahead</p>
+    <div class="ch-story-body">
+      <p>The clan pedigree, at <a href="/pedigree.html">ocomain.org/pedigree</a>, now traces the Ó Comáin line across eight chapters — from ancient origins four thousand years ago, through the royal pedigrees of <em>Uí Maine</em> in Connacht and the <em>Déisi Muman</em> in Munster, the saints and scholars of the name, the chiefdom of <em>Tulach Commáin</em> at Cahercommaun, and the journey into modern Clare. Forty-five scholarly sources stand behind the record.</p>
+      <p>In the coming year the work turns to the modern end of the line: the individual members whose own names and places deserve to be held in the master pedigree alongside the historical record. Members can now submit their own line for consideration using the <a href="/members/your-line.html">Your line in the clan</a> page — parents, grandparents, earliest Ó Comáin ancestor, Y-DNA status where held, and the family stories that belong alongside the dates.</p>
+      <p>Every line received will be read, acknowledged, and — where the connection to the clan line is clear — entered into the master pedigree by the Office. <strong>Your line is how the pedigree finishes its work.</strong></p>
+    </div>
+  </article>
+
+  <!-- WHAT COMES NEXT -->
+  <article class="ch-story">
+    <div class="ch-story-eyebrow">Looking ahead</div>
+    <h2 class="ch-story-title">What the <em>second year</em> is pointing toward</h2>
+    <div class="ch-story-body">
+      <p>Some of the direction the next twelve months are pointing:</p>
+      <ul class="ch-roll">
+        <li><strong>Filling the pastoral offices</strong>The <em>Anam Cara</em> (clan counsellor — mind), <em>Ollamh Leighis</em> (health advisor — body), and <em>Craoibhscríobhaí</em> (genealogist — bloodline) — plus the <em>Clan Chaplain</em> for Spirit. Applications are being received.</li>
+        <li><strong>The Ó Comáin Surname Project at FamilyTreeDNA</strong>A formally registered Y-DNA surname project is expected once the Craoibhscríobhaí is appointed — covering Big-Y 700 and the R-L21 / Irish Type III haplogroup context that anchors the male-line Ó Comáin inheritance.</li>
+        <li><strong>Summer gatherings at Newhall</strong>The Chief's home, Newhall House in Co. Clare, will be opened for the first formal clan gathering in summer 2026 — open to all members, with details to follow through this chronicle and the Office of the Private Secretary.</li>
+        <li><strong>Killone Abbey</strong>A preservation conversation is underway around the clan's 12th-century sacred site at Newhall — the ruined abbey and the Holy Well of Saint John the Baptist — to open it up to clan members and the wider public.</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- FOOT -->
+  <div class="ch-foot">
+    <div class="ch-foot-irish">Go raibh míle maith agat.</div>
+    <div class="ch-foot-eng">Thank you — a thousand thanks — for being part of the clan's return.</div>
+    <a class="ch-foot-btn" href="/members/">Back to your dashboard →</a>
+  </div>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '/members/auth.js';
+
+  // Sign-out wiring
+  const signoutBtn = document.getElementById('signoutBtn');
+  if (signoutBtn) {
+    signoutBtn.addEventListener('click', async () => {
+      await signOut();
+      window.location.href = '/members/login.html';
+    });
+  }
+
+  // Require a session
+  const session = await currentSession();
+  if (!session) {
+    window.location.href = '/members/login.html?next=/members/year.html';
+  }
+</script>
+
+</body>
+</html>
