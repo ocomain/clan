@@ -248,16 +248,30 @@
 
   (async () => {
     try {
+      // If the magic-link return URL contains an auth error (expired token,
+      // already-used link, etc.), Supabase puts the error code in the hash.
+      // Detect that BEFORE waiting for a session — there won't be one — and
+      // forward to the login page with an `expired=1` flag so it can offer
+      // a one-click resend instead of forcing the member to retype email.
+      const hash = window.location.hash || '';
+      if (hash.includes('error=') || hash.includes('error_code=')) {
+        window.location.href = '/members/login.html?expired=1';
+        return;
+      }
+
       // Wait for session to be established from URL hash (magic-link return)
       await new Promise(r => setTimeout(r, 200));
       const session = await currentSession();
       if (!session) {
-        window.location.href = '/members/login.html';
+        // No session and no hash error — could be a stale tab or someone
+        // visiting /members/ directly. Send to login with the same recovery
+        // hint so the resend button is visible.
+        window.location.href = '/members/login.html?expired=1';
         return;
       }
       const member = await getMemberProfile();
       if (!member) {
-        window.location.href = '/members/login.html';
+        window.location.href = '/members/login.html?expired=1';
         return;
       }
       if (member.notAMember) {

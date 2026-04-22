@@ -140,7 +140,7 @@
 </footer>
 
 <script type="module">
-  import { sendMagicLink, currentSession } from './auth.js';
+  import { sendMagicLink, currentSession, getLastEmail } from './auth.js';
 
   // If already logged in, go straight to the dashboard.
   (async () => {
@@ -152,6 +152,24 @@
   const emailInput = document.getElementById('email');
   const submitBtn = document.getElementById('submitBtn');
   const status = document.getElementById('status');
+
+  // Pre-fill the email from the last successful magic-link request — saves
+  // older members from retyping their email on each visit / recovery.
+  const cachedEmail = getLastEmail();
+  if (cachedEmail) emailInput.value = cachedEmail;
+
+  // If we arrived here via a recovery redirect (expired/used link, or
+  // visiting /members/ without a session), show a friendly recovery banner
+  // and offer a one-click resend if we have a cached email.
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('expired') === '1') {
+    status.className = 'mlogin-status show success';
+    if (cachedEmail) {
+      status.innerHTML = `<strong>Welcome back.</strong> Your previous sign-in link has expired or was already used. Click the button below and we'll send a fresh one to <em>${cachedEmail}</em> — no need to retype anything.`;
+    } else {
+      status.innerHTML = `<strong>Welcome back.</strong> Your previous sign-in link has expired or was already used. Just enter your email below and we'll send a fresh one. No need to remember a password — links don't expire quickly here, so take your time.`;
+    }
+  }
 
   form.addEventListener('submit', async () => {
     const email = emailInput.value.trim();
@@ -165,7 +183,7 @@
 
     if (ok) {
       status.className = 'mlogin-status show success';
-      status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link is on its way to <em>${email}</em>. It expires in one hour. If it doesn't arrive within a few minutes, check your spam folder.`;
+      status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link has been sent to <em>${email}</em>. The link is valid for 24 hours — open it on any device, any browser. If it doesn't arrive within a few minutes, check your spam folder.`;
       submitBtn.textContent = 'Link sent ✓';
       emailInput.disabled = true;
     } else {

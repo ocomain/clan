@@ -12,17 +12,36 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    flowType: 'pkce',
+    // NOTE: PKCE intentionally NOT used here. PKCE requires the magic link to
+    // be opened in the same browser/device that requested it — which breaks
+    // for the common pattern where someone requests on their phone and reads
+    // their email on a laptop, or vice versa. For a clan-membership site
+    // (not financial), implicit flow's cross-device tolerance is the right
+    // trade-off vs the marginal additional security of PKCE. If we need to
+    // tighten this later (e.g. for a payment flow), we can layer PKCE in for
+    // those specific routes.
+    flowType: 'implicit',
   },
 });
 
 export async function sendMagicLink(email) {
+  const cleanEmail = email.toLowerCase().trim();
   const redirectTo = window.location.origin + '/members/';
   const { error } = await supabase.auth.signInWithOtp({
-    email: email.toLowerCase().trim(),
+    email: cleanEmail,
     options: { emailRedirectTo: redirectTo },
   });
+  // Cache the email locally so the expired-link recovery flow can offer to
+  // send a fresh link without making the member retype it.
+  if (!error) {
+    try { localStorage.setItem('oc_last_email', cleanEmail); } catch {}
+  }
   return { ok: !error, error: error?.message };
+}
+
+// Get the last email a magic link was sent to (for recovery flow)
+export function getLastEmail() {
+  try { return localStorage.getItem('oc_last_email') || ''; } catch { return ''; }
 }
 
 export async function currentSession() {
