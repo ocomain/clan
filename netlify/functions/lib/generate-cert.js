@@ -196,7 +196,14 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   });
 
   // Register statement — wraps across two lines for readability
-  const register1 = `is hereby entered as a ${tierLabel} of Clan Ó Comáin`;
+  // If the tier label already contains "Clan" (e.g. "Guardian of the Clan"),
+  // don't tack on "of Clan Ó Comáin" after it — it reads "Clan of Clan".
+  // Smarter template: tier label owns the "of Clan Ó Comáin" phrasing when
+  // it already names the clan, otherwise we append it.
+  const tierContainsClan = /\bclan\b/i.test(tierLabel);
+  const register1 = tierContainsClan
+    ? `is hereby entered as a ${tierLabel.replace(/\bclan\b/i, 'Clan Ó Comáin')}`
+    : `is hereby entered as a ${tierLabel} of Clan Ó Comáin`;
   const register2 = 'in the Register of the clan, held at Newhall House, County Clare, Ireland';
   const registerSize = 12;
   const register1Width = fontSerif.widthOfTextAtSize(register1, registerSize);
