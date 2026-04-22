@@ -26,9 +26,10 @@ const C_CREAM  = rgb(0.973, 0.957, 0.925);  // #F8F4EC
  * @param {string} opts.joinedAt   - ISO timestamp
  * @param {string} opts.certNumber - short unique cert number
  * @param {Buffer} opts.shieldPng  - PNG buffer of the coat of arms
+ * @param {Buffer} [opts.signaturePng] - PNG buffer of the Chief's signature (optional, drawn over centre signature line if present)
  * @returns {Promise<Uint8Array>}  PDF bytes
  */
-async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng }) {
+async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng, signaturePng }) {
   // Sanitize all string inputs to WinAnsi-safe characters since pdf-lib's
   // standard fonts only speak WinAnsi. Replaces typographic quotes/dashes
   // that might arrive via copy-paste; unknown chars are dropped rather than
@@ -195,35 +196,47 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
     color: C_MUTED,
   });
 
-  // Signature area — left Chief, right Register
-  const sigY = margin + 100;
-  const sigLineLen = 140;
+  // Signature area — single centred block with handwritten signature image
+  // above the gold line, typed Chief name and ceremonial title beneath
+  const sigY = margin + 110;
+  const sigCenterX = W / 2;
+  const sigLineLen = 220;
 
-  // Chief signature (left)
-  const sigLeftX = W * 0.28;
+  // Embed and draw the Chief's signature image, if provided
+  if (signaturePng) {
+    try {
+      const sigImg = await doc.embedPng(signaturePng);
+      // Target signature width — fits comfortably within the gold line below
+      const sigDrawWidth = 180;
+      const aspectRatio = sigImg.height / sigImg.width;
+      const sigDrawHeight = sigDrawWidth * aspectRatio;
+      page.drawImage(sigImg, {
+        x: sigCenterX - sigDrawWidth / 2,
+        y: sigY + 32,                 // sits just above the gold line
+        width: sigDrawWidth,
+        height: sigDrawHeight,
+      });
+    } catch (e) {
+      // If embed fails (e.g. corrupt PNG) silently skip — typed name remains
+      console.error('Signature embed failed:', e.message);
+    }
+  }
+
+  // Single centred gold signature line
   page.drawLine({
-    start: { x: sigLeftX - sigLineLen/2, y: sigY + 28 },
-    end:   { x: sigLeftX + sigLineLen/2, y: sigY + 28 },
+    start: { x: sigCenterX - sigLineLen/2, y: sigY + 28 },
+    end:   { x: sigCenterX + sigLineLen/2, y: sigY + 28 },
     thickness: 0.5,
     color: C_GOLD,
   });
-  drawCentered(page, 'Fergus Kinfauns, The Commane', fontSerif, 11, C_INK, sigY + 12, sigLeftX);
-  drawCentered(page, 'Chief of Ó Comáin', fontSerifItalic, 9, C_MUTED, sigY - 2, sigLeftX);
 
-  // Register (right)
-  const sigRightX = W * 0.72;
-  page.drawLine({
-    start: { x: sigRightX - sigLineLen/2, y: sigY + 28 },
-    end:   { x: sigRightX + sigLineLen/2, y: sigY + 28 },
-    thickness: 0.5,
-    color: C_GOLD,
-  });
-  drawCentered(page, 'Newhall House, County Clare', fontSerif, 11, C_INK, sigY + 12, sigRightX);
-  drawCentered(page, 'Registered', fontSerifItalic, 9, C_MUTED, sigY - 2, sigRightX);
+  // Typed Chief name and ceremonial title beneath the line
+  drawCentered(page, 'Fergus Kinfauns, The Commane', fontSerif, 11, C_INK, sigY + 12, sigCenterX);
+  drawCentered(page, 'Chief of Ó Comáin', fontSerifItalic, 9, C_MUTED, sigY - 2, sigCenterX);
 
-  // Cert metadata footer
+  // Cert metadata footer — registration place + issue date + cert number
   const issuedDate = new Date(joinedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  const footerText = `Issued ${issuedDate}   ·   Cert No. ${certNumber}`;
+  const footerText = `Registered at Newhall House, County Clare   ·   Issued ${issuedDate}   ·   Cert No. ${certNumber}`;
   drawCentered(page, footerText, fontSans, 8, C_MUTED, margin + 48, W/2);
 
   // Small gold dot at top of the cert between inner borders — quiet heraldic flourish

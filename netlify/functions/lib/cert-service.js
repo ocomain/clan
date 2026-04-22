@@ -39,7 +39,8 @@ async function ensureCertificate(member, clan_id) {
 
   // Generate fresh
   const certNumber = shortCertNumber(member.id, member.joined_at);
-  const shieldPng = fs.readFileSync(path.join(__dirname, '..', 'assets', 'coat_of_arms.png'));
+  const shieldPng    = fs.readFileSync(path.join(__dirname, '..', 'assets', 'coat_of_arms.png'));
+  const signaturePng = fs.readFileSync(path.join(__dirname, '..', 'assets', 'the_commane_signature.png'));
 
   const pdfBytes = await generateCertificate({
     name:       member.name || member.email,
@@ -47,6 +48,7 @@ async function ensureCertificate(member, clan_id) {
     joinedAt:   member.joined_at,
     certNumber,
     shieldPng,
+    signaturePng,
   });
 
   const storagePath = `ocomain/members/${member.id}/${certNumber}.pdf`;
