@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Clan Library — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh}
+
+    /* Header — same as members dashboard */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .mmain{max-width:980px;margin:0 auto;padding:60px 24px 80px}
+
+    .lib-hero{text-align:center;margin-bottom:48px}
+    .lib-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .lib-title{font-family:'EB Garamond',serif;font-size:clamp(30px,4.5vw,46px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:14px}
+    .lib-title em{color:var(--gold);font-style:italic}
+    .lib-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);max-width:680px;margin:0 auto;line-height:1.7}
+
+    .lib-notice{max-width:720px;margin:0 auto 40px;background:var(--cream-mid);border-left:3px solid var(--gold);padding:18px 22px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.65;color:var(--ink-soft)}
+
+    /* Document list */
+    .lib-list{display:flex;flex-direction:column;gap:28px;margin-top:40px}
+    .lib-doc{background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:32px 36px;border-radius:2px;box-shadow:0 6px 24px rgba(12,26,12,.06)}
+    .lib-doc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+    .lib-doc-kind{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+    .lib-doc-title{font-family:'EB Garamond',serif;font-size:clamp(20px,2.4vw,26px);font-weight:400;color:var(--ink);line-height:1.25;margin-bottom:6px}
+    .lib-doc-title em{font-style:italic}
+    .lib-doc-byline{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:4px}
+    .lib-doc-inst{font-family:'Jost',sans-serif;font-size:12px;color:var(--ink-muted);letter-spacing:.04em}
+    .lib-doc-size{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap;padding-top:6px}
+    .lib-doc-desc{font-family:'EB Garamond',serif;font-size:15px;line-height:1.7;color:var(--ink);margin:14px 0 20px;max-width:720px}
+    .lib-doc-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .lib-btn{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:12px 22px;border-radius:1px;cursor:pointer;transition:background .2s}
+    .lib-btn:hover{background:var(--gold-light)}
+    .lib-btn:disabled{opacity:.5;cursor:not-allowed}
+    .lib-status{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:8px;min-height:18px}
+
+    .lib-loading{text-align:center;padding:80px 0;font-family:'EB Garamond',serif;font-style:italic;color:var(--ink-muted);font-size:16px}
+    .lib-error{max-width:560px;margin:40px auto;background:var(--cream-dark);border:1px solid var(--border);padding:28px;text-align:center;border-radius:2px}
+    .lib-error p{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);margin-bottom:16px}
+    .btn{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:12px 22px;border-radius:1px;text-decoration:none;display:inline-block}
+
+    @media(max-width:640px){
+      .lib-doc{padding:24px 20px}
+      .lib-doc-head{flex-direction:column;gap:6px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <a href="/pedigree.html">Pedigree</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<main class="mmain">
+  <div class="lib-hero">
+    <div class="lib-eyebrow">The Clan Library</div>
+    <h1 class="lib-title">Primary <em>scholarship</em></h1>
+    <p class="lib-sub">The scholarly archive of Clan Ó Comáin — primary sources on the clan, its chiefdom, and its place in the Gaelic record of early medieval Ireland. These documents are reserved for members of the clan.</p>
+  </div>
+
+  <div class="lib-notice">
+    <strong>A note on access:</strong> Download links are signed and valid for 7 days. These files are not publicly shared — please do not redistribute. If you need access to a scholarly source not listed here, write to <a href="mailto:clan@ocomain.org" style="color:var(--gold-strong)">clan@ocomain.org</a>.
+  </div>
+
+  <div id="libraryState" class="lib-loading">Loading the clan library…</div>
+  <div id="libraryList" class="lib-list" style="display:none"></div>
+  <div id="errorState" style="display:none" class="lib-error">
+    <p id="errorMessage">Something went wrong.</p>
+    <a href="/members/login.html" class="btn">Return to sign in →</a>
+  </div>
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from './auth.js';
+
+  const stateEl   = document.getElementById('libraryState');
+  const listEl    = document.getElementById('libraryList');
+  const errorBox  = document.getElementById('errorState');
+  const errorMsg  = document.getElementById('errorMessage');
+  const signOutBtn = document.getElementById('signOutBtn');
+  signOutBtn.addEventListener('click', signOut);
+
+  function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  function renderItem(item) {
+    // item.description may contain &apos; etc already encoded from the function — keep as-is since we emit
+    return `
+      <article class="lib-doc" data-slug="${escHtml(item.slug)}">
+        <div class="lib-doc-head">
+          <div>
+            <div class="lib-doc-kind">${escHtml(item.kind)}</div>
+            <div class="lib-doc-title">${escHtml(item.title)}</div>
+            <div class="lib-doc-byline">${escHtml(item.author)} · ${escHtml(item.year)}</div>
+            <div class="lib-doc-inst">${escHtml(item.institution)}${item.pages ? ' · ' + escHtml(item.pages) + ' pp.' : ''}</div>
+          </div>
+          <div class="lib-doc-size">${escHtml(item.sizeLabel || '')}</div>
+        </div>
+        <p class="lib-doc-desc">${escHtml(item.description)}</p>
+        <div class="lib-doc-actions">
+          <button class="lib-btn" data-slug="${escHtml(item.slug)}">Download PDF &rarr;</button>
+        </div>
+        <div class="lib-status" data-status-for="${escHtml(item.slug)}"></div>
+      </article>
+    `;
+  }
+
+  async function fetchSignedUrl(slug, session) {
+    const res = await fetch(`/api/library-fetch?doc=${encodeURIComponent(slug)}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `library-fetch ${res.status}`);
+    }
+    return await res.json();
+  }
+
+  async function main() {
+    const session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?expired=1';
+      return;
+    }
+
+    // Load the manifest
+    let manifest;
+    try {
+      const res = await fetch('/api/library-fetch', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (res.status === 401) {
+        window.location.href = '/members/login.html?expired=1';
+        return;
+      }
+      if (res.status === 403) {
+        errorMsg.textContent = 'This area is for members of Clan Ó Comáin only. If you believe this is an error, write to clan@ocomain.org.';
+        stateEl.style.display = 'none';
+        errorBox.style.display = 'block';
+        return;
+      }
+      if (!res.ok) throw new Error(`manifest ${res.status}`);
+      manifest = await res.json();
+    } catch (e) {
+      errorMsg.textContent = 'Could not load the library at the moment. Please try again shortly.';
+      stateEl.style.display = 'none';
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    const items = manifest.items || [];
+    if (items.length === 0) {
+      stateEl.textContent = 'The library is currently empty.';
+      return;
+    }
+
+    listEl.innerHTML = items.map(renderItem).join('');
+    stateEl.style.display = 'none';
+    listEl.style.display = 'flex';
+
+    // Wire download buttons — fetch fresh signed URL on click, then open in new tab
+    listEl.querySelectorAll('.lib-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.dataset.slug;
+        const statusEl = listEl.querySelector(`[data-status-for="${slug}"]`);
+        btn.disabled = true;
+        btn.textContent = 'Preparing download…';
+        statusEl.textContent = '';
+        try {
+          const { url } = await fetchSignedUrl(slug, session);
+          window.open(url, '_blank', 'noopener');
+          statusEl.textContent = 'Download started in a new tab. Link valid for 7 days.';
+          btn.textContent = 'Download again →';
+          btn.disabled = false;
+        } catch (e) {
+          statusEl.textContent = 'Could not prepare the download. The document may not be available yet — please try again shortly.';
+          btn.textContent = 'Try again →';
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  main().catch((e) => {
+    console.error('library page error:', e);
+    errorMsg.textContent = 'Something went wrong loading the library.';
+    stateEl.style.display = 'none';
+    errorBox.style.display = 'block';
+  });
+</script>
+</body>
+</html>
