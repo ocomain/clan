@@ -54,6 +54,9 @@
     .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
     .cert-preview{background:var(--cream);border:1px solid var(--border);padding:48px;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.08)}
     .cert-preview::before{content:'';position:absolute;inset:8px;border:1px solid rgba(184,151,90,.3);pointer-events:none}
+    /* Diagonal "SAMPLE" watermark across the preview so no one mistakes
+       this for the real deliverable. */
+    .cert-preview::after{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-22deg);font-family:'EB Garamond',serif;font-weight:400;font-size:clamp(72px,10vw,120px);letter-spacing:.12em;color:rgba(184,151,90,.14);pointer-events:none;white-space:nowrap;user-select:none}
     .cert-crest{width:64px;height:64px;margin:0 auto 12px;display:block}
     .cert-eyebrow{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.02em;color:var(--gold);text-align:center;margin-bottom:18px;line-height:1}
     .cert-title{font-family:'EB Garamond',serif;font-size:28px;color:var(--ink);text-align:center;font-weight:400;line-height:1.2;margin-bottom:8px}
@@ -294,6 +297,7 @@
           </div>
           <div class="cert-watermark">Caithfidh an stair a bheith i réim · History must prevail</div>
         </div>
+        <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:16px;line-height:1.65">Representative design — the actual certificate is issued in full colour on heavyweight stock with the Chief's handwritten signature, and bears a <strong>unique certificate number</strong> (e.g. <em>OC-A4B2-K9</em>) linking it to the recipient's entry in the clan's Register at Newhall House. No two certificates carry the same number.</p>
       </div>
     </div>
   </div>
