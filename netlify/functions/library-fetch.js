@@ -16,6 +16,10 @@ const DEFAULT_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 // Library manifest — single source of truth for what is available. Adding a new
 // document means (a) uploading to Storage under the storagePath below, and (b)
 // adding an entry here. Slugs are stable IDs used by the front-end.
+//
+// Topic taxonomy: 'history' | 'archaeology' | 'genealogy' | 'place' |
+// 'heraldry' | 'health'. Used by the front-end to render a small topic
+// badge on each item and to power the simple search/filter input.
 const LIBRARY = {
   'gibson-1990-dissertation': {
     slug: 'gibson-1990-dissertation',
@@ -23,6 +27,7 @@ const LIBRARY = {
     author: 'David Blair Gibson',
     year: 1990,
     kind: 'doctoral dissertation',
+    topic: 'history',
     institution: 'University of California, Los Angeles',
     pages: 456,
     sizeLabel: '14 MB',
@@ -36,6 +41,7 @@ const LIBRARY = {
     author: 'David Blair Gibson',
     year: 2008,
     kind: 'peer-reviewed journal article',
+    topic: 'history',
     institution: 'Journal of Anthropological Archaeology, vol. 27, Elsevier',
     pages: 17,
     sizeLabel: '2 MB',
@@ -49,6 +55,7 @@ const LIBRARY = {
     author: 'Claire Cotter',
     year: 1999,
     kind: 'Discovery Programme Report',
+    topic: 'archaeology',
     institution: 'Royal Irish Academy / Discovery Programme, Reports No. 5',
     pages: 55,
     sizeLabel: '3 key pages',
