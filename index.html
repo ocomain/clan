@@ -514,6 +514,7 @@ function toggleMenu(){
     <div class="hero-eyebrow">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
     <h1 class="hero-title">Irish Clan<br class="mobile-br"> <em>Ó Comáin</em></h1>
     <p class="hero-irish">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:'Jost',sans-serif;font-size:clamp(9px,1vw,11px);font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:rgba(184,151,90,.72);margin:-18px 0 24px">· Year One of the Revival · 2026 ·</p>
     <div class="hero-div"></div>
     <p class="hero-desc">An ancient Gaelic royal house, awake again after eight centuries of silence. Whether Ireland comes to you by name, by line, or by love — there is a place for you in the clan.</p>
     <div class="hero-ctas">
@@ -551,6 +552,90 @@ function toggleMenu(){
   <div class="stat"><div class="stat-num">9th C.</div><div class="stat-label">Cahercommane built</div></div>
   <div class="stat"><div class="stat-num">2025</div><div class="stat-label">Officially recognised</div></div>
 </div>
+
+<!-- VIDEO SOCIAL PROOF — high on page, immediately after stats -->
+<section class="video-section" id="videos">
+  <div class="si">
+    <div class="eyebrow" style="color:var(--gold)">Clan Ó Comáin recognised</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--gold-pale);margin-bottom:28px;line-height:1.2">Moments from the clan revival</h2>
+    <div class="video-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+
+      <!-- VIDEO 1 -->
+      <div>
+        <div id="videoContainer" style="position:relative;cursor:pointer" onclick="playVideo()">
+          <img src="chief_recognition.jpg" alt="Chief of Ó Comáin greeted by the Chairman of Clans of Ireland" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Chief of Ó Comáin greeted by the Chairman of Clans of Ireland</p>
+      </div>
+
+      <!-- VIDEO 2 -->
+      <div>
+        <div id="videoContainer2" style="position:relative;cursor:pointer" onclick="playVideo2()">
+          <img src="clans_dublin_thumbnail.jpg" alt="Clans of Ireland gathering, Dublin" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Clans of Ireland gathering — Dublin 2026</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- VIDEO MODAL -->
+<div id="videoModal" onclick="closeModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
+  <div style="position:relative;width:100%;max-width:340px" onclick="event.stopPropagation()">
+    <button onclick="closeModal()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:rgba(184,151,90,.7);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:4px 0">✕ Close</button>
+    <video id="modalVideo" controls style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
+      <source src="chief_recognition_compress.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+<script>
+function playVideo(){
+  const m=document.getElementById('videoModal');
+  m.style.display='flex';
+  document.getElementById('modalVideo').play();
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('videoModal'))return;
+  document.getElementById('videoModal').style.display='none';
+  const v=document.getElementById('modalVideo');
+  v.pause();v.currentTime=0;
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal({target:document.getElementById('videoModal')});closeModal2({target:document.getElementById('videoModal2')});}});
+</script>
+
+<!-- VIDEO 2 MODAL -->
+<div id="videoModal2" onclick="closeModal2(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
+  <div style="position:relative;width:100%;max-width:340px" onclick="event.stopPropagation()">
+    <button onclick="closeModal2()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:rgba(184,151,90,.7);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:4px 0">✕ Close</button>
+    <video id="modalVideo2" controls style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
+      <source src="dublin.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+<script>
+function playVideo2(){
+  const m=document.getElementById('videoModal2');
+  m.style.display='flex';
+  document.getElementById('modalVideo2').play();
+}
+function closeModal2(e){
+  if(e&&e.target!==document.getElementById('videoModal2'))return;
+  document.getElementById('videoModal2').style.display='none';
+  const v=document.getElementById('modalVideo2');
+  v.pause();v.currentTime=0;
+}
+</script>
 
 <!-- HERITAGE -->
 <section class="heritage-section" id="heritage">
@@ -636,45 +721,6 @@ function toggleMenu(){
   </div>
 </section>
 
-<section class="cards-section">
-  <div class="si">
-    <div class="eyebrow">Key chapters</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:400;color:var(--ink);margin-bottom:36px;line-height:1.15">A True Gaelic Name Rooted in Early Irish History</h2>
-    <div class="three-col">
-      <div class="card">
-        <div class="card-era">658–705 AD</div>
-        <h3 class="card-title">Kings of Déisi Muman</h3>
-        <p class="card-text">Suibne mac Comáin, king of the Déisi Muman in 658 AD, is one of the earliest historical figures bearing the Comáin name. Célechair mac Comáin was killed in battle in County Clare in 705 AD — placing the name in Clare itself generations before the chiefdom's height.</p>
-      </div>
-      <div class="card">
-        <div class="card-era">597–650 AD</div>
-        <h3 class="card-title">Royal line of Uí Maine</h3>
-        <p class="card-text">Through the Book of Lecan and Book of Leinster, the family traces direct descent from Breanan Dall, 12th King of Uí Maine, whose death is recorded in the Annals of Ulster at 597 AD. His son Coman mac Breanan Dall is the name-giver of the entire clan.</p>
-      </div>
-      <div class="card">
-        <div class="card-era">8th–9th century</div>
-        <h3 class="card-title">Chiefdom of Tulach Commáin</h3>
-        <p class="card-text">The great triple ring stone fort of Cahercommane was the ceremonial capital and inauguration site of the Chiefdom of Tulach Commáin. Excavated by Harvard in 1934, it is regarded as one of the most important ancient sites in Munster. The inner wall alone used 16,500 tons of stone.</p>
-      </div>
-      <div class="card">
-        <div class="card-era">747 AD</div>
-        <h3 class="card-title">Saint Commán</h3>
-        <p class="card-text">Saint Commán founded Roscommon — Ros Commáin, meaning Commán's Wood — and the ancient church at Kinvara on the southern edge of the Burren. His death is recorded in the Annals of Ulster at 747 AD. Roscommon town and county bear his name to this day.</p>
-      </div>
-      <div class="card">
-        <div class="card-era">The diaspora</div>
-        <h3 class="card-title">A name carried across the world</h3>
-        <p class="card-text">A Commane Road in Baldwinsville, New York, testifies to Famine-era emigration to America. The name appears in France, Australia and across the English-speaking world — carried by families who kept the flame of their Irish identity alive across generations of exile and distance.</p>
-      </div>
-      <div class="card">
-        <div class="card-era">2025</div>
-        <h3 class="card-title">A new chapter begins</h3>
-        <p class="card-text">Officially recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland, the clan is now reuniting its worldwide family — Irish Americans, Australians, Europeans and all who feel the call of this ancient Gaelic lineage — under one living community.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 
 
 
@@ -682,89 +728,6 @@ function toggleMenu(){
 
 
 <!-- VIDEOS -->
-<section class="video-section" id="videos">
-  <div class="si">
-    <div class="eyebrow" style="color:var(--gold)">Clan Ó Comáin recognised</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--gold-pale);margin-bottom:28px;line-height:1.2">Moments from the clan revival</h2>
-    <div class="video-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
-
-      <!-- VIDEO 1 -->
-      <div>
-        <div id="videoContainer" style="position:relative;cursor:pointer" onclick="playVideo()">
-          <img src="chief_recognition.jpg" alt="Chief of Ó Comáin greeted by the Chairman of Clans of Ireland" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
-              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
-            </div>
-          </div>
-        </div>
-
-        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Chief of Ó Comáin greeted by the Chairman of Clans of Ireland</p>
-      </div>
-
-      <!-- VIDEO 2 -->
-      <div>
-        <div id="videoContainer2" style="position:relative;cursor:pointer" onclick="playVideo2()">
-          <img src="clans_dublin_thumbnail.jpg" alt="Clans of Ireland gathering, Dublin" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
-              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
-            </div>
-          </div>
-        </div>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Clans of Ireland gathering — Dublin 2026</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-<!-- VIDEO MODAL -->
-<div id="videoModal" onclick="closeModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
-  <div style="position:relative;width:100%;max-width:340px" onclick="event.stopPropagation()">
-    <button onclick="closeModal()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:rgba(184,151,90,.7);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:4px 0">✕ Close</button>
-    <video id="modalVideo" controls style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
-      <source src="chief_recognition_compress.mp4" type="video/mp4">
-    </video>
-  </div>
-</div>
-<script>
-function playVideo(){
-  const m=document.getElementById('videoModal');
-  m.style.display='flex';
-  document.getElementById('modalVideo').play();
-}
-function closeModal(e){
-  if(e&&e.target!==document.getElementById('videoModal'))return;
-  document.getElementById('videoModal').style.display='none';
-  const v=document.getElementById('modalVideo');
-  v.pause();v.currentTime=0;
-}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal({target:document.getElementById('videoModal')});closeModal2({target:document.getElementById('videoModal2')});}});
-</script>
-
-<!-- VIDEO 2 MODAL -->
-<div id="videoModal2" onclick="closeModal2(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
-  <div style="position:relative;width:100%;max-width:340px" onclick="event.stopPropagation()">
-    <button onclick="closeModal2()" style="position:absolute;top:-36px;right:0;background:none;border:none;color:rgba(184,151,90,.7);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;padding:4px 0">✕ Close</button>
-    <video id="modalVideo2" controls style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3)">
-      <source src="dublin.mp4" type="video/mp4">
-    </video>
-  </div>
-</div>
-<script>
-function playVideo2(){
-  const m=document.getElementById('videoModal2');
-  m.style.display='flex';
-  document.getElementById('modalVideo2').play();
-}
-function closeModal2(e){
-  if(e&&e.target!==document.getElementById('videoModal2'))return;
-  document.getElementById('videoModal2').style.display='none';
-  const v=document.getElementById('modalVideo2');
-  v.pause();v.currentTime=0;
-}
-</script>
-
 <!-- CLANS OF IRELAND RECOGNITION -->
 <section class="clans-section">
   <div class="si">
@@ -916,7 +879,7 @@ function closeModal2(e){
     </div>
     <div class="mem-grid">
       <div class="mem-card"><div class="mem-card-title">Your name on the Register</div><div class="mem-card-text">Your name formally entered in the Register of Clan Ó Comáin, kept at Newhall House and read at clan gatherings and in prayers on Saint Commán's day.</div></div>
-      <div class="mem-card"><div class="mem-card-title">The arms of an ancient house</div><div class="mem-card-text">Chief-sanctioned use of the clan's crest and coat of arms on your own things — stationery, jewellery, personal items — as a descendant or kin of Ó Comáin.</div></div>
+      <div class="mem-card"><div class="mem-card-title">The arms of an ancient house</div><div class="mem-card-text">Chief-sanctioned use of the clan's crest and coat of arms on your own things — stationery, jewellery, personal items — as kin of Ó Comáin.</div></div>
       <div class="mem-card"><div class="mem-card-title">Your line recorded</div><div class="mem-card-text">Access to the clan pedigree, and a path for your own line — by descent, by marriage, by oath, by affinity — to be entered alongside it by the clan's genealogist.</div></div>
       <div class="mem-card"><div class="mem-card-title">Your place at Newhall</div><div class="mem-card-text">Invitations to future gatherings at Newhall House, the ancestral heartlands of Clare, and Cahercommane in the Burren — your ancestral ground, open to you as kin.</div></div>
       <div class="mem-card"><div class="mem-card-title">News from home</div><div class="mem-card-text">The yearly Members' Chronicle from Newhall — clan news, new research, recent findings from the pedigree, and the living story of the revival as it unfolds.</div></div>
