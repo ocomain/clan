@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your gift is on its way — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh;display:flex;flex-direction:column}
+    main{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+
+    /* Confirmation card — large, calm, centred */
+    .gc-card{max-width:640px;width:100%;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:56px 48px;border-radius:2px;box-shadow:0 10px 30px rgba(12,26,12,.06);text-align:center}
+
+    .gc-crest{width:72px;height:auto;display:block;margin:0 auto 18px;opacity:.92}
+    .gc-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .gc-title{font-family:'EB Garamond',serif;font-size:clamp(30px,4vw,42px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:12px}
+    .gc-title em{color:var(--gold);font-style:italic}
+    .gc-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--gold-strong);line-height:1.6;margin:0 auto 28px;max-width:480px}
+
+    .gc-divider{width:52px;height:1px;background:var(--gold);margin:0 auto 28px;opacity:.5}
+
+    .gc-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.8;margin:0 0 28px}
+    .gc-body strong{color:var(--ink);font-weight:600}
+    .gc-body .rec-email{color:var(--gold-strong);font-style:italic}
+
+    /* What happens next — left-bordered gold box */
+    .gc-next{background:var(--cream-dark);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:22px 26px;margin:0 0 32px;border-radius:0 2px 2px 0;text-align:left}
+    .gc-next-eye{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .gc-next ol{margin:0;padding-left:20px}
+    .gc-next li{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.7;margin-bottom:10px}
+    .gc-next li:last-child{margin-bottom:0}
+    .gc-next li strong{color:var(--ink)}
+
+    /* CTAs */
+    .gc-btn-primary{display:inline-block;background:var(--gold);color:var(--ink);padding:15px 32px;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
+    .gc-btn-primary:hover{background:var(--gold-pale)}
+    .gc-btn-large{padding:18px 40px;font-size:12px}
+
+    /* 'Another in the family?' prominent block - its own moment */
+    .gc-another{background:var(--cream-dark);border:2px solid var(--gold);padding:32px 28px;margin:0 0 24px;border-radius:2px;text-align:center;box-shadow:0 4px 14px rgba(184,151,90,.12)}
+    .gc-another-eye{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .gc-another-body{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0 auto 20px;max-width:440px}
+
+    /* Subtle return link below the prominent re-gift block */
+    .gc-return{text-align:center;margin-bottom:30px}
+    .gc-return-link{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);text-decoration:none;border-bottom:1px solid var(--gold-border);padding-bottom:2px}
+    .gc-return-link:hover{color:var(--gold-strong);border-color:var(--gold)}
+
+    .gc-signoff{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);margin:0;line-height:1.6}
+
+    /* Simple header */
+    .gc-header{background:var(--ink);padding:22px 24px;text-align:center;border-bottom:2px solid var(--gold)}
+    .gc-header-brand{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale);text-decoration:none}
+    .gc-header-brand em{color:var(--gold-light);font-style:italic}
+
+    @media(max-width:560px){
+      .gc-card{padding:36px 24px}
+      .gc-another{padding:26px 20px}
+      .gc-btn-primary{width:100%;box-sizing:border-box}
+    }
+  </style>
+</head>
+<body>
+
+<header class="gc-header">
+  <a href="/" class="gc-header-brand">Clan <em>Ó Comáin</em></a>
+</header>
+
+<main>
+  <div class="gc-card">
+    <img class="gc-crest" src="/coat_of_arms.png" alt="Clan Ó Comáin coat of arms">
+    <div class="gc-eyebrow">Payment Received</div>
+    <h1 class="gc-title">Your <em>gift</em> is on its way</h1>
+    <p class="gc-sub">The welcome has been sent. The clan opens its doors.</p>
+
+    <div class="gc-divider"></div>
+
+    <p class="gc-body">
+      Thank you for gifting a membership of Clan Ó Comáin.
+      The welcome email — with the certificate, the members' area access, and your personal message — has just been sent to <span class="rec-email" id="recEmail">your recipient</span>.
+    </p>
+
+    <div class="gc-next">
+      <div class="gc-next-eye">What happens next</div>
+      <ol>
+        <li>Your recipient receives their welcome email with their certificate, members' area access, and your personal message.</li>
+        <li>It's worth giving them a nudge to check their inbox — our email occasionally lands in a quieter folder.</li>
+        <li>The Chief — <strong>Fergus Kinfauns, The Commane</strong> — will write to them personally in the weeks that follow.</li>
+        <li>You'll receive a second note from us when they activate their membership and take their place in the clan.</li>
+      </ol>
+    </div>
+
+    <!-- Another gift CTA — prominently framed, separate moment from the return-to-site link -->
+    <div class="gc-another">
+      <div class="gc-another-eye">Another in the family?</div>
+      <p class="gc-another-body">A gift of heritage has a way of being given more than once. If there is another cousin, sibling, or child who would love this — someone else who feels the pull of the old country — you can send another now.</p>
+      <a href="/gift.html" class="gc-btn-primary gc-btn-large">Send another gift →</a>
+    </div>
+
+    <div class="gc-return">
+      <a href="/" class="gc-return-link">Return to the clan website</a>
+    </div>
+
+    <p class="gc-signoff">Go raibh míle maith agat.<br>On behalf of the Chief and the Office of the Private Secretary.</p>
+  </div>
+</main>
+
+<script>
+  // Personalise with recipient email if passed via URL (from Stripe success redirect)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const recEmail = params.get('rec_email');
+    if (recEmail) {
+      const el = document.getElementById('recEmail');
+      if (el) el.textContent = recEmail;
+    }
+  } catch(e) { /* non-blocking */ }
+</script>
+
+</body>
+</html>

@@ -485,6 +485,8 @@ async function submitForm() {
 
   const type = isFamily ? 'fam' : 'ind';
   const modeForLookup = (currentTier === 'life') ? 'onetime' : currentMode;
+  // Tier key matches GIFT_PRICE_CENTS in create-gift-checkout.js: 'clan-ind', 'guardian-fam', etc.
+  const tierKey = `${currentTier}-${type}`;
 
   // Address only included in payload when tier requires it (physical cert)
   const addressParts = (currentTier !== 'clan') ? [
@@ -513,17 +515,57 @@ async function submitForm() {
     connection: document.getElementById('connection').value.trim()
   };
 
-  const stripeBaseUrl = STRIPE[currentTier][modeForLookup][type];
-  const giverEmail = data.giverEmail;
-  const stripeUrl = stripeBaseUrl + (giverEmail ? (stripeBaseUrl.includes('?') ? '&' : '?') + 'prefilled_email=' + encodeURIComponent(giverEmail) : '');
+  // Button lock + loading indicator — Checkout Session creation round-trips
+  // the server, and the payee should not double-click.
+  const btn = document.getElementById('stripeBtn');
+  const origBtnText = btn.textContent;
+  btn.style.pointerEvents = 'none';
+  btn.style.opacity = '0.7';
+  btn.textContent = 'Opening secure payment…';
+
+  // Step 1: Write the gift row + notify clan inbox; capture gift ID for metadata linking.
+  let giftId = null;
   try {
-    await fetch('/api/submit-gift', {
+    const r1 = await fetch('/api/submit-gift', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-  } catch(e) { /* non-blocking */ }
-  window.location.href = stripeUrl;
+    const j1 = await r1.json().catch(() => ({}));
+    giftId = j1.giftId || null;
+  } catch(e) {
+    console.error('submit-gift failed (non-fatal):', e);
+    // Non-blocking — the gift row can be reconciled from Stripe metadata later.
+  }
+
+  // Step 2: Create a Checkout Session with full metadata so webhook routes emails correctly.
+  try {
+    const r2 = await fetch('/api/create-gift-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tier: tierKey,
+        giftMode: modeForLookup,
+        giverName: data.giverName,
+        giverEmail: data.giverEmail,
+        recipientName: data.recipientName + (data.recipientName2 ? ' & ' + data.recipientName2 : ''),
+        recipientEmail: data.recipientEmail,
+        personalMessage: data.message,
+        giftId,
+      })
+    });
+    const j2 = await r2.json().catch(() => ({}));
+    if (!r2.ok || !j2.url) {
+      throw new Error(j2.error || 'Could not start payment');
+    }
+    window.location.href = j2.url;
+  } catch(e) {
+    console.error('create-gift-checkout failed:', e);
+    btn.style.pointerEvents = '';
+    btn.style.opacity = '';
+    btn.textContent = origBtnText;
+    alert('We couldn\u2019t open the secure payment page. Please try again, or email clan@ocomain.org and we\u2019ll arrange your gift personally.');
+  }
 }
 </script>
 

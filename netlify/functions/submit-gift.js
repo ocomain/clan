@@ -34,6 +34,7 @@ exports.handler = async (event) => {
   const modeColor = giftMode === 'recurring' ? '#A47A2C' : '#0C1A0C';
 
   // ── 1. Persist the gift to Supabase ──────────────────────────────────────
+  let giftId = null;
   try {
     const clan_id = await clanId();
     const tierInfo = normaliseTier(tier + (family ? ' family' : ''));
@@ -58,6 +59,7 @@ exports.handler = async (event) => {
     if (error) {
       console.error('gifts insert failed:', error.message);
     } else {
+      giftId = inserted.id;
       await logEvent({ clan_id, event_type: 'gift_submitted', payload: { gift_id: inserted.id, tier: tierInfo.tier, buyer_email: giverEmail } });
     }
   } catch (e) {
@@ -115,5 +117,5 @@ exports.handler = async (event) => {
     console.error('Gift email failed:', err);
   }
 
-  return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+  return { statusCode: 200, headers, body: JSON.stringify({ ok: true, giftId }) };
 };
