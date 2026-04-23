@@ -45,6 +45,17 @@
     .mstatus-row-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px}
     .mstatus-row-value{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink)}
 
+    /* Gift panel — only renders when member.gift is present. Permanent
+       "this membership was a gift from [giver]" card, with the personal
+       message quoted so the recipient can return to it any time. */
+    .mgift{max-width:720px;margin:0 auto 26px;background:var(--cream-dark);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:28px 30px;border-radius:0 2px 2px 0;box-shadow:0 4px 14px rgba(12,26,12,.04)}
+    .mgift-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .mgift-title{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);font-weight:400;line-height:1.3;margin-bottom:6px}
+    .mgift-title em{color:var(--gold);font-style:italic}
+    .mgift-meta{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-bottom:16px}
+    .mgift-message{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.8;margin:0;padding:16px 0 0;border-top:1px solid var(--gold-border);white-space:pre-wrap}
+    .mgift-message::before{content:'"';font-family:'EB Garamond',serif;font-size:38px;color:var(--gold);line-height:0;position:relative;top:14px;margin-right:6px}
+
     /* Action cards */
     .mactions{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
     .maction{background:var(--white);border:1px solid var(--border);padding:26px 26px 22px;border-radius:2px;text-align:center;transition:border-color .2s,transform .15s}
@@ -163,6 +174,15 @@
           </div>
         </div>
       </section>
+
+      ${member.gift ? `
+      <section class="mgift">
+        <div class="mgift-eyebrow">A gift to you</div>
+        <div class="mgift-title">A gift from <em>${escHtml(member.gift.buyer_name || member.gift.buyer_email)}</em></div>
+        <div class="mgift-meta">Given ${fmtDate(member.gift.gifted_at)}${member.gift.tier_label ? ' · ' + escHtml(member.gift.tier_label) : ''}</div>
+        ${member.gift.personal_message ? `<p class="mgift-message">${escHtml(member.gift.personal_message)}</p>` : ''}
+      </section>
+      ` : ''}
 
       <section class="mactions">
         <div class="maction live">
