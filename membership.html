@@ -109,6 +109,15 @@
       .life-inner,.chief-grid,.faq-grid{grid-template-columns:1fr}
     }
 
+    /* ── FOUNDER CALLOUT grid — responsive ── */
+    .founder-callout-grid{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center}
+    @media(max-width:720px){
+      .founder-callout-grid{grid-template-columns:1fr;gap:24px;text-align:center}
+      .founder-callout-grid > div{justify-self:center}
+      .founder-callout-grid h3{font-size:24px!important;line-height:1.25!important}
+      .founder-callout-grid > div > p{font-size:15px!important;line-height:1.7!important}
+    }
+
     /* ── FAMILY PRICES (hidden by default, shown in family mode) ── */
     .family-price{display:none}
     .individual-price{display:block}
@@ -258,7 +267,7 @@
 <!-- TOGGLE -->
 <!-- FOUNDING MEMBERS CALLOUT — Year One moment, bigger visual weight, 'Founder since 2026' -->
 <section style="background:var(--cream-dark);padding:72px 24px;border-top:3px solid var(--gold);border-bottom:1px solid var(--border)">
-  <div style="max-width:920px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center">
+  <div class="founder-callout-grid" style="max-width:920px;margin:0 auto">
     <div style="flex-shrink:0">
       <div style="width:108px;height:108px;border:2.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--white);box-shadow:0 6px 22px rgba(184,151,90,0.22)">
         <div style="text-align:center;line-height:1.05">
