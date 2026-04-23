@@ -248,6 +248,7 @@
           <input class="form-input" type="text" id="recipientName2" placeholder="Second adult's full name">
         </div>
       </div>
+      <div id="postalFields">
       <div class="form-row full">
         <div class="form-group">
           <label class="form-label">Postal address for certificate *</label>
@@ -285,6 +286,7 @@
           </select>
         </div>
       </div>
+      </div><!-- /#postalFields -->
     </div>
 
     <!-- PERSONAL MESSAGE -->
@@ -403,6 +405,18 @@ function selectTier(tier) {
   // Hide mode chooser for Life Member (always one-time by nature)
   document.getElementById('giftModeWrap').style.display = (tier === 'life') ? 'none' : 'block';
   if (tier === 'life') currentMode = 'onetime';
+  // Clan Member tier does not include a posted physical certificate, so
+  // the postal address block is hidden and its required-fields become
+  // non-required so form submission isn't blocked. Reappears on switch
+  // to any tier that includes a physical cert.
+  const needsPostal = (tier !== 'clan');
+  const postalWrap = document.getElementById('postalFields');
+  if (postalWrap) postalWrap.style.display = needsPostal ? 'block' : 'none';
+  ['address1', 'city', 'country'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (needsPostal) el.setAttribute('required', ''); else el.removeAttribute('required');
+  });
   updateSummary();
 }
 
@@ -455,7 +469,10 @@ document.getElementById('message').addEventListener('input', function() {
 });
 
 async function submitForm() {
-  const required = ['giverName','giverEmail','recipientName','recipientEmail','address1','city','country'];
+  // Clan Member tier has no posted cert, so postal fields are optional
+  const baseRequired = ['giverName','giverEmail','recipientName','recipientEmail'];
+  const postalRequired = (currentTier !== 'clan') ? ['address1','city','country'] : [];
+  const required = baseRequired.concat(postalRequired);
   for (const id of required) {
     const el = document.getElementById(id);
     if (!el.value.trim()) {
@@ -468,6 +485,15 @@ async function submitForm() {
 
   const type = isFamily ? 'fam' : 'ind';
   const modeForLookup = (currentTier === 'life') ? 'onetime' : currentMode;
+
+  // Address only included in payload when tier requires it (physical cert)
+  const addressParts = (currentTier !== 'clan') ? [
+    document.getElementById('address1').value.trim(),
+    document.getElementById('address2').value.trim(),
+    document.getElementById('city').value.trim(),
+    document.getElementById('postcode').value.trim(),
+    document.getElementById('country').value
+  ].filter(Boolean) : [];
 
   const data = {
     tier: TIER_NAMES[currentTier],
@@ -482,13 +508,7 @@ async function submitForm() {
     recipientName: document.getElementById('recipientName').value.trim(),
     recipientName2: document.getElementById('recipientName2').value.trim(),
     recipientEmail: document.getElementById('recipientEmail').value.trim(),
-    address: [
-      document.getElementById('address1').value.trim(),
-      document.getElementById('address2').value.trim(),
-      document.getElementById('city').value.trim(),
-      document.getElementById('postcode').value.trim(),
-      document.getElementById('country').value
-    ].filter(Boolean).join(', '),
+    address: addressParts.join(', '),
     message: document.getElementById('message').value.trim(),
     connection: document.getElementById('connection').value.trim()
   };
