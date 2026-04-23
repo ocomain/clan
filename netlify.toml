@@ -15,6 +15,12 @@
 [functions."daily-abandoned-sweep"]
   schedule = "0 14 * * *"
 
+# Gift-recipient renewal reminder sweep. Offset 30min from the abandoned
+# sweep so they don't compete for the function runtime. Also ~15:30 Ireland
+# time - mid-afternoon reading window works just as well for this email.
+[functions."daily-expiry-sweep"]
+  schedule = "30 14 * * *"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
