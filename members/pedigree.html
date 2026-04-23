@@ -78,15 +78,16 @@
     .pd-chip{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.1em;color:var(--ink-muted);background:var(--cream-mid);padding:4px 9px;border-radius:20px;border:1px solid var(--border)}
 
     /* Special dark node for the DNA chapter */
-    .pd-node.dark .pd-node-card{background:var(--ink);border-color:var(--gold);color:var(--gold-pale)}
-    .pd-node.dark .pd-node-title{color:var(--gold-pale)}
-    .pd-node.dark .pd-node-title em{color:var(--gold-light)}
-    .pd-node.dark .pd-node-sub{color:rgba(160,210,160,.65)}
-    .pd-node.dark .pd-node-teaser{color:rgba(215,235,215,.82)}
-    .pd-node.dark .pd-node-num{color:var(--gold-light)}
-    .pd-node.dark .pd-node-date{color:rgba(215,235,215,.5)}
-    .pd-node.dark .pd-node-cta{color:var(--gold-light)}
-    .pd-node.dark .pd-chip{background:rgba(184,151,90,.08);border-color:rgba(184,151,90,.25);color:rgba(215,235,215,.7)}
+    .pd-node-card.dark{background:var(--ink);border-color:var(--gold);color:var(--gold-pale)}
+    .pd-node-card.dark .pd-node-title{color:var(--gold-pale)}
+    .pd-node-card.dark .pd-node-title em{color:var(--gold-light)}
+    .pd-node-card.dark .pd-node-sub{color:rgba(160,210,160,.65)}
+    .pd-node-card.dark .pd-node-teaser{color:rgba(215,235,215,.82)}
+    .pd-node-card.dark .pd-node-num{color:var(--gold-light)}
+    .pd-node-card.dark .pd-node-date{color:rgba(215,235,215,.5)}
+    .pd-node-card.dark .pd-node-cta{color:var(--gold-light)}
+    .pd-node-card.dark:hover .pd-node-cta{color:var(--gold-pale)}
+    .pd-node-card.dark .pd-chip{background:rgba(184,151,90,.08);border-color:rgba(184,151,90,.25);color:rgba(215,235,215,.7)}
 
     /* Spine end-marker — an arrowhead closing the line */
     .pd-spine-end{position:relative;margin-left:40px;height:40px}
@@ -386,8 +387,8 @@
   </a>
 
   <!-- X — DNA (dark styling) -->
-  <a class="pd-node-card" href="/pedigree.html#dna" style="display:block">
-    <div class="pd-node dark">
+  <a class="pd-node-card dark" href="/pedigree.html#dna" style="display:block">
+    <div class="pd-node">
       <div class="pd-node-head">
         <div>
           <div class="pd-node-num">Chapter X</div>
