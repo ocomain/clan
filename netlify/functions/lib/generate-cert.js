@@ -3,7 +3,7 @@
 // Uses self-hosted EB Garamond + Jost (embedded TTF) via @pdf-lib/fontkit.
 // No network calls. Safe to invoke on every request.
 
-const { PDFDocument, rgb, PageSizes } = require('pdf-lib');
+const { PDFDocument, rgb, PageSizes, degrees } = require('pdf-lib');
 const fontkit = require('@pdf-lib/fontkit');
 const fs = require('fs');
 const path = require('path');
@@ -16,8 +16,28 @@ const C_INK    = rgb(0.047, 0.102, 0.047);  // #0C1A0C
 const C_INK_S  = rgb(0.235, 0.165, 0.102);  // #3C2A1A  warmer body text
 const C_GOLD   = rgb(0.722, 0.592, 0.353);  // #B8975A
 const C_GOLD_L = rgb(0.831, 0.722, 0.478);  // #D4B87A
+const C_GOLD_D = rgb(0.584, 0.459, 0.216);  // #957537  slightly darker gold — used for seal arc text
 const C_MUTED  = rgb(0.424, 0.353, 0.290);  // #6C5A4A
 const C_CREAM  = rgb(0.973, 0.957, 0.925);  // #F8F4EC
+
+// ──────────────────────────────────────────────────────────────────────────
+// FOUNDING MEMBER SEAL — configuration
+//
+// Certificates issued to members whose join year is in FOUNDING_YEARS receive
+// a gold "FOUNDER · YEAR ONE OF THE REVIVAL · [year]" seal in the top-right
+// corner. Currently the founding window is the single year 2026 (the first
+// full year after the 2025 Clans of Ireland recognition).
+//
+// To extend the founding window later (e.g. including 2025 once the lifetime
+// founding members are imported), add years to this Set. Never remove a year
+// once certs have been issued — existing certs would still show the seal (we
+// do NOT regenerate past certs), but new joins in the removed year would
+// silently lose the badge, which would be operationally confusing.
+//
+// Year II, III etc. would get their own distinct seal designs (to be added
+// to drawFoundingMemberSeal below as a branching renderer) — do not simply
+// extend FOUNDING_YEARS to 2027 unless you want the 2026 seal design re-used.
+const FOUNDING_YEARS = new Set([2026]);
 
 // Font files live at /fonts/ in the repo root. bundle them with the
 // function via netlify.toml [functions] included_files pattern.
@@ -282,6 +302,19 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   // Small gold dot at top of the cert between inner borders — quiet heraldic flourish
   page.drawCircle({ x: W/2, y: H - margin - 22, size: 2.2, color: C_GOLD });
 
+  // Founding Member seal (top-right corner) — rendered ONLY for members
+  // whose join year falls inside the founding window. The seal is cosmetic
+  // and non-invasive: nothing else on the cert moves when it's present or
+  // absent. See FOUNDING_YEARS comment at top of file for extension rules.
+  const joinYear = new Date(joinedAt).getFullYear();
+  if (FOUNDING_YEARS.has(joinYear)) {
+    drawFoundingMemberSeal(page, {
+      fonts: { fontSerif, fontSerifItalic, fontSerifMedium, fontSansBold },
+      margin, W, H,
+      joinYear,
+    });
+  }
+
   return await doc.save();
 }
 
@@ -300,6 +333,140 @@ function drawSpacedText(page, { text, font, size, color, y, centerX, letterSpaci
   chars.forEach((c, i) => {
     page.drawText(c, { x, y, size, font, color });
     x += charWidths[i] + letterSpacing;
+  });
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Founding Member seal — corner badge for Year One (2026) members
+// ──────────────────────────────────────────────────────────────────────────
+//
+// Layout (inside-out):
+//   - Outer bold gold ring + inner thin gold ring
+//   - Cream fill inside inner ring (so arc text reads cleanly on a clean ground)
+//   - Top-arc curved text: "YEAR ONE OF THE REVIVAL"  (Jost SemiBold, small caps)
+//   - Bottom-arc curved text: "· <joinYear> ·"        (EB Garamond italic)
+//   - Dot ornaments at the 3- and 9-o'clock positions separating the arcs
+//   - Centre word: FOUNDER  (EB Garamond Medium)
+//   - Small flourish rule under the centre word
+//
+// Characters on the arcs are drawn at their angular position and rotated
+// tangent so the text follows the curve. The baseline sits on the arc;
+// character tops naturally extend slightly outward, which reads as formal
+// engraved lettering on a seal.
+function drawFoundingMemberSeal(page, { fonts, margin, W, H, joinYear }) {
+  const { fontSerif, fontSerifItalic, fontSerifMedium, fontSansBold } = fonts;
+
+  // Seal geometry — positioned in the top-right corner with breathing room
+  // from the triple gold border (kept 72pt from each edge = ~22pt gap from
+  // the innermost border line at margin+12).
+  const cx = W - margin - 72;
+  const cy = H - margin - 72;
+  const rOuter    = 50;
+  const rInner    = 44;
+  const rArcTop   = 38;  // baseline radius for top-arc text
+  const rArcBottom = 36; // slightly smaller for the italic bottom text which sits lower visually
+
+  // Outer thick ring
+  page.drawCircle({ x: cx, y: cy, size: rOuter, borderColor: C_GOLD, borderWidth: 1.4 });
+  // Inner thin ring
+  page.drawCircle({ x: cx, y: cy, size: rInner, borderColor: C_GOLD, borderWidth: 0.5 });
+  // Cream fill inside inner ring — hides anything the seal overlaps so the
+  // arc text reads cleanly regardless of what the seal sits on top of.
+  page.drawCircle({ x: cx, y: cy, size: rInner - 1, color: C_CREAM });
+
+  // Top-arc curved text
+  drawArcTextTop(page, {
+    text: 'YEAR ONE OF THE REVIVAL',
+    font: fontSansBold,
+    size: 5.5,
+    color: C_GOLD_D,
+    centerX: cx, centerY: cy,
+    radius: rArcTop,
+    letterSpacing: 1.2,
+  });
+
+  // Bottom-arc curved year text — dynamically shows the member's join year
+  // so the seal is truthful regardless of when we later extend FOUNDING_YEARS.
+  drawArcTextBottom(page, {
+    text: `· ${joinYear} ·`,
+    font: fontSerifItalic,
+    size: 8,
+    color: C_GOLD_D,
+    centerX: cx, centerY: cy,
+    radius: rArcBottom,
+    letterSpacing: 1.0,
+  });
+
+  // Dot ornaments at 3 and 9 o'clock separating the two arcs
+  page.drawCircle({ x: cx - rArcTop, y: cy, size: 0.9, color: C_GOLD });
+  page.drawCircle({ x: cx + rArcTop, y: cy, size: 0.9, color: C_GOLD });
+
+  // Centre word — FOUNDER
+  const founderSize = 13;
+  const founderWidth = fontSerifMedium.widthOfTextAtSize('FOUNDER', founderSize);
+  page.drawText('FOUNDER', {
+    x: cx - founderWidth / 2,
+    y: cy - 3,
+    size: founderSize,
+    font: fontSerifMedium,
+    color: C_GOLD,
+  });
+
+  // Small flourish rule under the centre word
+  page.drawLine({
+    start: { x: cx - 12, y: cy - 8 },
+    end:   { x: cx + 12, y: cy - 8 },
+    thickness: 0.4,
+    color: C_GOLD,
+  });
+}
+
+// Draw text along an upper arc of given radius, reading left-to-right across
+// the top of the circle. Characters are placed at their angular position and
+// rotated tangent (rotation = arc-angle - 90°). pdf-lib rotates around each
+// glyph's baseline-left origin, so baselines sit on the arc and character
+// tops extend slightly outward — which reads as engraved seal lettering.
+function drawArcTextTop(page, { text, font, size, color, centerX, centerY, radius, letterSpacing = 0 }) {
+  const chars = text.split('');
+  const widths = chars.map(c => font.widthOfTextAtSize(c, size));
+  const totalLen = widths.reduce((a, b) => a + b, 0) + letterSpacing * (chars.length - 1);
+  const totalAngleRad = totalLen / radius;
+  // Start angle at top of circle (90°) plus half the span; walk clockwise.
+  let angleRad = Math.PI / 2 + totalAngleRad / 2;
+
+  chars.forEach((c, i) => {
+    const charW = widths[i];
+    const charAngleRad = charW / radius;
+    const placeAngleRad = angleRad - charAngleRad / 2;
+    const x = centerX + radius * Math.cos(placeAngleRad);
+    const y = centerY + radius * Math.sin(placeAngleRad);
+    const rotDeg = (placeAngleRad * 180 / Math.PI) - 90;
+    page.drawText(c, { x, y, size, font, color, rotate: degrees(rotDeg) });
+    angleRad -= charAngleRad + (letterSpacing / radius);
+  });
+}
+
+// Draw text along a lower arc, reading left-to-right across the bottom of the
+// circle (characters upright). Rotation = arc-angle + 90° so glyphs flip to
+// read upright at the bottom rather than upside-down.
+function drawArcTextBottom(page, { text, font, size, color, centerX, centerY, radius, letterSpacing = 0 }) {
+  const chars = text.split('');
+  const widths = chars.map(c => font.widthOfTextAtSize(c, size));
+  const totalLen = widths.reduce((a, b) => a + b, 0) + letterSpacing * (chars.length - 1);
+  const totalAngleRad = totalLen / radius;
+  // Start angle at bottom of circle (-90°) minus half the span; walk counter-
+  // clockwise (increasing angle) so text reads left-to-right.
+  let angleRad = -Math.PI / 2 - totalAngleRad / 2;
+
+  chars.forEach((c, i) => {
+    const charW = widths[i];
+    const charAngleRad = charW / radius;
+    const placeAngleRad = angleRad + charAngleRad / 2;
+    const x = centerX + radius * Math.cos(placeAngleRad);
+    const y = centerY + radius * Math.sin(placeAngleRad);
+    const rotDeg = (placeAngleRad * 180 / Math.PI) + 90;
+    page.drawText(c, { x, y, size, font, color, rotate: degrees(rotDeg) });
+    angleRad += charAngleRad + (letterSpacing / radius);
   });
 }
 
