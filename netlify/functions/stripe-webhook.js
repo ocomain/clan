@@ -119,35 +119,90 @@ exports.handler = async (event) => {
           });
           await logEvent({ clan_id, event_type: 'gift_paid_no_recipient', payload: { session_id: session.id, buyer_email: buyerEmail } });
         } else {
-          // 1. Create/upsert the MEMBER row for the recipient.
+          // 1. Create or update the MEMBER row for the recipient. Two cases:
+          //    (a) Brand new recipient — INSERT with joined_at = now
+          //    (b) Existing member receiving a gift (e.g. someone upgrades
+          //        them from Clan to Guardian via a gift) — UPDATE, preserve
+          //        original joined_at so their 'Member since' and any
+          //        Founder seal on their original cert stay true.
           const now = new Date();
           const expiresAt = isLife ? null : new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-          const { data: member, error: upsertErr } = await supa()
+
+          const { data: existingRecipient } = await supa()
             .from('members')
-            .upsert({
-              clan_id,
-              email:                  recipientEmail,
-              name:                   recipientName,
-              tier:                   tierInfo.tier,
-              tier_label:             tierInfo.label,
-              tier_family:            tierInfo.tier_family,
-              // Stripe customer/subscription belong to the BUYER, not the
-              // member — keep them null on the member row so the recipient
-              // doesn't get Stripe renewal receipts. Buyer's subscription
-              // is tracked on the gift row.
-              stripe_customer_id:     null,
-              stripe_subscription_id: null,
-              status:                 'active',
-              joined_at:              now.toISOString(),
-              renewed_at:             now.toISOString(),
-              expires_at:             expiresAt ? expiresAt.toISOString() : null,
-              metadata:               { gift: true, buyer_name: buyerName, buyer_email: buyerEmail },
-            }, { onConflict: 'clan_id,email' })
-            .select('id, email, name, tier, tier_label, tier_family, joined_at')
-            .single();
+            .select('id, joined_at, tier, tier_label')
+            .eq('clan_id', clan_id)
+            .eq('email', recipientEmail)
+            .maybeSingle();
+
+          let member, upsertErr;
+          if (existingRecipient) {
+            // Gift upgrade on an existing member — preserve original join date.
+            const updateRes = await supa()
+              .from('members')
+              .update({
+                name:                   recipientName || undefined,
+                tier:                   tierInfo.tier,
+                tier_label:             tierInfo.label,
+                tier_family:            tierInfo.tier_family,
+                // stripe_* stay null on the member row for gifts
+                status:                 'active',
+                renewed_at:             now.toISOString(),
+                expires_at:             expiresAt ? expiresAt.toISOString() : null,
+                updated_at:             now.toISOString(),
+                metadata:               { gift: true, buyer_name: buyerName, buyer_email: buyerEmail },
+                // joined_at OMITTED — preserves original year
+              })
+              .eq('id', existingRecipient.id)
+              .select('id, email, name, tier, tier_label, tier_family, joined_at')
+              .single();
+            member = updateRes.data;
+            upsertErr = updateRes.error;
+
+            if (!upsertErr && existingRecipient.tier !== tierInfo.tier) {
+              await logEvent({
+                clan_id,
+                member_id: member.id,
+                event_type: 'tier_changed_via_gift',
+                payload: {
+                  from_tier: existingRecipient.tier,
+                  to_tier: tierInfo.tier,
+                  buyer_email: buyerEmail,
+                  session_id: session.id,
+                },
+              });
+            }
+          } else {
+            // Brand new gift recipient — INSERT.
+            const insertRes = await supa()
+              .from('members')
+              .insert({
+                clan_id,
+                email:                  recipientEmail,
+                name:                   recipientName,
+                tier:                   tierInfo.tier,
+                tier_label:             tierInfo.label,
+                tier_family:            tierInfo.tier_family,
+                // Stripe customer/subscription belong to the BUYER, not the
+                // member — keep them null on the member row so the recipient
+                // doesn't get Stripe renewal receipts. Buyer's subscription
+                // is tracked on the gift row.
+                stripe_customer_id:     null,
+                stripe_subscription_id: null,
+                status:                 'active',
+                joined_at:              now.toISOString(),
+                renewed_at:             now.toISOString(),
+                expires_at:             expiresAt ? expiresAt.toISOString() : null,
+                metadata:               { gift: true, buyer_name: buyerName, buyer_email: buyerEmail },
+              })
+              .select('id, email, name, tier, tier_label, tier_family, joined_at')
+              .single();
+            member = insertRes.data;
+            upsertErr = insertRes.error;
+          }
 
           if (upsertErr) {
-            console.error('gift member upsert failed:', upsertErr.message);
+            console.error('gift member insert/update failed:', upsertErr.message);
           } else {
             // 2. Update/insert the gift row, linking it to the created member.
             if (giftId) {
@@ -205,38 +260,119 @@ exports.handler = async (event) => {
           }
         }
       } else {
-        // Regular self-purchase: upsert member (unique on clan_id + email).
+        // Regular self-purchase path. A member may already exist — this
+        // happens on tier upgrades (member joins as Clan Member, later goes
+        // through /membership to pick Guardian). In that case we must NOT
+        // overwrite joined_at, otherwise the member's 'Member since YYYY'
+        // identity (and any Founder-year seal on their cert) gets lost.
+        //
+        // Strategy: fetch first to see if a row already exists, then either
+        // INSERT (new member) or UPDATE (tier change / renewal), each with
+        // the correct set of fields.
         const now = new Date();
+        const normEmail = (customerEmail || '').toLowerCase().trim();
         const expiresAt = isLife ? null : new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
-        const { data: member, error: upsertErr } = await supa()
+
+        const { data: existing } = await supa()
           .from('members')
-          .upsert({
-            clan_id,
-            email:                  (customerEmail || '').toLowerCase().trim(),
-            name:                   customerName,
+          .select('id, joined_at, tier, tier_label, stripe_subscription_id')
+          .eq('clan_id', clan_id)
+          .eq('email', normEmail)
+          .maybeSingle();
+
+        let member, upsertErr;
+        if (existing) {
+          // UPGRADE / RENEWAL path — preserve joined_at (original year),
+          // update everything else. stripe_customer_id may legitimately
+          // change if Stripe creates a new customer; keep the newer one.
+          // If the previous subscription still exists (they're now on Life,
+          // or upgraded from one annual tier to another), the old sub
+          // should be cancelled at Stripe, which we don't do automatically
+          // here — that's an operational step (see comment below).
+          const updatePayload = {
+            name:                   customerName || undefined,
             tier:                   tierInfo.tier,
             tier_label:             tierInfo.label,
             tier_family:            tierInfo.tier_family,
             stripe_customer_id:     session.customer,
             stripe_subscription_id: session.subscription || null,
             status:                 'active',
-            joined_at:              now.toISOString(),
             renewed_at:             now.toISOString(),
             expires_at:             expiresAt ? expiresAt.toISOString() : null,
-          }, { onConflict: 'clan_id,email' })
-          .select('id, email, name, tier, tier_label, tier_family, joined_at')
-          .single();
-        if (upsertErr) {
-          console.error('member upsert failed:', upsertErr.message);
+            updated_at:             now.toISOString(),
+            // joined_at DELIBERATELY OMITTED — preserves original year,
+            // which is what the Founder seal and 'Member since' hook
+            // depend on
+            // gift_renewal_reminded_at DELIBERATELY NOT RESET — if a gift
+            // recipient upgrades to self-paying, their previous reminder
+            // flag stays stamped (they already got the reminder that
+            // triggered this upgrade). The next year's reminder will
+            // reset appropriately via future renewal logic.
+          };
+
+          const updateRes = await supa()
+            .from('members')
+            .update(updatePayload)
+            .eq('id', existing.id)
+            .select('id, email, name, tier, tier_label, tier_family, joined_at')
+            .single();
+          member = updateRes.data;
+          upsertErr = updateRes.error;
+
+          if (!upsertErr && existing.tier !== tierInfo.tier) {
+            // Note a tier change for observability. If the previous tier
+            // was a recurring subscription and they've now moved to a
+            // different annual tier or to Life, the OLD Stripe subscription
+            // needs to be cancelled manually in the Stripe Dashboard (or
+            // we can automate later). Logging it here makes that queue
+            // visible.
+            await logEvent({
+              clan_id,
+              member_id: member.id,
+              event_type: 'tier_changed',
+              payload: {
+                from_tier: existing.tier,
+                to_tier: tierInfo.tier,
+                previous_subscription_id: existing.stripe_subscription_id,
+                new_subscription_id: session.subscription || null,
+                session_id: session.id,
+              },
+            });
+          }
         } else {
-          await logEvent({ clan_id, member_id: member.id, event_type: 'member_paid', payload: { tier: tierInfo.tier, amount, session_id: session.id } });
+          // Genuine new member — INSERT with joined_at = now.
+          const insertRes = await supa()
+            .from('members')
+            .insert({
+              clan_id,
+              email:                  normEmail,
+              name:                   customerName,
+              tier:                   tierInfo.tier,
+              tier_label:             tierInfo.label,
+              tier_family:            tierInfo.tier_family,
+              stripe_customer_id:     session.customer,
+              stripe_subscription_id: session.subscription || null,
+              status:                 'active',
+              joined_at:              now.toISOString(),
+              renewed_at:             now.toISOString(),
+              expires_at:             expiresAt ? expiresAt.toISOString() : null,
+            })
+            .select('id, email, name, tier, tier_label, tier_family, joined_at')
+            .single();
+          member = insertRes.data;
+          upsertErr = insertRes.error;
+        }
+        if (upsertErr) {
+          console.error('member insert/update failed:', upsertErr.message);
+        } else {
+          await logEvent({ clan_id, member_id: member.id, event_type: 'member_paid', payload: { tier: tierInfo.tier, amount, session_id: session.id, was_upgrade: !!existing } });
 
           // Close any matching pending application for this email.
           await supa()
             .from('applications')
             .update({ status: 'paid', member_id: member.id, stripe_session_id: session.id })
             .eq('clan_id', clan_id)
-            .eq('email', (customerEmail || '').toLowerCase().trim())
+            .eq('email', normEmail)
             .eq('status', 'pending');
 
           // Pre-create Supabase auth user so first login is magic-link (not
