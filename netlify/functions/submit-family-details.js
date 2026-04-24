@@ -48,6 +48,8 @@ exports.handler = async (event) => {
   const {
     email,
     sessionId,
+    nameOnCert,
+    ancestorDedication,
     partnerName,
     childrenFirstNames,
     publicRegisterVisible,
@@ -77,7 +79,7 @@ exports.handler = async (event) => {
     if (!member && email) {
       const { data } = await supa()
         .from('members')
-        .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, cert_version, public_register_visible, public_register_opted_in_at')
+        .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, public_register_visible, public_register_opted_in_at')
         .eq('clan_id', clan_id)
         .eq('email', email.toLowerCase().trim())
         .maybeSingle();
@@ -98,20 +100,27 @@ exports.handler = async (event) => {
     const cleanChildren = Array.isArray(childrenFirstNames)
       ? childrenFirstNames.map(s => (s || '').trim()).filter(Boolean)
       : [];
+    const cleanName = (nameOnCert || '').trim();
+    const cleanAncestor = (ancestorDedication || '').trim() || null;
 
-    // Compute display_name_on_register from family composition.
+    // Use the corrected name (if supplied) as the member.name for cert
+    // purposes. If the member just confirmed their existing name, it's
+    // unchanged; if they edited it, the update is captured.
+    const effectiveName = cleanName || member.name;
+
+    // Compute display_name_on_register from family composition, using
+    // the effective (possibly corrected) primary name.
     const hasPartner = !!cleanPartner;
     const hasChildren = cleanChildren.length > 0;
     let displayName;
     if (hasPartner && hasChildren) {
-      displayName = `${member.name} & Family`;
+      displayName = `${effectiveName} & Family`;
     } else if (hasPartner && !hasChildren) {
-      displayName = combineCoupleNames(member.name, cleanPartner);
+      displayName = combineCoupleNames(effectiveName, cleanPartner);
     } else if (!hasPartner && hasChildren) {
-      displayName = `${member.name} & Family`;
+      displayName = `${effectiveName} & Family`;
     } else {
-      // Empty family - just the primary name on the register
-      displayName = member.name;
+      displayName = effectiveName;
     }
 
     const wantsPublic = !!publicRegisterVisible;
@@ -123,32 +132,50 @@ exports.handler = async (event) => {
     // Always stamp settings_updated_at on this call so changes-of-mind are tracked
     const settingsUpdatedAt = now.toISOString();
 
-    // Increment cert_version so the cached cert is bypassed and a fresh one
-    // is generated reflecting the new family details. If the cert already
-    // matches what we're about to write (idempotent re-submit), don't bump.
+    // Anything that affects the cert's printed content requires regeneration:
+    // - primary name (if corrected from Herald chat capture)
+    // - partner name
+    // - children names
+    // - ancestor dedication
+    // - tier (not updated here but checked separately elsewhere)
+    const nameChanged = cleanName && cleanName !== member.name;
+    const ancestorChanged = cleanAncestor !== (member.ancestor_dedication || null);
     const familyChanged = (
       (member.partner_name || null) !== cleanPartner ||
       JSON.stringify(member.children_first_names || []) !== JSON.stringify(cleanChildren)
     );
-    const newVersion = familyChanged ? (member.cert_version || 1) + 1 : (member.cert_version || 1);
+    const certAffectingChange = nameChanged || ancestorChanged || familyChanged;
+    const newVersion = certAffectingChange ? (member.cert_version || 1) + 1 : (member.cert_version || 1);
 
     // ── Update the member row ─────────────────────────────────────────────
+    const updatePayload = {
+      partner_name:                          cleanPartner,
+      children_first_names:                  cleanChildren.length > 0 ? cleanChildren : null,
+      display_name_on_register:              displayName,
+      ancestor_dedication:                   cleanAncestor,
+      family_details_completed_at:           now.toISOString(),
+      public_register_visible:               wantsPublic,
+      children_visible_on_register:          wantsChildrenPublic,
+      public_register_opted_in_at:           optedInAt,
+      public_register_settings_updated_at:   settingsUpdatedAt,
+      cert_version:                          newVersion,
+      updated_at:                            now.toISOString(),
+    };
+    // Only update member.name if the cert-name confirmation actually differs
+    // from the currently-stored value (member typed a correction). Skip
+    // otherwise so we don't needlessly touch the canonical identity.
+    if (nameChanged) {
+      updatePayload.name = cleanName;
+    }
+    if (cleanName) {
+      updatePayload.name_confirmed_on_cert = true;
+    }
+
     const { data: updated, error: updateErr } = await supa()
       .from('members')
-      .update({
-        partner_name:                          cleanPartner,
-        children_first_names:                  cleanChildren.length > 0 ? cleanChildren : null,
-        display_name_on_register:              displayName,
-        family_details_completed_at:           now.toISOString(),
-        public_register_visible:               wantsPublic,
-        children_visible_on_register:          wantsChildrenPublic,
-        public_register_opted_in_at:           optedInAt,
-        public_register_settings_updated_at:   settingsUpdatedAt,
-        cert_version:                          newVersion,
-        updated_at:                            now.toISOString(),
-      })
+      .update(updatePayload)
       .eq('id', member.id)
-      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, cert_version')
+      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version')
       .single();
 
     if (updateErr) {
@@ -163,16 +190,16 @@ exports.handler = async (event) => {
       payload: {
         has_partner: hasPartner,
         children_count: cleanChildren.length,
+        has_ancestor: !!cleanAncestor,
+        name_corrected: nameChanged,
         public_register: wantsPublic,
         children_visible: wantsChildrenPublic,
       },
     });
 
-    // ── Regenerate cert with family format ────────────────────────────────
-    // Run the regeneration but don't fail the whole request if cert gen
-    // hiccups. The member can always re-trigger from the dashboard.
+    // ── Regenerate cert on any cert-affecting change ──────────────────────
     let certDownloadUrl = null;
-    if (familyChanged) {
+    if (certAffectingChange) {
       try {
         const { storagePath } = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
         certDownloadUrl = await signCertUrl(storagePath, {
@@ -190,7 +217,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         ok: true,
         certUrl: certDownloadUrl,
-        familyChanged,
+        certAffectingChange,
       }),
     };
   } catch (e) {

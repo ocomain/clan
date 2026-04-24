@@ -68,7 +68,7 @@ function loadFontBuffers() {
  * @param {Buffer} [opts.signaturePng] - PNG buffer of the Chief's signature (optional, drawn over centre signature line if present)
  * @returns {Promise<Uint8Array>}  PDF bytes
  */
-async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng, signaturePng, partnerName, childrenFirstNames }) {
+async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng, signaturePng, partnerName, childrenFirstNames, ancestorDedication }) {
   // With real Unicode fonts, we don't need WinAnsi sanitization — EB Garamond
   // covers the full Latin Extended-A range including Irish acute accents (á é
   // í ó ú) and typographic punctuation. Keep the name exactly as the member
@@ -318,6 +318,67 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
     font: fontSerifItalic,
     color: C_MUTED,
   });
+
+  // Running Y cursor for the conditional cert extensions below the register
+  // block: inheritance line (families with children), ancestor dedication
+  // line (optional member-entered). Each pushes the next one down further
+  // but neither encroaches on the signature area (which starts at margin+110).
+  let cursorY = ruleY - 240 + regOffset;
+
+  // ── INHERITANCE LINE — only for families with children ────────────────
+  // Heraldic letters-patent convention: the cert names the inheritors.
+  // Rendered as two short italic lines in muted ink, wrapping naturally.
+  if (hasChildren) {
+    cursorY -= 30;
+    const inherit1 = 'The children named herein shall inherit this membership in their own right,';
+    const inherit2 = 'in the fullness of time — their parents\u2019 names remembered always.';
+    const inheritSize = 11;
+    const i1w = fontSerifItalic.widthOfTextAtSize(inherit1, inheritSize);
+    const i2w = fontSerifItalic.widthOfTextAtSize(inherit2, inheritSize);
+    page.drawText(inherit1, {
+      x: (W - i1w) / 2,
+      y: cursorY,
+      size: inheritSize,
+      font: fontSerifItalic,
+      color: C_INK_S,
+    });
+    cursorY -= 16;
+    page.drawText(inherit2, {
+      x: (W - i2w) / 2,
+      y: cursorY,
+      size: inheritSize,
+      font: fontSerifItalic,
+      color: C_INK_S,
+    });
+  }
+
+  // ── ANCESTOR DEDICATION — optional member-entered free text ───────────
+  // Renders the member's own dedication as a single italic line between
+  // the register block and the signature. Members type this into the
+  // welcome-page form (or the dashboard edit modal) after paying.
+  // Free-text — whatever the member writes is what appears, verbatim.
+  // If the dedication is too long for one line, it gracefully reduces
+  // size to fit (same approach as the recipient name scaling above).
+  if (ancestorDedication && ancestorDedication.trim()) {
+    const dedication = ancestorDedication.trim();
+    cursorY -= hasChildren ? 26 : 30;
+    const dedSize = 12;
+    const dedWidth = fontSerifItalic.widthOfTextAtSize(dedication, dedSize);
+    let actualDedSize = dedSize;
+    let actualDedWidth = dedWidth;
+    const maxDedWidth = W - 2 * (margin + 60);
+    if (dedWidth > maxDedWidth) {
+      actualDedSize = dedSize * (maxDedWidth / dedWidth);
+      actualDedWidth = fontSerifItalic.widthOfTextAtSize(dedication, actualDedSize);
+    }
+    page.drawText(dedication, {
+      x: (W - actualDedWidth) / 2,
+      y: cursorY,
+      size: actualDedSize,
+      font: fontSerifItalic,
+      color: C_GOLD_D,
+    });
+  }
 
   // Signature area — single centred block with handwritten signature image
   // above the gold line, typed Chief name and ceremonial title beneath

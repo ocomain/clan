@@ -153,54 +153,93 @@
 
      Default state for both visibility flags: OFF. GDPR-clean: members must
      consciously tick to appear publicly. -->
-<section id="welFamily" style="display:none;background:var(--cream-mid);padding:64px 0;border-bottom:1px solid var(--border)">
+<!-- CERTIFICATE DETAILS — shown POST-PAYMENT for all paid tiers. Collects:
+     (1) Name-on-cert confirmation (pre-filled from member row) so the member
+         can correct Herald chat capitalisation / typos before cert generation
+     (2) Ancestor dedication (optional free text) — member-entered dedication
+         that appears as a small italic line above the signature on the cert
+     (3) Family details + public register opt-ins — only rendered for Family
+         tiers. Default state for visibility flags: OFF (GDPR-clean opt-in). -->
+<section id="welCertDetails" style="display:none;background:var(--cream-mid);padding:64px 0;border-bottom:1px solid var(--border)">
   <div style="max-width:680px;margin:0 auto;padding:0 24px">
     <div class="wel-confirm-card" style="margin:0;padding:44px 48px">
-      <div class="wel-confirm-eyebrow">Your Family on the Membership</div>
-      <h2 class="wel-confirm-tier" id="welFamilyTitle" style="margin-bottom:14px">A few details to honour your <em>family</em></h2>
-      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 24px;max-width:520px">Your Family membership covers two adults and any children under your care. Their names will be recorded on your certificate and in the Register of the clan at Newhall House.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">Your children's place in the clan is theirs to carry — through your membership, and theirs to continue when in time they choose.</p>
-
+      <div class="wel-confirm-eyebrow">Your Certificate Details</div>
+      <h2 class="wel-confirm-tier" style="margin-bottom:14px">A few details before your <em>certificate</em> is issued</h2>
+      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">These details will appear on your certificate and in the Register of the clan at Newhall House. You can update them any time from your Members' Area.</p>
       <div class="wel-confirm-rule" style="margin:0 auto 30px"></div>
 
-      <form id="welFamilyForm">
-        <!-- Partner / spouse - optional -->
+      <form id="welCertForm">
+        <!-- Name on cert - ALL tiers. Pre-filled from member row, editable. -->
         <div style="margin-bottom:24px">
-          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Partner / Spouse <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
-          <input type="text" id="famPartnerName" placeholder="Full name"
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">How your name appears on the certificate</label>
+          <input type="text" id="famNameOnCert" placeholder="Your full name as it should appear"
             style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.55">Check the capitalisation and spelling carefully — this is how it will be printed.</p>
         </div>
 
-        <!-- Children - first names only, optional -->
+        <!-- Ancestor dedication - ALL tiers, optional -->
         <div style="margin-bottom:24px">
-          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Children <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— first names only, one per line, optional</span></label>
-          <textarea id="famChildren" rows="4" placeholder="Saoirse&#10;Liam&#10;Aoife"
-            style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;resize:vertical;line-height:1.5"></textarea>
-          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.55">First names only. Children's full identities are protected — surnames are never publicly displayed.</p>
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">An ancestor you wish to honour <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
+          <input type="text" id="famAncestor" placeholder="e.g. In memory of my grandfather, Patrick Cummins of Ennistymon, 1908&#8211;1984"
+            maxlength="140"
+            style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.55">For the cert dedication line. Write it exactly as you want it to appear — "In memory of, or in honour of".</p>
         </div>
 
-        <!-- Public register opt-in - default OFF -->
-        <div style="background:var(--cream);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0">
+        <!-- FAMILY sub-block — only shown for Family tiers -->
+        <div id="welFamilySubblock" style="display:none">
+          <div style="border-top:1px solid var(--gold-border);margin:32px 0 24px;padding-top:28px">
+            <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 10px">Your Family on the Membership</p>
+            <p style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 24px">Your Family membership covers two adults and any children under your care. Their names will be recorded on your certificate and in the Register of the clan at Newhall House. <strong style="color:var(--ink)">Your children named here will inherit this membership in their own right, in the fullness of time.</strong></p>
+          </div>
+
+          <!-- Partner -->
+          <div style="margin-bottom:24px">
+            <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Partner / Spouse <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
+            <input type="text" id="famPartnerName" placeholder="Full name"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          </div>
+
+          <!-- Children - first names only -->
+          <div style="margin-bottom:24px">
+            <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Children <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— first names only, one per line, optional</span></label>
+            <textarea id="famChildren" rows="4" placeholder="Saoirse&#10;Liam&#10;Aoife"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;resize:vertical;line-height:1.5"></textarea>
+            <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.55">First names only. Children's full identities are protected — surnames are never publicly displayed.</p>
+          </div>
+
+          <!-- Public register opt-in -->
+          <div style="background:var(--cream);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0">
+            <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 14px">Public Register Settings</p>
+
+            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6;margin-bottom:14px">
+              <input type="checkbox" id="famPublicRegister" style="margin-top:5px;width:18px;height:18px;flex-shrink:0;cursor:pointer">
+              <span><strong>Show our family on the public Founding Members Register</strong> at <em>ocomain.org/register</em>. Members who choose to be publicly recorded join the clan's living roll of names.</span>
+            </label>
+
+            <label id="famChildrenVisibleWrap" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6;margin-left:30px;opacity:.5;pointer-events:none">
+              <input type="checkbox" id="famChildrenVisible" disabled style="margin-top:5px;width:18px;height:18px;flex-shrink:0;cursor:pointer">
+              <span>Include our children's first names on our public entry. <em style="color:var(--ink-muted);font-style:italic">Off by default — children's names are private unless you choose otherwise.</em></span>
+            </label>
+
+            <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">You can change either of these any time from your Members' Area.</p>
+          </div>
+        </div><!-- /#welFamilySubblock -->
+
+        <!-- Public register opt-in for INDIVIDUAL tiers - simpler, just the one flag -->
+        <div id="welIndividualRegisterBlock" style="display:none;background:var(--cream);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0">
           <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 14px">Public Register Settings</p>
-
-          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6;margin-bottom:14px">
-            <input type="checkbox" id="famPublicRegister" style="margin-top:5px;width:18px;height:18px;flex-shrink:0;cursor:pointer">
-            <span><strong>Show our family on the public Founding Members Register</strong> at <em>ocomain.org/register</em>. Members who choose to be publicly recorded join the clan's living roll of names.</span>
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6;margin-bottom:8px">
+            <input type="checkbox" id="indPublicRegister" style="margin-top:5px;width:18px;height:18px;flex-shrink:0;cursor:pointer">
+            <span><strong>Show me on the public Founding Members Register</strong> at <em>ocomain.org/register</em>. Off by default — you can change this any time from your Members' Area.</span>
           </label>
-
-          <label id="famChildrenVisibleWrap" style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6;margin-left:30px;opacity:.5;pointer-events:none">
-            <input type="checkbox" id="famChildrenVisible" disabled style="margin-top:5px;width:18px;height:18px;flex-shrink:0;cursor:pointer">
-            <span>Include our children's first names on our public entry. <em style="color:var(--ink-muted);font-style:italic">Off by default — children's names are private unless you choose otherwise.</em></span>
-          </label>
-
-          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">You can change either of these any time from your Members' Area.</p>
         </div>
 
         <!-- Submit -->
         <div style="text-align:center;margin-top:32px">
           <button type="submit" id="famSubmitBtn"
             style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border:none;border-radius:1px;cursor:pointer;transition:background .2s">Save and update my certificate →</button>
-          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Or skip for now — you can add your family any time from your Members' Area.</p>
+          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Or skip for now — you can add these any time from your Members' Area.</p>
         </div>
 
         <div id="famStatus" style="display:none;margin-top:20px;padding:16px;border-radius:2px;text-align:center;font-family:'EB Garamond',serif;font-size:15px"></div>
@@ -369,47 +408,73 @@
     document.getElementById('welEyebrow').textContent = 'Gift confirmed · Ó Comáin';
   }
 
-  // ── FAMILY SECTION: only shown for Family-tier (non-gift) purchases ──
-  // Tier param ends in '-fam' for all family tiers (clan-fam, guardian-fam,
-  // steward-fam, life-fam). Gift family flows go to a different recipient
-  // workflow so we exclude isGift here.
-  const isFamilyTier = !isGift && /-fam$/.test(tier);
-  if (isFamilyTier) {
-    const familySection = document.getElementById('welFamily');
-    familySection.style.display = 'block';
+  // ── CERT DETAILS SECTION: shown for ALL paid (non-gift) tiers ────────
+  // - Name confirmation always shown (pre-filled from member row via API)
+  // - Ancestor dedication always shown (optional)
+  // - Family sub-block only for Family tiers (ends in '-fam')
+  // - Public register opt-in shown to everyone, with children-visibility
+  //   flag only available to Family tiers
+  const isPaidTier = !isGift && !!tierDisplay;
+  const isFamilyTier = isPaidTier && /-fam$/.test(tier);
 
-    // Children-visibility checkbox is dependent on the public-register
-    // checkbox. Disabled (and visually muted) when the parent is unchecked.
-    const publicCb = document.getElementById('famPublicRegister');
-    const childrenCb = document.getElementById('famChildrenVisible');
-    const childrenWrap = document.getElementById('famChildrenVisibleWrap');
-    publicCb.addEventListener('change', () => {
-      const enabled = publicCb.checked;
-      childrenCb.disabled = !enabled;
-      childrenWrap.style.opacity = enabled ? '1' : '.5';
-      childrenWrap.style.pointerEvents = enabled ? 'auto' : 'none';
-      if (!enabled) childrenCb.checked = false;
-    });
+  if (isPaidTier) {
+    const section = document.getElementById('welCertDetails');
+    section.style.display = 'block';
 
-    // Submit handler
-    const form = document.getElementById('welFamilyForm');
+    // Family sub-block visible for Family tiers; otherwise the Individual
+    // public-register block is shown instead (single checkbox, no children).
+    if (isFamilyTier) {
+      document.getElementById('welFamilySubblock').style.display = 'block';
+    } else {
+      document.getElementById('welIndividualRegisterBlock').style.display = 'block';
+    }
+
+    // Pre-fill name-on-cert from URL param (buyer's name passed from Stripe)
+    // If not in URL, fetch from member-info after sign-in. For now: use param
+    // if present, otherwise leave blank so member sees placeholder prompting.
+    const params = new URLSearchParams(window.location.search);
+    const paramName = params.get('name');
+    if (paramName) {
+      document.getElementById('famNameOnCert').value = paramName;
+    }
+
+    // Children-visibility checkbox dependency (Family only)
+    if (isFamilyTier) {
+      const publicCb = document.getElementById('famPublicRegister');
+      const childrenCb = document.getElementById('famChildrenVisible');
+      const childrenWrap = document.getElementById('famChildrenVisibleWrap');
+      publicCb.addEventListener('change', () => {
+        const enabled = publicCb.checked;
+        childrenCb.disabled = !enabled;
+        childrenWrap.style.opacity = enabled ? '1' : '.5';
+        childrenWrap.style.pointerEvents = enabled ? 'auto' : 'none';
+        if (!enabled) childrenCb.checked = false;
+      });
+    }
+
+    // Submit handler — POST /api/submit-family-details with all fields
+    const form = document.getElementById('welCertForm');
     const submitBtn = document.getElementById('famSubmitBtn');
     const statusEl = document.getElementById('famStatus');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const partnerName = document.getElementById('famPartnerName').value.trim();
-      const childrenRaw = document.getElementById('famChildren').value.trim();
-      const children = childrenRaw
-        ? childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean)
-        : [];
-      const publicVisible = publicCb.checked;
-      const childrenVisible = childrenCb.checked && publicVisible;
+      const nameOnCert = document.getElementById('famNameOnCert').value.trim();
+      const ancestor = document.getElementById('famAncestor').value.trim();
+      let partnerName = '';
+      let children = [];
+      let publicVisible = false;
+      let childrenVisible = false;
 
-      // We need an identifier to know WHICH member to update. Two options:
-      // (1) ?email= URL param if Stripe success_url passes it
-      // (2) Stripe session_id from URL if available, server resolves member
-      // The submit-family-details function accepts either.
-      const params = new URLSearchParams(window.location.search);
+      if (isFamilyTier) {
+        partnerName = document.getElementById('famPartnerName').value.trim();
+        const childrenRaw = document.getElementById('famChildren').value.trim();
+        children = childrenRaw ? childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean) : [];
+        publicVisible = document.getElementById('famPublicRegister').checked;
+        childrenVisible = document.getElementById('famChildrenVisible').checked && publicVisible;
+      } else {
+        publicVisible = document.getElementById('indPublicRegister').checked;
+      }
+
       const email = params.get('email') || params.get('rec_email') || '';
       const sessionId = params.get('session_id') || '';
 
@@ -424,6 +489,8 @@
           body: JSON.stringify({
             email,
             sessionId,
+            nameOnCert: nameOnCert || null,
+            ancestorDedication: ancestor || null,
             partnerName,
             childrenFirstNames: children,
             publicRegisterVisible: publicVisible,
@@ -436,7 +503,7 @@
         statusEl.style.background = 'rgba(184,151,90,.12)';
         statusEl.style.border = '1px solid var(--gold-border)';
         statusEl.style.color = 'var(--ink)';
-        statusEl.innerHTML = '<strong>Saved.</strong> Your family is now recorded on your certificate. The updated certificate is being prepared and will be available in your Members\u2019 Area in a moment.';
+        statusEl.innerHTML = '<strong>Saved.</strong> Your certificate is being prepared with these details. It will be ready in your Members\u2019 Area in a moment.';
         submitBtn.textContent = 'Saved \u2713';
         submitBtn.style.background = 'rgba(184,151,90,.5)';
       } catch (err) {
@@ -444,7 +511,7 @@
         statusEl.style.background = 'rgba(192,57,43,.08)';
         statusEl.style.border = '1px solid rgba(192,57,43,.3)';
         statusEl.style.color = '#922c1f';
-        statusEl.innerHTML = 'We couldn\u2019t save your details just now. Please try again, or add your family from your Members\u2019 Area after signing in.';
+        statusEl.innerHTML = 'We couldn\u2019t save your details just now. Please try again, or add them from your Members\u2019 Area after signing in.';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Save and update my certificate \u2192';
         submitBtn.style.opacity = '1';

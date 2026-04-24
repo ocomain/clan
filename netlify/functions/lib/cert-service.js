@@ -75,6 +75,8 @@ async function ensureCertificate(member, clan_id, opts = {}) {
     // falls back to single-name rendering in that case.
     partnerName:          member.partner_name || null,
     childrenFirstNames:   member.children_first_names || null,
+    // Optional ancestor dedication line — member-entered free text
+    ancestorDedication:   member.ancestor_dedication || null,
   });
 
   // Versioned storage path so multiple cert versions can coexist for audit.

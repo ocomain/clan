@@ -45,6 +45,8 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
   const {
+    nameOnCert,
+    ancestorDedication,
     partnerName,
     childrenFirstNames,
     publicRegisterVisible,
@@ -59,7 +61,7 @@ exports.handler = async (event) => {
     const email = (authUser.email || '').toLowerCase().trim();
     const { data: member } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, cert_version, public_register_visible, public_register_opted_in_at')
+      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, public_register_visible, public_register_opted_in_at')
       .eq('clan_id', clan_id)
       .eq('email', email)
       .maybeSingle();
@@ -71,39 +73,59 @@ exports.handler = async (event) => {
     const now = new Date();
     const update = {};
     let familyChanged = false;
+    let nameChanged = false;
+    let ancestorChanged = false;
 
-    // ── Family details (only if not privacy-only) ────────────────────────
+    // ── Family + name + ancestor (skipped for privacy-only requests) ─────
     if (!privacyOnly) {
       const cleanPartner = (partnerName || '').trim() || null;
       const cleanChildren = Array.isArray(childrenFirstNames)
         ? childrenFirstNames.map(s => (s || '').trim()).filter(Boolean)
         : [];
+      const cleanName = (nameOnCert || '').trim();
+      const cleanAncestor = ancestorDedication !== undefined
+        ? ((ancestorDedication || '').trim() || null)
+        : member.ancestor_dedication;  // undefined means "don't change"
 
+      nameChanged = !!cleanName && cleanName !== member.name;
+      ancestorChanged = (cleanAncestor || null) !== (member.ancestor_dedication || null);
       familyChanged = (
         (member.partner_name || null) !== cleanPartner ||
         JSON.stringify(member.children_first_names || []) !== JSON.stringify(cleanChildren)
       );
 
-      if (familyChanged) {
-        // Recompute display name from composition
+      const certAffectingChange = nameChanged || ancestorChanged || familyChanged;
+
+      if (familyChanged || ancestorChanged || nameChanged) {
+        // Use the effective (possibly corrected) primary name when computing display_name
+        const effectiveName = cleanName || member.name;
         const hasPartner = !!cleanPartner;
         const hasChildren = cleanChildren.length > 0;
         let displayName;
         if (hasPartner && hasChildren) {
-          displayName = `${member.name} & Family`;
+          displayName = `${effectiveName} & Family`;
         } else if (hasPartner && !hasChildren) {
-          displayName = combineCoupleNames(member.name, cleanPartner);
+          displayName = combineCoupleNames(effectiveName, cleanPartner);
         } else if (!hasPartner && hasChildren) {
-          displayName = `${member.name} & Family`;
+          displayName = `${effectiveName} & Family`;
         } else {
-          displayName = member.name;
+          displayName = effectiveName;
         }
 
         update.partner_name = cleanPartner;
         update.children_first_names = cleanChildren.length > 0 ? cleanChildren : null;
         update.display_name_on_register = displayName;
+        update.ancestor_dedication = cleanAncestor;
         update.family_details_completed_at = now.toISOString();
-        update.cert_version = (member.cert_version || 1) + 1;
+        if (nameChanged) {
+          update.name = cleanName;
+        }
+        if (cleanName) {
+          update.name_confirmed_on_cert = true;
+        }
+        if (certAffectingChange) {
+          update.cert_version = (member.cert_version || 1) + 1;
+        }
       }
     }
 
@@ -130,7 +152,7 @@ exports.handler = async (event) => {
       .from('members')
       .update(update)
       .eq('id', member.id)
-      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, cert_version')
+      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version')
       .single();
 
     if (updateErr) {
@@ -149,9 +171,11 @@ exports.handler = async (event) => {
       },
     });
 
-    // Regenerate cert if family changed (privacy-only changes don't regen)
+    // Regenerate cert if any cert-affecting change (name, ancestor, family)
+    // occurred. Privacy-only changes skip this entirely.
+    const certAffectingChange = familyChanged || nameChanged || ancestorChanged;
     let certUrl = null;
-    if (familyChanged) {
+    if (certAffectingChange) {
       try {
         const { storagePath } = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
         certUrl = await signCertUrl(storagePath, {
@@ -166,7 +190,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ok: true, certUrl, familyChanged }),
+      body: JSON.stringify({ ok: true, certUrl, certAffectingChange, familyChanged, nameChanged, ancestorChanged }),
     };
   } catch (e) {
     console.error('update-family-details crashed:', e.message);
