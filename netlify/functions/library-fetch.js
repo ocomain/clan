@@ -63,6 +63,20 @@ const LIBRARY = {
     storagePath: 'ocomain/library/cotter-1999-cahercommaun-key-pages.pdf',
     downloadAs: 'Cotter-1999-Cahercommaun-key-pages.pdf',
   },
+  'comman-name-essay-2026': {
+    slug: 'comman-name-essay-2026',
+    title: 'The Commán Name in the Early Irish Annals: A Survey of the Primary Sources',
+    author: 'Clan Ó Comáin',
+    year: 2026,
+    kind: 'members\' essay',
+    topic: 'history',
+    institution: 'Clan Ó Comáin Members\' Library',
+    pages: 18,
+    sizeLabel: '92 KB',
+    description: 'The scholarly companion to the public pedigree page. A full survey of the primary sources behind the Commán-name tradition — Pender\'s Déisi Genealogies, Ó Cróinín\'s Peritia 2 (1983) computus evidence, the Synod of Birr guarantor list, the Torpad mac Cernaig dual-rule attestation, the Cahercommaun radiocarbon convergence, and an explicit accounting of what is directly attested, reasonably inferred, and genuinely open. For members who want to see the workings behind every claim on the public page.',
+    storagePath: 'ocomain/library/comman-name-essay-2026.pdf',
+    downloadAs: 'Comman-Name-Members-Essay-2026.pdf',
+  },
 };
 
 exports.handler = async (event) => {
