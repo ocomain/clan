@@ -226,13 +226,22 @@
           </div>
         </div><!-- /#welFamilySubblock -->
 
-        <!-- Public register opt-in for INDIVIDUAL tiers - simpler, just the one flag -->
+        <!-- Public register opt-in for Guardian+ non-family tiers -->
         <div id="welIndividualRegisterBlock" style="display:none;background:var(--cream);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0">
           <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 14px">Public Register Settings</p>
           <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6;margin-bottom:8px">
             <input type="checkbox" id="indPublicRegister" style="margin-top:5px;width:18px;height:18px;flex-shrink:0;cursor:pointer">
             <span><strong>Show me on the public Founding Members Register</strong> at <em>ocomain.org/register</em>. Off by default — you can change this any time from your Members' Area.</span>
           </label>
+        </div>
+
+        <!-- Public register upgrade prompt - shown for Clan Member (entry) tier.
+             The register is a Guardian+ benefit, so entry-tier members see an
+             invitation to upgrade rather than a checkbox they can't use. -->
+        <div id="welEntryUpgradePrompt" style="display:none;background:linear-gradient(180deg,rgba(184,151,90,.08) 0%,rgba(184,151,90,.03) 100%);border:1px solid rgba(184,151,90,.35);border-left:3px solid var(--gold);padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0">
+          <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 10px">Public Register — a Guardian benefit</p>
+          <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 8px">The public Founding Members Register at <em>ocomain.org/register</em> is reserved for Guardian-tier members and above — those who have made the deeper commitment to the clan's revival.</p>
+          <p style="font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);line-height:1.65;margin:0"><a href="/membership.html#tiers" style="color:var(--gold-strong);text-decoration:underline">Upgrade to Guardian</a> any time to take your place on the public roll.</p>
         </div>
 
         <!-- Submit -->
@@ -421,11 +430,28 @@
     const section = document.getElementById('welCertDetails');
     section.style.display = 'block';
 
-    // Family sub-block visible for Family tiers; otherwise the Individual
-    // public-register block is shown instead (single checkbox, no children).
+    // Entry-tier (Clan Member) detection — the public register is a Guardian+
+    // benefit. 'clan-ind' and 'clan-fam' are both entry-tier.
+    const isEntryTier = /^clan-/.test(tier);
+
+    // Family sub-block visible for Family tiers. However, if the tier is
+    // clan-fam (entry-tier Family), we still show family fields (partner,
+    // children) but the public register checkboxes inside the sub-block
+    // are hidden in favour of the entry-tier upgrade prompt.
     if (isFamilyTier) {
       document.getElementById('welFamilySubblock').style.display = 'block';
+      if (isEntryTier) {
+        // Hide the in-sub-block public register checkboxes
+        const parentRegisterBlock = document.getElementById('famPublicRegister')?.closest('div[style*="border-left"]');
+        if (parentRegisterBlock) parentRegisterBlock.style.display = 'none';
+        // And show the entry-tier upgrade prompt instead
+        document.getElementById('welEntryUpgradePrompt').style.display = 'block';
+      }
+    } else if (isEntryTier) {
+      // clan-ind: simple entry-tier upgrade prompt (no family block)
+      document.getElementById('welEntryUpgradePrompt').style.display = 'block';
     } else {
+      // Guardian/Steward/Life Individual: standard register block
       document.getElementById('welIndividualRegisterBlock').style.display = 'block';
     }
 
@@ -438,8 +464,8 @@
       document.getElementById('famNameOnCert').value = paramName;
     }
 
-    // Children-visibility checkbox dependency (Family only)
-    if (isFamilyTier) {
+    // Children-visibility checkbox dependency (Family only, Guardian+ only)
+    if (isFamilyTier && !isEntryTier) {
       const publicCb = document.getElementById('famPublicRegister');
       const childrenCb = document.getElementById('famChildrenVisible');
       const childrenWrap = document.getElementById('famChildrenVisibleWrap');
@@ -469,11 +495,16 @@
         partnerName = document.getElementById('famPartnerName').value.trim();
         const childrenRaw = document.getElementById('famChildren').value.trim();
         children = childrenRaw ? childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean) : [];
-        publicVisible = document.getElementById('famPublicRegister').checked;
-        childrenVisible = document.getElementById('famChildrenVisible').checked && publicVisible;
-      } else {
+        // Public register checkboxes only apply to Guardian+ Family tiers.
+        // Entry-tier Family (clan-fam) ignores them - server enforces this too.
+        if (!isEntryTier) {
+          publicVisible = document.getElementById('famPublicRegister').checked;
+          childrenVisible = document.getElementById('famChildrenVisible').checked && publicVisible;
+        }
+      } else if (!isEntryTier) {
         publicVisible = document.getElementById('indPublicRegister').checked;
       }
+      // isEntryTier && !isFamilyTier falls through — both flags stay false
 
       const email = params.get('email') || params.get('rec_email') || '';
       const sessionId = params.get('session_id') || '';

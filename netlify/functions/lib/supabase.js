@@ -65,4 +65,22 @@ async function logEvent({ clan_id, member_id, event_type, payload }) {
   }
 }
 
-module.exports = { supa, clanId, normaliseTier, logEvent };
+// Determine whether a member's tier qualifies them for the public Founding
+// Members Register at ocomain.org/register.
+//
+// Policy: the public register is a Guardian+ benefit. Entry-tier Clan Member
+// purchases do NOT appear on the public register, and attempts to flip the
+// public_register_visible flag true on a clan-* tier row are rejected at
+// the endpoint level. The member's privacy fields remain on the row (so
+// upgrading later flips them live), but the flags stay false while the
+// member is on a clan-* tier.
+//
+// Tier key format is {base}-{ind|fam} — 'clan-ind', 'clan-fam',
+// 'guardian-ind', 'guardian-fam', 'steward-*', 'life-*'. Everything
+// starting with 'clan-' is entry-tier. Everything else qualifies.
+function canAppearOnPublicRegister(tierKey) {
+  if (!tierKey) return false;
+  return !tierKey.startsWith('clan-');
+}
+
+module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister };
