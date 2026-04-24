@@ -20,7 +20,7 @@
 //      checkboxes which auto-save on change. No cert regeneration since
 //      family details aren't changing.
 
-const { supa, clanId, logEvent } = require('./lib/supabase');
+const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 
 exports.handler = async (event) => {
@@ -61,7 +61,7 @@ exports.handler = async (event) => {
     const email = (authUser.email || '').toLowerCase().trim();
     const { data: member } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, public_register_visible, public_register_opted_in_at')
+      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, cert_locked_at, public_register_visible, public_register_opted_in_at')
       .eq('clan_id', clan_id)
       .eq('email', email)
       .maybeSingle();
@@ -131,11 +131,13 @@ exports.handler = async (event) => {
 
     // ── Privacy flags (always applied if provided) ───────────────────────
     if (publicRegisterVisible !== undefined) {
-      const wantsPublic = !!publicRegisterVisible;
+      // Server-side enforcement: public register is Guardian+ only. Clan Member
+      // (entry tier) rows cannot have public_register_visible set to true.
+      const eligible = canAppearOnPublicRegister(member.tier);
+      const wantsPublic = !!publicRegisterVisible && eligible;
       const wantsChildrenPublic = !!childrenVisibleOnRegister && wantsPublic;
       update.public_register_visible = wantsPublic;
       update.children_visible_on_register = wantsChildrenPublic;
-      // Stamp opted_in_at the first time public_register_visible flips true
       if (wantsPublic && !member.public_register_opted_in_at) {
         update.public_register_opted_in_at = now.toISOString();
       }
@@ -175,13 +177,18 @@ exports.handler = async (event) => {
     // occurred. Privacy-only changes skip this entirely.
     const certAffectingChange = familyChanged || nameChanged || ancestorChanged;
     let certUrl = null;
+    let certLocked = false;
     if (certAffectingChange) {
       try {
-        const { storagePath } = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
-        certUrl = await signCertUrl(storagePath, {
-          ttlSeconds: 60 * 60 * 24 * 7,
-          downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(updated.name || updated.email)}.pdf`,
-        });
+        const certResult = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
+        if (certResult.locked) {
+          certLocked = true;
+        } else if (certResult.storagePath) {
+          certUrl = await signCertUrl(certResult.storagePath, {
+            ttlSeconds: 60 * 60 * 24 * 7,
+            downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(updated.name || updated.email)}.pdf`,
+          });
+        }
       } catch (certErr) {
         console.error('cert regeneration after family update (non-fatal):', certErr.message);
       }
@@ -190,7 +197,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ok: true, certUrl, certAffectingChange, familyChanged, nameChanged, ancestorChanged }),
+      body: JSON.stringify({ ok: true, certUrl, certAffectingChange, familyChanged, nameChanged, ancestorChanged, certLocked }),
     };
   } catch (e) {
     console.error('update-family-details crashed:', e.message);

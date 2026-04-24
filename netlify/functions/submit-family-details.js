@@ -33,7 +33,7 @@
 //   /api/update-family-details endpoint instead — anything edited from the
 //   members area requires signed-in session.
 
-const { supa, clanId, logEvent } = require('./lib/supabase');
+const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 
 exports.handler = async (event) => {
@@ -79,7 +79,7 @@ exports.handler = async (event) => {
     if (!member && email) {
       const { data } = await supa()
         .from('members')
-        .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, public_register_visible, public_register_opted_in_at')
+        .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, cert_locked_at, public_register_visible, public_register_opted_in_at')
         .eq('clan_id', clan_id)
         .eq('email', email.toLowerCase().trim())
         .maybeSingle();
@@ -123,7 +123,7 @@ exports.handler = async (event) => {
       displayName = effectiveName;
     }
 
-    const wantsPublic = !!publicRegisterVisible;
+    const wantsPublic = !!publicRegisterVisible && canAppearOnPublicRegister(member.tier);
     const wantsChildrenPublic = !!childrenVisibleOnRegister && wantsPublic;
     // Stamp opted_in_at the FIRST TIME public visibility is set true
     const optedInAt = wantsPublic && !member.public_register_opted_in_at
@@ -199,13 +199,21 @@ exports.handler = async (event) => {
 
     // ── Regenerate cert on any cert-affecting change ──────────────────────
     let certDownloadUrl = null;
+    let certLocked = false;
     if (certAffectingChange) {
       try {
-        const { storagePath } = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
-        certDownloadUrl = await signCertUrl(storagePath, {
-          ttlSeconds: 60 * 60 * 24 * 7,
-          downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(updated.name || updated.email)}.pdf`,
-        });
+        const certResult = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
+        if (certResult.locked) {
+          // Lock enforced — member row was updated (their Register entry at
+          // Newhall reflects the change) but PDF not regenerated. Tell the
+          // caller so the UI can explain the situation.
+          certLocked = true;
+        } else if (certResult.storagePath) {
+          certDownloadUrl = await signCertUrl(certResult.storagePath, {
+            ttlSeconds: 60 * 60 * 24 * 7,
+            downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(updated.name || updated.email)}.pdf`,
+          });
+        }
       } catch (certErr) {
         console.error('cert regeneration after family details (non-fatal):', certErr.message);
       }
@@ -218,6 +226,7 @@ exports.handler = async (event) => {
         ok: true,
         certUrl: certDownloadUrl,
         certAffectingChange,
+        certLocked,
       }),
     };
   } catch (e) {

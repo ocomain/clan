@@ -36,8 +36,35 @@ async function ensureCertificate(member, clan_id, opts = {}) {
   const forceRegenerate = !!opts.forceRegenerate;
   const version = member.cert_version || 1;
 
+  // ── CERT LOCK ENFORCEMENT ────────────────────────────────────────────
+  // A cert is a one-time heraldic instrument. Members get a 30-day grace
+  // window from the FIRST time a cert was issued during which they can
+  // make edits that regenerate the PDF freely. After that window, the
+  // cert is locked: edits still update the member row (and the clan's
+  // Register at Newhall) but this function will NOT regenerate the PDF.
+  //
+  // The lock is computed on-demand from cert_locked_at: if it's set AND
+  // forceRegenerate is true, we refuse and return a structured response
+  // so callers can tell the member their cert is locked.
+  //
+  // The lock is set lazily - here, when we're about to regenerate - if
+  // the original cert was issued 30+ days ago. This self-heals rows that
+  // were written before the lock mechanism existed.
+  const GRACE_DAYS = 30;
+  const now = new Date();
+  if (forceRegenerate && member.cert_locked_at) {
+    // Hard stop - cert is locked. Caller receives a structured refusal.
+    return {
+      storagePath: null,
+      issuedAt: null,
+      certNumber: null,
+      wasGenerated: false,
+      locked: true,
+      lockedAt: member.cert_locked_at,
+    };
+  }
+
   // Look for an existing cert AT THE CURRENT VERSION first (unless forcing).
-  // Older versions are ignored — they're stale (e.g. pre-family-details).
   if (!forceRegenerate) {
     const { data: existing } = await supa()
       .from('certificates')
@@ -56,6 +83,34 @@ async function ensureCertificate(member, clan_id, opts = {}) {
         certNumber:  existing.metadata?.cert_number || 'OC-UNKNOWN',
         wasGenerated: false,
       };
+    }
+  }
+
+  // If we get here, we're generating a new cert (first issuance OR
+  // regeneration within the grace window). Check if this is the first
+  // issuance or a regeneration - the member's first ever issued cert
+  // sets the start of the grace window.
+  const { data: priorCert } = await supa()
+    .from('certificates')
+    .select('issued_at')
+    .eq('clan_id', clan_id)
+    .eq('member_id', member.id)
+    .order('issued_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  // Determine whether to set cert_locked_at. If this is NOT the first
+  // cert AND the first cert was issued 30+ days ago, set the lock NOW -
+  // this is the last edit allowed within grace, and future forceRegen
+  // calls will bounce. Also handles legacy members (no cert_locked_at
+  // but first cert was issued > 30 days ago) by locking them on this
+  // regeneration.
+  let shouldSetLock = false;
+  if (priorCert?.issued_at) {
+    const firstIssuedAt = new Date(priorCert.issued_at);
+    const daysSinceFirst = (now - firstIssuedAt) / (1000 * 60 * 60 * 24);
+    if (daysSinceFirst >= GRACE_DAYS && !member.cert_locked_at) {
+      shouldSetLock = true;
     }
   }
 
@@ -116,6 +171,22 @@ async function ensureCertificate(member, clan_id, opts = {}) {
     event_type: forceRegenerate ? 'certificate_regenerated' : 'certificate_generated',
     payload:    { storage_path: storagePath, cert_number: certNumber, version },
   });
+
+  // If this regeneration happens on the boundary of the grace window,
+  // stamp cert_locked_at so the next forceRegenerate call refuses. This
+  // makes the grace window self-enforcing - no background job needed.
+  if (shouldSetLock) {
+    await supa()
+      .from('members')
+      .update({ cert_locked_at: now.toISOString() })
+      .eq('id', member.id);
+    await logEvent({
+      clan_id,
+      member_id: member.id,
+      event_type: 'certificate_locked',
+      payload: { days_after_first_issue: Math.floor((now - new Date(priorCert.issued_at)) / (1000*60*60*24)) },
+    });
+  }
 
   return { storagePath, issuedAt, certNumber, wasGenerated: true };
 }
