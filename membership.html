@@ -38,6 +38,29 @@
     .toggle-btn.active{background:var(--gold);color:var(--ink)}
     .toggle-save{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6);margin-top:10px}
 
+    /* Heritage callout section - the permanent marketing moment between
+       Founder callout and tier section. Wraps .family-callout in a cream
+       background panel with top/bottom padding so it reads as its own
+       page section rather than continuing from the Founder callout above. */
+    .heritage-callout-section{background:var(--cream);padding:44px 0 16px;border-top:1px solid var(--border)}
+    @media(max-width:720px){.heritage-callout-section{padding:32px 0 8px}}
+
+    /* Family-tiers-add extension block - labelled sub-section within the
+       heritage callout. Separated from universal pillars by a gold rule
+       so it's clear this is specifically about Family tiers. Present on
+       every page load but visually demarcated so Individual buyers know
+       which content applies to their tier and which doesn't. */
+    .family-callout-extension{margin:28px auto 0;padding:22px 24px 4px;max-width:780px;border-top:1px solid rgba(184,151,90,.35);text-align:left}
+    .family-extension-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;text-align:center}
+    .family-extension-body{font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.7;color:var(--ink-soft);max-width:640px;margin:0 auto}
+    .family-extension-body p{margin:0}
+    .family-extension-body strong{color:var(--ink);font-weight:500}
+    .family-extension-body em{color:var(--ink);font-style:italic}
+    @media(max-width:720px){
+      .family-callout-extension{padding:18px 4px 4px;margin-top:22px}
+      .family-extension-body{font-size:14.5px}
+    }
+
     /* Family-mode marketing callout - "Three generations remembered".
        Rendered only when Family toggle is active (hidden by default via
        the same .family-price toggle pattern). Sells the heraldic heirloom
@@ -310,6 +333,50 @@
   </div>
 </section>
 
+<!-- HERITAGE CALLOUT — permanent, always visible. Sits between the Founder
+     Member callout (Year I / 2026 urgency) and the tier section (pricing
+     toggle + cards). Answers the question a visitor asks in that moment:
+     "What am I actually getting?" Not gated to Individual/Family toggle
+     because the callout is about the heraldic instrument itself, which is
+     universal across tiers. Family-specific features are explicitly
+     labelled in their own section within the callout, below the universal
+     pillars, so Individual buyers don't see promises their tier can't keep
+     and Family buyers see both what they share with Individual plus what
+     Family tier uniquely adds. -->
+<section class="heritage-callout-section">
+  <div class="si" style="max-width:920px;margin:0 auto">
+    <div class="family-callout" style="margin:0">
+      <div class="family-callout-eyebrow">A heraldic instrument, not a receipt</div>
+      <h3 class="family-callout-title">Your place in an ancient <em>Gaelic clan</em></h3>
+      <p class="family-callout-lead">A membership of Clan Ó Comáin is a Chief-signed heraldic certificate bearing your name, an optional dedication to an ancestor, and your entry in the clan's Register at Newhall House — a living record that will outlast you.</p>
+      <div class="family-callout-pillars">
+        <div class="family-pillar">
+          <div class="family-pillar-icon">❦</div>
+          <div class="family-pillar-label">Signed<br>by the Chief</div>
+          <div class="family-pillar-text">A certificate issued in your name, signed by the Chief of Ó Comáin — in the tradition of Gaelic letters patent.</div>
+        </div>
+        <div class="family-pillar">
+          <div class="family-pillar-icon">⁂</div>
+          <div class="family-pillar-label">An ancestor<br>honoured</div>
+          <div class="family-pillar-text">A dedication line in your own words — a grandfather, a mother, an ancestor whose name carries you here.</div>
+        </div>
+        <div class="family-pillar">
+          <div class="family-pillar-icon">⚜</div>
+          <div class="family-pillar-label">Founder Member<br>— 2026 only</div>
+          <div class="family-pillar-text">A gold seal on your certificate marking you as a Founder of the revival. Earned only this year, for life.</div>
+        </div>
+      </div>
+      <!-- Family-specific extension - labelled so it's clear which tier this applies to -->
+      <div class="family-callout-extension">
+        <div class="family-extension-label">Family tiers add</div>
+        <div class="family-extension-body">
+          <p><strong>Three generations from one moment of giving.</strong> A Family membership names partner and children below the primary grantee — in letters patent tradition — and includes the inheritance clause: <em>the children named herein shall inherit this membership in their own right, in the fullness of time.</em> Their parents' names remain remembered always.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="tiers-section" id="tiers">
   <div class="si">
     <div class="toggle-wrap">
@@ -319,52 +386,7 @@
         <button class="toggle-btn" id="btnFam" onclick="setMode('family')">Family</button>
       </div>
       <div class="toggle-save individual-price">&nbsp;</div>
-      <div class="family-callout individual-price">
-        <div class="family-callout-eyebrow">A heraldic instrument, not a receipt</div>
-        <h3 class="family-callout-title">Your name, your <em>lineage</em>, your place in the clan</h3>
-        <p class="family-callout-lead">A membership is a Chief-signed certificate bearing your name, an optional dedication to the ancestor who brought you here, and your entry in the Register of Clan Ó Comáin at Newhall House.</p>
-        <div class="family-callout-pillars">
-          <div class="family-pillar">
-            <div class="family-pillar-icon">❦</div>
-            <div class="family-pillar-label">Signed<br>by the Chief</div>
-            <div class="family-pillar-text">A certificate issued in your name, signed by the Chief of Ó Comáin — one of Ireland's oldest Gaelic lineages.</div>
-          </div>
-          <div class="family-pillar">
-            <div class="family-pillar-icon">⁂</div>
-            <div class="family-pillar-label">An ancestor<br>honoured</div>
-            <div class="family-pillar-text">A dedication line of your choosing — a grandfather, a mother, an ancestor whose name carries you here.</div>
-          </div>
-          <div class="family-pillar">
-            <div class="family-pillar-icon">⚜</div>
-            <div class="family-pillar-label">Founder Member<br>— 2026 only</div>
-            <div class="family-pillar-text">A gold seal on your cert recording you as a Founder of the revival. Available only this year, for life.</div>
-          </div>
-        </div>
-        <p class="family-callout-foot">Or choose <a href="#" onclick="setMode('family');return false" style="color:var(--gold-strong);text-decoration:underline;font-style:normal;font-weight:500">Family</a> to extend the membership to your children — inheritable in time.</p>
-      </div>
-      <div class="family-callout family-price">
-        <div class="family-callout-eyebrow">A family heirloom, not a receipt</div>
-        <h3 class="family-callout-title">Three generations <em>remembered</em></h3>
-        <p class="family-callout-lead">A Family membership is one heraldic instrument carrying your family's name through time. <em>Your children, named on the certificate, inherit this membership in their own right, in the fullness of time</em> — their parents' names remembered always.</p>
-        <div class="family-callout-pillars">
-          <div class="family-pillar">
-            <div class="family-pillar-icon">❦</div>
-            <div class="family-pillar-label">Primary grantee<br>&amp; family named</div>
-            <div class="family-pillar-text">Your name heads the cert; partner and children named below in letters patent tradition.</div>
-          </div>
-          <div class="family-pillar">
-            <div class="family-pillar-icon">⁂</div>
-            <div class="family-pillar-label">An ancestor<br>honoured</div>
-            <div class="family-pillar-text">A dedication line of your choosing — a grandfather, a mother, an ancestor whose name carries you here.</div>
-          </div>
-          <div class="family-pillar">
-            <div class="family-pillar-icon">☙</div>
-            <div class="family-pillar-label">Inherited<br>by your children</div>
-            <div class="family-pillar-text">In time, the membership passes to the children named herein — who continue the line in their own right.</div>
-          </div>
-        </div>
-        <p class="family-callout-foot">One certificate. One clan. One family, three generations deep.</p>
-      </div>
+      <div class="toggle-save family-price">Family covers 2 adults &amp; all children under 18 — one certificate, one clan family</div>
     </div>
 
     <!-- THREE TIERS -->
