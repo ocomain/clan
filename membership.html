@@ -38,6 +38,29 @@
     .toggle-btn.active{background:var(--gold);color:var(--ink)}
     .toggle-save{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6);margin-top:10px}
 
+    /* Family-mode marketing callout - "Three generations remembered".
+       Rendered only when Family toggle is active (hidden by default via
+       the same .family-price toggle pattern). Sells the heraldic heirloom
+       story + ancestor + inheritance in a single dense block before the
+       tier cards. */
+    .family-callout{max-width:880px;margin:18px auto 0;background:linear-gradient(180deg,rgba(184,151,90,.08) 0%,rgba(184,151,90,.03) 100%);border:1px solid rgba(184,151,90,.35);border-top:3px solid var(--gold);padding:36px 40px 32px;border-radius:2px;text-align:center}
+    .family-callout-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .family-callout-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,38px);font-weight:400;color:var(--ink);line-height:1.1;margin:0 0 14px}
+    .family-callout-title em{color:var(--gold);font-style:italic}
+    .family-callout-lead{font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;color:var(--ink-soft);margin:0 auto 28px;max-width:640px}
+    .family-callout-lead em{color:var(--ink);font-style:italic}
+    .family-callout-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin:0 auto 24px;max-width:780px;text-align:left}
+    .family-pillar{padding:18px 14px;border-top:1px solid rgba(184,151,90,.25)}
+    .family-pillar-icon{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold);margin-bottom:10px;line-height:1}
+    .family-pillar-label{font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;line-height:1.35}
+    .family-pillar-text{font-family:'EB Garamond',serif;font-size:14.5px;line-height:1.65;color:var(--ink-soft)}
+    .family-callout-foot{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin:18px 0 0;padding-top:20px;border-top:1px solid rgba(184,151,90,.2)}
+    @media(max-width:720px){
+      .family-callout{padding:28px 22px 24px}
+      .family-callout-pillars{grid-template-columns:1fr;gap:8px}
+      .family-pillar{padding:14px 0}
+    }
+
     /* ── TIERS ── */
     .tiers-section{background:var(--cream);padding:0 0 80px}
     .tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border)}
@@ -296,7 +319,29 @@
         <button class="toggle-btn" id="btnFam" onclick="setMode('family')">Family</button>
       </div>
       <div class="toggle-save individual-price">&nbsp;</div>
-      <div class="toggle-save family-price">Family covers 2 adults &amp; all children under 18 — one certificate, one clan family</div>
+      <div class="family-callout family-price">
+        <div class="family-callout-eyebrow">A family heirloom, not a receipt</div>
+        <h3 class="family-callout-title">Three generations <em>remembered</em></h3>
+        <p class="family-callout-lead">A Family membership is one heraldic instrument carrying your family's name through time. <em>Your children, named on the certificate, inherit this membership in their own right, in the fullness of time</em> — their parents' names remembered always.</p>
+        <div class="family-callout-pillars">
+          <div class="family-pillar">
+            <div class="family-pillar-icon">❦</div>
+            <div class="family-pillar-label">Primary grantee<br>&amp; family named</div>
+            <div class="family-pillar-text">Your name heads the cert; partner and children named below in letters patent tradition.</div>
+          </div>
+          <div class="family-pillar">
+            <div class="family-pillar-icon">⁂</div>
+            <div class="family-pillar-label">An ancestor<br>honoured</div>
+            <div class="family-pillar-text">A dedication line of your choosing — a grandfather, a mother, an ancestor whose name carries you here.</div>
+          </div>
+          <div class="family-pillar">
+            <div class="family-pillar-icon">☙</div>
+            <div class="family-pillar-label">Inherited<br>by your children</div>
+            <div class="family-pillar-text">In time, the membership passes to the children named herein — who continue the line in their own right.</div>
+          </div>
+        </div>
+        <p class="family-callout-foot">One certificate. One clan. One family, three generations deep.</p>
+      </div>
     </div>
 
     <!-- THREE TIERS -->
