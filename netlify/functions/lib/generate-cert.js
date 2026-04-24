@@ -68,7 +68,7 @@ function loadFontBuffers() {
  * @param {Buffer} [opts.signaturePng] - PNG buffer of the Chief's signature (optional, drawn over centre signature line if present)
  * @returns {Promise<Uint8Array>}  PDF bytes
  */
-async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng, signaturePng }) {
+async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shieldPng, signaturePng, partnerName, childrenFirstNames }) {
   // With real Unicode fonts, we don't need WinAnsi sanitization — EB Garamond
   // covers the full Latin Extended-A range including Irish acute accents (á é
   // í ó ú) and typographic punctuation. Keep the name exactly as the member
@@ -196,24 +196,90 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
     color: C_MUTED,
   });
 
+  // ── FAMILY FORMAT: heraldic letters-patent convention ────────────────────
+  // Primary grantee in main body (large), family acknowledged below as
+  // a smaller credit line. Three real-world household types handled:
+  //
+  //   couple + children:   "JOHN CUMMINS & FAMILY"
+  //                        with Mary Cummins, and Saoirse, Liam, and Aoife
+  //
+  //   couple, no children: "JOHN & MARY CUMMINS"
+  //                        (no credit line — both adults are in the main body)
+  //
+  //   single + children:   "MARY CUMMINS & FAMILY"
+  //                        with her children Saoirse, Liam, and Aoife
+  //
+  //   individual / no family details: just "JOHN CUMMINS"
+  const hasPartner = partnerName && partnerName.trim();
+  const hasChildren = Array.isArray(childrenFirstNames) && childrenFirstNames.filter(c => c && c.trim()).length > 0;
+  const cleanChildren = hasChildren ? childrenFirstNames.filter(c => c && c.trim()).map(c => c.trim()) : [];
+
+  let displayName, creditLine;
+  if (hasPartner && hasChildren) {
+    // Couple + children
+    displayName = `${name} & Family`;
+    creditLine = `with ${partnerName.trim()}, and ${formatNameList(cleanChildren)}`;
+  } else if (hasPartner && !hasChildren) {
+    // Couple, no children — combine surnames intelligently
+    // If both share a surname (likely), render as "John & Mary Cummins"
+    // Otherwise fall back to "John Cummins & Mary [Surname]"
+    displayName = combineCoupleNames(name, partnerName.trim());
+    creditLine = null;
+  } else if (!hasPartner && hasChildren) {
+    // Single parent + children
+    displayName = `${name} & Family`;
+    creditLine = `with their children ${formatNameList(cleanChildren)}`;
+  } else {
+    // Individual member — no family details
+    displayName = name;
+    creditLine = null;
+  }
+
   // Recipient name — large gold italic, the emotional centre of the cert
   const recipientSize = 34;
-  const recipientWidth = fontSerifItalic.widthOfTextAtSize(name, recipientSize);
+  const recipientWidth = fontSerifItalic.widthOfTextAtSize(displayName, recipientSize);
   // If the name is too wide, shrink it gracefully
   let actualRecipientSize = recipientSize;
   let actualRecipientWidth = recipientWidth;
   const maxNameWidth = W - 2 * (margin + 60);
   if (recipientWidth > maxNameWidth) {
     actualRecipientSize = recipientSize * (maxNameWidth / recipientWidth);
-    actualRecipientWidth = fontSerifItalic.widthOfTextAtSize(name, actualRecipientSize);
+    actualRecipientWidth = fontSerifItalic.widthOfTextAtSize(displayName, actualRecipientSize);
   }
-  page.drawText(name, {
+  page.drawText(displayName, {
     x: (W - actualRecipientWidth) / 2,
     y: ruleY - 160,
     size: actualRecipientSize,
     font: fontSerifItalic,
     color: C_GOLD_L,
   });
+
+  // FAMILY CREDIT LINE — sits just below the main name in muted italic.
+  // Only rendered when we have a creditLine (couple+children or single+children).
+  // Pushes the register block down by 18pt to make room.
+  const hasCreditLine = !!creditLine;
+  if (hasCreditLine) {
+    const creditSize = 12;
+    const creditWidth = fontSerifItalic.widthOfTextAtSize(creditLine, creditSize);
+    // Truncate gracefully if the credit line is too long for the page width
+    let actualCreditLine = creditLine;
+    let actualCreditWidth = creditWidth;
+    let actualCreditSize = creditSize;
+    if (creditWidth > maxNameWidth) {
+      actualCreditSize = creditSize * (maxNameWidth / creditWidth);
+      actualCreditWidth = fontSerifItalic.widthOfTextAtSize(actualCreditLine, actualCreditSize);
+    }
+    page.drawText(actualCreditLine, {
+      x: (W - actualCreditWidth) / 2,
+      y: ruleY - 182,
+      size: actualCreditSize,
+      font: fontSerifItalic,
+      color: C_MUTED,
+    });
+  }
+
+  // Register block Y offset — pushed down 18pt when credit line is present
+  const regOffset = hasCreditLine ? -18 : 0;
 
   // Register statement — wraps across two lines for readability
   // If the tier label already contains "Clan" (e.g. "Guardian of the Clan"),
@@ -230,14 +296,14 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   const register2Width = fontSerif.widthOfTextAtSize(register2, registerSize);
   page.drawText(register1, {
     x: (W - register1Width) / 2,
-    y: ruleY - 200,
+    y: ruleY - 200 + regOffset,
     size: registerSize,
     font: fontSerif,
     color: C_INK_S,
   });
   page.drawText(register2, {
     x: (W - register2Width) / 2,
-    y: ruleY - 220,
+    y: ruleY - 220 + regOffset,
     size: registerSize,
     font: fontSerif,
     color: C_INK_S,
@@ -247,7 +313,7 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   const register3Width = fontSerifItalic.widthOfTextAtSize(register3, registerSize);
   page.drawText(register3, {
     x: (W - register3Width) / 2,
-    y: ruleY - 240,
+    y: ruleY - 240 + regOffset,
     size: registerSize,
     font: fontSerifItalic,
     color: C_MUTED,
@@ -471,3 +537,48 @@ function drawArcTextBottom(page, { text, font, size, color, centerX, centerY, ra
 }
 
 module.exports = { generateCertificate };
+
+// ──────────────────────────────────────────────────────────────────────────
+// Name-list helpers used by the family-format rendering above.
+//
+// formatNameList — renders an array of names as a natural English list:
+//   ["Aoife"]                 → "Aoife"
+//   ["Aoife", "Liam"]         → "Aoife and Liam"
+//   ["Aoife", "Liam", "Saoirse"] → "Aoife, Liam, and Saoirse" (Oxford comma)
+//
+// combineCoupleNames — combines two adult names into a single display string:
+//   ("John Cummins", "Mary Cummins")          → "John & Mary Cummins"
+//   ("John Cummins", "Mary O'Brien-Cummins")  → "John Cummins & Mary O'Brien-Cummins"
+//   ("John", "Mary")                          → "John & Mary"
+// Logic: if both names share the same final word (likely shared surname),
+// collapse to "First1 & First2 SharedSurname". Otherwise keep both full
+// names side by side. Surname-detection is naive (last whitespace-separated
+// token) but handles the common case correctly without hyphenated-surname
+// false collapses.
+// ──────────────────────────────────────────────────────────────────────────
+function formatNameList(names) {
+  if (!names || names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  const last = names[names.length - 1];
+  const rest = names.slice(0, -1).join(', ');
+  return `${rest}, and ${last}`;
+}
+
+function combineCoupleNames(name1, name2) {
+  const tokens1 = name1.trim().split(/\s+/);
+  const tokens2 = name2.trim().split(/\s+/);
+  // Only attempt collapse if BOTH have at least 2 tokens (first + surname)
+  // AND the final tokens match (case-insensitive). Otherwise keep both full.
+  if (tokens1.length >= 2 && tokens2.length >= 2) {
+    const surname1 = tokens1[tokens1.length - 1];
+    const surname2 = tokens2[tokens2.length - 1];
+    if (surname1.toLowerCase() === surname2.toLowerCase()) {
+      const first1 = tokens1.slice(0, -1).join(' ');
+      const first2 = tokens2.slice(0, -1).join(' ');
+      return `${first1} & ${first2} ${surname1}`;
+    }
+  }
+  // Otherwise present as two distinct full names
+  return `${name1.trim()} & ${name2.trim()}`;
+}

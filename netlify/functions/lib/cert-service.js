@@ -11,30 +11,52 @@ const path = require('path');
 const BUCKET = 'certificates';
 
 /**
- * Idempotently generate + store a cert for a member. If one exists, returns
- * the existing storage path. If not, generates a new PDF, uploads, records.
- * @param {Object} member — full row from members table (id, name, tier_label, joined_at…)
+ * Idempotently generate + store a cert for a member. If one exists at the
+ * member's current cert_version, returns that path. If not (or if
+ * forceRegenerate is true), generates a new PDF, uploads, records.
+ *
+ * Family-aware: if the member row carries partner_name and/or
+ * children_first_names, those are passed through to the cert generator
+ * which renders the heraldic letters-patent format (primary grantee in
+ * main body + smaller credit line below).
+ *
+ * Cert versioning: each member row has cert_version (default 1). The cert
+ * filename embeds the version. When family details change post-payment,
+ * the calling code increments cert_version and calls ensureCertificate
+ * with forceRegenerate=true, producing a new file. Old files are kept
+ * in storage for audit but are no longer surfaced to the member.
+ *
+ * @param {Object} member — full row from members table (id, name, tier_label, joined_at, partner_name?, children_first_names?, cert_version?)
  * @param {string} clan_id
+ * @param {Object} [opts]
+ * @param {boolean} [opts.forceRegenerate=false] — bypass the cache and produce a fresh cert at the current version
  * @returns {Promise<{ storagePath: string, issuedAt: string, certNumber: string, wasGenerated: boolean }>}
  */
-async function ensureCertificate(member, clan_id) {
-  // Look for an existing cert first
-  const { data: existing } = await supa()
-    .from('certificates')
-    .select('id, storage_path, issued_at, metadata')
-    .eq('clan_id', clan_id)
-    .eq('member_id', member.id)
-    .order('issued_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+async function ensureCertificate(member, clan_id, opts = {}) {
+  const forceRegenerate = !!opts.forceRegenerate;
+  const version = member.cert_version || 1;
 
-  if (existing?.storage_path) {
-    return {
-      storagePath: existing.storage_path,
-      issuedAt:    existing.issued_at,
-      certNumber:  existing.metadata?.cert_number || 'OC-UNKNOWN',
-      wasGenerated: false,
-    };
+  // Look for an existing cert AT THE CURRENT VERSION first (unless forcing).
+  // Older versions are ignored — they're stale (e.g. pre-family-details).
+  if (!forceRegenerate) {
+    const { data: existing } = await supa()
+      .from('certificates')
+      .select('id, storage_path, issued_at, metadata')
+      .eq('clan_id', clan_id)
+      .eq('member_id', member.id)
+      .eq('metadata->>version', String(version))
+      .order('issued_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing?.storage_path) {
+      return {
+        storagePath: existing.storage_path,
+        issuedAt:    existing.issued_at,
+        certNumber:  existing.metadata?.cert_number || 'OC-UNKNOWN',
+        wasGenerated: false,
+      };
+    }
   }
 
   // Generate fresh
@@ -43,15 +65,21 @@ async function ensureCertificate(member, clan_id) {
   const signaturePng = fs.readFileSync(path.join(__dirname, '..', 'assets', 'the_commane_signature.png'));
 
   const pdfBytes = await generateCertificate({
-    name:       member.name || member.email,
-    tierLabel:  member.tier_label || 'Clan Member',
-    joinedAt:   member.joined_at,
+    name:                 member.name || member.email,
+    tierLabel:            member.tier_label || 'Clan Member',
+    joinedAt:             member.joined_at,
     certNumber,
     shieldPng,
     signaturePng,
+    // Family-format extension — undefined/null/empty is fine, generator
+    // falls back to single-name rendering in that case.
+    partnerName:          member.partner_name || null,
+    childrenFirstNames:   member.children_first_names || null,
   });
 
-  const storagePath = `ocomain/members/${member.id}/${certNumber}.pdf`;
+  // Versioned storage path so multiple cert versions can coexist for audit.
+  const versionSuffix = version > 1 ? `-v${version}` : '';
+  const storagePath = `ocomain/members/${member.id}/${certNumber}${versionSuffix}.pdf`;
   const { error: uploadErr } = await supa()
     .storage
     .from(BUCKET)
@@ -70,15 +98,21 @@ async function ensureCertificate(member, clan_id) {
       recipient_name: member.name,
       issued_at:      issuedAt,
       storage_path:   storagePath,
-      metadata:       { tier: member.tier, tier_label: member.tier_label, cert_number: certNumber },
+      metadata:       {
+        tier:        member.tier,
+        tier_label:  member.tier_label,
+        cert_number: certNumber,
+        version,
+        has_family:  !!(member.partner_name || (Array.isArray(member.children_first_names) && member.children_first_names.length > 0)),
+      },
     });
   if (insertErr) console.error('certificates insert warning:', insertErr.message);
 
   await logEvent({
     clan_id,
     member_id:  member.id,
-    event_type: 'certificate_generated',
-    payload:    { storage_path: storagePath, cert_number: certNumber },
+    event_type: forceRegenerate ? 'certificate_regenerated' : 'certificate_generated',
+    payload:    { storage_path: storagePath, cert_number: certNumber, version },
   });
 
   return { storagePath, issuedAt, certNumber, wasGenerated: true };
