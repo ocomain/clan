@@ -3,6 +3,12 @@ html{scroll-behavior:smooth}
 :root{
   --gold:#B8975A;--gold-light:#D4B483;--gold-pale:#F5ECD8;
   --gold-border:rgba(184,151,90,0.25);--gold-strong:rgba(184,151,90,0.45);
+  /* --gold-deep is the proper readable dark gold for body / accent TEXT.
+     Note: --gold-strong is misnamed — its value is rgba(...,.45) which
+     reads as a faded gold, only suitable for borders/decorative use,
+     not for text contrast. Use --gold-deep for text where you want
+     gold colour with good legibility on cream/white backgrounds. */
+  --gold-deep:#8B6F32;
   --ink:#0F1F0F;--ink-mid:#182818;--ink-soft:#2E4A2E;
   --ink-muted:#5A7A5A;--ink-faint:#8AAA8A;
   --cream:#F7F9F4;--cream-mid:#EEF3EC;--cream-dark:#E4EDE2;
