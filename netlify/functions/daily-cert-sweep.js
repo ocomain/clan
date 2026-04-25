@@ -205,7 +205,7 @@ async function sendDay29Reminder(member, suggestedName) {
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
   <div style="background:#0C1A0C;padding:36px 40px 28px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="76" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="76" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:0.32em;color:#B8975A;margin:0 0 18px;text-align:center">Ó COMÁIN</p>
     <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Final 24 hours</p>
     <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0;line-height:1.2">Your certificate publishes tomorrow</h1>
   </div>
