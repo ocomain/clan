@@ -69,11 +69,37 @@ exports.handler = async (event) => {
       return redirectTo('/members/login.html?signin=fallback');
     }
 
+    // ── Ensure the Supabase auth user exists ─────────────────────────
+    // Race window: Stripe's redirect to welcome.html can arrive before
+    // the stripe-webhook fires its ensureAuthUser call. If the auth
+    // user doesn't exist when we reach generateLink below, that call
+    // returns "User not found" and we'd fall through to login.html —
+    // which makes the buyer go through magic-link-by-email even though
+    // they just paid 5 seconds ago.
+    //
+    // Pre-create here, swallowing "already registered" errors which
+    // are expected for repeat purchasers and for the common case
+    // where the webhook beat us to it.
+    try {
+      const { error: createErr } = await supa().auth.admin.createUser({
+        email,
+        email_confirm: true,
+        user_metadata: { created_via: 'welcome_signin', stripe_session_id: sessionId },
+      });
+      if (createErr && !/already|exists|registered/i.test(createErr.message)) {
+        console.error('welcome-signin: createUser warning (non-fatal):', createErr.message);
+      }
+    } catch (e) {
+      console.error('welcome-signin: createUser threw (non-fatal):', e.message);
+    }
+
     // ── Generate magic-link URL for this email ───────────────────────
     // generateLink with type='magiclink' returns a properties.action_link URL
     // containing tokens Supabase will accept as authentication. We redirect
     // the browser to that URL — Supabase processes it and lands the user
-    // on redirectTo (/members/) authenticated.
+    // on redirectTo (/members/) authenticated. No email is sent: admin
+    // generateLink returns the link directly, the buyer never sees an
+    // OTP/magic-link email for this flow.
     const { data: linkData, error: linkErr } = await supa().auth.admin.generateLink({
       type: 'magiclink',
       email,

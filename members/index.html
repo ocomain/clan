@@ -366,11 +366,13 @@
       </section>
       `) : ''}
 
-      ${(member.tier && /^(guardian|steward|life)-/.test(member.tier)) ? `
-      <!-- Postal address card — Guardian+ only. Surfaces current postal
-           address state and shipped status. Edit button opens a modal for
-           in-place edit during the 30-day grace; once cert_posted_at is
-           set the address is locked in (a re-print would need clan@ contact). -->
+      ${(isPublished && member.tier && /^(guardian|steward|life)-/.test(member.tier)) ? `
+      <!-- Postal address card — Guardian+ only, AND only after the digital
+           cert has been published. The physical cert is a print of what
+           was sealed digitally, so we must not collect a postal address
+           until the member has confirmed the cert details and the PDF
+           is locked. Edit button opens a modal for in-place edit until
+           Linda posts (cert_posted_at set). -->
       <section class="mpostal">
         <div class="mpostal-eyebrow">Physical Certificate Delivery</div>
         ${member.cert_posted_at ? `
