@@ -237,16 +237,16 @@
     // centre word. Plain horizontal text (no SVG arc) for cross-browser
     // reliability — the cert keeps the actual curved arcs in PDF.
     const founderSeal = isFounder ? `
-      <svg viewBox="0 0 80 80" width="68" height="68" class="mfounder-seal" role="img" aria-label="Founder ${joinYear}">
+      <svg viewBox="0 0 80 80" width="96" height="96" class="mfounder-seal" role="img" aria-label="Founder ${joinYear}">
         <circle cx="40" cy="40" r="37" fill="#FAF7EE" stroke="#B8975A" stroke-width="1.5"/>
         <circle cx="40" cy="40" r="33" fill="none" stroke="#B8975A" stroke-width="0.5"/>
         <circle cx="7"  cy="40" r="0.9" fill="#B8975A"/>
         <circle cx="73" cy="40" r="0.9" fill="#B8975A"/>
-        <text x="40" y="22" text-anchor="middle" font-family="Jost,sans-serif" font-size="4.5" letter-spacing="0.5" fill="#8B6F32" font-weight="600">YEAR ONE</text>
-        <text x="40" y="28" text-anchor="middle" font-family="Jost,sans-serif" font-size="4.5" letter-spacing="0.5" fill="#8B6F32" font-weight="600">OF THE REVIVAL</text>
-        <text x="40" y="46" text-anchor="middle" font-family="EB Garamond,serif" font-weight="500" font-size="11" fill="#B8975A" letter-spacing="0.5">FOUNDER</text>
-        <line x1="32" y1="51" x2="48" y2="51" stroke="#B8975A" stroke-width="0.5"/>
-        <text x="40" y="61" text-anchor="middle" font-family="EB Garamond,serif" font-style="italic" font-size="8" fill="#A47A2C">· ${joinYear} ·</text>
+        <text x="40" y="20" text-anchor="middle" font-family="Jost,sans-serif" font-size="5" letter-spacing="0.6" fill="#8B6F32" font-weight="700">YEAR ONE</text>
+        <text x="40" y="27" text-anchor="middle" font-family="Jost,sans-serif" font-size="5" letter-spacing="0.6" fill="#8B6F32" font-weight="700">OF THE REVIVAL</text>
+        <text x="40" y="48" text-anchor="middle" font-family="EB Garamond,serif" font-weight="500" font-size="13" fill="#B8975A" letter-spacing="0.6">FOUNDER</text>
+        <line x1="30" y1="53" x2="50" y2="53" stroke="#B8975A" stroke-width="0.6"/>
+        <text x="40" y="64" text-anchor="middle" font-family="EB Garamond,serif" font-style="italic" font-size="9" fill="#A47A2C">· ${joinYear} ·</text>
       </svg>
     ` : '';
     // Cert published = the cert PDF exists and has been sealed. Both
