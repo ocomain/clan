@@ -34,25 +34,39 @@
 
     /* Status card — the "your membership" panel */
     .mstatus{max-width:720px;margin:0 auto 40px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:36px 40px;border-radius:2px;box-shadow:0 6px 24px rgba(12,26,12,.06)}
-    .mstatus-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:18px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+    .mstatus-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:0;padding-bottom:18px;border-bottom:1px solid var(--border)}
     .mstatus-head-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
     .mstatus-head-tier{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);margin-top:2px}
-    /* Right side of the head — badge + (optional) Founder seal stacked */
-    .mstatus-head-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
-    /* FOUNDER SEAL — matches the gold seal stamped in the top-right of the
-       cert PDF (see drawFoundingMemberSeal in lib/generate-cert.js).
-       Same wording, same colour palette, smaller scale. Shown when the
-       member's join year is in the founding window (currently {2026}). */
-    .mfounder-seal{flex-shrink:0;display:block}
+    /* FOUNDER BAND — honour ribbon for members who joined in the founding
+       window (currently {2026}). Sits between the membership head and the
+       data rows. Borrows the cert's typographic elements ('YEAR ONE OF
+       THE REVIVAL' eyebrow + 'Founder · YYYY' title) but laid out flat
+       and horizontal for the screen — explicitly NOT a copy of the
+       circular cert seal. Thin gold rules on either side give it the
+       air of a stamped ribbon without the literal circle/embossing. */
+    .mfounder-band{
+      display:flex;align-items:center;justify-content:center;gap:18px;
+      padding:18px 24px;margin:18px 0 0;
+      background:linear-gradient(180deg,rgba(184,151,90,.04),rgba(184,151,90,.07) 50%,rgba(184,151,90,.04));
+      border-radius:1px;
+    }
+    .mfounder-rule{flex:1 1 0;max-width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-border),var(--gold),var(--gold-border),transparent)}
+    .mfounder-content{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+    .mfounder-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+    .mfounder-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-strong,#A47A2C);letter-spacing:.04em;line-height:1}
+    .mfounder-title em{font-style:italic;font-weight:500;color:var(--gold)}
+    .mfounder-sep{margin:0 12px;color:rgba(184,151,90,.5);font-style:normal;font-size:.85em;vertical-align:.08em}
     @media (max-width:520px){
-      .mstatus-head{flex-direction:column;align-items:flex-start}
-      .mstatus-head-right{flex-direction:row;align-items:center}
+      .mfounder-band{padding:16px 14px;gap:10px}
+      .mfounder-rule{max-width:36px}
+      .mfounder-title{font-size:21px}
+      .mfounder-sep{margin:0 8px}
     }
     .mbadge{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:5px 10px;border-radius:1px}
     .mbadge.active{background:rgba(160,180,100,.18);color:#556B1F;border:1px solid rgba(160,180,100,.4)}
     .mbadge.lapsed{background:rgba(210,150,80,.18);color:#8F5E1B;border:1px solid rgba(210,150,80,.4)}
     .mbadge.cancelled{background:rgba(180,180,180,.18);color:#666;border:1px solid rgba(180,180,180,.4)}
-    .mstatus-rows{display:grid;grid-template-columns:1fr 1fr;gap:20px 32px}
+    .mstatus-rows{display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;margin-top:24px}
     @media (max-width:520px){.mstatus-rows{grid-template-columns:1fr}}
     .mstatus-row-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px}
     .mstatus-row-value{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink)}
@@ -230,24 +244,22 @@
     const FOUNDING_YEARS_DASH = new Set([2026]);
     const joinYear = member.joined_at ? new Date(member.joined_at).getFullYear() : null;
     const isFounder = joinYear && FOUNDING_YEARS_DASH.has(joinYear);
-    // Inline SVG seal mirroring drawFoundingMemberSeal in generate-cert.js.
-    // Same elements, smaller scale: outer/inner gold ring, cream fill,
-    // 'YEAR ONE OF THE REVIVAL' top, 'FOUNDER' centre, '· {year} ·'
-    // bottom, dot ornaments at 3 and 9 o'clock, flourish rule under the
-    // centre word. Plain horizontal text (no SVG arc) for cross-browser
-    // reliability — the cert keeps the actual curved arcs in PDF.
-    const founderSeal = isFounder ? `
-      <svg viewBox="0 0 80 80" width="96" height="96" class="mfounder-seal" role="img" aria-label="Founder ${joinYear}">
-        <circle cx="40" cy="40" r="37" fill="#FAF7EE" stroke="#B8975A" stroke-width="1.5"/>
-        <circle cx="40" cy="40" r="33" fill="none" stroke="#B8975A" stroke-width="0.5"/>
-        <circle cx="7"  cy="40" r="0.9" fill="#B8975A"/>
-        <circle cx="73" cy="40" r="0.9" fill="#B8975A"/>
-        <text x="40" y="20" text-anchor="middle" font-family="Jost,sans-serif" font-size="5" letter-spacing="0.6" fill="#8B6F32" font-weight="700">YEAR ONE</text>
-        <text x="40" y="27" text-anchor="middle" font-family="Jost,sans-serif" font-size="5" letter-spacing="0.6" fill="#8B6F32" font-weight="700">OF THE REVIVAL</text>
-        <text x="40" y="48" text-anchor="middle" font-family="EB Garamond,serif" font-weight="500" font-size="13" fill="#B8975A" letter-spacing="0.6">FOUNDER</text>
-        <line x1="30" y1="53" x2="50" y2="53" stroke="#B8975A" stroke-width="0.6"/>
-        <text x="40" y="64" text-anchor="middle" font-family="EB Garamond,serif" font-style="italic" font-size="9" fill="#A47A2C">· ${joinYear} ·</text>
-      </svg>
+    // Horizontal Founder band — lives between the membership head and the
+    // data rows, in the white space the user pointed at. Borrows the
+    // cert's typographic elements (the 'YEAR ONE OF THE REVIVAL' eyebrow
+    // and the 'Founder · YYYY' title) but lays them out flat for the
+    // screen rather than copying the seal literally. Subtle warm cream
+    // tint background + thin gold rules give it the air of an honour
+    // ribbon stamped onto the membership record.
+    const founderBand = isFounder ? `
+      <div class="mfounder-band" role="note" aria-label="Founding member ${joinYear}">
+        <span class="mfounder-rule"></span>
+        <span class="mfounder-content">
+          <span class="mfounder-eyebrow">Year One of the Revival</span>
+          <span class="mfounder-title"><em>Founder</em><span class="mfounder-sep">·</span>${joinYear}</span>
+        </span>
+        <span class="mfounder-rule"></span>
+      </div>
     ` : '';
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
@@ -276,11 +288,9 @@
             <div class="mstatus-head-label">Your membership</div>
             <div class="mstatus-head-tier">${escHtml(tierLabel)}</div>
           </div>
-          <div class="mstatus-head-right">
-            ${founderSeal}
-            ${statusBadge}
-          </div>
+          ${statusBadge}
         </div>
+        ${founderBand}
         <div class="mstatus-rows">
           <div>
             <div class="mstatus-row-label">Name on the Register</div>
