@@ -571,7 +571,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
 
   await sendEmail({
     to: email,
-    subject: `Spirit, mind, body, bloodline — your place in Clan Ó Comáin`,
+    subject: `Welcome to Clan O'Comain (membership area login)`,
     html,
   });
 }
