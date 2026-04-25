@@ -329,12 +329,17 @@
   // makes session-id-in-URL too leaky over time); welcome page is the
   // right surface for this convenience.
   //
+  // Selector targets by CLASS, not by href, because Netlify's Pretty
+  // URLs post-processing rewrites '/members/login.html' to
+  // '/members/login/' at serve time — an href-based selector silently
+  // fails to match. Classes are stable across the rewrite.
+  //
   // If session_id is absent (member re-visits welcome.html directly,
   // or it's been stripped), buttons fall back to standard login flow.
   const sessionIdForSignin = params.get('session_id') || '';
   if (sessionIdForSignin) {
     const autoLoginHref = `/api/welcome-signin?session_id=${encodeURIComponent(sessionIdForSignin)}`;
-    document.querySelectorAll('a[href="/members/login.html"]').forEach((a) => {
+    document.querySelectorAll('a.wel-mbr-btn, a.wel-final-btn').forEach((a) => {
       a.setAttribute('href', autoLoginHref);
     });
   }
