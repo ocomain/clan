@@ -64,30 +64,64 @@ exports.handler = async (event) => {
     const clan_id = await clanId();
 
     // ── Resolve the member ────────────────────────────────────────────────
-    // Prefer sessionId lookup if provided (one row per checkout, unambiguous).
-    // Falls back to email lookup if sessionId is not supplied.
-    let member = null;
-    if (sessionId) {
-      // Look for a member whose stripe_session_id matches. Note that the
-      // members table currently doesn't store session_id directly — Stripe
-      // session id sits on the gifts table for gift flows. For regular
-      // member purchases we'd need to add this; for now, fall through to
-      // email lookup.
-      // (Future enhancement: store session_id on members table at upsert
-      // time so this lookup works directly.)
+    // Two paths to identify which member to update:
+    //   (a) email param directly in URL — used in dashboard and explicit links
+    //   (b) sessionId from Stripe success URL — most common path post-checkout
+    //       The Stripe Checkout Session contains the buyer's email which we
+    //       fetch from the API, then resolve the member by that email.
+    let resolvedEmail = email ? email.toLowerCase().trim() : null;
+
+    if (!resolvedEmail && sessionId) {
+      try {
+        const stripeKey = process.env.STRIPE_SECRET_KEY;
+        if (!stripeKey) {
+          console.error('STRIPE_SECRET_KEY not set in environment');
+        } else {
+          const sessionResp = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, {
+            headers: { Authorization: `Bearer ${stripeKey}` },
+          });
+          if (sessionResp.ok) {
+            const session = await sessionResp.json();
+            // Stripe Checkout Session has customer_details.email (buyer's
+            // email captured during checkout). For subscriptions also
+            // available as customer_email if pre-filled.
+            const sessionEmail = session?.customer_details?.email
+              || session?.customer_email
+              || null;
+            if (sessionEmail) {
+              resolvedEmail = sessionEmail.toLowerCase().trim();
+            }
+          } else {
+            const errBody = await sessionResp.text().catch(() => '');
+            console.error(`Stripe session lookup failed (${sessionResp.status}):`, errBody.slice(0, 200));
+          }
+        }
+      } catch (err) {
+        console.error('Stripe session lookup error:', err.message);
+      }
     }
-    if (!member && email) {
+
+    if (!resolvedEmail) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Could not identify member. Please sign in to your members area to add details.' }) };
+    }
+
+    let member = null;
+    {
       const { data } = await supa()
         .from('members')
         .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, cert_locked_at, public_register_visible, public_register_opted_in_at')
         .eq('clan_id', clan_id)
-        .eq('email', email.toLowerCase().trim())
+        .eq('email', resolvedEmail)
         .maybeSingle();
       member = data;
     }
 
     if (!member) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Member record not found. Sign in to your members area to add family details.' }) };
+      // The webhook may not yet have written the member row when the buyer
+      // hits welcome.html (Stripe checkout completion → webhook → member
+      // upsert is usually <1 second but not guaranteed). Tell the caller
+      // gracefully so the UI can suggest a retry.
+      return { statusCode: 404, body: JSON.stringify({ error: 'Membership not yet recorded. Please wait a moment and try again, or sign in to your members area.' }) };
     }
 
     // Only Family-tier members should be hitting this endpoint, but we don't
