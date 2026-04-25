@@ -85,7 +85,27 @@ exports.handler = async (event) => {
     let giftContext = null;
     try {
       const clan_id = await clanId();
-      const tierInfo = normaliseTier(productName, session.amount_total);
+      // Tier resolution priority (most → least reliable):
+      //   1. session.metadata.tier — set explicitly by create-checkout /
+      //      create-gift-checkout endpoints. The deterministic source of
+      //      truth, used for all live purchases going forward.
+      //   2. amount-based detection in normaliseTier — fallback for
+      //      legacy plink purchases (pre-create-checkout) and any oddity.
+      //   3. product-name parsing in normaliseTier — last-ditch fallback.
+      const TIER_BY_SLUG_LOCAL = {
+        'clan-ind':     { tier: 'clan-ind',     label: 'Clan Member',                       tier_family: false },
+        'clan-fam':     { tier: 'clan-fam',     label: 'Clan Member (Family)',              tier_family: true  },
+        'guardian-ind': { tier: 'guardian-ind', label: 'Guardian of the Clan',              tier_family: false },
+        'guardian-fam': { tier: 'guardian-fam', label: 'Guardian of the Clan (Family)',     tier_family: true  },
+        'steward-ind':  { tier: 'steward-ind',  label: 'Steward of the Clan',               tier_family: false },
+        'steward-fam':  { tier: 'steward-fam',  label: 'Steward of the Clan (Family)',      tier_family: true  },
+        'life-ind':     { tier: 'life-ind',     label: 'Life Member',                       tier_family: false },
+        'life-fam':     { tier: 'life-fam',     label: 'Life Member (Family)',              tier_family: true  },
+      };
+      const tierFromMeta = session.metadata?.tier;
+      const tierInfo = (tierFromMeta && TIER_BY_SLUG_LOCAL[tierFromMeta])
+        ? TIER_BY_SLUG_LOCAL[tierFromMeta]
+        : normaliseTier(productName, session.amount_total);
       const isLife = tierInfo.tier.startsWith('life');
 
       if (isGift) {

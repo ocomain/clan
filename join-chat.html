@@ -191,17 +191,17 @@
     <!-- Inline tier picker when no tier pre-selected -->
     <div id="tierPicker" style="display:none;text-align:left">
       <div style="display:flex;flex-direction:column;gap:4px">
-        <a href="https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Clan Member — Individual</span><span>€49/yr</span></a>
-        <a href="https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Clan Member — Family</span><span>€79/yr</span></a>
+        <a href="/api/create-checkout?tier=clan-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Clan Member — Individual</span><span>€49/yr</span></a>
+        <a href="/api/create-checkout?tier=clan-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Clan Member — Family</span><span>€79/yr</span></a>
         <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">Annual subscription · cancel anytime</p>
-        <a href="https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span>Guardian of the Clan — Individual</span><span>€150/yr</span></a>
-        <a href="https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Guardian of the Clan — Family</span><span>€220/yr</span></a>
+        <a href="/api/create-checkout?tier=guardian-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span>Guardian of the Clan — Individual</span><span>€150/yr</span></a>
+        <a href="/api/create-checkout?tier=guardian-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Guardian of the Clan — Family</span><span>€220/yr</span></a>
         <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">Annual subscription · cancel anytime</p>
-        <a href="https://buy.stripe.com/7sY3cv2KQ5Mw7qZaJIeZ20f" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span>Steward of the Clan — Individual</span><span>€350/yr</span></a>
-        <a href="https://buy.stripe.com/dRmaEX85acaUfXv3hgeZ20g" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Steward of the Clan — Family</span><span>€480/yr</span></a>
+        <a href="/api/create-checkout?tier=steward-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span>Steward of the Clan — Individual</span><span>€350/yr</span></a>
+        <a href="/api/create-checkout?tier=steward-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Steward of the Clan — Family</span><span>€480/yr</span></a>
         <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">Annual subscription · cancel anytime</p>
-        <a href="https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.7);margin-top:8px"><span>Life Member — Individual</span><span>€750 once</span></a>
-        <a href="https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.6)"><span>Life Member — Family</span><span>€1,100 once</span></a>
+        <a href="/api/create-checkout?tier=life-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.7);margin-top:8px"><span>Life Member — Individual</span><span>€750 once</span></a>
+        <a href="/api/create-checkout?tier=life-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.6)"><span>Life Member — Family</span><span>€1,100 once</span></a>
         <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">One-time payment · No renewal · For life</p>
       </div>
     </div>
@@ -221,14 +221,14 @@
 
 // ── Stripe links by tier ──
 const STRIPE_LINKS = {
-  'clan-ind':     { url: 'https://buy.stripe.com/8x214n0CI7UE8v3eZYeZ20b', label: 'Clan Member (Individual) — €49/yr' },
-  'clan-fam':     { url: 'https://buy.stripe.com/6oUaEX0CI0sc5iRdVUeZ20c', label: 'Clan Member (Family) — €79/yr' },
-  'guardian-ind': { url: 'https://buy.stripe.com/8x23cv4SYdeY5iR9FEeZ20d', label: 'Guardian of the Clan (Individual) — €150/yr' },
-  'guardian-fam': { url: 'https://buy.stripe.com/bJe14ndpuej26mV2dceZ20e', label: 'Guardian of the Clan (Family) — €220/yr' },
-  'steward-ind':  { url: 'https://buy.stripe.com/7sY3cv2KQ5Mw7qZaJIeZ20f', label: 'Steward of the Clan (Individual) — €350/yr' },
-  'steward-fam':  { url: 'https://buy.stripe.com/dRmaEX85acaUfXv3hgeZ20g', label: 'Steward of the Clan (Family) — €480/yr' },
-  'life-ind':     { url: 'https://buy.stripe.com/14A3cvety4Is26F8BAeZ20h', label: 'Life Member (Individual) — €750' },
-  'life-fam':     { url: 'https://buy.stripe.com/00weVd4SYej2h1z6tseZ20i', label: 'Life Member (Family) — €1,100' },
+  'clan-ind':     { url: '/api/create-checkout?tier=clan-ind', label: 'Clan Member (Individual) — €49/yr' },
+  'clan-fam':     { url: '/api/create-checkout?tier=clan-fam', label: 'Clan Member (Family) — €79/yr' },
+  'guardian-ind': { url: '/api/create-checkout?tier=guardian-ind', label: 'Guardian of the Clan (Individual) — €150/yr' },
+  'guardian-fam': { url: '/api/create-checkout?tier=guardian-fam', label: 'Guardian of the Clan (Family) — €220/yr' },
+  'steward-ind':  { url: '/api/create-checkout?tier=steward-ind', label: 'Steward of the Clan (Individual) — €350/yr' },
+  'steward-fam':  { url: '/api/create-checkout?tier=steward-fam', label: 'Steward of the Clan (Family) — €480/yr' },
+  'life-ind':     { url: '/api/create-checkout?tier=life-ind', label: 'Life Member (Individual) — €750' },
+  'life-fam':     { url: '/api/create-checkout?tier=life-fam', label: 'Life Member (Family) — €1,100' },
 };
 
 // Read tier from URL param
@@ -469,8 +469,11 @@ function showCompletion() {
   // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
   if (tierInfo && payBtn) {
-    const stripeUrl = tierInfo.url + (collected.email ? (tierInfo.url.includes('?') ? '&' : '?') + 'prefilled_email=' + encodeURIComponent(collected.email) : '');
-    payBtn.href = stripeUrl;
+    // Append email to /api/create-checkout. The endpoint passes it to
+    // Stripe as customer_email, so the buyer sees their email pre-filled
+    // on the Stripe checkout page.
+    const checkoutUrl = tierInfo.url + (collected.email ? '&email=' + encodeURIComponent(collected.email) : '');
+    payBtn.href = checkoutUrl;
     payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
     // Show cancel note for annual tiers only
@@ -485,9 +488,9 @@ function showCompletion() {
     // Show inline tier picker — inject herald-collected email into every tier button
     const tierPicker = document.getElementById('tierPicker');
     if (collected.email) {
-      tierPicker.querySelectorAll('a[href*="buy.stripe.com"]').forEach(a => {
-        const sep = a.href.includes('?') ? '&' : '?';
-        a.href = a.href + sep + 'prefilled_email=' + encodeURIComponent(collected.email);
+      tierPicker.querySelectorAll('a[href*="/api/create-checkout"]').forEach(a => {
+        const sep = a.getAttribute('href').includes('?') ? '&' : '?';
+        a.setAttribute('href', a.getAttribute('href') + sep + 'email=' + encodeURIComponent(collected.email));
       });
     }
     tierPicker.style.display = 'block';
