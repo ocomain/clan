@@ -188,7 +188,7 @@ async function ensureCertificate(member, clan_id, opts = {}) {
     });
   }
 
-  return { storagePath, issuedAt, certNumber, wasGenerated: true };
+  return { storagePath, issuedAt, certNumber, wasGenerated: true, pdfBytes };
 }
 
 /**

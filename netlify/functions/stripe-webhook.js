@@ -4,8 +4,8 @@
 
 const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, ensureAuthUser, sanitizeFilename } = require('./lib/cert-service');
+const { sendEmail } = require('./lib/email');
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLAN_EMAIL = 'clan@ocomain.org';
 
@@ -858,21 +858,4 @@ async function notifyClan(email, name, product, amount, currency, isGift, sessio
   </div>`;
 
   await sendEmail({ to: CLAN_EMAIL, subject: `New member: ${name} — ${product} (${currency}${amount})`, html });
-}
-
-async function sendEmail({ to, subject, html }) {
-  // Sender convention: 'Clan Ó Comáin <clan@ocomain.org>' while the Private
-  // Secretary position is vacant. When Linda Cryan (or the appointed officer)
-  // takes up the role, change the display name to e.g.
-  // 'Linda Cryan, Private Secretary to The Commane <clan@ocomain.org>'
-  // — all member-facing email will then carry the officer's name.
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: 'Clan Ó Comáin <clan@ocomain.org>', to, subject, html }),
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    console.error('Resend error:', err);
-  }
 }

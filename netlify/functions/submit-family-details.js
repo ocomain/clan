@@ -35,6 +35,7 @@
 
 const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
+const { sendPublicationConfirmation } = require('./lib/publication-email');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -277,6 +278,7 @@ exports.handler = async (event) => {
     // its cert_locked_at check).
     let certDownloadUrl = null;
     let certLocked = false;
+    let certResultForEmail = null;
     if (publishingNow || certAffectingChange) {
       try {
         const certResult = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
@@ -290,9 +292,20 @@ exports.handler = async (event) => {
             ttlSeconds: 60 * 60 * 24 * 7,
             downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(updated.name || updated.email)}.pdf`,
           });
+          certResultForEmail = certResult;
         }
       } catch (certErr) {
         console.error('cert generation in submit-family-details (non-fatal):', certErr.message);
+      }
+    }
+
+    // Send publication confirmation email if we actually published.
+    // Best-effort — failure here doesn't affect the API response.
+    if (publishingNow && certResultForEmail) {
+      try {
+        await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
+      } catch (emailErr) {
+        console.error('publication email send failed (non-fatal):', emailErr.message);
       }
     }
 

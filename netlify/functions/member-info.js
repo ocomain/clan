@@ -36,7 +36,7 @@ exports.handler = async (event) => {
     // First: look up by auth_user_id (faster once linked).
     let { data: member, error } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, cert_version, cert_locked_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at')
+      .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, cert_version, cert_locked_at, cert_published_at, cert_publish_reminder_sent_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at')
       .eq('clan_id', clan_id)
       .eq('auth_user_id', authUser.id)
       .maybeSingle();
@@ -50,7 +50,7 @@ exports.handler = async (event) => {
     if (!member) {
       ({ data: member, error } = await supa()
         .from('members')
-        .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, cert_version, cert_locked_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at')
+        .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, cert_version, cert_locked_at, cert_published_at, cert_publish_reminder_sent_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at')
         .eq('clan_id', clan_id)
         .eq('email', email)
         .maybeSingle());

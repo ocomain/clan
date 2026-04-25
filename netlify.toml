@@ -21,6 +21,12 @@
 [functions."daily-expiry-sweep"]
   schedule = "30 14 * * *"
 
+# Cert publication sweep — handles day-29 publication reminder + day-30
+# auto-publish for members who never explicitly published. Offset another
+# 30min from expiry sweep so daily fan-out is staggered.
+[functions."daily-cert-sweep"]
+  schedule = "0 15 * * *"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

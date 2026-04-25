@@ -715,8 +715,10 @@
         statusEl.style.background = 'rgba(184,151,90,.12)';
         statusEl.style.border = '1px solid var(--gold-border)';
         statusEl.style.color = 'var(--ink)';
-        statusEl.innerHTML = '<strong>Saved.</strong> Your certificate is being prepared with these details. It will be ready in your Members\u2019 Area in a moment.';
-        submitBtn.textContent = 'Saved \u2713';
+        statusEl.innerHTML = j.published
+          ? '<strong>Published.</strong> Your certificate has been sealed in your name and is on its way to your inbox. You can also download it any time from your Members\u2019 Area.'
+          : '<strong>Saved.</strong> Your changes have been recorded in the Register at Newhall House.';
+        submitBtn.textContent = j.published ? 'Published \u2713' : 'Saved \u2713';
         submitBtn.style.background = 'rgba(184,151,90,.5)';
 
         // ── REVEAL POSTAL ADDRESS for Guardian+ tiers ─────────────────────
