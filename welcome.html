@@ -186,7 +186,7 @@
     <div class="wel-confirm-card" style="margin:0;padding:44px 48px">
       <div class="wel-confirm-eyebrow">Your Certificate Details</div>
       <h2 class="wel-confirm-tier" style="margin-bottom:14px">A few details before your <em>certificate</em> is issued</h2>
-      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">These details will appear on your certificate and in the Register of the clan at Newhall House. <strong style="color:var(--ink);font-style:normal">Your certificate is issued once</strong> — please confirm everything carefully. You have 30 days to refine these details from your Members' Area before your certificate is sealed.</p>
+      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">These details will appear on your certificate and in the Register of the clan at Newhall House. <strong style="color:var(--ink);font-style:normal">Your certificate is published once</strong> — once published, it is sealed. You have <strong style="color:var(--ink);font-style:normal">30 days</strong> from your join date to publish your certificate. After that, any unpublished certificate will be automatically issued in your name as you entered it.</p>
       <div class="wel-confirm-rule" style="margin:0 auto 30px"></div>
 
       <form id="welCertForm">
@@ -268,8 +268,8 @@
         <!-- Submit -->
         <div style="text-align:center;margin-top:32px">
           <button type="submit" id="famSubmitBtn"
-            style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border:none;border-radius:1px;cursor:pointer;transition:background .2s">Save and update my certificate →</button>
-          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Or skip for now — you can add these within 30 days from your Members' Area.</p>
+            style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border:none;border-radius:1px;cursor:pointer;transition:background .2s">Publish my certificate →</button>
+          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Or come back later — you can publish from your Members' Area within 30 days. After that, your certificate will be auto-issued in the name on your record.</p>
         </div>
 
         <div id="famStatus" style="display:none;margin-top:20px;padding:16px;border-radius:2px;text-align:center;font-family:'EB Garamond',serif;font-size:15px"></div>
@@ -746,7 +746,7 @@
         statusEl.style.color = '#922c1f';
         statusEl.innerHTML = 'We couldn\u2019t save your details just now. Please try again, or add them from your Members\u2019 Area after signing in.';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Save and update my certificate \u2192';
+        submitBtn.textContent = 'Publish my certificate \u2192';
         submitBtn.style.opacity = '1';
       }
     });

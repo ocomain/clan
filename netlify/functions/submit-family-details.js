@@ -181,6 +181,23 @@ exports.handler = async (event) => {
     const certAffectingChange = nameChanged || ancestorChanged || familyChanged;
     const newVersion = certAffectingChange ? (member.cert_version || 1) + 1 : (member.cert_version || 1);
 
+    // PUBLICATION SEMANTICS (per migration 011):
+    // The first save of the welcome form IS the publication moment. The
+    // cert is sealed, the PDF is generated, the publish-cert email is
+    // sent. cert_published_at gets stamped (and cert_locked_at as the
+    // alias used by older code paths).
+    //
+    // If already published (cert_published_at set), we DO NOT re-publish.
+    // The form save still updates the member row (so the Register at
+    // Newhall reflects edits), but the cert PDF is locked. This is what
+    // the existing cert_locked_at check inside ensureCertificate enforces.
+    //
+    // Edge: an already-published member submitting again will see their
+    // changes saved to the Register but the cert returned in the response
+    // will be the same locked PDF. UI surfaces this via certLocked: true.
+    const isAlreadyPublished = !!(member.cert_locked_at || member.cert_published_at);
+    const publishingNow = !isAlreadyPublished;
+
     // ── Update the member row ─────────────────────────────────────────────
     const updatePayload = {
       partner_name:                          cleanPartner,
@@ -195,6 +212,12 @@ exports.handler = async (event) => {
       cert_version:                          newVersion,
       updated_at:                            now.toISOString(),
     };
+    // Stamp publication on the first save. Both fields set to the same
+    // value so legacy cert_locked_at checks continue to work.
+    if (publishingNow) {
+      updatePayload.cert_published_at = now.toISOString();
+      updatePayload.cert_locked_at = now.toISOString();
+    }
     // Only update member.name if the cert-name confirmation actually differs
     // from the currently-stored value (member typed a correction). Skip
     // otherwise so we don't needlessly touch the canonical identity.
@@ -228,13 +251,33 @@ exports.handler = async (event) => {
         name_corrected: nameChanged,
         public_register: wantsPublic,
         children_visible: wantsChildrenPublic,
+        publishing_now: publishingNow,
       },
     });
 
-    // ── Regenerate cert on any cert-affecting change ──────────────────────
+    if (publishingNow) {
+      await logEvent({
+        clan_id,
+        member_id: member.id,
+        event_type: 'certificate_published',
+        payload: {
+          tier: updated.tier,
+          source: 'member_action',
+        },
+      });
+    }
+
+    // ── Generate cert PDF ─────────────────────────────────────────────────
+    // Generate on the first publish (publishingNow) — this IS the
+    // publication moment, the cert PDF is sealed at this point.
+    // Also regenerate on cert-affecting changes BEFORE publication
+    // (legacy code path — should be no-op now since the only way to
+    // reach this with publishingNow=false is if the member is already
+    // published, in which case cert-service refuses regeneration via
+    // its cert_locked_at check).
     let certDownloadUrl = null;
     let certLocked = false;
-    if (certAffectingChange) {
+    if (publishingNow || certAffectingChange) {
       try {
         const certResult = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
         if (certResult.locked) {
@@ -249,7 +292,7 @@ exports.handler = async (event) => {
           });
         }
       } catch (certErr) {
-        console.error('cert regeneration after family details (non-fatal):', certErr.message);
+        console.error('cert generation in submit-family-details (non-fatal):', certErr.message);
       }
     }
 
@@ -261,6 +304,7 @@ exports.handler = async (event) => {
         certUrl: certDownloadUrl,
         certAffectingChange,
         certLocked,
+        published: publishingNow,
       }),
     };
   } catch (e) {

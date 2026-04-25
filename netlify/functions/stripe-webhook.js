@@ -239,23 +239,19 @@ exports.handler = async (event) => {
             // 3. Pre-create auth user for the recipient so first login is magic-link.
             await ensureAuthUser(recipientEmail, recipientName);
 
-            // 4. Generate cert for the RECIPIENT (not the buyer).
-            try {
-              const { storagePath } = await ensureCertificate(member, clan_id);
-              certDownloadUrl = await signCertUrl(storagePath, {
-                ttlSeconds: 60 * 60 * 24 * 7,
-                downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(member.name || recipientEmail)}.pdf`,
-              });
-            } catch (certErr) {
-              console.error('gift cert generation (non-fatal):', certErr.message);
-            }
+            // 4. CERT GENERATION DELIBERATELY OMITTED.
+            // Per the publication model (migration 011), the gift
+            // recipient must explicitly publish their cert via the
+            // members area. The recipient activation email routes them
+            // there. Auto-publication at day 30 catches anyone who
+            // never engages.
 
             giftContext = {
               recipientEmail, recipientName,
               buyerEmail, buyerName,
               personalMsg,
               tierLabel: tierInfo.label,
-              certDownloadUrl,
+              certDownloadUrl: null,  // recipient publishes themselves
             };
           }
         }
@@ -414,19 +410,15 @@ exports.handler = async (event) => {
           // confirm-signup). Best-effort — doesn't block payment flow.
           await ensureAuthUser(customerEmail, customerName);
 
-          // Generate + store cert immediately so it's ready when the welcome
-          // email arrives. Catch separately — if cert generation fails, the
-          // email still sends (without the download link), and the cert can
-          // be generated on-demand via the dashboard.
-          try {
-            const { storagePath } = await ensureCertificate(member, clan_id);
-            certDownloadUrl = await signCertUrl(storagePath, {
-              ttlSeconds: 60 * 60 * 24 * 7, // 7 days — gives members time to click from email
-              downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(member.name || customerEmail)}.pdf`,
-            });
-          } catch (certErr) {
-            console.error('cert generation in webhook (non-fatal):', certErr.message);
-          }
+          // CERT GENERATION DELIBERATELY OMITTED HERE.
+          // Per the publication model (migration 011), the cert is a
+          // draft until the member explicitly publishes it via the
+          // welcome flow / members area. No PDF is generated at payment
+          // time. The welcome email (sendMemberWelcome) routes the buyer
+          // to /members/login.html where they confirm details and click
+          // 'Publish my certificate'.
+          // If they never publish, the daily sweep auto-publishes at
+          // day 30 with the Herald-captured name (auto-fixed for caps).
         }
       }
     } catch (e) {
@@ -435,7 +427,7 @@ exports.handler = async (event) => {
 
     if (isGift) {
       if (giftContext && giftContext.recipientEmail) {
-        // Send welcome to the RECIPIENT (the actual member), with cert + gift context
+        // Send welcome to the RECIPIENT (the actual member), with gift context
         await sendGiftRecipientWelcome(giftContext);
         // Send confirmation to the BUYER (the payer)
         await sendGiftBuyerConfirmation(giftContext, productName, amount, currency);
@@ -444,7 +436,10 @@ exports.handler = async (event) => {
         await sendGiftConfirmations(session, customerEmail, customerName, productName, amount, currency);
       }
     } else {
-      await sendMemberWelcome(customerEmail, customerName, productName, amount, currency, certDownloadUrl);
+      // certDownloadUrl is now always null — email no longer uses it
+      // anyway (Commit 2 of last session refactored to "Confirm cert
+      // details →" routing). Param retained for signature compatibility.
+      await sendMemberWelcome(customerEmail, customerName, productName, amount, currency, null);
     }
 
     // Always notify the clan
