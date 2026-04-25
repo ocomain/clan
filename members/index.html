@@ -78,6 +78,21 @@
     .mcert-prompt-urgent .mcert-prompt-body strong{color:var(--cream)}
     .mcert-prompt-urgent .mcert-prompt-deadline{color:var(--gold)}
 
+    /* Sealed-cert card — appears in place of mcert-prompt once the cert is
+       published. A cert is a one-time heraldic instrument: there is no
+       editing post-publish, only download. Matches mcert-prompt dimensions
+       so the dashboard reads as the same shape transitioning from
+       "Action required" → "Sealed". Calmer treatment: no urgency colours,
+       no countdown, just the cert's identity + download. */
+    .mcert-sealed{max-width:720px;margin:0 auto 26px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:32px 36px 30px;border-radius:2px;box-shadow:0 4px 18px rgba(12,26,12,.05);text-align:center}
+    .mcert-sealed-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .mcert-sealed-title{font-family:'EB Garamond',serif;font-size:28px;color:var(--ink);font-weight:400;line-height:1.2;margin-bottom:6px}
+    .mcert-sealed-title em{color:var(--gold);font-style:italic}
+    .mcert-sealed-meta{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);margin:0 0 22px;line-height:1.5}
+    .mcert-sealed-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:14px 30px;border-radius:1px;cursor:pointer;transition:background .2s}
+    .mcert-sealed-btn:hover{background:var(--gold-light)}
+    .mcert-sealed-btn:disabled{opacity:.6;cursor:default}
+
     /* Family panel — only renders for Family-tier members. Two roles: shows
        current family details + provides a single edit/manage CTA that opens
        a small modal/form on the dashboard. Same visual language as the gift
@@ -201,13 +216,13 @@
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
     // are set together at publication; checking either works.
     const isPublished = !!(member.cert_published_at || member.cert_locked_at);
-    // Inline button row that adds a download link alongside the existing
-    // 'Edit' button when the member is published. Same visual weight as
-    // the edit button so they read as a pair, not a primary/secondary CTA.
+    // Edit button row for the unpublished cert-details / family card. Once
+    // published, the card itself is removed from the dashboard (a cert is
+    // a one-time heraldic instrument — no editing post-publish), so this
+    // row is only ever rendered while !isPublished.
     const certActionRow = (editLabel) => `
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
         <button class="mfam-edit-btn" id="mfamEditBtn">${editLabel} →</button>
-        ${isPublished ? `<button class="mfam-edit-btn" id="mfamCertDownloadBtn" type="button">Download certificate (PDF) →</button>` : ''}
       </div>
     `;
 
@@ -255,7 +270,20 @@
       </section>
       ` : ''}
 
-      ${(!member.cert_published_at && !member.cert_locked_at) ? (() => {
+      ${isPublished ? `
+      <!-- Sealed-cert card — replaces both the publish prompt and the
+           cert/family edit cards once the cert is published. A cert is a
+           one-time heraldic instrument: there is no editing post-publish,
+           only download. The Register at Newhall reflects the same names
+           that were sealed onto the PDF; corrections after the fact are
+           handled by writing to clan@ocomain.org. -->
+      <section class="mcert-sealed">
+        <div class="mcert-sealed-eyebrow">Your sealed certificate</div>
+        <div class="mcert-sealed-title">Certificate of <em>Membership</em></div>
+        <p class="mcert-sealed-meta">Issued ${fmtDate(member.cert_published_at || member.cert_locked_at)} · sealed in your name</p>
+        <button class="mcert-sealed-btn" id="mfamCertDownloadBtn" type="button">Download certificate (PDF) →</button>
+      </section>
+      ` : (() => {
         // Days-remaining countdown to the 30-day publication deadline.
         // joined_at + 30 days = auto-publish moment. We compute days
         // remaining server-side via the member row's joined_at field
@@ -271,8 +299,9 @@
             : `${daysRemaining} days remaining`;
         return `
       <!-- Cert-not-yet-published prompt — prominent gold-border card asking
-           the member to publish their cert. Hidden once cert_published_at
-           is set (member published, or auto-publish at day 30 fired).
+           the member to publish their cert. Replaced by mcert-sealed once
+           cert_published_at is set (member published, or auto-publish at
+           day 30 fired).
            Stronger visual treatment when ≤7 days remaining (urgent gold-on-ink).
       -->
       <section class="mcert-prompt${urgent ? ' mcert-prompt-urgent' : ''}">
@@ -282,9 +311,9 @@
         <p class="mcert-prompt-deadline">${daysText} to publish · auto-publishes ${daysRemaining === 0 ? 'imminently' : `in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}`} with the name on your record</p>
         <button class="mcert-prompt-btn" id="mcertPromptBtn">Publish my certificate →</button>
       </section>
-      `;})() : ''}
+      `;})()}
 
-      ${member.tier_family ? `
+      ${!isPublished ? (member.tier_family ? `
       <section class="mfam" id="mfam-section">
         <div class="mfam-eyebrow">Your Family on the Membership</div>
         <div class="mfam-title">Family <em>recorded</em></div>
@@ -335,7 +364,7 @@
         ` : ''}
         ${certActionRow(member.ancestor_dedication ? 'Edit certificate details' : 'Add a dedication or correct my name')}
       </section>
-      `}
+      `) : ''}
 
       ${(member.tier && /^(guardian|steward|life)-/.test(member.tier)) ? `
       <!-- Postal address card — Guardian+ only. Surfaces current postal
