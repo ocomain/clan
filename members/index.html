@@ -356,8 +356,8 @@
           </div>
           <button class="mfam-edit-btn" id="mpostalEditBtn" style="margin-top:14px">Edit address →</button>
         ` : `
-          <div class="mpostal-title">Address <em>required</em></div>
-          <p class="mpostal-empty">Your tier includes a hand-printed certificate posted from Newhall House. Tell us where to send it.</p>
+          <div class="mpostal-title">Optional · Physical <em>certificate</em></div>
+          <p class="mpostal-empty">Your tier includes a hand-printed certificate posted from Newhall House. <strong style="color:var(--ink);font-style:normal">This is optional.</strong> If you don't add a postal address, your certificate remains digital only.</p>
           <button class="mfam-edit-btn" id="mpostalEditBtn">Add postal address →</button>
         `}
       </section>
@@ -772,7 +772,7 @@
             <p style="font-family:'EB Garamond',serif;font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:0">Your certificate was posted on <strong style="color:var(--ink);font-style:normal">${fmtDate(member.cert_posted_at)}</strong>. The address below is read-only. To request a re-print or update for a different recipient, write to <a href="mailto:clan@ocomain.org" style="color:var(--gold-strong)">clan@ocomain.org</a>.</p>
           </div>
         ` : `
-          <p style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">Update your postal address before your certificate is hand-printed and posted from Newhall House.</p>
+          <p style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">Provide your postal address to receive a hand-printed certificate from Newhall House. <span style="color:var(--ink);font-style:normal">Optional</span> — if you'd rather not, your certificate stays digital only.</p>
         `}
 
         <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Addressee</label>
