@@ -85,7 +85,7 @@ exports.handler = async (event) => {
     let giftContext = null;
     try {
       const clan_id = await clanId();
-      const tierInfo = normaliseTier(productName);
+      const tierInfo = normaliseTier(productName, session.amount_total);
       const isLife = tierInfo.tier.startsWith('life');
 
       if (isGift) {

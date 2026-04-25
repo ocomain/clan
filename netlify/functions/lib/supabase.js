@@ -34,10 +34,61 @@ async function clanId(slug = DEFAULT_CLAN_SLUG) {
   return _cachedClanId;
 }
 
-// Fuzzy tier normalisation — maps any Stripe product name variant to a canonical
-// tier slug ('guardian-ind', 'clan-fam', etc.) plus a display label. Matches the
-// logic in stripe-webhook.js so every system reaches the same verdict.
-function normaliseTier(productName) {
+// Canonical tier objects, keyed by canonical slug. The single source of truth
+// for the 8 paid tiers and what they look like in the dashboard / cert / emails.
+const TIER_BY_SLUG = {
+  'clan-ind':     { tier: 'clan-ind',     label: 'Clan Member',                       tier_family: false },
+  'clan-fam':     { tier: 'clan-fam',     label: 'Clan Member (Family)',              tier_family: true  },
+  'guardian-ind': { tier: 'guardian-ind', label: 'Guardian of the Clan',              tier_family: false },
+  'guardian-fam': { tier: 'guardian-fam', label: 'Guardian of the Clan (Family)',     tier_family: true  },
+  'steward-ind':  { tier: 'steward-ind',  label: 'Steward of the Clan',               tier_family: false },
+  'steward-fam':  { tier: 'steward-fam',  label: 'Steward of the Clan (Family)',      tier_family: true  },
+  'life-ind':     { tier: 'life-ind',     label: 'Life Member',                       tier_family: false },
+  'life-fam':     { tier: 'life-fam',     label: 'Life Member (Family)',              tier_family: true  },
+};
+
+// Charged-amount → tier slug. The most reliable detection signal because the
+// amount is what the buyer actually paid, regardless of how the Stripe
+// product/price is labelled. Covers BOTH regular Stripe payment-link
+// purchases and the gift-checkout flow (gift Guardian prices differ).
+//
+// IMPORTANT: if you ever change a price in Stripe, update this map. A
+// missing amount falls through to product-name parsing, which works
+// when the product name contains the word 'family' but is otherwise a
+// best-guess fallback.
+const AMOUNT_CENTS_TO_TIER_SLUG = {
+  // Regular (annual) tier amounts
+  4900:   'clan-ind',     // €49
+  7900:   'clan-fam',     // €79
+  15000:  'guardian-ind', // €150
+  22000:  'guardian-fam', // €220
+  35000:  'steward-ind',  // €350
+  48000:  'steward-fam',  // €480
+  75000:  'life-ind',     // €750
+  110000: 'life-fam',     // €1,100
+  // Gift-only Guardian amounts (different from regular Guardian — see
+  // create-gift-checkout.js GIFT_PRICE_CENTS)
+  19500:  'guardian-ind', // gift €195
+  31500:  'guardian-fam', // gift €315
+};
+
+// Fuzzy tier normalisation. Resolves a Stripe checkout to a canonical tier
+// using the most reliable signal available:
+//   1. Charged amount (deterministic — what they actually paid)
+//   2. Product name containing 'family' / 'guardian' / 'steward' / 'life'
+//   3. Default to clan-ind
+//
+// Keeping the function signature backward-compatible (productName positional
+// first) means existing callers that don't yet pass the amount continue to
+// work, just less precisely.
+function normaliseTier(productName, amountCents) {
+  // Primary signal: charged amount maps directly to a known tier
+  if (amountCents && AMOUNT_CENTS_TO_TIER_SLUG[amountCents]) {
+    return TIER_BY_SLUG[AMOUNT_CENTS_TO_TIER_SLUG[amountCents]];
+  }
+
+  // Fallback: parse the product name (works when name contains 'family',
+  // otherwise lands on individual variant of the matched base tier)
   const p = (productName || '').toLowerCase();
   const isFamily = p.includes('family');
   const family = isFamily ? '-fam' : '-ind';
