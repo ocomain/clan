@@ -56,6 +56,18 @@
     .mgift-message{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.8;margin:0;padding:16px 0 0;border-top:1px solid var(--gold-border);white-space:pre-wrap}
     .mgift-message::before{content:'"';font-family:'EB Garamond',serif;font-size:38px;color:var(--gold);line-height:0;position:relative;top:14px;margin-right:6px}
 
+    /* Cert-not-yet-confirmed prompt — prominent gold border card at top of
+       dashboard. Stronger visual treatment than the family/gift cards
+       because it represents a real action item with a 30-day deadline. */
+    .mcert-prompt{max-width:720px;margin:0 auto 26px;background:linear-gradient(180deg,rgba(184,151,90,.12) 0%,rgba(184,151,90,.04) 100%);border:1.5px solid var(--gold);border-top:3px solid var(--gold);padding:30px 32px 28px;border-radius:2px;box-shadow:0 6px 20px rgba(184,151,90,.18);text-align:center}
+    .mcert-prompt-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-strong);margin-bottom:12px}
+    .mcert-prompt-title{font-family:'EB Garamond',serif;font-size:26px;color:var(--ink);font-weight:400;line-height:1.25;margin-bottom:14px}
+    .mcert-prompt-title em{color:var(--gold);font-style:italic}
+    .mcert-prompt-body{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.7;margin:0 auto 22px;max-width:520px}
+    .mcert-prompt-body strong{color:var(--ink);font-weight:500}
+    .mcert-prompt-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:14px 30px;border-radius:1px;cursor:pointer;transition:background .2s}
+    .mcert-prompt-btn:hover{background:var(--gold-light)}
+
     /* Family panel — only renders for Family-tier members. Two roles: shows
        current family details + provides a single edit/manage CTA that opens
        a small modal/form on the dashboard. Same visual language as the gift
@@ -208,6 +220,19 @@
         <div class="mgift-title">A gift from <em>${escHtml(member.gift.buyer_name || member.gift.buyer_email)}</em></div>
         <div class="mgift-meta">Given ${fmtDate(member.gift.gifted_at)}${member.gift.tier_label ? ' · ' + escHtml(member.gift.tier_label) : ''}</div>
         ${member.gift.personal_message ? `<p class="mgift-message">${escHtml(member.gift.personal_message)}</p>` : ''}
+      </section>
+      ` : ''}
+
+      ${(!member.name_confirmed_on_cert && !member.cert_locked_at) ? `
+      <!-- Cert-not-yet-confirmed prompt — prominent gold-border card asking
+           the member to complete cert details. Hidden once name_confirmed_on_cert
+           flips true (i.e. they save anything via welcome.html or the modal),
+           OR if cert is already locked (30-day grace expired). -->
+      <section class="mcert-prompt">
+        <div class="mcert-prompt-eyebrow">Action required — your certificate awaits</div>
+        <div class="mcert-prompt-title">Confirm your <em>certificate details</em></div>
+        <p class="mcert-prompt-body">Your certificate is a one-time heraldic instrument issued in your name. Confirm a few details — how your name appears, an optional ancestor dedication${member.tier_family ? ', your partner and children' : ''} — before it is sealed. You have <strong>30 days</strong> from your join date.</p>
+        <button class="mcert-prompt-btn" id="mcertPromptBtn">Confirm my certificate details →</button>
       </section>
       ` : ''}
 
@@ -393,6 +418,12 @@
     const familyEditBtn = document.getElementById('mfamEditBtn');
     if (familyEditBtn) {
       familyEditBtn.addEventListener('click', () => openFamilyModal(member));
+    }
+
+    // ── Cert-not-yet-confirmed prompt button — opens the same modal ───────
+    const certPromptBtn = document.getElementById('mcertPromptBtn');
+    if (certPromptBtn) {
+      certPromptBtn.addEventListener('click', () => openFamilyModal(member));
     }
 
     // ── Privacy checkbox auto-save handlers ────────────────────────────────

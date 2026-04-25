@@ -273,9 +273,37 @@ exports.handler = async (event) => {
         const normEmail = (customerEmail || '').toLowerCase().trim();
         const expiresAt = isLife ? null : new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
 
+        // ── Resolve preferred name ─────────────────────────────────────────
+        // The Herald chat captures the name the buyer chose for clan purposes
+        // BEFORE Stripe takes the cardholder name. Cardholder name is often
+        // miscapitalised ('john smith' lowercase from card data) or
+        // shortened ('J Smith'). The Herald name is what the buyer
+        // intentionally wrote - prefer it.
+        //
+        // Lookup applications table by email (most recent pending row).
+        // Falls back to customerName if no Herald submission found
+        // (e.g. user clicked Stripe link directly, skipping Herald).
+        let preferredName = customerName;
+        try {
+          const { data: app } = await supa()
+            .from('applications')
+            .select('name, created_at')
+            .eq('clan_id', clan_id)
+            .eq('email', normEmail)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (app?.name && app.name.trim()) {
+            preferredName = app.name.trim();
+          }
+        } catch (lookupErr) {
+          // Non-fatal - fall through to customerName
+          console.error('Herald name lookup failed (non-fatal):', lookupErr.message);
+        }
+
         const { data: existing } = await supa()
           .from('members')
-          .select('id, joined_at, tier, tier_label, stripe_subscription_id')
+          .select('id, joined_at, tier, tier_label, stripe_subscription_id, name')
           .eq('clan_id', clan_id)
           .eq('email', normEmail)
           .maybeSingle();
@@ -290,7 +318,10 @@ exports.handler = async (event) => {
           // should be cancelled at Stripe, which we don't do automatically
           // here — that's an operational step (see comment below).
           const updatePayload = {
-            name:                   customerName || undefined,
+            // name handling: preserve existing name if user has confirmed it
+            // (could've been edited on welcome page). Only update if existing
+            // name is null/empty - in which case use preferredName.
+            // Skip the field entirely otherwise so previous edits stick.
             tier:                   tierInfo.tier,
             tier_label:             tierInfo.label,
             tier_family:            tierInfo.tier_family,
@@ -309,6 +340,10 @@ exports.handler = async (event) => {
             // triggered this upgrade). The next year's reminder will
             // reset appropriately via future renewal logic.
           };
+          // Only update name if existing is empty - preserve user-confirmed name
+          if (!existing.name || !existing.name.trim()) {
+            updatePayload.name = preferredName || undefined;
+          }
 
           const updateRes = await supa()
             .from('members')
@@ -346,7 +381,7 @@ exports.handler = async (event) => {
             .insert({
               clan_id,
               email:                  normEmail,
-              name:                   customerName,
+              name:                   preferredName,
               tier:                   tierInfo.tier,
               tier_label:             tierInfo.label,
               tier_family:            tierInfo.tier_family,
@@ -452,18 +487,22 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
   const benefitsList = tier.benefits.map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
 
   // Certificate block — prominent CTA if cert was successfully generated.
-  // If generation failed, we silently omit this block and direct them to the
-  // Members' Area, where they can generate on-demand.
-  const certBlock = certDownloadUrl ? `
-    <!-- Certificate download CTA — emotional payoff -->
+  // The cert block now ALWAYS appears (whether or not certDownloadUrl was
+  // generated, the buyer has a member row to claim). Direct cert download
+  // removed in favour of routing to the welcome flow / members area where
+  // the buyer first confirms their name + ancestor + family details before
+  // their cert is sealed. This is correct heraldic practice: the cert is a
+  // one-time instrument and the buyer should personalise it before sealing.
+  const certBlock = `
+    <!-- Certificate claim CTA — routes to members area to confirm details first -->
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
-      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Ready to download</p>
-      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Bearing the Chief's signature, issued in your name, entered in the Register at Newhall House.</p>
-      <a href="${certDownloadUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Download your certificate (PDF) →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">This link is valid for seven days. Your certificate is also always available from your Members' Area, below.</p>
+      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
+      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
+      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email. You have 30 days to refine your certificate details before it is sealed.</p>
     </div>
-  ` : '';
+  `;
 
   const html = `<!DOCTYPE html>
 <html>
@@ -499,13 +538,10 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
 
-    <!-- Members area CTA -->
-    <div style="background:rgba(184,151,90,.08);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0;text-align:center">
-      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0 0 18px">Sign in any time to view your membership details, re-download your certificate, and access members-only content.</p>
-      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Sign in to your Members' Area →</a>
-      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:12px 0 0">A one-time access link will be sent to this email address. No password required.</p>
-    </div>
+    <!-- Members' Area note — secondary, since the cert claim CTA above
+         already points to the same destination. Frames the members area
+         as the ongoing home for membership management. -->
+    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, download your certificate, and access members-only content.</p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
 
