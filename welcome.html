@@ -558,6 +558,27 @@
 
   const tierDisplay = TIER_NAMES[tier] || null;
 
+  // ── Members' Area auto-login from welcome page ────────────────────
+  // When session_id is present in the URL (i.e. we just got here from
+  // Stripe redirect), rewrite the Members' Area buttons to use the
+  // auto-login endpoint that trades session_id for a fresh auth
+  // session. This avoids the magic-link prompt for the post-payment
+  // moment where we already know who paid (Stripe just told us).
+  //
+  // Email-link path is intentionally NOT auto-login (email forwarding
+  // makes session-id-in-URL too leaky over time); welcome page is the
+  // right surface for this convenience.
+  //
+  // If session_id is absent (member re-visits welcome.html directly,
+  // or it's been stripped), buttons fall back to standard login flow.
+  const sessionIdForSignin = params.get('session_id') || '';
+  if (sessionIdForSignin) {
+    const autoLoginHref = `/api/welcome-signin?session_id=${encodeURIComponent(sessionIdForSignin)}`;
+    document.querySelectorAll('a[href="/members/login.html"]').forEach((a) => {
+      a.setAttribute('href', autoLoginHref);
+    });
+  }
+
   // (Hero subtitle removed — the title 'Céad míle fáilte / A hundred
   //  thousand welcomes' + scroll banner below convey welcome + next-step
   //  without needing a separate subtitle line. Gift-specific framing
