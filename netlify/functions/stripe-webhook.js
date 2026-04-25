@@ -598,15 +598,19 @@ async function sendGiftRecipientWelcome(ctx) {
     </div>
   ` : '';
 
-  const certBlock = certDownloadUrl ? `
+  // Cert claim CTA — same pattern as self-buyer email post-refactor.
+  // Direct cert download REMOVED. Recipient routes to members area
+  // login → publication flow. The activation IS the welcome — one
+  // email, one click, lands in members area, publishes cert.
+  const certBlock = `
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
-      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Ready to download</p>
-      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Bearing the Chief's signature, issued in your name, entered in the Register at Newhall House.</p>
-      <a href="${certDownloadUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Download your certificate (PDF) →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">This link is valid for seven days. Your certificate is also always available from your Members' Area, below.</p>
+      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
+      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
+      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email. You have 30 days to refine your certificate details before it is sealed.</p>
     </div>
-  ` : '';
+  `;
 
   const benefitsList = (tier.benefits || []).map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
 
@@ -646,13 +650,7 @@ async function sendGiftRecipientWelcome(ctx) {
 
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
-    <!-- Members area CTA — for the recipient, not the giver -->
-    <div style="background:rgba(184,151,90,.08);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:22px 24px;margin:0 0 24px;border-radius:0 2px 2px 0;text-align:center">
-      <p style="font-family:'Georgia',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0 0 18px">Sign in to view your membership, re-download your certificate, read the clan pedigree, and find ${escapeHtml(giverName)}'s gift message — always available there.</p>
-      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Sign in to your Members' Area →</a>
-      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:12px 0 0">A one-time access link will be sent to this email (${escapeHtml(recipientEmail)}). No password required.</p>
-    </div>
+    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>
 
@@ -716,19 +714,31 @@ async function sendGiftBuyerConfirmation(ctx, productName, amount, currency) {
   <div style="padding:40px">
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your gift of a <strong>${escapeHtml(tier.name)}</strong> membership of Clan Ó Comáin has been received and confirmed. A welcome email has just been sent to <strong>${escapeHtml(recipientDisplay)}</strong> at ${escapeHtml(recipientEmail)}, carrying their certificate, their place in the Register, and your personal message.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your gift of a <strong>${escapeHtml(tier.name)}</strong> membership of Clan Ó Comáin has been received and confirmed. A welcome email has just been sent to <strong>${escapeHtml(recipientDisplay)}</strong> at ${escapeHtml(recipientEmail)} — inviting them to confirm their certificate details and take their place in the Register.</p>
 
-    <!-- "What happens next" box — sets the buyer's expectations clearly -->
+    <!-- "What happens next" — accurate to the publication flow.
+         Recipient receives one email, clicks once, lands in members area,
+         publishes their cert. We'll send the buyer a copy when that
+         happens (the keepsake email — see sendGiftBuyerCertKeepsake). -->
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 28px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">What happens next</p>
       <ol style="margin:0;padding-left:20px">
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email from this office with their certificate, their members' area access, and your personal message.</li>
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">We'd suggest giving them a nudge to check their inbox — our email may land in a quiet folder.</li>
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Kinfauns, The Commane — will write to them personally in the weeks that follow.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email from this office, with your personal message and a single-click link to their Members' Area.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">There they confirm their certificate details — their name, an optional ancestor dedication — and publish it. The certificate is sealed, in their name, entered in the Register at Newhall House.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">We send you a copy of the published certificate as a keepsake of the gift you've given.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Kinfauns, The Commane — writes to them personally in the weeks that follow.</li>
       </ol>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We'll let you know when ${escapeHtml(recipientDisplay.split(' ')[0] || 'your recipient')} activates their membership and is welcomed into the clan.</p>
+    <!-- Nudge CTA — more prominent than 'we'd suggest a nudge' buried
+         in the previous list. Direct ask: tell your recipient to check
+         their inbox. The 30-day deadline gives a concrete reason. -->
+    <div style="background:rgba(12,26,12,.04);border:1px solid var(--gold-border, rgba(184,151,90,.3));border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 8px">A quiet word</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">If you can, tell ${escapeHtml(recipientDisplay.split(' ')[0] || 'your recipient')} the email is on its way — sometimes our messages land in a quiet folder. They have <strong>30 days</strong> to publish their certificate; after that it auto-publishes in their name as it stands.</p>
+    </div>
+
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We'll write to you again when ${escapeHtml(recipientDisplay.split(' ')[0] || 'your recipient')} publishes their certificate, with their published copy as a keepsake.</p>
 
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 28px">If you have any questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and I will respond on behalf of the Chief.</p>
 

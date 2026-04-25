@@ -35,7 +35,7 @@
 
 const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
-const { sendPublicationConfirmation } = require('./lib/publication-email');
+const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -306,6 +306,29 @@ exports.handler = async (event) => {
         await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
       } catch (emailErr) {
         console.error('publication email send failed (non-fatal):', emailErr.message);
+      }
+
+      // GIFT BUYER KEEPSAKE — if this published member was a gift
+      // recipient, send the gift buyer a copy of the published cert
+      // as a keepsake. Look up the gifts table by member_id to find
+      // the buyer's email + name + personal message context.
+      try {
+        const { data: gift } = await supa()
+          .from('gifts')
+          .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
+          .eq('member_id', updated.id)
+          .maybeSingle();
+        if (gift?.buyer_email) {
+          await sendGiftBuyerCertKeepsake(updated, certResultForEmail, gift);
+          await logEvent({
+            clan_id,
+            member_id: updated.id,
+            event_type: 'gift_buyer_keepsake_sent',
+            payload: { buyer_email: gift.buyer_email },
+          });
+        }
+      } catch (keepsakeErr) {
+        console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
       }
     }
 

@@ -26,7 +26,7 @@ const { supa, clanId, logEvent } = require('./lib/supabase');
 const { ensureCertificate } = require('./lib/cert-service');
 const { autoFixName } = require('./lib/name-format');
 const { sendEmail } = require('./lib/email');
-const { sendPublicationConfirmation } = require('./lib/publication-email');
+const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const REMINDER_DAY = 29; // send reminder when joined_at was this many days ago
@@ -145,6 +145,27 @@ exports.handler = async () => {
 
           if (certResult.storagePath) {
             await sendPublicationConfirmation(updated, certResult, { autoPublished: true });
+
+            // Gift keepsake — if this auto-published member was a gift
+            // recipient, send the buyer their copy too.
+            try {
+              const { data: gift } = await supa()
+                .from('gifts')
+                .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
+                .eq('member_id', m.id)
+                .maybeSingle();
+              if (gift?.buyer_email) {
+                await sendGiftBuyerCertKeepsake(updated, certResult, gift);
+                await logEvent({
+                  clan_id,
+                  member_id: m.id,
+                  event_type: 'gift_buyer_keepsake_sent',
+                  payload: { buyer_email: gift.buyer_email, source: 'auto_publish' },
+                });
+              }
+            } catch (keepsakeErr) {
+              console.error(`keepsake send failed for member ${m.id} (non-fatal):`, keepsakeErr.message);
+            }
           }
           autoPublished++;
         } catch (e) {

@@ -150,4 +150,112 @@ function escapeHtml(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-module.exports = { sendPublicationConfirmation };
+/**
+ * Send the gift buyer a keepsake email when their gift recipient publishes
+ * their certificate. The buyer receives a copy of the recipient's published
+ * cert as PDF attachment, with copy that frames it as a souvenir of the
+ * gift they gave.
+ *
+ * Sent from:
+ *   - submit-family-details.js (member-action publication, after the
+ *     recipient's confirmation email)
+ *   - daily-cert-sweep.js (auto-publication at day 30)
+ *
+ * Best-effort — failure here doesn't affect the publication itself.
+ *
+ * @param {Object} member - the gift recipient's member row (post-publish)
+ * @param {Object} certResult - return from ensureCertificate
+ *   ({ storagePath, certNumber, pdfBytes, ... })
+ * @param {Object} gift - the gifts row ({ buyer_email, buyer_name,
+ *   personal_message, gifted_at, ... })
+ * @returns {Promise<boolean>}
+ */
+async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
+  if (!gift?.buyer_email) return false;
+
+  const buyerFirstName = (gift.buyer_name || '').split(' ')[0] || 'friend';
+  const recipientFirstName = (member.name || '').split(' ')[0] || 'your recipient';
+  const recipientFull = member.name || gift.recipient_email || 'your recipient';
+  const certNumber = certResult.certNumber || '—';
+
+  let downloadUrl = null;
+  let pdfBase64 = null;
+  let pdfFilename = `Clan-O-Comain-Gift-Certificate-${sanitizeFilename(member.name || member.email)}.pdf`;
+  try {
+    downloadUrl = await signCertUrl(certResult.storagePath, {
+      ttlSeconds: 60 * 60 * 24 * 30,
+      downloadAs: pdfFilename,
+    });
+  } catch (err) {
+    console.error('keepsake: signCertUrl failed (non-fatal):', err.message);
+  }
+  try {
+    if (certResult.pdfBytes) {
+      pdfBase64 = Buffer.from(certResult.pdfBytes).toString('base64');
+    }
+  } catch (err) {
+    console.error('keepsake: pdf attachment encoding failed (non-fatal):', err.message);
+  }
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
+<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
+
+  <div style="background:#0C1A0C;padding:36px 40px 28px;text-align:center;border-bottom:2px solid #B8975A">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">A keepsake from your gift</p>
+    <h1 style="font-family:'Georgia',serif;font-size:30px;font-weight:400;color:#D4B87A;margin:0;line-height:1.15">${escapeHtml(recipientFirstName)} has been welcomed</h1>
+  </div>
+
+  <div style="padding:36px 40px">
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dear ${escapeHtml(buyerFirstName)},</p>
+
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 22px">${escapeHtml(recipientFull)} has confirmed and published the certificate for the membership you gave them. They are now formally entered in the Register of Clan Ó Comáin, held at Newhall House, County Clare.</p>
+
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 24px">A copy of their published certificate is attached for you — a small keepsake of the gift you've given.</p>
+
+    <!-- Cert keepsake block -->
+    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:30px 26px;margin:0 0 28px;border-radius:2px;text-align:center">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Their published certificate</p>
+      <p style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#0C1A0C;margin:0 0 8px;line-height:1.2">${escapeHtml(member.name || '')}</p>
+      <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 4px">Cert № ${escapeHtml(certNumber)} · ${escapeHtml(member.tier_label || 'Member')}</p>
+      ${member.ancestor_dedication ? `<p style="font-family:'Georgia',serif;font-size:12.5px;font-style:italic;color:#B8975A;margin:14px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.3)">${escapeHtml(member.ancestor_dedication)}</p>` : ''}
+      ${downloadUrl ? `<div style="margin-top:24px"><a href="${downloadUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Download PDF →</a></div>` : ''}
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">${pdfBase64 ? 'Also attached to this email.' : ''}${downloadUrl ? ' Download link valid for 30 days.' : ''}</p>
+    </div>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 24px">Go raibh míle maith agat — for bringing another name to the clan.</p>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
+      <tr>
+        <td style="vertical-align:middle;padding-right:18px;width:84px">
+          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="68" height="68" alt="Linda Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
+        </td>
+        <td style="vertical-align:middle">
+          <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Linda Cryan</strong></p>
+          <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0">Office of the Private Secretary to Chief of Ó Comáin</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="background:#0C1A0C;padding:22px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Caithfidh an stair a bheith i réim — History must prevail</p>
+  </div>
+</div>
+</body>
+</html>`;
+
+  const attachments = pdfBase64 ? [{ filename: pdfFilename, content: pdfBase64 }] : undefined;
+
+  return await sendEmail({
+    to: gift.buyer_email,
+    subject: `${recipientFirstName} has been welcomed — your gift, in the Register`,
+    html,
+    attachments,
+  });
+}
+
+module.exports = { sendPublicationConfirmation, sendGiftBuyerCertKeepsake };
