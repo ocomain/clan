@@ -716,6 +716,8 @@
         statusEl.style.color = 'var(--ink)';
         if (result.certLocked) {
           statusEl.innerHTML = 'Saved to the Register at Newhall House. Your certificate PDF is locked — contact <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a> to request a new cert.';
+        } else if (result.published) {
+          statusEl.innerHTML = 'Published. Your certificate has been sealed and emailed to you. Reloading…';
         } else {
           statusEl.innerHTML = 'Saved. Your certificate has been regenerated. Reloading…';
         }

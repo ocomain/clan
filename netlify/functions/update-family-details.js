@@ -22,6 +22,7 @@
 
 const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
+const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -61,7 +62,7 @@ exports.handler = async (event) => {
     const email = (authUser.email || '').toLowerCase().trim();
     const { data: member } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, cert_locked_at, public_register_visible, public_register_opted_in_at')
+      .select('id, email, name, tier, tier_label, tier_family, joined_at, partner_name, children_first_names, ancestor_dedication, cert_version, cert_locked_at, cert_published_at, public_register_visible, public_register_opted_in_at')
       .eq('clan_id', clan_id)
       .eq('email', email)
       .maybeSingle();
@@ -75,6 +76,22 @@ exports.handler = async (event) => {
     let familyChanged = false;
     let nameChanged = false;
     let ancestorChanged = false;
+
+    // PUBLICATION SEMANTICS (mirrors submit-family-details.js, per migration 011):
+    // The first save from the dashboard's "Publish my certificate" modal IS
+    // the publication moment. The cert is sealed, the PDF is generated,
+    // the publish-cert email is sent. cert_published_at gets stamped (and
+    // cert_locked_at as the alias used by older code paths).
+    //
+    // If already published (cert_published_at set), the modal still saves
+    // changes to the member row — they appear in the Register at Newhall —
+    // but the cert PDF is locked. ensureCertificate enforces this via
+    // its cert_locked_at check.
+    //
+    // Privacy-only requests skip publication entirely: a privacy checkbox
+    // toggle should never trigger cert publication.
+    const isAlreadyPublished = !!(member.cert_locked_at || member.cert_published_at);
+    const publishingNow = !privacyOnly && !isAlreadyPublished;
 
     // ── Family + name + ancestor (skipped for privacy-only requests) ─────
     if (!privacyOnly) {
@@ -96,7 +113,11 @@ exports.handler = async (event) => {
 
       const certAffectingChange = nameChanged || ancestorChanged || familyChanged;
 
-      if (familyChanged || ancestorChanged || nameChanged) {
+      // Write family/name/ancestor fields whenever there's a cert-affecting
+      // change OR we're publishing now (first publish needs the field write
+      // even if the user didn't edit anything — that's the act of confirming
+      // and sealing the record).
+      if (certAffectingChange || publishingNow) {
         // Use the effective (possibly corrected) primary name when computing display_name
         const effectiveName = cleanName || member.name;
         const hasPartner = !!cleanPartner;
@@ -126,6 +147,13 @@ exports.handler = async (event) => {
         if (certAffectingChange) {
           update.cert_version = (member.cert_version || 1) + 1;
         }
+      }
+
+      // Stamp publication on first publish. Both fields set to the same
+      // value so legacy cert_locked_at checks continue to work.
+      if (publishingNow) {
+        update.cert_published_at = now.toISOString();
+        update.cert_locked_at = now.toISOString();
       }
     }
 
@@ -168,17 +196,40 @@ exports.handler = async (event) => {
       event_type: privacyOnly ? 'privacy_settings_updated' : 'family_details_updated',
       payload: {
         family_changed: familyChanged,
+        publishing_now: publishingNow,
         public_register: update.public_register_visible,
         children_visible: update.children_visible_on_register,
       },
     });
 
-    // Regenerate cert if any cert-affecting change (name, ancestor, family)
-    // occurred. Privacy-only changes skip this entirely.
+    if (publishingNow) {
+      await logEvent({
+        clan_id,
+        member_id: member.id,
+        event_type: 'certificate_published',
+        payload: {
+          tier: updated.tier,
+          source: 'dashboard_action',
+        },
+      });
+    }
+
+    // ── Generate cert PDF ─────────────────────────────────────────────────
+    // Generate on:
+    //   - publishingNow (first publish via dashboard) — this IS the
+    //     publication moment, the cert PDF is sealed at this point. Even
+    //     if the user clicked Publish without changing any field, we still
+    //     generate so they have a PDF.
+    //   - certAffectingChange before publication — legacy code path,
+    //     should be a no-op now since the only way to reach this with
+    //     publishingNow=false is if the member is already published, in
+    //     which case ensureCertificate refuses regeneration via its
+    //     cert_locked_at check.
     const certAffectingChange = familyChanged || nameChanged || ancestorChanged;
     let certUrl = null;
     let certLocked = false;
-    if (certAffectingChange) {
+    let certResultForEmail = null;
+    if (publishingNow || certAffectingChange) {
       try {
         const certResult = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
         if (certResult.locked) {
@@ -188,16 +239,58 @@ exports.handler = async (event) => {
             ttlSeconds: 60 * 60 * 24 * 7,
             downloadAs: `Clan-O-Comain-Certificate-${sanitizeFilename(updated.name || updated.email)}.pdf`,
           });
+          certResultForEmail = certResult;
         }
       } catch (certErr) {
         console.error('cert regeneration after family update (non-fatal):', certErr.message);
       }
     }
 
+    // Send publication confirmation email + gift-buyer keepsake on first
+    // publish. Best-effort — failure here doesn't affect the API response.
+    if (publishingNow && certResultForEmail) {
+      try {
+        await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
+      } catch (emailErr) {
+        console.error('publication email send failed (non-fatal):', emailErr.message);
+      }
+
+      // GIFT BUYER KEEPSAKE — if this published member was a gift
+      // recipient, send the gift buyer a copy of the published cert
+      // as a keepsake.
+      try {
+        const { data: gift } = await supa()
+          .from('gifts')
+          .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
+          .eq('member_id', updated.id)
+          .maybeSingle();
+        if (gift?.buyer_email) {
+          await sendGiftBuyerCertKeepsake(updated, certResultForEmail, gift);
+          await logEvent({
+            clan_id,
+            member_id: updated.id,
+            event_type: 'gift_buyer_keepsake_sent',
+            payload: { buyer_email: gift.buyer_email },
+          });
+        }
+      } catch (keepsakeErr) {
+        console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
+      }
+    }
+
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ok: true, certUrl, certAffectingChange, familyChanged, nameChanged, ancestorChanged, certLocked }),
+      body: JSON.stringify({
+        ok: true,
+        certUrl,
+        certAffectingChange,
+        familyChanged,
+        nameChanged,
+        ancestorChanged,
+        certLocked,
+        published: publishingNow,
+      }),
     };
   } catch (e) {
     console.error('update-family-details crashed:', e.message);
