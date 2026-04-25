@@ -197,6 +197,19 @@
 
     const isLife = (member.tier || '').startsWith('life');
     const renewalValue = isLife ? 'For life · no renewal' : fmtDate(member.expires_at);
+    // Cert published = the cert PDF exists and has been sealed. Both
+    // cert_published_at (canonical) and cert_locked_at (legacy alias)
+    // are set together at publication; checking either works.
+    const isPublished = !!(member.cert_published_at || member.cert_locked_at);
+    // Inline button row that adds a download link alongside the existing
+    // 'Edit' button when the member is published. Same visual weight as
+    // the edit button so they read as a pair, not a primary/secondary CTA.
+    const certActionRow = (editLabel) => `
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+        <button class="mfam-edit-btn" id="mfamEditBtn">${editLabel} →</button>
+        ${isPublished ? `<button class="mfam-edit-btn" id="mfamCertDownloadBtn" type="button">Download certificate (PDF) →</button>` : ''}
+      </div>
+    `;
 
     dashboard.innerHTML = `
       <div class="mwelcome">
@@ -299,7 +312,7 @@
         ` : `
           <p class="mfam-empty">Your Family membership covers two adults and any children under your care. Add their names to record them on your certificate and in the Register at Newhall House — your children carry their place in the clan with you, and inherit the membership in their own right in the fullness of time.</p>
         `}
-        <button class="mfam-edit-btn" id="mfamEditBtn">${(member.partner_name || (member.children_first_names && member.children_first_names.length)) ? 'Edit family details' : 'Add family details'} →</button>
+        ${certActionRow((member.partner_name || (member.children_first_names && member.children_first_names.length)) ? 'Edit family details' : 'Add family details')}
       </section>
       ` : `
       <section class="mfam" id="mfam-section">
@@ -320,7 +333,7 @@
         ${!member.ancestor_dedication ? `
           <p class="mfam-empty" style="margin-top:4px">Honour an ancestor on your certificate — a grandparent who carried the name, a parent who spoke of home, or a forebear whose story drew you to the clan.</p>
         ` : ''}
-        <button class="mfam-edit-btn" id="mfamEditBtn">${member.ancestor_dedication ? 'Edit certificate details' : 'Add a dedication or correct my name'} →</button>
+        ${certActionRow(member.ancestor_dedication ? 'Edit certificate details' : 'Add a dedication or correct my name')}
       </section>
       `}
 
@@ -390,13 +403,6 @@
       `}
 
       <section class="mactions">
-        <div class="maction live">
-          <div class="maction-eyebrow">Available</div>
-          <div class="maction-title">Your certificate</div>
-          <div class="maction-desc">Your official Certificate of Membership, bearing the Chief's signature — in PDF form for printing, framing, or sharing.</div>
-          <button class="maction-btn" id="certBtn">Prepare my certificate →</button>
-          <div id="certStatus" style="margin-top:10px;font-family:'EB Garamond',serif;font-size:12px;color:var(--ink-soft);font-style:italic;min-height:18px"></div>
-        </div>
         <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/library.html">
           <div class="maction-eyebrow">Members only</div>
           <div class="maction-title">The clan library</div>
@@ -438,60 +444,45 @@
     loading.style.display = 'none';
     dashboard.style.display = 'block';
 
-    // Wire up the certificate download button (rendered dynamically above)
-    const certBtn = document.getElementById('certBtn');
-    const certStatus = document.getElementById('certStatus');
-    let certUrlCache = null;
-
-    certBtn.addEventListener('click', async () => {
-      certBtn.disabled = true;
-      certBtn.textContent = certUrlCache ? 'Preparing fresh link…' : 'Preparing your certificate…';
-      certStatus.textContent = 'This may take a few seconds on first generation.';
-
-      try {
-        const session = await currentSession();
-        if (!session) {
-          window.location.href = '/members/login.html';
-          return;
-        }
-
-        const res = await fetch('/api/generate-certificate', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-
-        if (!res.ok) {
-          const errBody = await res.json().catch(() => ({}));
-          throw new Error(errBody.error || `Request failed (${res.status})`);
-        }
-
-        const { url } = await res.json();
-        certUrlCache = url;
-
-        // Trigger the download — opens the signed URL which has a download=
-        // filename hint so browsers save instead of opening inline
-        window.location.href = url;
-
-        // Give the browser a moment to start the download, then restore button state
-        setTimeout(() => {
-          certBtn.disabled = false;
-          certBtn.textContent = 'Download again →';
-          certStatus.textContent = 'Your certificate is on the way. Click again for another copy.';
-        }, 800);
-
-      } catch (e) {
-        console.error('certificate error:', e);
-        certBtn.disabled = false;
-        certBtn.textContent = 'Try again →';
-        certStatus.style.color = 'var(--ink)';
-        certStatus.innerHTML = `Something went wrong — <em>${escHtml(e.message)}</em>. If this persists, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>.`;
-      }
-    });
-
     // ── Family edit modal (only present if Family tier) ────────────────────
     const familyEditBtn = document.getElementById('mfamEditBtn');
     if (familyEditBtn) {
       familyEditBtn.addEventListener('click', () => openFamilyModal(member));
+    }
+
+    // ── Cert PDF download (published members only — button only present
+    //     in DOM when isPublished is true) ────────────────────────────────
+    const certDownloadBtn = document.getElementById('mfamCertDownloadBtn');
+    if (certDownloadBtn) {
+      certDownloadBtn.addEventListener('click', async () => {
+        const originalText = certDownloadBtn.textContent;
+        certDownloadBtn.disabled = true;
+        certDownloadBtn.textContent = 'Preparing PDF…';
+        try {
+          const session = await currentSession();
+          if (!session) { window.location.href = '/members/login.html'; return; }
+          const res = await fetch('/api/generate-certificate', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}));
+            throw new Error(errBody.error || `Request failed (${res.status})`);
+          }
+          const { url } = await res.json();
+          // Trigger download via signed URL with download= filename hint
+          window.location.href = url;
+          setTimeout(() => {
+            certDownloadBtn.disabled = false;
+            certDownloadBtn.textContent = originalText;
+          }, 1200);
+        } catch (e) {
+          console.error('cert download error:', e);
+          certDownloadBtn.disabled = false;
+          certDownloadBtn.textContent = 'Try again →';
+          alert('Could not prepare your certificate — ' + (e.message || 'please try again, or write to clan@ocomain.org'));
+        }
+      });
     }
 
     // ── Cert-not-yet-confirmed prompt button — opens the same modal ───────

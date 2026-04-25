@@ -30,7 +30,7 @@ exports.handler = async (event) => {
 
     let { data: member } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, status, joined_at')
+      .select('id, email, name, tier, tier_label, tier_family, status, joined_at, cert_published_at, cert_locked_at')
       .eq('clan_id', clan_id)
       .eq('auth_user_id', authData.user.id)
       .maybeSingle();
@@ -38,13 +38,29 @@ exports.handler = async (event) => {
     if (!member) {
       ({ data: member } = await supa()
         .from('members')
-        .select('id, email, name, tier, tier_label, tier_family, status, joined_at')
+        .select('id, email, name, tier, tier_label, tier_family, status, joined_at, cert_published_at, cert_locked_at')
         .eq('clan_id', clan_id)
         .eq('email', email)
         .maybeSingle());
     }
 
     if (!member) return { statusCode: 404, body: JSON.stringify({ error: 'Not a member' }) };
+
+    // Defence in depth: if the cert hasn't been published yet, refuse to
+    // generate. The UI gates this on cert_published_at too, but never
+    // trust the UI alone. Pre-publication members must explicitly publish
+    // via the welcome flow / dashboard modal — that's the deliberate moment
+    // the cert PDF comes into existence.
+    const isPublished = !!(member.cert_published_at || member.cert_locked_at);
+    if (!isPublished) {
+      return {
+        statusCode: 409,
+        body: JSON.stringify({
+          error: 'Your certificate has not yet been published. Please confirm and publish it first.',
+          notPublished: true,
+        }),
+      };
+    }
 
     const { storagePath, issuedAt } = await ensureCertificate(member, clan_id);
 
