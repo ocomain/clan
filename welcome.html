@@ -30,6 +30,11 @@
     .wel-confirm-tier em{color:var(--gold)}
     .wel-confirm-rule{width:48px;height:1px;background:var(--gold);margin:18px auto 22px;opacity:.5}
     .wel-confirm-body{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.75;text-align:center;margin-bottom:0}
+    @keyframes welBounce{
+      0%,20%,50%,80%,100%{transform:translateY(0)}
+      40%{transform:translateY(6px)}
+      60%{transform:translateY(3px)}
+    }
 
     /* ── NEXT STEPS ── */
     .wel-next{background:var(--ink);padding:80px 0;color:var(--gold-pale)}
@@ -43,10 +48,17 @@
 
     /* ── PRIVATE SECRETARY SIGN-OFF ── */
     .wel-sig{background:var(--cream-mid);padding:56px 0;text-align:center;border-bottom:1px solid var(--border)}
-    .wel-sig-text{max-width:560px;margin:0 auto 24px;font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-soft);line-height:1.7}
-    .wel-sig-line{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.5;margin-bottom:4px}
-    .wel-sig-line strong{font-weight:500}
-    .wel-sig-irish{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(60,42,26,.65)}
+    .wel-sig-text{max-width:560px;margin:0 auto 28px;font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-soft);line-height:1.7}
+    .wel-sig-author{display:inline-flex;align-items:center;gap:18px;text-align:left;max-width:520px}
+    .wel-sig-photo{width:76px;height:76px;border-radius:50%;display:block;flex-shrink:0;object-fit:cover;border:1px solid rgba(184,151,90,.3)}
+    .wel-sig-author-text{display:flex;flex-direction:column;gap:3px}
+    .wel-sig-author-name{font-family:'EB Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);margin:0;line-height:1.2}
+    .wel-sig-author-title{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);margin:0;line-height:1.4}
+    .wel-sig-irish{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(60,42,26,.6);margin:0;line-height:1.4}
+    @media(max-width:560px){
+      .wel-sig-author{flex-direction:column;gap:14px;text-align:center}
+      .wel-sig-author-text{align-items:center}
+    }
 
     /* ── UPSELL / FORWARD-LOOKING ── */
     .wel-look{background:var(--cream);padding:80px 0;border-bottom:1px solid var(--border)}
@@ -79,6 +91,8 @@
     .wel-final-text{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.75);max-width:520px;margin:0 auto 28px;line-height:1.7}
     .wel-final-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:16px 38px;border-radius:1px;text-decoration:none;transition:background .2s}
     .wel-final-btn:hover{background:var(--gold-light)}
+    .wel-final-gift{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:rgba(215,235,215,.55);max-width:540px;margin:24px auto 0;line-height:1.65}
+    .wel-final-gift a{color:var(--gold);text-decoration:underline;font-style:normal}
 
     @media(max-width:780px){
       .wel-confirm-card{padding:32px 26px;margin:0 20px}
@@ -144,6 +158,17 @@
     <h2 class="wel-confirm-tier" id="welTierName">Welcome to <em>Clan Ó Comáin</em></h2>
     <div class="wel-confirm-rule"></div>
     <p class="wel-confirm-body" id="welConfirmBody">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare. The Office of the Private Secretary will be in touch shortly.</p>
+
+    <!-- Scroll cue — visible to all paid tiers (controlled by JS). Appears
+         only after the cert-details form is unhidden, so gift recipients and
+         non-paid landings don't see it. Animated bounce on the chevron makes
+         it unmissable for older users who might otherwise close the tab. -->
+    <div id="welScrollCue" style="display:none;text-align:center;margin-top:38px;padding-top:30px;border-top:1px solid var(--gold-border)">
+      <p style="font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);margin:0 0 12px;line-height:1.6">A few details remain before your <em>certificate</em> is issued.</p>
+      <a href="#welCertDetails" style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-strong);text-decoration:none;padding:10px 0">Continue below
+        <span style="display:inline-block;margin-left:8px;animation:welBounce 2s infinite;font-size:18px;vertical-align:-3px">↓</span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -165,7 +190,7 @@
     <div class="wel-confirm-card" style="margin:0;padding:44px 48px">
       <div class="wel-confirm-eyebrow">Your Certificate Details</div>
       <h2 class="wel-confirm-tier" style="margin-bottom:14px">A few details before your <em>certificate</em> is issued</h2>
-      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">These details will appear on your certificate and in the Register of the clan at Newhall House. You can update them any time from your Members' Area.</p>
+      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">These details will appear on your certificate and in the Register of the clan at Newhall House. <strong style="color:var(--ink);font-style:normal">Your certificate is issued once</strong> — please confirm everything carefully. You have 30 days to refine these details from your Members' Area before your certificate is sealed.</p>
       <div class="wel-confirm-rule" style="margin:0 auto 30px"></div>
 
       <form id="welCertForm">
@@ -248,13 +273,15 @@
         <div style="text-align:center;margin-top:32px">
           <button type="submit" id="famSubmitBtn"
             style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border:none;border-radius:1px;cursor:pointer;transition:background .2s">Save and update my certificate →</button>
-          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Or skip for now — you can add these any time from your Members' Area.</p>
+          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Or skip for now — you can add these within 30 days from your Members' Area.</p>
         </div>
 
         <div id="famStatus" style="display:none;margin-top:20px;padding:16px;border-radius:2px;text-align:center;font-family:'EB Garamond',serif;font-size:15px"></div>
       </form>
     </div>
   </div>
+</section>
+
 <section class="wel-mbr">
   <div class="wel-mbr-inner">
     <div class="wel-mbr-eyebrow">Your Members' Area — now open</div>
@@ -290,12 +317,21 @@
   </div>
 </section>
 
-<!-- PRIVATE SECRETARY SIGN-OFF -->
+<!-- PRIVATE SECRETARY SIGN-OFF — Linda Cryan, with round headshot.
+     Mirrors the welcome email treatment so members recognise the same
+     person across email and site. Private Secretary structure preserved
+     (the role exists in service of the Chief — heraldic tradition). -->
 <section class="wel-sig">
   <div class="si">
     <p class="wel-sig-text">As is the custom in the household of the Chief, all correspondence with the clan passes through this office. Direct access to the Chief is reserved — but you have been welcomed in his name, and your name now stands among those of the clan he leads.</p>
-    <p class="wel-sig-line">— <strong>The Office of the Private Secretary to The Commane</strong></p>
-    <p class="wel-sig-irish">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
+    <div class="wel-sig-author">
+      <img src="/linda_cryan_bubble.png" alt="Linda Cryan" class="wel-sig-photo">
+      <div class="wel-sig-author-text">
+        <p class="wel-sig-author-name">Linda Cryan</p>
+        <p class="wel-sig-author-title">Office of the Private Secretary to Chief of Ó Comáin</p>
+        <p class="wel-sig-irish">Rúnaí Príobháideach an Taoisigh · Newhall House, County Clare</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -332,7 +368,8 @@
 <!-- FINAL CTA -->
 <section class="wel-final">
   <p class="wel-final-text"><em>Caithfidh an stair a bheith i réim</em> — History must prevail.</p>
-  <a href="/" class="wel-final-btn">Visit the clan website →</a>
+  <a href="/members/login.html" class="wel-final-btn">Sign in to your Members' Area →</a>
+  <p class="wel-final-gift">Or, if your family or friends might care to share this with you — invite them to take their own place in the clan, or <a href="/gift.html">gift a membership →</a></p>
 </section>
 
 <footer class="footer">
@@ -429,6 +466,11 @@
   if (isPaidTier) {
     const section = document.getElementById('welCertDetails');
     section.style.display = 'block';
+    // Reveal the scroll cue at the bottom of the confirmation card so older
+    // users (and any user who didn't notice the form below) get a clear
+    // visual prompt to scroll down and complete cert details.
+    const scrollCue = document.getElementById('welScrollCue');
+    if (scrollCue) scrollCue.style.display = 'block';
 
     // Entry-tier (Clan Member) detection — the public register is a Guardian+
     // benefit. 'clan-ind' and 'clan-fam' are both entry-tier.
@@ -455,13 +497,44 @@
       document.getElementById('welIndividualRegisterBlock').style.display = 'block';
     }
 
-    // Pre-fill name-on-cert from URL param (buyer's name passed from Stripe)
-    // If not in URL, fetch from member-info after sign-in. For now: use param
-    // if present, otherwise leave blank so member sees placeholder prompting.
+    // Pre-fill cert-details fields from the member row (Herald-captured
+    // name preserved at webhook time). If the member row isn't yet written
+    // (webhook lag race), we fall back to URL params or empty fields and
+    // the user can type from scratch.
     const params = new URLSearchParams(window.location.search);
     const paramName = params.get('name');
+    const sessionId = params.get('session_id') || '';
+
+    // URL ?name= takes precedence (used by future direct-link cases)
     if (paramName) {
       document.getElementById('famNameOnCert').value = paramName;
+    } else if (sessionId) {
+      // Async fetch from member row - don't block UI
+      (async () => {
+        try {
+          const r = await fetch(`/api/get-pending-cert-details?session_id=${encodeURIComponent(sessionId)}`);
+          if (!r.ok) return;
+          const data = await r.json();
+          if (!data.found) return;
+          // Pre-fill ALL the fields - name, ancestor, partner, children
+          if (data.name) {
+            document.getElementById('famNameOnCert').value = data.name;
+          }
+          if (data.ancestorDedication) {
+            document.getElementById('famAncestor').value = data.ancestorDedication;
+          }
+          if (isFamilyTier) {
+            const partnerEl = document.getElementById('famPartnerName');
+            const childrenEl = document.getElementById('famChildren');
+            if (partnerEl && data.partnerName) partnerEl.value = data.partnerName;
+            if (childrenEl && Array.isArray(data.childrenFirstNames) && data.childrenFirstNames.length) {
+              childrenEl.value = data.childrenFirstNames.join('\n');
+            }
+          }
+        } catch (e) {
+          // Silent failure - form remains blank, user can type from scratch
+        }
+      })();
     }
 
     // Children-visibility checkbox dependency (Family only, Guardian+ only)
