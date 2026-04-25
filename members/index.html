@@ -750,6 +750,18 @@
         } else {
           statusEl.innerHTML = 'Saved. Your certificate has been regenerated. Reloading…';
         }
+        // Auto-trigger the cert download on first publish — they shouldn't
+        // have to click again. The signed URL carries Content-Disposition:
+        // attachment so the browser saves the file rather than navigating.
+        // Hidden anchor click is the most reliable cross-browser path.
+        if (result.published && result.certUrl) {
+          const a = document.createElement('a');
+          a.href = result.certUrl;
+          a.rel = 'noopener';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
         setTimeout(() => window.location.reload(), 1800);
       } catch (e) {
         statusEl.style.display = 'block';

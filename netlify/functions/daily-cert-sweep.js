@@ -236,7 +236,7 @@ async function sendDay29Reminder(member, suggestedName) {
         </td>
         <td style="vertical-align:middle">
           <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Linda Cryan</strong></p>
-          <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0">Office of the Private Secretary to Chief of Ó Comáin</p>
+          <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0">Office of the Private Secretary to the Chief</p>
         </td>
       </tr>
     </table>
