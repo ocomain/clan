@@ -450,11 +450,18 @@ function showCompletion() {
     <div class="completion-row"><span class="completion-label">Connection</span><span class="completion-value">${escHtml(collected.connection||'')}</span></div>
     <div class="completion-row"><span class="completion-label">Referred by</span><span class="completion-value">${escHtml(collected.source||'')}</span></div>`;
 
-  // POST application data to Netlify function (background, non-blocking)
+  // POST application data to Netlify function (background, non-blocking).
+  // keepalive:true is critical here — without it, the browser will abort
+  // this in-flight request the moment the user clicks 'Complete payment'
+  // and navigates to Stripe, which means the applications row may never
+  // get written. The webhook then can't find the Herald-captured name and
+  // falls back to whatever the buyer typed on the Stripe checkout page.
+  // keepalive ensures the request continues until the server responds.
   try {
     fetch('/api/submit-application', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
       body: JSON.stringify({
         name: collected.name,
         email: collected.email,
