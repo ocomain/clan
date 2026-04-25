@@ -58,7 +58,7 @@ exports.handler = async (event) => {
     const clan_id = await clanId();
     const { data: member } = await supa()
       .from('members')
-      .select('id, name, tier, tier_label, tier_family, partner_name, children_first_names, ancestor_dedication, name_confirmed_on_cert, public_register_visible, children_visible_on_register, cert_locked_at')
+      .select('id, name, tier, tier_label, tier_family, partner_name, children_first_names, ancestor_dedication, name_confirmed_on_cert, public_register_visible, children_visible_on_register, cert_locked_at, postal_address, postal_address_provided_at, cert_posted_at')
       .eq('clan_id', clan_id)
       .eq('email', email)
       .maybeSingle();
@@ -89,6 +89,9 @@ exports.handler = async (event) => {
         publicRegisterVisible: !!member.public_register_visible,
         childrenVisibleOnRegister: !!member.children_visible_on_register,
         certLocked: !!member.cert_locked_at,
+        postalAddress: member.postal_address || null,
+        postalAddressProvidedAt: member.postal_address_provided_at || null,
+        certPostedAt: member.cert_posted_at || null,
       }),
     };
   } catch (err) {

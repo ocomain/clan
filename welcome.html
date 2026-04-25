@@ -282,6 +282,118 @@
   </div>
 </section>
 
+<!-- POSTAL ADDRESS — Guardian+ tiers only. Hidden by default; revealed
+     by JS only after (a) the tier is Guardian/Steward/Life AND (b) the
+     cert details form above has been saved (to confirm the digital cert
+     is sealed before address is taken — physical cert reflects what was
+     locked digitally). The reveal is animated + smooth-scrolled into
+     view so older users don't miss it.
+
+     The form mirrors the cert-details visual treatment for consistency. -->
+<section id="welPostalAddress" style="display:none;background:var(--cream-mid);padding:64px 0;border-bottom:1px solid var(--border)">
+  <div style="max-width:680px;margin:0 auto;padding:0 24px">
+    <div class="wel-confirm-card" style="margin:0;padding:44px 48px">
+      <div class="wel-confirm-eyebrow">Where to send your physical certificate</div>
+      <h2 class="wel-confirm-tier" style="margin-bottom:14px">Your <em>postal</em> address</h2>
+      <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:520px">Your certificate is a hand-printed heraldic instrument on heavyweight stock, signed by the Chief and posted to you from Newhall House, County Clare. Tell us where to send it.</p>
+      <div class="wel-confirm-rule" style="margin:0 auto 30px"></div>
+
+      <form id="welPostalForm">
+        <!-- Recipient name (defaults to cert name) -->
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Addressee</label>
+          <input type="text" id="paRecipientName" placeholder="Recipient name as it should appear on the envelope"
+            style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.55">Pre-filled from your certificate name — change if a different addressee is needed.</p>
+        </div>
+
+        <!-- Line 1 -->
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Address line 1</label>
+          <input type="text" id="paLine1" placeholder="House number and street"
+            style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+        </div>
+
+        <!-- Line 2 (optional) -->
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Address line 2 <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
+          <input type="text" id="paLine2" placeholder="Apartment, suite, unit, building"
+            style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+        </div>
+
+        <!-- City + region row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div>
+            <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">City / Town</label>
+            <input type="text" id="paCity"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          </div>
+          <div>
+            <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">County / State <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
+            <input type="text" id="paRegion"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          </div>
+        </div>
+
+        <!-- Postal code + country row -->
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:14px;margin-bottom:18px">
+          <div>
+            <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Postal Code</label>
+            <input type="text" id="paPostalCode"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          </div>
+          <div>
+            <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Country</label>
+            <select id="paCountry"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;-webkit-appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 8%22><path d=%22M0 0l6 8 6-8z%22 fill=%22%23B8975A%22/></svg>');background-repeat:no-repeat;background-position:right 16px center;background-size:10px;padding-right:36px">
+              <option value="">Select…</option>
+              <option data-cc="IE" value="Ireland">Ireland</option>
+              <option data-cc="GB" value="United Kingdom">United Kingdom</option>
+              <option data-cc="US" value="United States">United States</option>
+              <option data-cc="CA" value="Canada">Canada</option>
+              <option data-cc="AU" value="Australia">Australia</option>
+              <option data-cc="NZ" value="New Zealand">New Zealand</option>
+              <option data-cc="FR" value="France">France</option>
+              <option data-cc="DE" value="Germany">Germany</option>
+              <option data-cc="ES" value="Spain">Spain</option>
+              <option data-cc="IT" value="Italy">Italy</option>
+              <option data-cc="NL" value="Netherlands">Netherlands</option>
+              <option data-cc="BE" value="Belgium">Belgium</option>
+              <option data-cc="SE" value="Sweden">Sweden</option>
+              <option data-cc="NO" value="Norway">Norway</option>
+              <option data-cc="DK" value="Denmark">Denmark</option>
+              <option data-cc="FI" value="Finland">Finland</option>
+              <option data-cc="CH" value="Switzerland">Switzerland</option>
+              <option data-cc="AT" value="Austria">Austria</option>
+              <option data-cc="JP" value="Japan">Japan</option>
+              <option data-cc="ZA" value="South Africa">South Africa</option>
+              <option data-cc="AE" value="United Arab Emirates">United Arab Emirates</option>
+              <option data-cc="ARG" value="Argentina">Argentina</option>
+              <option data-cc="other" value="OTHER">Other (write in line 1)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Delivery instructions (optional) -->
+        <div style="margin-bottom:18px">
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Delivery instructions <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
+          <input type="text" id="paInstructions" placeholder="e.g. Letterbox by side gate, leave with concierge, etc."
+            style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:17px;padding:14px 16px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+        </div>
+
+        <!-- Submit -->
+        <div style="text-align:center;margin-top:32px">
+          <button type="submit" id="paSubmitBtn"
+            style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border:none;border-radius:1px;cursor:pointer;transition:background .2s">Save my postal address →</button>
+          <p style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 0;line-height:1.6">Your physical certificate is posted within ten working days of receipt.</p>
+        </div>
+
+        <div id="paStatus" style="display:none;margin-top:20px;padding:16px;border-radius:2px;text-align:center;font-family:'EB Garamond',serif;font-size:15px"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
 <section class="wel-mbr">
   <div class="wel-mbr-inner">
     <div class="wel-mbr-eyebrow">Your Members' Area — now open</div>
@@ -462,6 +574,9 @@
   //   flag only available to Family tiers
   const isPaidTier = !isGift && !!tierDisplay;
   const isFamilyTier = isPaidTier && /-fam$/.test(tier);
+  // Physical cert is included for Guardian, Steward, Life tiers (any
+  // variant). Clan Member tier is digital-only, so no postal address.
+  const isPhysicalCertTier = isPaidTier && /^(guardian|steward|life)-/.test(tier);
 
   if (isPaidTier) {
     const section = document.getElementById('welCertDetails');
@@ -610,6 +725,27 @@
         statusEl.innerHTML = '<strong>Saved.</strong> Your certificate is being prepared with these details. It will be ready in your Members\u2019 Area in a moment.';
         submitBtn.textContent = 'Saved \u2713';
         submitBtn.style.background = 'rgba(184,151,90,.5)';
+
+        // ── REVEAL POSTAL ADDRESS for Guardian+ tiers ─────────────────────
+        // Their tier includes a posted physical cert, so we capture address
+        // here. Pre-fill recipient name from cert name, smooth-scroll into
+        // view so older users don't miss it. Clan Member tier skips this
+        // (digital cert only).
+        if (isPhysicalCertTier) {
+          const postalSection = document.getElementById('welPostalAddress');
+          if (postalSection) {
+            postalSection.style.display = 'block';
+            const recipientInput = document.getElementById('paRecipientName');
+            if (recipientInput && nameOnCert) {
+              recipientInput.value = nameOnCert;
+            }
+            // Smooth-scroll into view, with a small delay so the buyer
+            // sees the 'Saved' confirmation first
+            setTimeout(() => {
+              postalSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 800);
+          }
+        }
       } catch (err) {
         statusEl.style.display = 'block';
         statusEl.style.background = 'rgba(192,57,43,.08)';
@@ -618,6 +754,80 @@
         statusEl.innerHTML = 'We couldn\u2019t save your details just now. Please try again, or add them from your Members\u2019 Area after signing in.';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Save and update my certificate \u2192';
+        submitBtn.style.opacity = '1';
+      }
+    });
+  }
+
+  // ── POSTAL ADDRESS FORM HANDLER (Guardian+ only) ──────────────────────
+  // Submit handler for the postal address card revealed after cert details
+  // are saved. Sends to /api/save-postal-address with sessionId so server
+  // can resolve the buyer's email via Stripe session API.
+  const postalForm = document.getElementById('welPostalForm');
+  if (postalForm) {
+    postalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('paSubmitBtn');
+      const statusEl = document.getElementById('paStatus');
+      const fields = {
+        recipient_name: document.getElementById('paRecipientName').value.trim(),
+        line1:          document.getElementById('paLine1').value.trim(),
+        line2:          document.getElementById('paLine2').value.trim(),
+        city:           document.getElementById('paCity').value.trim(),
+        region:         document.getElementById('paRegion').value.trim(),
+        postal_code:    document.getElementById('paPostalCode').value.trim(),
+      };
+      const countryEl = document.getElementById('paCountry');
+      const countryOpt = countryEl.selectedOptions[0];
+      fields.country = countryOpt?.value || '';
+      fields.country_code = countryOpt?.dataset?.cc || '';
+      fields.instructions = document.getElementById('paInstructions').value.trim();
+
+      // Client-side validation: required fields
+      const missing = [];
+      if (!fields.recipient_name) missing.push('Addressee');
+      if (!fields.line1) missing.push('Address line 1');
+      if (!fields.city) missing.push('City');
+      if (!fields.postal_code) missing.push('Postal code');
+      if (!fields.country) missing.push('Country');
+      if (missing.length) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(192,57,43,.08)';
+        statusEl.style.border = '1px solid rgba(192,57,43,.3)';
+        statusEl.style.color = '#922c1f';
+        statusEl.textContent = 'Please fill in: ' + missing.join(', ');
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id') || '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving address\u2026';
+      submitBtn.style.opacity = '0.7';
+
+      try {
+        const r = await fetch('/api/save-postal-address', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, address: fields }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || 'Could not save your address');
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(184,151,90,.12)';
+        statusEl.style.border = '1px solid var(--gold-border)';
+        statusEl.style.color = 'var(--ink)';
+        statusEl.innerHTML = '<strong>Saved.</strong> Your physical certificate will be hand-printed at Newhall House and posted within ten working days.';
+        submitBtn.textContent = 'Saved \u2713';
+        submitBtn.style.background = 'rgba(184,151,90,.5)';
+      } catch (err) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(192,57,43,.08)';
+        statusEl.style.border = '1px solid rgba(192,57,43,.3)';
+        statusEl.style.color = '#922c1f';
+        statusEl.textContent = 'Could not save \u2014 ' + (err.message || 'please try again, or update from your Members\u2019 Area.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save my postal address \u2192';
         submitBtn.style.opacity = '1';
       }
     });
