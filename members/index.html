@@ -420,15 +420,15 @@
         <div class="mpriv-title">Your visibility on the public register</div>
         <label class="mpriv-row">
           <input type="checkbox" id="prvPublic" ${member.public_register_visible ? 'checked' : ''}>
-          <span>Show me on the public Founding Members Register at <em>ocomain.org/register</em>.</span>
+          <span><strong>Yes — include my name in the Founding Members Register at <em>ocomain.org/register</em>. I'm proud to be counted.</strong></span>
         </label>
         ${member.tier_family ? `
         <label class="mpriv-row" id="prvChildrenWrap" style="margin-left:28px;${member.public_register_visible ? '' : 'opacity:.5;pointer-events:none'}">
           <input type="checkbox" id="prvChildren" ${member.children_visible_on_register ? 'checked' : ''} ${member.public_register_visible ? '' : 'disabled'}>
-          <span>Include my children's first names on my public entry.</span>
+          <span>Yes — show my children's first names alongside our family entry.</span>
         </label>
         ` : ''}
-        <p class="mpriv-note">Both default to off. Your changes save automatically and take effect on the next register page load.</p>
+        <p class="mpriv-note">Untick at any time to remove yourself from the public register. Your changes save automatically and take effect on the next register page load.</p>
         <div class="mpriv-status" id="prvStatus"></div>
       </section>
       `}
@@ -592,6 +592,60 @@
     // alias and is set to the same value on publish — checking either works.
     const isPublished = !!(member.cert_published_at || member.cert_locked_at);
 
+    // Client-side mirror of the cert credit-line logic in
+    // netlify/functions/lib/generate-cert.js (formatNameList +
+    // combineCoupleNames + the displayName/creditLine block). The preview
+    // must read the same way as the published PDF — anything else is a
+    // WYSIWYG lie. Returns { displayName, creditLine } where creditLine
+    // may be null (no italic line under the name on the cert).
+    //
+    //   partner + children -> "[name] & Family"  /  "with [partner], and [children]"
+    //   partner only       -> "[John & Mary Cummins]"  /  null
+    //   children only      -> "[name] & Family"  /  "with their children [children]"
+    //   nothing            -> "[name]"  /  null
+    const formatFamilyDisplay = (name, partner, childrenList) => {
+      const hasPartner = !!(partner && partner.trim());
+      const cleanChildren = Array.isArray(childrenList)
+        ? childrenList.map(c => (c || '').trim()).filter(Boolean)
+        : [];
+      const hasChildren = cleanChildren.length > 0;
+
+      const formatList = (names) => {
+        if (names.length === 1) return names[0];
+        if (names.length === 2) return names[0] + ' and ' + names[1];
+        return names.slice(0, -1).join(', ') + ', and ' + names[names.length - 1];
+      };
+
+      const combineCoupleNames = (n1, n2) => {
+        const t1 = n1.trim().split(/\s+/);
+        const t2 = n2.trim().split(/\s+/);
+        if (t1.length >= 2 && t2.length >= 2 &&
+            t1[t1.length - 1].toLowerCase() === t2[t2.length - 1].toLowerCase()) {
+          const first1 = t1.slice(0, -1).join(' ');
+          const first2 = t2.slice(0, -1).join(' ');
+          return first1 + ' & ' + first2 + ' ' + t1[t1.length - 1];
+        }
+        return n1.trim() + ' & ' + n2.trim();
+      };
+
+      const cleanName = (name || '').trim();
+      if (hasPartner && hasChildren) {
+        return { displayName: cleanName + ' & Family', creditLine: 'with ' + partner.trim() + ', and ' + formatList(cleanChildren) };
+      }
+      if (hasPartner && !hasChildren) {
+        return { displayName: combineCoupleNames(cleanName, partner), creditLine: null };
+      }
+      if (!hasPartner && hasChildren) {
+        return { displayName: cleanName + ' & Family', creditLine: 'with their children ' + formatList(cleanChildren) };
+      }
+      return { displayName: cleanName, creditLine: null };
+    };
+
+    // Initial preview values from the loaded member row
+    const initialChildren = Array.isArray(member.children_first_names) ? member.children_first_names : [];
+    const initialPreview = formatFamilyDisplay(member.name || '—', member.partner_name || '', initialChildren);
+
+
     const lockedBanner = isPublished ? `
       <div style="background:rgba(184,151,90,.12);border:1px solid rgba(184,151,90,.35);border-left:3px solid var(--gold);padding:14px 18px;margin:0 0 22px;border-radius:2px">
         <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Certificate published</div>
@@ -628,8 +682,8 @@
           <div style="font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);margin:0 0 4px">Certificate of Membership</div>
           <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:12px;color:var(--gold);margin:0 0 18px">Teastas Ballraíochta</div>
           <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:var(--ink-muted);margin:0 0 6px">This is to certify that</div>
-          <div id="prevName" style="font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);line-height:1.25;margin:6px 0 4px">${escHtml(member.name || '—')}</div>
-          <div id="prevCreditLine" style="font-family:'EB Garamond',serif;font-style:italic;font-size:11.5px;color:var(--ink-muted);margin:4px 0 14px;display:${isFamilyTier && (member.partner_name || (member.children_first_names && member.children_first_names.length)) ? 'block' : 'none'}">together with ${escHtml(member.partner_name || '—')}${member.children_first_names && member.children_first_names.length ? ` and their children, ${escHtml(member.children_first_names.join(', '))}` : ''}</div>
+          <div id="prevName" style="font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);line-height:1.25;margin:6px 0 4px">${escHtml(initialPreview.displayName)}</div>
+          <div id="prevCreditLine" style="font-family:'EB Garamond',serif;font-style:italic;font-size:11.5px;color:var(--ink-muted);margin:4px 0 14px;display:${isFamilyTier && initialPreview.creditLine ? 'block' : 'none'}">${escHtml(initialPreview.creditLine || '')}</div>
           <div style="font-family:'EB Garamond',serif;font-size:11px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px;max-width:440px;margin-left:auto;margin-right:auto">${registerLine}<br>in the Register of the clan, held at Newhall House, County Clare, Ireland</div>
           <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:var(--ink-muted);margin:0 0 18px">an ancient Gaelic royal house recognised by Clans of Ireland.</div>
           <div id="prevAncestor" style="font-family:'EB Garamond',serif;font-style:italic;font-size:11px;color:var(--gold-strong);margin:14px 0 0;padding:10px 0 0;border-top:1px solid var(--gold-border);max-width:440px;margin-left:auto;margin-right:auto;display:${member.ancestor_dedication ? 'block' : 'none'}">${escHtml(member.ancestor_dedication || '')}</div>
@@ -693,26 +747,34 @@
       const prevCreditLine = document.getElementById('prevCreditLine');
 
       const updatePreview = () => {
-        if (prevName) prevName.textContent = (nameEl?.value || '').trim() || '—';
+        const nameVal = (nameEl?.value || '').trim() || '—';
+        const partnerVal = (partnerEl?.value || '').trim();
+        const childrenVal = (childrenEl?.value || '').split('\n').map(s => s.trim()).filter(Boolean);
+
         if (prevAncestor) {
           const v = (ancestorEl?.value || '').trim();
           prevAncestor.textContent = v;
           prevAncestor.style.display = v ? 'block' : 'none';
         }
-        if (prevCreditLine && isFamilyTier) {
-          const partner = (partnerEl?.value || '').trim();
-          const children = (childrenEl?.value || '').split('\n').map(s => s.trim()).filter(Boolean);
-          if (partner || children.length) {
-            const parts = ['together with'];
-            if (partner) parts.push(partner);
-            if (children.length) {
-              parts.push((partner ? 'and their children, ' : 'and ') + children.join(', '));
+
+        // Drive both prevName and prevCreditLine from the same helper that
+        // generate-cert.js uses, so the preview matches the published PDF
+        // exactly. Family-only feature — for individual tier the credit
+        // line stays hidden and the name renders plain.
+        if (isFamilyTier) {
+          const out = formatFamilyDisplay(nameVal, partnerVal, childrenVal);
+          if (prevName) prevName.textContent = out.displayName;
+          if (prevCreditLine) {
+            if (out.creditLine) {
+              prevCreditLine.textContent = out.creditLine;
+              prevCreditLine.style.display = 'block';
+            } else {
+              prevCreditLine.style.display = 'none';
             }
-            prevCreditLine.textContent = parts.join(' ').replace('together with and', 'together with');
-            prevCreditLine.style.display = 'block';
-          } else {
-            prevCreditLine.style.display = 'none';
           }
+        } else {
+          if (prevName) prevName.textContent = nameVal;
+          if (prevCreditLine) prevCreditLine.style.display = 'none';
         }
       };
 
