@@ -151,24 +151,20 @@
   </div>
 </section>
 
-<!-- CONFIRMATION CARD -->
-<section class="wel-confirm">
-  <div class="wel-confirm-card">
-    <div class="wel-confirm-eyebrow">Confirmed</div>
-    <h2 class="wel-confirm-tier" id="welTierName">Welcome to <em>Clan Ó Comáin</em></h2>
-    <div class="wel-confirm-rule"></div>
-    <p class="wel-confirm-body" id="welConfirmBody">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare. The Office of the Private Secretary will be in touch shortly.</p>
-
-    <!-- Scroll cue — visible to all paid tiers (controlled by JS). Appears
-         only after the cert-details form is unhidden, so gift recipients and
-         non-paid landings don't see it. Animated bounce on the chevron makes
-         it unmissable for older users who might otherwise close the tab. -->
-    <div id="welScrollCue" style="display:none;text-align:center;margin-top:38px;padding-top:30px;border-top:1px solid var(--gold-border)">
-      <p style="font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);margin:0 0 12px;line-height:1.6">A few details remain before your <em>certificate</em> is issued.</p>
-      <a href="#welCertDetails" style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-strong);text-decoration:none;padding:10px 0">Continue below
-        <span style="display:inline-block;margin-left:8px;animation:welBounce 2s infinite;font-size:18px;vertical-align:-3px">↓</span>
-      </a>
-    </div>
+<!-- SCROLL BANNER — visible for paid tiers only (controlled by JS). Sits
+     prominently under the hero where eyes naturally land after reading
+     the welcome. Animated bounce on the chevron + gold border-bottom
+     creates an unmissable visual prompt for older users. Tells the
+     buyer there's something below worth scrolling for, in clear
+     plain-English language. -->
+<section id="welScrollCue" style="display:none;background:var(--cream-mid);padding:26px 24px;text-align:center;border-bottom:2px solid var(--gold)">
+  <div style="max-width:680px;margin:0 auto">
+    <p style="font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 10px">One more step</p>
+    <p style="font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);line-height:1.5;margin:0 0 14px">Your certificate awaits — please scroll down to confirm your details.</p>
+    <a href="#welCertDetails" style="display:inline-block;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-strong);text-decoration:none">
+      Continue below
+      <span style="display:inline-block;margin-left:8px;animation:welBounce 2s infinite;font-size:18px;vertical-align:-3px">↓</span>
+    </a>
   </div>
 </section>
 
@@ -448,30 +444,32 @@
 </section>
 
 <!-- WHILE YOU'RE HERE / UPSELL-READY -->
-<section class="wel-look">
+<!-- BRING OTHERS TO THE CLAN — gift CTA section. Replaces the previous
+     'Continue exploring' content links since the welcome page should focus
+     the buyer's post-purchase journey rather than browsing. Hidden for
+     gift recipients (they'd find it strange to be invited to gift back to
+     themselves) — JS toggles via #welGiftSection visibility on isGift. -->
+<section id="welGiftSection" class="wel-look">
   <div class="wel-look-inner">
-    <div class="wel-look-eyebrow">While you're here</div>
-    <h2 class="wel-look-title">Continue exploring the clan</h2>
-    <p class="wel-look-sub">Your membership opens the doors. Here is some of what lies behind them.</p>
-    <div class="wel-look-grid">
+    <div class="wel-look-eyebrow">Bring others to the clan</div>
+    <h2 class="wel-look-title">Family, friends, those you love</h2>
+    <p class="wel-look-sub">A membership shared is a name carried further. If your family, your friends, or someone whose story is woven into yours might find a place here — invite them to take it.</p>
 
-      <a href="pedigree.html" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block">
-        <div class="wel-look-card-eyebrow">Live · open now</div>
-        <div class="wel-look-card-title">The full clan pedigree</div>
-        <div class="wel-look-card-desc">Eight chapters tracing the Ó Comáin line back to the 7th century — with 45 footnotes from the primary sources.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:32px">
+
+      <!-- Gift a membership -->
+      <a href="/gift.html" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block;border-top:3px solid var(--gold)">
+        <div class="wel-look-card-eyebrow">Gift</div>
+        <div class="wel-look-card-title">Gift a membership to someone you love</div>
+        <div class="wel-look-card-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome — posted from Newhall House. The most enduring Irish gift there is.</div>
       </a>
 
-      <a href="heartlands.html" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block">
-        <div class="wel-look-card-eyebrow">Live · open now</div>
-        <div class="wel-look-card-title">The clan's heartlands</div>
-        <div class="wel-look-card-desc">Cahercommane, Newhall House, Killone Abbey — the ancestral holdings and sacred sites of the chiefdom.</div>
+      <!-- Invite to join -->
+      <a href="/membership.html" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block;border-top:3px solid var(--gold)">
+        <div class="wel-look-card-eyebrow">Invite</div>
+        <div class="wel-look-card-title">Invite a family member to join</div>
+        <div class="wel-look-card-desc">Share the clan with someone who would care about it — a sibling, a parent, a cousin abroad. Each membership is its own story, signed personally by the Chief.</div>
       </a>
-
-      <div class="wel-look-card coming">
-        <div class="wel-look-card-eyebrow">Coming soon</div>
-        <div class="wel-look-card-title">The clan tartan and crest</div>
-        <div class="wel-look-card-desc">Signet rings, ceremonial dress, official tartan — produced under the Chief's authority. Available to members first.</div>
-      </div>
 
     </div>
   </div>
@@ -481,7 +479,6 @@
 <section class="wel-final">
   <p class="wel-final-text"><em>Caithfidh an stair a bheith i réim</em> — History must prevail.</p>
   <a href="/members/login.html" class="wel-final-btn">Sign in to your Members' Area →</a>
-  <p class="wel-final-gift">Or, if your family or friends might care to share this with you — invite them to take their own place in the clan, or <a href="/gift.html">gift a membership →</a></p>
 </section>
 
 <footer class="footer">
@@ -536,23 +533,12 @@
 
   const tierDisplay = TIER_NAMES[tier] || null;
 
-  // ── Hero subtitle ──
+  // ── Hero subtitle (different copy for gifts vs paid self) ──
   const sub = document.getElementById('welSub');
   if (isGift) {
     sub.textContent = 'Your gift has been received. Your recipient will be welcomed to the clan in your name.';
   } else if (tierDisplay) {
     sub.textContent = 'Your application has been received and your place in the clan is confirmed.';
-  }
-
-  // ── Confirmation card heading ──
-  const tierName = document.getElementById('welTierName');
-  const confirmBody = document.getElementById('welConfirmBody');
-  if (isGift && tierDisplay) {
-    tierName.innerHTML = 'Your gift of <em>' + tierDisplay + '</em> is confirmed';
-    confirmBody.innerHTML = 'Your gift to the clan has been received and processed. The Office of the Private Secretary will write to your recipient shortly to welcome them in your name. They will receive their own welcome from this office, and the Chief will write to them personally in the weeks that follow.';
-  } else if (tierDisplay) {
-    tierName.innerHTML = 'Welcome, <em>' + tierDisplay + '</em>';
-    confirmBody.textContent = 'Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare. The Office of the Private Secretary will be in touch shortly with your formal welcome.';
   }
 
   // ── Step 2 (the Chief's letter) — different framing for gifts ──
@@ -564,6 +550,13 @@
   // ── Eyebrow text ──
   if (isGift) {
     document.getElementById('welEyebrow').textContent = 'Gift confirmed · Ó Comáin';
+  }
+
+  // ── Gift section visibility — hidden for gift recipients (would feel
+  //     odd inviting them to gift back to themselves) ──────────────────
+  if (isGift) {
+    const giftSection = document.getElementById('welGiftSection');
+    if (giftSection) giftSection.style.display = 'none';
   }
 
   // ── CERT DETAILS SECTION: shown for ALL paid (non-gift) tiers ────────
