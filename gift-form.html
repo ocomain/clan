@@ -233,19 +233,25 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Recipient's full name *</label>
-          <input class="form-input" type="text" id="recipientName" placeholder="Their full name" required>
+          <input class="form-input" type="text" id="recipientName" placeholder="The person you're gifting to" required>
+          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.7);margin:6px 0 0;line-height:1.5">One name only — the person who will receive the gift.</p>
         </div>
         <div class="form-group">
           <label class="form-label">Recipient's email *</label>
           <input class="form-input" type="email" id="recipientEmail" placeholder="their@email.com" required>
         </div>
       </div>
-      <div class="form-row full" id="familyNameRow" style="display:none">
-        <div class="form-group">
-          <label class="form-label">Second adult's name (family membership) *</label>
-          <input class="form-input" type="text" id="recipientName2" placeholder="Second adult's full name">
-        </div>
+
+      <!-- Family-tier explainer — only visible when Family is selected.
+           Pre-empts the common mistake of putting two names in the
+           recipient name field. The recipient adds their partner /
+           children themselves in their members' area when they
+           confirm and seal their certificate. -->
+      <div class="fam-only" style="display:none;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 4px;border-radius:0 2px 2px 0">
+        <p style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">About the family membership</p>
+        <p style="font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.85);line-height:1.7;margin:0">Your recipient will add their <strong style="color:var(--gold-pale);font-weight:500">partner and children's first names</strong> themselves when they accept the gift, in their members' area. You only need to enter one name above — the person you're sending this to.</p>
       </div>
+
       <!-- Postal address note — for tiers that include a physical cert
            (Guardian, Steward, Life), we ask the RECIPIENT to enter their
            own address in their members' area when they accept the gift.
@@ -386,7 +392,12 @@ function selectTier(tier) {
 function updateFamily() {
   isFamily = document.getElementById('familyToggle').checked;
   document.getElementById('familyNote').textContent = isFamily ? '— covers 2 adults & children under 18' : '';
-  document.getElementById('familyNameRow').style.display = isFamily ? 'grid' : 'none';
+  // Toggle the family-tier explainer note on/off. Direct display write
+  // since the .fam-only/body.fam-mode CSS pattern is only present on
+  // gift.html (marketing), not in this form's stylesheet.
+  document.querySelectorAll('.fam-only').forEach(el => {
+    el.style.display = isFamily ? 'block' : 'none';
+  });
   updateSummary();
 }
 
@@ -461,8 +472,14 @@ async function submitForm() {
       : 'Renewing annually (cancel anytime)',
     giverName: document.getElementById('giverName').value.trim(),
     giverEmail: document.getElementById('giverEmail').value.trim(),
+    // recipientName is one person — the gift recipient. For Family-tier
+    // gifts, the recipient enters their partner / children's names
+    // themselves in their members' area. (Old recipientName2 collection
+    // here led to users putting a couple's combined name in the
+    // recipientName field when they bypassed it, which then got
+    // published verbatim on the cert. Removed to make the flow
+    // unambiguous.)
     recipientName: document.getElementById('recipientName').value.trim(),
-    recipientName2: document.getElementById('recipientName2').value.trim(),
     recipientEmail: document.getElementById('recipientEmail').value.trim(),
     // address intentionally empty — recipient supplies it post-acceptance
     address: '',
@@ -503,7 +520,7 @@ async function submitForm() {
         giftMode: modeForLookup,
         giverName: data.giverName,
         giverEmail: data.giverEmail,
-        recipientName: data.recipientName + (data.recipientName2 ? ' & ' + data.recipientName2 : ''),
+        recipientName: data.recipientName,
         recipientEmail: data.recipientEmail,
         personalMessage: data.message,
         giftId,

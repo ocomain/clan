@@ -981,11 +981,20 @@
      * animation) which then runs the actual save.
      */
     async function runPublishCeremony() {
+      // CRITICAL: capture every form field's value BEFORE we replace the
+      // modal's innerHTML. Once card.innerHTML = ... fires, the form
+      // input elements no longer exist in the DOM, and runSave can no
+      // longer read them — which silently drops the user's edits.
+      // (This was a regression that lost the name edit, the ancestor
+      // dedication, and the family field changes during the ceremonial
+      // step. Fix: snapshot all four fields here as a frozen object.)
+      const formSnapshot = readModalFormValues();
+
       // Build the overlay
       const card = modal.querySelector('div[style*="max-width:680px"]');
       const original = card.innerHTML;
-      const nameVal = (document.getElementById('famModalName')?.value || '').trim() || (member.name || '');
-      const ancestorVal = (document.getElementById('famModalAncestor')?.value || '').trim();
+      const nameVal = formSnapshot.name || (member.name || '');
+      const ancestorVal = formSnapshot.ancestor;
       card.innerHTML = `
         <!-- Herald-led ceremonial confirmation. The Clan Herald is the
              anonymous figure who guided the member through the chat on
@@ -1037,7 +1046,10 @@
       });
       document.getElementById('cermSeal').addEventListener('click', async () => {
         await runSealingAnimation(card);
-        await runSave();
+        // IMPORTANT: pass the captured form snapshot to runSave so it
+        // doesn't try to re-read DOM inputs that no longer exist after
+        // the ceremony replaced the modal HTML.
+        await runSave(formSnapshot);
       });
     }
 
@@ -1096,18 +1108,43 @@
     }
 
     /**
+     * Read all four form fields from the live modal DOM. Returns a frozen
+     * snapshot object: { name, ancestor, partner, children[] }. Used both
+     * for the immediate save path (re-edit case) AND, critically, for
+     * capturing values BEFORE the ceremony replaces the modal HTML.
+     */
+    function readModalFormValues() {
+      const nameEl = document.getElementById('famModalName');
+      const ancestorEl = document.getElementById('famModalAncestor');
+      const partnerEl = document.getElementById('famModalPartner');
+      const childrenEl = document.getElementById('famModalChildren');
+      const childrenRaw = childrenEl ? childrenEl.value.trim() : '';
+      return Object.freeze({
+        name:     nameEl ? nameEl.value.trim() : '',
+        ancestor: ancestorEl ? ancestorEl.value.trim() : '',
+        partner:  partnerEl ? partnerEl.value.trim() : '',
+        children: childrenRaw ? childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean) : [],
+      });
+    }
+
+    /**
      * The actual save+publish API call. Reads the form fields, fires
      * /api/update-family-details, handles the response. Now invoked
      * either directly (re-edit save) or after the ceremony (first publish).
+     *
+     * @param {object} [snapshot] - optional pre-captured values from
+     *   readModalFormValues(). REQUIRED when called from the publish
+     *   ceremony, since the ceremony replaces the modal innerHTML and
+     *   the form inputs no longer exist by the time this runs. If
+     *   absent, we read live from the DOM (re-edit save case where
+     *   the form is still present).
      */
-    async function runSave() {
-      const nameVal = (document.getElementById('famModalName')?.value || '').trim() || (member.name || '');
-      const ancestorVal = (document.getElementById('famModalAncestor')?.value || '').trim();
-      const partnerEl = document.getElementById('famModalPartner');
-      const childrenEl = document.getElementById('famModalChildren');
-      const partner = partnerEl ? partnerEl.value.trim() : '';
-      const childrenRaw = childrenEl ? childrenEl.value.trim() : '';
-      const children = childrenRaw ? childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean) : [];
+    async function runSave(snapshot) {
+      const values = snapshot || readModalFormValues();
+      const nameVal = values.name || (member.name || '');
+      const ancestorVal = values.ancestor;
+      const partner = values.partner;
+      const children = values.children;
       const statusEl = document.getElementById('famModalStatus');
       const saveBtn = document.getElementById('famModalSave');
       if (saveBtn) {
