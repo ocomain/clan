@@ -56,6 +56,15 @@ exports.handler = async (event) => {
     const session = stripeEvent.data.object;
     const customerEmail = session.customer_details?.email;
     const customerName = session.customer_details?.name;
+    // preferredName is the name we use in email greetings ('Dear X').
+    // Defaults to Stripe billing name, but gets overridden by the
+    // Herald-captured name in BOTH branches below — the gift branch
+    // pulls it from session.metadata.buyer_name, the non-gift branch
+    // resolves through metadata.herald_name -> applications table ->
+    // customerName fallback. The email send sites further down use
+    // this variable, NOT customerName, so the buyer is greeted by
+    // what they typed in the Herald rather than what's on their card.
+    let preferredName = customerName;
 
     // Get the product name. Prefer metadata (if ever set), then fall back to
     // fetching the actual line item description from Stripe.
@@ -118,6 +127,10 @@ exports.handler = async (event) => {
         const recipientName  = md.recipient_name || null;
         const buyerEmail     = (md.buyer_email || customerEmail || '').toLowerCase().trim();
         const buyerName      = md.buyer_name || customerName || null;
+        // The buyer is who Stripe receipts and our gift confirmations greet.
+        // Update outer-scope preferredName so notifyClan + the legacy
+        // fallback path use the Herald-collected name, not Stripe billing.
+        preferredName = buyerName || preferredName;
         const personalMsg    = md.personal_message || null;
         const giftId         = md.gift_id || null;
 
@@ -308,7 +321,9 @@ exports.handler = async (event) => {
         //   3. session.customer_details.name — Stripe billing name. Last
         //      resort. Often miscapitalised or a card-name initial like
         //      'J Smith'.
-        let preferredName = customerName;
+        // (preferredName is declared at outer scope, defaulting to
+        //  customerName — we just override it with herald_name or the
+        //  applications-table value below if either is found.)
         const heraldNameFromMeta = (session.metadata?.herald_name || '').trim();
         if (heraldNameFromMeta) {
           preferredName = heraldNameFromMeta;
@@ -477,18 +492,22 @@ exports.handler = async (event) => {
         // Send confirmation to the BUYER (the payer)
         await sendGiftBuyerConfirmation(giftContext, productName, amount, currency);
       } else {
-        // Fallback: legacy buyer-only confirmation
-        await sendGiftConfirmations(session, customerEmail, customerName, productName, amount, currency);
+        // Fallback: legacy buyer-only confirmation. preferredName has
+        // already been set to the Herald-collected buyer name.
+        await sendGiftConfirmations(session, customerEmail, preferredName, productName, amount, currency);
       }
     } else {
       // certDownloadUrl is now always null — email no longer uses it
       // anyway (Commit 2 of last session refactored to "Confirm cert
       // details →" routing). Param retained for signature compatibility.
-      await sendMemberWelcome(customerEmail, customerName, productName, amount, currency, null);
+      // preferredName is the Herald-resolved name (metadata > apps table
+      // > customerName fallback) — see resolution block above.
+      await sendMemberWelcome(customerEmail, preferredName, productName, amount, currency, null);
     }
 
-    // Always notify the clan
-    await notifyClan(customerEmail, customerName, productName, amount, currency, isGift, session);
+    // Always notify the clan. preferredName is correctly resolved for
+    // both gift (= buyer) and non-gift (= member) flows above.
+    await notifyClan(customerEmail, preferredName, productName, amount, currency, isGift, session);
   }
 
   // ── ABANDONED CHECKOUT ──
@@ -577,10 +596,16 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
 
-    <!-- Members' Area note — secondary, since the cert claim CTA above
-         already points to the same destination. Frames the members area
-         as the ongoing home for membership management. -->
-    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, download your certificate, and access members-only content.</p>
+    <!-- Members' Area sign-in CTA — secondary to the cert action above.
+         Members will reference this email later for ongoing access (the
+         cert action becomes irrelevant once published), so a clear
+         button here makes future sign-ins obvious. Outline style keeps
+         the cert action above as the primary post-purchase CTA. -->
+    <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
+      <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — view details, download your certificate, and access members-only content any time.</p>
+      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+    </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
 
@@ -694,7 +719,16 @@ async function sendGiftRecipientWelcome(ctx) {
 
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
-    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
+    <!-- Members' Area sign-in CTA — same pattern as member welcome.
+         Recipient will reference this email later for ongoing access
+         and to find the giver's personal gift message; clear button
+         makes future sign-ins obvious. Outline style keeps the cert
+         action above as the primary post-purchase CTA. -->
+    <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
+      <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
+      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+    </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>
 
