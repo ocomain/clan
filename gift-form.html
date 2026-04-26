@@ -528,7 +528,13 @@ async function submitForm() {
     });
     const j2 = await r2.json().catch(() => ({}));
     if (!r2.ok || !j2.url) {
-      throw new Error(j2.error || 'Could not start payment');
+      // Surface the actual server message in the thrown error so the
+      // catch block's alert tells the user (and us, when they report it)
+      // what genuinely went wrong — not just the generic 'we couldn't
+      // open' fallback. j2.error comes from the function's structured
+      // error response.
+      const detail = j2.error || `HTTP ${r2.status}`;
+      throw new Error(detail);
     }
     window.location.href = j2.url;
   } catch(e) {
@@ -536,7 +542,15 @@ async function submitForm() {
     btn.style.pointerEvents = '';
     btn.style.opacity = '';
     btn.textContent = origBtnText;
-    alert('We couldn\u2019t open the secure payment page. Please try again, or email clan@ocomain.org and we\u2019ll arrange your gift personally.');
+    // Show the actual error in the alert so a user reporting this can
+    // tell us what they saw. Generic 'try again' messaging without the
+    // detail makes diagnosis impossible.
+    const detail = e && e.message ? `\n\nDetails: ${e.message}` : '';
+    alert(
+      'We couldn\u2019t open the secure payment page. Please try again, ' +
+      'or email clan@ocomain.org and we\u2019ll arrange your gift personally.' +
+      detail
+    );
   }
 }
 

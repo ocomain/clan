@@ -77,7 +77,20 @@ exports.handler = async (event) => {
   const isLife = tier.startsWith('life');
   const mode = isLife ? 'onetime' : (giftMode === 'recurring' ? 'recurring' : 'onetime');
 
-  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) {
+    console.error('create-gift-checkout: STRIPE_SECRET_KEY not set in environment');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Stripe is not configured on the server. Please email clan@ocomain.org.' }),
+    };
+  }
+  // Log the key prefix (sk_test_ vs sk_live_) so function logs make
+  // test-vs-live mode obvious without exposing the secret. Helps next
+  // time someone reports 'gift checkout broken' — log will show whether
+  // the env var has the expected prefix.
+  console.log('create-gift-checkout: stripe key prefix =', stripeKey.slice(0, 8));
+  const stripe = require('stripe')(stripeKey);
   const amountCents = GIFT_PRICE_CENTS[tier];
   const tierLabel = TIER_LABELS[tier];
   const productName = `${tierLabel} — Gift`;
@@ -155,7 +168,29 @@ exports.handler = async (event) => {
       body: JSON.stringify({ url: session.url }),
     };
   } catch (e) {
-    console.error('create-gift-checkout failed:', e.message);
-    return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
+    // Stripe errors carry useful structure: type ('StripeInvalidRequestError',
+    // 'StripeAuthenticationError', etc.), code, and a request_log_url that
+    // links back to the Stripe dashboard. Log all three so the function
+    // logs are actionable — last time this errored, the user-facing alert
+    // was useless and we had no log signal to diagnose from.
+    console.error('create-gift-checkout failed:', {
+      message: e.message,
+      type:    e.type,
+      code:    e.code,
+      param:   e.param,
+      request_log_url: e.requestLogUrl,
+      tier,
+      mode,
+    });
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: e.message,
+        // Surface the Stripe error type to the client too. The frontend
+        // can show a friendlier message (e.g. for auth errors, point at
+        // env-var setup) without exposing the secret.
+        type: e.type || 'unknown',
+      }),
+    };
   }
 };
