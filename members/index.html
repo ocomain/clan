@@ -987,12 +987,37 @@
       const nameVal = (document.getElementById('famModalName')?.value || '').trim() || (member.name || '');
       const ancestorVal = (document.getElementById('famModalAncestor')?.value || '').trim();
       card.innerHTML = `
+        <!-- Herald-led ceremonial confirmation. The Clan Herald is the
+             anonymous figure who guided the member through the chat on
+             join-chat.html — keeper of the clan's register, voice of its
+             ancient tradition. His visual signature there is the clan
+             shield (coat_of_arms.png) used as his avatar; we carry that
+             same persona into the seal moment so the experience feels
+             continuous: the Herald who entered your name at the gate is
+             the same Herald who now seals it.
+
+             Note: this is NOT Mícheál Ó Comáin (the historical Herald of
+             Arms profiled on coat-of-arms.html) — he's a real figure
+             outside the clan. Our Clan Herald is a website persona. -->
         <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center">A one-time act</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:30px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 16px;text-align:center">Are you ready to <em style="color:var(--gold)">seal</em> your certificate?</h3>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0 auto 28px;max-width:520px;text-align:center">Once sealed, your name is entered in the Register at Newhall House for keeps. The certificate becomes a fixed record — a heraldic instrument the clan will preserve in your name.</p>
+        <h3 style="font-family:'EB Garamond',serif;font-size:30px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 22px;text-align:center">The Herald awaits your <em style="color:var(--gold)">word</em></h3>
+
+        <!-- The Clan Herald speaks. Visual signature: shield avatar inside
+             a dark-ink circle (matching the join-chat header treatment).
+             Voice register matches his other lines from the chat —
+             "Dia dhuit", ceremonious, formal Hiberno-English. -->
+        <div style="display:flex;gap:18px;align-items:flex-start;background:var(--cream-mid);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 26px;margin:0 auto 28px;max-width:560px;border-radius:0 2px 2px 0">
+          <div style="flex-shrink:0;width:64px;height:64px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;border:2px solid var(--gold-border)">
+            <img src="/coat_of_arms.png" alt="" style="width:42px;height:auto;display:block">
+          </div>
+          <div>
+            <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">The Clan Herald</div>
+            <p style="font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0">Dia dhuit. When you give the word, I shall enter your name in the Register at Newhall House and seal the certificate in the clan's voice. From that moment your record is fixed — a heraldic instrument the clan will preserve in your name.</p>
+          </div>
+        </div>
 
         <!-- Summary of what's about to be sealed -->
-        <div style="background:var(--white);border:1px solid var(--gold-border);border-top:2px solid var(--gold);padding:24px 28px;margin:0 auto 32px;border-radius:1px;max-width:520px">
+        <div style="background:var(--white);border:1px solid var(--gold-border);border-top:2px solid var(--gold);padding:24px 28px;margin:0 auto 28px;border-radius:1px;max-width:520px">
           <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:10px">To be sealed in your name</div>
           <div style="font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);text-align:center;line-height:1.3">${escHtml(nameVal)}</div>
           ${ancestorVal ? `<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--gold-deep);text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--gold-border)">${escHtml(ancestorVal)}</div>` : ''}
@@ -1000,7 +1025,7 @@
 
         <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
           <button id="cermBack" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:1px solid var(--border);padding:14px 24px;border-radius:1px;cursor:pointer">← Edit details</button>
-          <button id="cermSeal" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);background:var(--gold);border:none;padding:16px 36px;border-radius:1px;cursor:pointer;box-shadow:0 2px 12px rgba(184,151,90,.35)">Yes — seal my certificate</button>
+          <button id="cermSeal" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);background:var(--gold);border:none;padding:16px 36px;border-radius:1px;cursor:pointer;box-shadow:0 2px 12px rgba(184,151,90,.35)">Yes — seal it, Herald</button>
         </div>
         <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);text-align:center;margin:18px 0 0">This action cannot be undone.</p>
       `;
@@ -1017,33 +1042,43 @@
     }
 
     /**
-     * Step 2 of publish ceremony: visual sealing animation. ~2.5 seconds
-     * of ceremonial micro-copy + a CSS-animated gold ring closing on the
-     * shield. Gives the moment the weight it deserves before the reload.
+     * Step 2 of publish ceremony: visual sealing animation, framed around
+     * the Clan Herald. The shield (his avatar in join-chat.html) sits at
+     * the centre with a gold ring closing around it; the messages quote
+     * the Herald narrating the act of sealing in his voice. ~3 seconds
+     * of ceremony before the actual save fires.
      */
     async function runSealingAnimation(card) {
       card.innerHTML = `
-        <div style="text-align:center;padding:40px 20px">
-          <!-- Sealing spinner — gold ring closing on the shield -->
-          <div style="position:relative;width:140px;height:140px;margin:0 auto 32px">
+        <div style="text-align:center;padding:36px 20px">
+          <!-- Shield (the Herald's avatar) at the centre, with a gold
+               ring rotating around it — the visual metaphor of a wax
+               seal being drawn. The shield sits inside an ink-dark
+               circle to echo the chat avatar treatment. -->
+          <div style="position:relative;width:160px;height:160px;margin:0 auto 28px">
             <div style="position:absolute;inset:0;border:2px solid var(--gold-border);border-radius:50%"></div>
             <div style="position:absolute;inset:0;border:3px solid transparent;border-top-color:var(--gold);border-right-color:var(--gold);border-radius:50%;animation:sealSpin 1.4s cubic-bezier(.65,0,.35,1) infinite"></div>
-            <div style="position:absolute;inset:18px;display:flex;align-items:center;justify-content:center">
-              <img src="/coat_of_arms.png" alt="" style="width:96px;height:auto;opacity:.9">
+            <div style="position:absolute;inset:14px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center">
+              <img src="/coat_of_arms.png" alt="" style="width:78px;height:auto;display:block">
             </div>
           </div>
-          <div id="sealMsg" style="font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.4;min-height:34px;transition:opacity .4s">Drawing the seal…</div>
-          <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-top:14px">Newhall House · Co. Clare</div>
+
+          <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">The Clan Herald</div>
+          <div id="sealMsg" style="font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.5;min-height:60px;max-width:480px;margin:0 auto;transition:opacity .4s">"I take up the quill…"</div>
+
+          <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-top:22px">Newhall House · Co. Clare</div>
         </div>
         <style>
           @keyframes sealSpin { to { transform: rotate(360deg); } }
         </style>
       `;
-      // Sequenced copy — feels deliberate, not stalled
+      // Three quoted lines from the Herald — narrating the act of sealing
+      // in his voice. Same register as his join-chat lines: ceremonious,
+      // first person, formal Hiberno-English.
       const messages = [
-        'Drawing the seal…',
-        'Inscribing the name in the Register…',
-        'Sealing your certificate.',
+        '"I take up the quill…"',
+        '"Your name is entered in the Register at Newhall…"',
+        '"It is done. Your certificate is sealed."',
       ];
       const sealMsg = document.getElementById('sealMsg');
       for (let i = 1; i < messages.length; i++) {
