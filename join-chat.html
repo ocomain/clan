@@ -479,7 +479,16 @@ function showCompletion() {
     // Append email to /api/create-checkout. The endpoint passes it to
     // Stripe as customer_email, so the buyer sees their email pre-filled
     // on the Stripe checkout page.
-    const checkoutUrl = tierInfo.url + (collected.email ? '&email=' + encodeURIComponent(collected.email) : '');
+    // Append email AND herald-captured name to /api/create-checkout. The
+    // endpoint passes email as customer_email (pre-fills Stripe form) and
+    // sets metadata.herald_name on the session — the latter is read by
+    // stripe-webhook as the authoritative name (avoiding the previous
+    // bug where the Stripe billing name overrode the Herald name in
+    // some cases).
+    const params = [];
+    if (collected.email) params.push('email=' + encodeURIComponent(collected.email));
+    if (collected.name)  params.push('name='  + encodeURIComponent(collected.name));
+    const checkoutUrl = tierInfo.url + (params.length ? '&' + params.join('&') : '');
     payBtn.href = checkoutUrl;
     payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
@@ -492,12 +501,20 @@ function showCompletion() {
       payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
     }
   } else {
-    // Show inline tier picker — inject herald-collected email into every tier button
+    // Show inline tier picker — inject herald-collected email AND name
+    // into every tier button so they reach Stripe metadata regardless of
+    // which tier the user ultimately picks.
     const tierPicker = document.getElementById('tierPicker');
-    if (collected.email) {
+    if (collected.email || collected.name) {
       tierPicker.querySelectorAll('a[href*="/api/create-checkout"]').forEach(a => {
-        const sep = a.getAttribute('href').includes('?') ? '&' : '?';
-        a.setAttribute('href', a.getAttribute('href') + sep + 'email=' + encodeURIComponent(collected.email));
+        let href = a.getAttribute('href');
+        const append = (k, v) => {
+          if (!v) return;
+          href += (href.includes('?') ? '&' : '?') + k + '=' + encodeURIComponent(v);
+        };
+        append('email', collected.email);
+        append('name',  collected.name);
+        a.setAttribute('href', href);
       });
     }
     tierPicker.style.display = 'block';

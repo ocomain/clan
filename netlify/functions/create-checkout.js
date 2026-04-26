@@ -61,6 +61,13 @@ exports.handler = async (event) => {
   }
   const tier = (qs.tier || body.tier || '').trim();
   const email = (qs.email || body.email || '').trim();
+  // Herald-captured name. Travels into Stripe as metadata.herald_name and
+  // is read FIRST by stripe-webhook (deterministic — no DB race, no
+  // dependency on the applications-table POST having completed before the
+  // webhook fires). Optional: if absent, the webhook falls back to the
+  // applications table lookup (keepalive-protected) and finally the Stripe
+  // billing name.
+  const heraldName = (qs.name || body.name || '').trim();
 
   if (!tier || !TIER_PRICES_CENTS[tier]) {
     return {
@@ -126,6 +133,13 @@ exports.handler = async (event) => {
         tier_label: productName,
         product_name: productName,
         is_gift: 'false',
+        // herald_name: only set if the herald captured one. The webhook
+        // treats this as the authoritative name source — it reflects what
+        // the buyer wrote when telling the clan who they are, not what
+        // their card billing address says. (A buyer might have a card in
+        // one name but go by another — common with married couples,
+        // children paying for parents' membership, etc.)
+        ...(heraldName ? { herald_name: heraldName.slice(0, 100) } : {}),
       },
       // Carry metadata onto the subscription too for annual tiers, so
       // renewal invoice events have tier context.

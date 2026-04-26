@@ -292,29 +292,43 @@ exports.handler = async (event) => {
         // ── Resolve preferred name ─────────────────────────────────────────
         // The Herald chat captures the name the buyer chose for clan purposes
         // BEFORE Stripe takes the cardholder name. Cardholder name is often
-        // miscapitalised ('john smith' lowercase from card data) or
-        // shortened ('J Smith'). The Herald name is what the buyer
-        // intentionally wrote - prefer it.
+        // Resolve the member's preferred name. Three sources, highest
+        // priority first:
         //
-        // Lookup applications table by email (most recent pending row).
-        // Falls back to customerName if no Herald submission found
-        // (e.g. user clicked Stripe link directly, skipping Herald).
+        //   1. session.metadata.herald_name — set by create-checkout from
+        //      the URL when the buyer came through the Herald flow. This
+        //      is DETERMINISTIC: it travels into the webhook with the
+        //      session itself, no DB race possible. Also robust to the
+        //      buyer choosing a different card name on Stripe (married
+        //      surname, gift purchase from another account, etc.).
+        //   2. applications table lookup — fallback for buyers who hit
+        //      Stripe directly (skipping Herald) or for legacy sessions
+        //      from before metadata.herald_name existed. Protected by
+        //      keepalive on the herald POST.
+        //   3. session.customer_details.name — Stripe billing name. Last
+        //      resort. Often miscapitalised or a card-name initial like
+        //      'J Smith'.
         let preferredName = customerName;
-        try {
-          const { data: app } = await supa()
-            .from('applications')
-            .select('name, created_at')
-            .eq('clan_id', clan_id)
-            .eq('email', normEmail)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (app?.name && app.name.trim()) {
-            preferredName = app.name.trim();
+        const heraldNameFromMeta = (session.metadata?.herald_name || '').trim();
+        if (heraldNameFromMeta) {
+          preferredName = heraldNameFromMeta;
+        } else {
+          try {
+            const { data: app } = await supa()
+              .from('applications')
+              .select('name, created_at')
+              .eq('clan_id', clan_id)
+              .eq('email', normEmail)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            if (app?.name && app.name.trim()) {
+              preferredName = app.name.trim();
+            }
+          } catch (lookupErr) {
+            // Non-fatal - fall through to customerName
+            console.error('Herald name lookup failed (non-fatal):', lookupErr.message);
           }
-        } catch (lookupErr) {
-          // Non-fatal - fall through to customerName
-          console.error('Herald name lookup failed (non-fatal):', lookupErr.message);
         }
 
         const { data: existing } = await supa()
@@ -356,8 +370,19 @@ exports.handler = async (event) => {
             // triggered this upgrade). The next year's reminder will
             // reset appropriately via future renewal logic.
           };
-          // Only update name if existing is empty - preserve user-confirmed name
-          if (!existing.name || !existing.name.trim()) {
+          // Name handling on the UPGRADE path:
+          //   - If the herald name comes from session metadata (highest-
+          //     trust source — buyer just confirmed it minutes ago via
+          //     the Herald flow on this same purchase), update the row.
+          //     This corrects any prior bad value (e.g. earlier test
+          //     purchases that landed a Stripe billing name like '1111').
+          //   - Otherwise, preserve the existing name. The buyer may have
+          //     edited it via the welcome page or members' area since the
+          //     last write — we shouldn't clobber that with a DB-fallback
+          //     or Stripe-billing fallback that may be stale.
+          if (heraldNameFromMeta) {
+            updatePayload.name = heraldNameFromMeta;
+          } else if (!existing.name || !existing.name.trim()) {
             updatePayload.name = preferredName || undefined;
           }
 
