@@ -744,16 +744,29 @@
         <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name on the certificate</label>
         <input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:18px">
 
-        <!-- Ancestor dedication -->
+        <!-- Ancestor dedication — structured (prefix chooser + name field).
+             Splits the dedication into two parts so users can't accidentally
+             save just a name with no prefix (which renders as a bare
+             'Ronan Commane' on the cert — grammatically broken).
+
+             How the saved string is rebuilt:  "{prefix} {detail}"
+             e.g.  "In memory of" + "my grandfather, Patrick Cummins, 1908-1984"
+                =  "In memory of my grandfather, Patrick Cummins, 1908-1984"
+
+             A 4th 'Custom...' option lets advanced users write a fully bespoke
+             dedication if neither 'In memory of' / 'In honour of' / 'For' fits. -->
         <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">An ancestor you wish to honour <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
-        <input type="text" id="famModalAncestor" value="${escHtml(member.ancestor_dedication || '')}" placeholder="In memory of, or in honour of…" maxlength="140" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:6px">
+        <div id="famAncestorChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px"></div>
+        <input type="text" id="famModalAncestorDetail" value="" placeholder="my grandfather, Patrick Cummins of Ennistymon, 1908&ndash;1984" maxlength="140" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:6px">
+        <!-- Hidden input keeps the legacy single-string interface for save-handler compatibility -->
+        <input type="hidden" id="famModalAncestor" value="${escHtml(member.ancestor_dedication || '')}">
         <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);margin:6px 0 18px;line-height:1.6">
-          <p style="margin:0 0 8px">For the cert dedication line. Write it exactly as you want it printed. Examples:</p>
+          <p style="margin:0 0 8px">Pick a phrase above, then describe the person. Whole line gets printed as-is. Examples:</p>
           <ul style="margin:0 0 0 20px;padding:0;list-style:disc">
-            <li style="margin-bottom:4px">In memory of my grandfather, Patrick Cummins of Ennistymon, 1908&ndash;1984</li>
-            <li style="margin-bottom:4px">In honour of my mother, Mary Commane, who first told me of the clan</li>
-            <li style="margin-bottom:4px">For Bridget Comyn of Doonbeg, who kept the name</li>
-            <li style="margin-bottom:0">In memory of Thomas Cummins, who left for Boston, 1888</li>
+            <li style="margin-bottom:4px"><strong style="color:var(--ink);font-style:normal">In memory of</strong> my grandfather, Patrick Cummins of Ennistymon, 1908&ndash;1984</li>
+            <li style="margin-bottom:4px"><strong style="color:var(--ink);font-style:normal">In honour of</strong> my mother, Mary Commane, who first told me of the clan</li>
+            <li style="margin-bottom:4px"><strong style="color:var(--ink);font-style:normal">For</strong> Bridget Comyn of Doonbeg, who kept the name</li>
+            <li style="margin-bottom:0">Or write the whole line yourself with <strong style="color:var(--ink);font-style:normal">Custom…</strong></li>
           </ul>
         </div>
 
@@ -789,12 +802,94 @@
     // Live preview wiring (only in unpublished state)
     if (!isPublished) {
       const nameEl = document.getElementById('famModalName');
-      const ancestorEl = document.getElementById('famModalAncestor');
+      const ancestorEl = document.getElementById('famModalAncestor');           // hidden — saved value
+      const ancestorDetailEl = document.getElementById('famModalAncestorDetail'); // visible name field
+      const chipsWrap = document.getElementById('famAncestorChips');
       const partnerEl = document.getElementById('famModalPartner');
       const childrenEl = document.getElementById('famModalChildren');
       const prevName = document.getElementById('prevName');
       const prevAncestor = document.getElementById('prevAncestor');
       const prevCreditLine = document.getElementById('prevCreditLine');
+
+      // Ancestor dedication: prefix chips + detail input. The saved value
+      // in ancestorEl (hidden) is rebuilt as `prefix + ' ' + detail` on
+      // every change. If the user picks 'Custom…', the detail field
+      // becomes the entire dedication and no prefix is added.
+      const ANCESTOR_PREFIXES = ['In memory of', 'In honour of', 'For', 'Custom…'];
+      let activePrefix = ANCESTOR_PREFIXES[0]; // default
+
+      // Parse a saved value back into prefix + detail for re-editing.
+      // Tries each prefix in turn (longest first to avoid 'For' eating
+      // 'For Bridget' AND 'In memory of For someone'). If none match,
+      // treat the whole thing as Custom.
+      const parseAncestor = (saved) => {
+        const s = (saved || '').trim();
+        if (!s) return { prefix: ANCESTOR_PREFIXES[0], detail: '' };
+        const sortedPrefixes = ['In memory of', 'In honour of', 'For']
+          .sort((a, b) => b.length - a.length);
+        for (const p of sortedPrefixes) {
+          if (s.toLowerCase().startsWith(p.toLowerCase() + ' ')) {
+            return { prefix: p, detail: s.slice(p.length + 1).trim() };
+          }
+          if (s.toLowerCase() === p.toLowerCase()) {
+            return { prefix: p, detail: '' };
+          }
+        }
+        return { prefix: 'Custom…', detail: s };
+      };
+
+      // Render chips with current selection highlighted. Re-rendered on
+      // every selection change to swap the active styling.
+      const renderChips = () => {
+        chipsWrap.innerHTML = ANCESTOR_PREFIXES.map(p => {
+          const active = (p === activePrefix);
+          const baseStyle = "font-family:'Jost',sans-serif;font-size:12px;font-weight:500;letter-spacing:.06em;padding:8px 14px;border-radius:1px;cursor:pointer;border:1px solid;transition:all .15s;user-select:none";
+          const activeStyle = ";background:var(--gold);color:var(--white);border-color:var(--gold)";
+          const inactiveStyle = ";background:var(--white);color:var(--ink-soft);border-color:var(--gold-border)";
+          return `<button type="button" data-prefix="${escHtml(p)}" style="${baseStyle}${active ? activeStyle : inactiveStyle}">${escHtml(p)}</button>`;
+        }).join('');
+        // Wire each chip
+        chipsWrap.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activePrefix = btn.getAttribute('data-prefix');
+            renderChips();
+            recomputeAncestor();
+            // For 'Custom…', refocus the detail field so the user
+            // immediately writes the full line. Adjust placeholder for
+            // clarity.
+            if (activePrefix === 'Custom…') {
+              ancestorDetailEl.placeholder = 'Write the entire dedication line as you want it printed';
+            } else {
+              ancestorDetailEl.placeholder = 'my grandfather, Patrick Cummins of Ennistymon, 1908\u20131984';
+            }
+            ancestorDetailEl.focus();
+          });
+        });
+      };
+
+      // Recombine prefix + detail into the hidden saved value, then
+      // refresh the preview. Empty detail = empty saved value (no
+      // dedication shown on cert).
+      const recomputeAncestor = () => {
+        const detail = (ancestorDetailEl.value || '').trim();
+        let combined = '';
+        if (detail) {
+          combined = (activePrefix === 'Custom…')
+            ? detail
+            : (activePrefix + ' ' + detail);
+        }
+        ancestorEl.value = combined;
+        updatePreview();
+      };
+
+      // Initialise from any existing saved value (re-edit case)
+      const parsed = parseAncestor(member.ancestor_dedication || '');
+      activePrefix = parsed.prefix;
+      ancestorDetailEl.value = parsed.detail;
+      if (activePrefix === 'Custom…') {
+        ancestorDetailEl.placeholder = 'Write the entire dedication line as you want it printed';
+      }
+      renderChips();
 
       const updatePreview = () => {
         const nameVal = (nameEl?.value || '').trim() || '—';
@@ -829,7 +924,7 @@
       };
 
       nameEl?.addEventListener('input', updatePreview);
-      ancestorEl?.addEventListener('input', updatePreview);
+      ancestorDetailEl?.addEventListener('input', recomputeAncestor);
       partnerEl?.addEventListener('input', updatePreview);
       childrenEl?.addEventListener('input', updatePreview);
       updatePreview(); // initial render

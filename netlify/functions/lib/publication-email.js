@@ -84,7 +84,7 @@ async function sendPublicationConfirmation(member, certResult, opts = {}) {
 
   <!-- Header -->
   <div style="background:#0C1A0C;padding:38px 40px 30px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:0.32em;color:#B8975A;margin:0 0 18px;text-align:center">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
     <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">${eyebrow}</p>
     <h1 style="font-family:'Georgia',serif;font-size:30px;font-weight:400;color:#D4B87A;margin:0;line-height:1.15">${heading}</h1>
   </div>
@@ -204,7 +204,7 @@ async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
 
   <div style="background:#0C1A0C;padding:36px 40px 28px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:0.32em;color:#B8975A;margin:0 0 18px;text-align:center">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
     <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">A keepsake from your gift</p>
     <h1 style="font-family:'Georgia',serif;font-size:30px;font-weight:400;color:#D4B87A;margin:0;line-height:1.15">${escapeHtml(recipientFirstName)} has been welcomed</h1>
   </div>
