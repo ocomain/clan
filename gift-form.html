@@ -565,6 +565,35 @@ async function submitForm() {
     alert('We couldn\u2019t open the secure payment page. Please try again, or email clan@ocomain.org and we\u2019ll arrange your gift personally.');
   }
 }
+
+// Initialise from URL query params on load. The /gift.html tier cards
+// link here with ?tier=<slug> where slug is one of the canonical 6:
+// clan-ind, clan-fam, guardian-ind, guardian-fam, life-ind, life-fam.
+// Splitting on the hyphen yields the base tier (clan/guardian/life) and
+// the family flag (ind/fam) which we apply via the existing selectTier
+// and updateFamily handlers — same code path the user would trigger by
+// clicking the controls themselves, so all the dependent UI (postal
+// fields, gift-mode chooser, price labels, summary) updates correctly.
+(function applyTierFromUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const tierSlug = (params.get('tier') || '').trim().toLowerCase();
+    if (!tierSlug) return;
+    const [base, suffix] = tierSlug.split('-');
+    if (!['clan', 'guardian', 'life'].includes(base)) return;
+    selectTier(base);
+    if (suffix === 'fam') {
+      const toggle = document.getElementById('familyToggle');
+      if (toggle) {
+        toggle.checked = true;
+        updateFamily();
+      }
+    }
+  } catch (e) {
+    // Non-fatal — fall through to the default Guardian/individual state
+    console.warn('Could not apply tier from URL:', e);
+  }
+})();
 </script>
 
 </body>
