@@ -1026,21 +1026,50 @@
              instrument' — which is what we want at the moment of
              sealing the cert. -->
         <div style="display:flex;gap:20px;align-items:flex-start;background:var(--cream-mid);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 26px;margin:0 auto 28px;max-width:560px;border-radius:0 2px 2px 0">
-          <!-- Heraldic stamp — gold roundel with embossed shield.
-               Layers:
-                 1. Outer roundel: radial gradient simulating raised
-                    metal/wax (light at top-left, deep gold at edges).
-                 2. Outer border: thin dark-bronze stroke.
-                 3. Inset shadows: highlight rim at top + depression
-                    shadow at bottom (the 'pressed into wax' effect).
-                 4. Inner ring (absolute-positioned div): the second
-                    impression line characteristic of heraldic seals.
-                 5. Shield: filtered to a darker bronze tone with
-                    drop-shadow for the engraved/embossed effect. -->
-          <div style="flex-shrink:0;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 32% 28%, #E5C68A 0%, #B8975A 48%, #6F5223 100%);border:1px solid #4A3818;box-shadow:0 3px 8px rgba(0,0,0,.18),inset 0 2px 3px rgba(255,255,255,.35),inset 0 -3px 5px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;position:relative">
-            <div style="position:absolute;inset:6px;border-radius:50%;border:1px solid rgba(74,56,24,.4);pointer-events:none"></div>
-            <img src="/coat_of_arms.png" alt="" style="width:38px;height:auto;display:block;filter:brightness(.45) sepia(.6) saturate(1.3) drop-shadow(0 1px 1px rgba(0,0,0,.5));position:relative">
-          </div>
+          <!-- Heraldic stamp — wax-seal aesthetic with an embossed 'Ó'
+               monogram. The Ó is uniquely identifying to the clan name
+               (Ó Comáin) and visually distinct without using the shield
+               artwork. Inline SVG so it's a single self-contained
+               element with all decoration baked in.
+
+               Composition (inside-out):
+                 1. Gold radial-gradient roundel (light source top-left,
+                    bronze depths at the rim) — the wax body.
+                 2. Highlight arc across the upper edge — simulates
+                    light catching a raised surface.
+                 3. Outer impression ring + inner impression ring — the
+                    double concentric lines characteristic of pressed
+                    seals / heraldic stamps.
+                 4. Eight ornamental dots evenly spaced between the
+                    rings — filigree/pearl decoration.
+                 5. Embossed 'Ó' monogram via two stacked text elements:
+                    a light highlight beneath, the dark glyph above,
+                    1px offset → 'pressed into wax' effect. -->
+          <svg viewBox="0 0 100 100" style="flex-shrink:0;width:78px;height:78px;display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.2))" aria-hidden="true">
+            <defs>
+              <radialGradient id="heraldSealBg" cx="32%" cy="28%">
+                <stop offset="0%" stop-color="#E5C68A"/>
+                <stop offset="48%" stop-color="#B8975A"/>
+                <stop offset="100%" stop-color="#6F5223"/>
+              </radialGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="url(#heraldSealBg)" stroke="#4A3818" stroke-width="0.6"/>
+            <path d="M 14 32 A 42 42 0 0 1 80 22" stroke="rgba(255,255,255,.4)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="43" fill="none" stroke="rgba(74,56,24,.55)" stroke-width="0.7"/>
+            <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(74,56,24,.4)" stroke-width="0.5"/>
+            <g fill="rgba(74,56,24,.5)">
+              <circle cx="50" cy="11.5" r="0.9"/>
+              <circle cx="77.2" cy="22.8" r="0.9"/>
+              <circle cx="88.5" cy="50" r="0.9"/>
+              <circle cx="77.2" cy="77.2" r="0.9"/>
+              <circle cx="50" cy="88.5" r="0.9"/>
+              <circle cx="22.8" cy="77.2" r="0.9"/>
+              <circle cx="11.5" cy="50" r="0.9"/>
+              <circle cx="22.8" cy="22.8" r="0.9"/>
+            </g>
+            <text x="50" y="64.5" text-anchor="middle" font-family="'EB Garamond', Garamond, Georgia, serif" font-size="34" font-weight="400" fill="rgba(255,255,255,.35)">Ó</text>
+            <text x="50" y="63.5" text-anchor="middle" font-family="'EB Garamond', Garamond, Georgia, serif" font-size="34" font-weight="400" fill="#3D2D14">Ó</text>
+          </svg>
           <div>
             <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">The Clan Herald</div>
             <p style="font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0">Dia dhuit — God be with you. It has been my privilege to welcome you to the clan. When you give the word, I shall take up the quill and enter your name in the Register at Newhall House. The seal of Ó Comáin will close upon your certificate — and your record will stand fixed, in the clan's keeping, in your name.</p>
