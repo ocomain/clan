@@ -304,7 +304,30 @@
         <div class="mstatus-rows">
           <div>
             <div class="mstatus-row-label">Name on the Register</div>
-            <div class="mstatus-row-value">${escHtml(member.name || '—')}</div>
+            <!-- For family-tier members, display_name_on_register holds
+                 the formatted family entry as it will appear on the public
+                 register: 'Antoin & Aoife Commane' (couple same-surname),
+                 'Antoin Commane & Aoife Smith' (couple different-surname),
+                 or 'Antoin Commane & Family' (with children). It's
+                 computed and stamped into the row by submit-/update-
+                 family-details.js on first publish.
+
+                 For individual-tier members, display_name_on_register
+                 either equals member.name or is null (depending on whether
+                 they went through the family-details path). Fall through
+                 to member.name in either case.
+
+                 Pre-publish members have display_name_on_register null —
+                 we show member.name (the Herald-collected primary name)
+                 until they publish, at which point this field flips to
+                 the formatted family entry automatically.
+
+                 Children opt-out does NOT affect the family-entry display
+                 name itself — it controls whether children's FIRST NAMES
+                 get LISTED separately under the family entry. The family
+                 line ('X & Family') always shows; only the listing of
+                 children's names is privacy-gated. -->
+            <div class="mstatus-row-value">${escHtml(member.display_name_on_register || member.name || '—')}</div>
           </div>
           <div>
             <div class="mstatus-row-label">Email</div>
