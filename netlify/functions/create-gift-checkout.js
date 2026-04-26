@@ -31,8 +31,16 @@
 const GIFT_PRICE_CENTS = {
   'clan-ind':     4900,
   'clan-fam':     7900,
-  'guardian-ind': 19500,
-  'guardian-fam': 31500,
+  // Guardian gift pricing previously had a 'gift premium' built in
+  // (19500 / 31500 = €195 / €315) but gift.html marketing displays
+  // €150 / €220 — same as the regular Guardian tier. The mismatch led
+  // to users being charged ~€45-95 more than the page advertised.
+  // Aligned to the regular tier prices so what the page shows is what
+  // Stripe charges. Bonus: these now match AMOUNT_CENTS_TO_TIER_SLUG
+  // in lib/supabase.js, so the webhook's amount-based tier detection
+  // works as a fallback if metadata is somehow missing.
+  'guardian-ind': 15000,
+  'guardian-fam': 22000,
   'life-ind':     75000,
   'life-fam':    110000,
 };

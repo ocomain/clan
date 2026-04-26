@@ -1011,17 +1011,39 @@
         <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center">A one-time act</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:30px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 22px;text-align:center">The Herald awaits your <em style="color:var(--gold)">word</em></h3>
 
-        <!-- The Clan Herald speaks. Visual signature: shield avatar inside
-             a dark-ink circle (matching the join-chat header treatment).
-             Voice register matches his other lines from the chat —
-             "Dia dhuit", ceremonious, formal Hiberno-English. -->
-        <div style="display:flex;gap:18px;align-items:flex-start;background:var(--cream-mid);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 26px;margin:0 auto 28px;max-width:560px;border-radius:0 2px 2px 0">
-          <div style="flex-shrink:0;width:64px;height:64px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;border:2px solid var(--gold-border)">
-            <img src="/coat_of_arms.png" alt="" style="width:42px;height:auto;display:block">
+        <!-- The Clan Herald speaks. Voice register echoes his opening
+             line on join-chat.html: 'Dia dhuit — God be with you. I am
+             the Clan Herald of Ó Comáin, keeper of the clan's register
+             and voice of its ancient tradition.' We open the same way
+             here so the seal moment feels like the natural close of
+             that conversation, with the same Herald.
+
+             Visual signature: heraldic-stamp / wax-seal aesthetic
+             (gold gradient roundel with double impression rings and
+             the shield embossed into it) rather than the dark-ink
+             chat-bubble treatment used in join-chat. The chat avatar
+             reads as 'speaker'; the seal-roundel reads as 'official
+             instrument' — which is what we want at the moment of
+             sealing the cert. -->
+        <div style="display:flex;gap:20px;align-items:flex-start;background:var(--cream-mid);border:1px solid var(--border);border-left:3px solid var(--gold);padding:24px 26px;margin:0 auto 28px;max-width:560px;border-radius:0 2px 2px 0">
+          <!-- Heraldic stamp — gold roundel with embossed shield.
+               Layers:
+                 1. Outer roundel: radial gradient simulating raised
+                    metal/wax (light at top-left, deep gold at edges).
+                 2. Outer border: thin dark-bronze stroke.
+                 3. Inset shadows: highlight rim at top + depression
+                    shadow at bottom (the 'pressed into wax' effect).
+                 4. Inner ring (absolute-positioned div): the second
+                    impression line characteristic of heraldic seals.
+                 5. Shield: filtered to a darker bronze tone with
+                    drop-shadow for the engraved/embossed effect. -->
+          <div style="flex-shrink:0;width:78px;height:78px;border-radius:50%;background:radial-gradient(circle at 32% 28%, #E5C68A 0%, #B8975A 48%, #6F5223 100%);border:1px solid #4A3818;box-shadow:0 3px 8px rgba(0,0,0,.18),inset 0 2px 3px rgba(255,255,255,.35),inset 0 -3px 5px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;position:relative">
+            <div style="position:absolute;inset:6px;border-radius:50%;border:1px solid rgba(74,56,24,.4);pointer-events:none"></div>
+            <img src="/coat_of_arms.png" alt="" style="width:38px;height:auto;display:block;filter:brightness(.45) sepia(.6) saturate(1.3) drop-shadow(0 1px 1px rgba(0,0,0,.5));position:relative">
           </div>
           <div>
             <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">The Clan Herald</div>
-            <p style="font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0">Dia dhuit. When you give the word, I shall enter your name in the Register at Newhall House and seal the certificate in the clan's voice. From that moment your record is fixed — a heraldic instrument the clan will preserve in your name.</p>
+            <p style="font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0">Dia dhuit — God be with you. It has been my privilege to welcome you to the clan. When you give the word, I shall take up the quill and enter your name in the Register at Newhall House. The seal of Ó Comáin will close upon your certificate — and your record will stand fixed, in the clan's keeping, in your name.</p>
           </div>
         </div>
 
