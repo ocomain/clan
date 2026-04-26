@@ -4,11 +4,13 @@
 // links auth_user_id on first call, returns the member record.
 //
 // Extended: if this member's membership was a gift, the response includes a
-// `gift` object with buyer context and (first-time only) triggers a
-// "your gift was accepted" email to the giver.
+// `gift` object with buyer context and stamps activated_notified_at on first
+// signin (used to log the activation moment for admin observability).
+// No email is sent on activation — gift givers receive (1) the payment
+// confirmation at purchase, and (2) the cert keepsake when the recipient
+// publishes their cert. See lib/publication-email's sendGiftBuyerCertKeepsake.
 
 const { supa, clanId, logEvent } = require('./lib/supabase');
-const { notifyGiverOfActivation } = require('./lib/notify-giver-activated');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') {
@@ -101,23 +103,22 @@ exports.handler = async (event) => {
           tier_label: gift.tier_label,
         };
 
-        // First-activation trigger for giver notification.
+        // First-activation moment is still LOGGED (so the admin panel can
+        // see when each gift was opened), but no longer triggers an email.
+        // Per user direction, the giver receives only two emails:
+        //   1. Payment confirmation at gift purchase (sendGiftConfirmations
+        //      in stripe-webhook).
+        //   2. Cert keepsake at recipient cert publish (sendGiftBuyerCertKeepsake
+        //      in lib/publication-email — fires from both submit-family-details
+        //      and update-family-details on first publish, with the published
+        //      PDF attached).
+        // The previous activation-email-on-first-signin between those two
+        // moments was redundant and contained no cert. Removed.
         if (isFirstActivation && !gift.activated_notified_at && gift.buyer_email) {
-          // Stamp the gift row FIRST so a parallel/retry invocation can't
-          // double-send. Email send is best-effort and logged on failure.
           const now = new Date().toISOString();
+          // Stamp the gift row so we don't relog this event on every future signin.
           await supa().from('gifts').update({ activated_notified_at: now }).eq('id', gift.id);
           await logEvent({ clan_id, member_id: member.id, event_type: 'gift_activated', payload: { gift_id: gift.id, buyer_email: gift.buyer_email } });
-
-          // Fire async (don't await) so the dashboard doesn't wait on email
-          // latency. Errors are caught internally by the notify module.
-          notifyGiverOfActivation({
-            buyerEmail: gift.buyer_email,
-            buyerName: gift.buyer_name,
-            recipientName: member.name,
-            recipientEmail: member.email,
-            tierLabel: gift.tier_label,
-          }).catch(err => console.error('giver activation notify failed:', err.message));
         }
       }
     } catch (giftErr) {

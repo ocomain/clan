@@ -484,7 +484,7 @@
           <li class="mupgrade-perk">
             <span class="mupgrade-perk-mark">✦</span>
             <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted from Newhall House to your door — yours to keep, frame, or pass on.
+              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted from Newhall House to your door — yours to keep or frame.
             </span>
           </li>
           <li class="mupgrade-perk">
@@ -963,8 +963,111 @@
     }
 
     document.getElementById('famModalSave').addEventListener('click', async () => {
-      const nameVal = document.getElementById('famModalName').value.trim();
-      const ancestorVal = document.getElementById('famModalAncestor').value.trim();
+      // Two-step ceremony for the FIRST publish (one-time, irreversible).
+      // Subsequent saves (already-published members editing register only)
+      // skip the ceremony — they go straight to save.
+      if (!isPublished) {
+        await runPublishCeremony();
+        return;
+      }
+      await runSave();
+    });
+
+    /**
+     * Step 1 of publish ceremony: a deliberate confirmation overlay inside
+     * the existing modal. Calm, ceremonial language, single primary action.
+     * The user has to actively choose to seal — no accidental publishes.
+     * Clicking 'Yes — seal my certificate' kicks off step 2 (the sealing
+     * animation) which then runs the actual save.
+     */
+    async function runPublishCeremony() {
+      // Build the overlay
+      const card = modal.querySelector('div[style*="max-width:680px"]');
+      const original = card.innerHTML;
+      const nameVal = (document.getElementById('famModalName')?.value || '').trim() || (member.name || '');
+      const ancestorVal = (document.getElementById('famModalAncestor')?.value || '').trim();
+      card.innerHTML = `
+        <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center">A one-time act</div>
+        <h3 style="font-family:'EB Garamond',serif;font-size:30px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 16px;text-align:center">Are you ready to <em style="color:var(--gold)">seal</em> your certificate?</h3>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.7;margin:0 auto 28px;max-width:520px;text-align:center">Once sealed, your name is entered in the Register at Newhall House for keeps. The certificate becomes a fixed record — a heraldic instrument the clan will preserve in your name.</p>
+
+        <!-- Summary of what's about to be sealed -->
+        <div style="background:var(--white);border:1px solid var(--gold-border);border-top:2px solid var(--gold);padding:24px 28px;margin:0 auto 32px;border-radius:1px;max-width:520px">
+          <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:10px">To be sealed in your name</div>
+          <div style="font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);text-align:center;line-height:1.3">${escHtml(nameVal)}</div>
+          ${ancestorVal ? `<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--gold-deep);text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--gold-border)">${escHtml(ancestorVal)}</div>` : ''}
+        </div>
+
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <button id="cermBack" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:1px solid var(--border);padding:14px 24px;border-radius:1px;cursor:pointer">← Edit details</button>
+          <button id="cermSeal" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);background:var(--gold);border:none;padding:16px 36px;border-radius:1px;cursor:pointer;box-shadow:0 2px 12px rgba(184,151,90,.35)">Yes — seal my certificate</button>
+        </div>
+        <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);text-align:center;margin:18px 0 0">This action cannot be undone.</p>
+      `;
+      // Wire the two buttons
+      document.getElementById('cermBack').addEventListener('click', () => {
+        card.innerHTML = original;
+        // Re-bind every modal handler since we replaced innerHTML
+        wireModalAfterRebuild();
+      });
+      document.getElementById('cermSeal').addEventListener('click', async () => {
+        await runSealingAnimation(card);
+        await runSave();
+      });
+    }
+
+    /**
+     * Step 2 of publish ceremony: visual sealing animation. ~2.5 seconds
+     * of ceremonial micro-copy + a CSS-animated gold ring closing on the
+     * shield. Gives the moment the weight it deserves before the reload.
+     */
+    async function runSealingAnimation(card) {
+      card.innerHTML = `
+        <div style="text-align:center;padding:40px 20px">
+          <!-- Sealing spinner — gold ring closing on the shield -->
+          <div style="position:relative;width:140px;height:140px;margin:0 auto 32px">
+            <div style="position:absolute;inset:0;border:2px solid var(--gold-border);border-radius:50%"></div>
+            <div style="position:absolute;inset:0;border:3px solid transparent;border-top-color:var(--gold);border-right-color:var(--gold);border-radius:50%;animation:sealSpin 1.4s cubic-bezier(.65,0,.35,1) infinite"></div>
+            <div style="position:absolute;inset:18px;display:flex;align-items:center;justify-content:center">
+              <img src="/coat_of_arms.png" alt="" style="width:96px;height:auto;opacity:.9">
+            </div>
+          </div>
+          <div id="sealMsg" style="font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.4;min-height:34px;transition:opacity .4s">Drawing the seal…</div>
+          <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-top:14px">Newhall House · Co. Clare</div>
+        </div>
+        <style>
+          @keyframes sealSpin { to { transform: rotate(360deg); } }
+        </style>
+      `;
+      // Sequenced copy — feels deliberate, not stalled
+      const messages = [
+        'Drawing the seal…',
+        'Inscribing the name in the Register…',
+        'Sealing your certificate.',
+      ];
+      const sealMsg = document.getElementById('sealMsg');
+      for (let i = 1; i < messages.length; i++) {
+        await new Promise(r => setTimeout(r, 1100));
+        if (sealMsg) {
+          sealMsg.style.opacity = '0';
+          await new Promise(r => setTimeout(r, 200));
+          sealMsg.textContent = messages[i];
+          sealMsg.style.opacity = '1';
+        }
+      }
+      // Hold the final 'Sealing your certificate.' beat for ~600ms before
+      // the actual save fires. Total ceremony ~3 seconds.
+      await new Promise(r => setTimeout(r, 600));
+    }
+
+    /**
+     * The actual save+publish API call. Reads the form fields, fires
+     * /api/update-family-details, handles the response. Now invoked
+     * either directly (re-edit save) or after the ceremony (first publish).
+     */
+    async function runSave() {
+      const nameVal = (document.getElementById('famModalName')?.value || '').trim() || (member.name || '');
+      const ancestorVal = (document.getElementById('famModalAncestor')?.value || '').trim();
       const partnerEl = document.getElementById('famModalPartner');
       const childrenEl = document.getElementById('famModalChildren');
       const partner = partnerEl ? partnerEl.value.trim() : '';
@@ -972,8 +1075,10 @@
       const children = childrenRaw ? childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean) : [];
       const statusEl = document.getElementById('famModalStatus');
       const saveBtn = document.getElementById('famModalSave');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Saving…';
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving…';
+      }
       try {
         const session = await currentSession();
         if (!session) { window.location.href = '/members/login.html'; return; }
@@ -989,15 +1094,17 @@
         });
         if (!r.ok) { const j = await r.json().catch(()=>({})); throw new Error(j.error || 'Save failed'); }
         const result = await r.json().catch(() => ({}));
-        statusEl.style.display = 'block';
-        statusEl.style.background = 'rgba(184,151,90,.15)';
-        statusEl.style.color = 'var(--ink)';
-        if (result.certLocked) {
-          statusEl.innerHTML = 'Saved to the Register at Newhall House. Your certificate PDF is locked — contact <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a> to request a new cert.';
-        } else if (result.published) {
-          statusEl.innerHTML = 'Published. Your certificate has been sealed and emailed to you. Reloading…';
-        } else {
-          statusEl.innerHTML = 'Saved. Your certificate has been regenerated. Reloading…';
+        if (statusEl) {
+          statusEl.style.display = 'block';
+          statusEl.style.background = 'rgba(184,151,90,.15)';
+          statusEl.style.color = 'var(--ink)';
+          if (result.certLocked) {
+            statusEl.innerHTML = 'Saved to the Register at Newhall House. Your certificate PDF is locked — contact <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a> to request a new cert.';
+          } else if (result.published) {
+            statusEl.innerHTML = '<strong>Sealed.</strong> Your certificate has been entered in the Register at Newhall House. Reloading…';
+          } else {
+            statusEl.innerHTML = 'Saved. Your certificate has been regenerated. Reloading…';
+          }
         }
         // Auto-trigger the cert download on first publish — they shouldn't
         // have to click again. The signed URL carries Content-Disposition:
@@ -1013,14 +1120,34 @@
         }
         setTimeout(() => window.location.reload(), 1800);
       } catch (e) {
-        statusEl.style.display = 'block';
-        statusEl.style.background = 'rgba(192,57,43,.08)';
-        statusEl.style.color = '#922c1f';
-        statusEl.textContent = 'Could not save — ' + (e.message || 'please try again');
-        saveBtn.disabled = false;
-        saveBtn.textContent = isPublished ? 'Save to Register' : 'Publish my certificate';
+        if (statusEl) {
+          statusEl.style.display = 'block';
+          statusEl.style.background = 'rgba(192,57,43,.08)';
+          statusEl.style.color = '#922c1f';
+          statusEl.textContent = 'Could not save — ' + (e.message || 'please try again');
+        }
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = isPublished ? 'Save to Register' : 'Publish my certificate';
+        }
       }
-    });
+    }
+
+    /**
+     * Re-bind modal event listeners after a back-from-ceremony rebuild.
+     * The Cancel button + Save button get re-rendered with the original
+     * innerHTML, so their click handlers must be re-attached.
+     */
+    function wireModalAfterRebuild() {
+      document.getElementById('famModalCancel')?.addEventListener('click', close);
+      document.getElementById('famModalSave')?.addEventListener('click', async () => {
+        if (!isPublished) {
+          await runPublishCeremony();
+          return;
+        }
+        await runSave();
+      });
+    }
   }
 
   // Postal address edit modal — Guardian+ only. Submits to

@@ -28,9 +28,23 @@ exports.handler = async (event) => {
   try {
     const clan_id = await clanId();
 
+    // Field list MUST include all data the cert generator reads. If
+    // ensureCertificate falls through to regeneration (because the
+    // version-keyed lookup misses, e.g. cert_version > 1 and a matching
+    // cert row wasn't found at that version) it reads partner_name,
+    // children_first_names, and ancestor_dedication from this object —
+    // missing them caused certs to regenerate WITHOUT the ancestor
+    // dedication after a re-login download. Include everything.
+    const MEMBER_COLS = [
+      'id', 'email', 'name', 'tier', 'tier_label', 'tier_family', 'status',
+      'joined_at', 'cert_published_at', 'cert_locked_at', 'cert_version',
+      'partner_name', 'children_first_names', 'ancestor_dedication',
+      'name_confirmed_on_cert',
+    ].join(', ');
+
     let { data: member } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, status, joined_at, cert_published_at, cert_locked_at')
+      .select(MEMBER_COLS)
       .eq('clan_id', clan_id)
       .eq('auth_user_id', authData.user.id)
       .maybeSingle();
@@ -38,7 +52,7 @@ exports.handler = async (event) => {
     if (!member) {
       ({ data: member } = await supa()
         .from('members')
-        .select('id, email, name, tier, tier_label, tier_family, status, joined_at, cert_published_at, cert_locked_at')
+        .select(MEMBER_COLS)
         .eq('clan_id', clan_id)
         .eq('email', email)
         .maybeSingle());
