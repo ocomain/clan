@@ -243,7 +243,7 @@ async function sendDay29Reminder(member, suggestedName) {
   </div>
 
   <div style="background:#0C1A0C;padding:22px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0">Caithfidh an stair a bheith i réim — History must prevail</p>
   </div>
 </div>
 </body>

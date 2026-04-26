@@ -43,9 +43,9 @@ exports.handler = async (event) => {
   </div>
 
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:rgba(184,151,90,.6);margin:0 0 6px">Caithfidh an stair a bheith i réim</p>
-    <p style="font-family:sans-serif;font-size:10px;color:rgba(184,151,90,.35);margin:0;letter-spacing:0.06em">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
-    <p style="font-family:sans-serif;font-size:10px;color:rgba(184,151,90,.25);margin:8px 0 0"><a href="https://www.ocomain.org/unsubscribe?email=${encodeURIComponent(email)}" style="color:rgba(184,151,90,.3)">Unsubscribe</a></p>
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim</p>
+    <p style="font-family:sans-serif;font-size:10px;color:#A88B57;margin:0;letter-spacing:0.06em">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
+    <p style="font-family:sans-serif;font-size:10px;color:#8A7245;margin:8px 0 0"><a href="https://www.ocomain.org/unsubscribe?email=${encodeURIComponent(email)}" style="color:#A88B57">Unsubscribe</a></p>
   </div>
 </div>
 </body>

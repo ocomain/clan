@@ -129,8 +129,8 @@ async function sendPublicationConfirmation(member, certResult, opts = {}) {
 
   <!-- Footer -->
   <div style="background:#0C1A0C;padding:22px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.6);margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:sans-serif;font-size:10px;color:rgba(184,151,90,.4);margin:0;letter-spacing:0.08em">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:sans-serif;font-size:10px;color:#A88B57;margin:0;letter-spacing:0.08em">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
   </div>
 </div>
 </body>
@@ -242,7 +242,7 @@ async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
   </div>
 
   <div style="background:#0C1A0C;padding:22px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.6);margin:0">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0">Caithfidh an stair a bheith i réim — History must prevail</p>
   </div>
 </div>
 </body>
