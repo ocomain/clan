@@ -154,6 +154,16 @@
     .mpriv-row input{margin-top:4px;width:16px;height:16px;cursor:pointer;flex-shrink:0}
     .mpriv-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.6}
     .mpriv-status{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:10px;min-height:18px}
+    /* Upgrade card perks list — used in the clan-tier 'Two more benefits
+       await as a Guardian' panel. Same visual register as the gift-tier
+       perks on /membership.html: gold ✦ marker + serif body, comfortable
+       line-height, generous gap between items. */
+    .mupgrade{background:linear-gradient(180deg,rgba(184,151,90,.04),rgba(184,151,90,.02))}
+    .mupgrade-perks{list-style:none;padding:0;margin:6px 0 0}
+    .mupgrade-perk{display:flex;align-items:flex-start;gap:14px;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin-bottom:10px}
+    .mupgrade-perk:last-child{margin-bottom:0}
+    .mupgrade-perk-mark{flex-shrink:0;color:var(--gold);font-size:14px;line-height:1.65;margin-top:1px}
+    .mupgrade-perk-body{flex:1}
 
     /* Action cards */
     .mactions{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
@@ -458,11 +468,33 @@
       ` : ''}
 
       ${(member.tier && member.tier.startsWith('clan-')) ? `
-      <section class="mpriv" style="border-left:3px solid var(--gold)">
-        <div class="mpriv-eyebrow">Public Register — a Guardian benefit</div>
-        <div class="mpriv-title">Take your place on the public roll</div>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 8px">The public Founding Members Register at <em>ocomain.org/register</em> is reserved for Guardian-tier members and above — those who have made the deeper commitment to the clan's revival.</p>
-        <p class="mpriv-note" style="margin-top:8px"><a href="/membership.html#tiers" style="color:var(--gold-strong);text-decoration:underline;font-style:normal">Upgrade to Guardian</a> any time to take your place on the public roll.</p>
+      <!-- Clan-tier upgrade prompt. Replaces both the standalone public-
+           register upgrade hint AND the (otherwise hidden) physical-cert
+           hint with one richer card listing both Guardian benefits the
+           member could unlock. Better than two parallel cards because:
+             - cleaner visual hierarchy on a tier-locked dashboard
+             - the "two missing things" framing makes the upgrade feel
+               more substantial than either alone
+             - single CTA to think about rather than two parallel prompts -->
+      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
+        <div class="mpriv-eyebrow">Two more benefits await as a Guardian</div>
+        <div class="mpriv-title">Make the deeper commitment</div>
+        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Clan Member</strong>, you are entered in the Register at Newhall House and are part of the revival. Two further honours are reserved for those who deepen their commitment by becoming a Guardian.</p>
+        <ul class="mupgrade-perks">
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted from Newhall House to your door — yours to keep, frame, or pass on.
+            </span>
+          </li>
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">A place on the public Founding Members Register</strong> at <em>ocomain.org/register</em> — your name visible to the clan and to any future member who comes looking.
+            </span>
+          </li>
+        </ul>
+        <p class="mpriv-note" style="margin-top:14px"><a href="/membership.html#tiers" style="color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500">Upgrade to Guardian →</a></p>
       </section>
       ` : `
       <section class="mpriv">
