@@ -539,7 +539,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
-      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
+      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
       <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email. You have 30 days to refine your certificate details before it is sealed.</p>
     </div>
   `;
@@ -580,7 +580,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
     <!-- Members' Area note — secondary, since the cert claim CTA above
          already points to the same destination. Frames the members area
          as the ongoing home for membership management. -->
-    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, download your certificate, and access members-only content.</p>
+    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, download your certificate, and access members-only content.</p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
 
@@ -651,7 +651,7 @@ async function sendGiftRecipientWelcome(ctx) {
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
-      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
+      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
       <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email. You have 30 days to refine your certificate details before it is sealed.</p>
     </div>
   `;
@@ -694,7 +694,7 @@ async function sendGiftRecipientWelcome(ctx) {
 
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
-    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
+    <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 28px;text-align:center;padding:14px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">Your <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}" style="color:#B8975A;text-decoration:underline;font-style:normal">Members' Area</a> is the home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>
 

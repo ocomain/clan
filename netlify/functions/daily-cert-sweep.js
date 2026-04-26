@@ -223,7 +223,7 @@ async function sendDay29Reminder(member, suggestedName) {
     </div>
 
     <div style="text-align:center;margin:0 0 28px">
-      <a href="https://www.ocomain.org/members/login.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Refine and publish now →</a>
+      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(member.email)}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Refine and publish now →</a>
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;margin:12px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email.</p>
     </div>
 

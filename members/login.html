@@ -150,16 +150,29 @@
   const emailInput = document.getElementById('email');
   const submitBtn = document.getElementById('submitBtn');
   const status = document.getElementById('status');
+  const params = new URLSearchParams(window.location.search);
 
-  // Pre-fill the email from the last successful magic-link request — saves
-  // older members from retyping their email on each visit / recovery.
+  // Pre-fill the email field. Priority order:
+  //   1. ?email= URL param  — the user just clicked a personalised
+  //      'Members' Area' link in an email we sent them. Most specific
+  //      and most trusted source.
+  //   2. cachedEmail from last successful magic-link request — saves
+  //      returning members from retyping (especially older ones).
+  //   3. empty — show the placeholder.
+  // We accept a basic-shape email check on the URL value to avoid
+  // pre-filling junk if someone hand-edits the URL with a bad value.
+  const isEmailLike = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s || '');
+  const urlEmail = (params.get('email') || '').trim();
   const cachedEmail = getLastEmail();
-  if (cachedEmail) emailInput.value = cachedEmail;
+  if (isEmailLike(urlEmail)) {
+    emailInput.value = urlEmail;
+  } else if (cachedEmail) {
+    emailInput.value = cachedEmail;
+  }
 
   // If we arrived here via a recovery redirect (expired/used link, or
   // visiting /members/ without a session), show a friendly recovery banner
   // and offer a one-click resend if we have a cached email.
-  const params = new URLSearchParams(window.location.search);
   if (params.get('expired') === '1') {
     status.className = 'mlogin-status show success';
     if (cachedEmail) {
