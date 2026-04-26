@@ -113,14 +113,43 @@ exports.handler = async (event) => {
   const successUrl = `${origin}/welcome.html?tier=${encodeURIComponent(tier)}&session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl  = `${origin}/membership.html`;
 
+  // Find or create a Stripe Customer with the buyer's email. Passing
+  // `customer: <id>` to the session (vs `customer_email`) makes Stripe
+  // LOCK the email field in Checkout — buyers can't accidentally edit
+  // it to a different address, which would have caused the welcome
+  // email and member row to end up tied to different addresses.
+  //
+  // Stripe doesn't deduplicate customers by email automatically, so we
+  // look up first and reuse if found. Otherwise create new with the
+  // herald-collected name, which Stripe also pre-fills as the billing
+  // name (and may lock too, depending on the Customer's billing data).
+  //
+  // If find-or-create fails for any reason, fall back to customer_email
+  // (pre-filled but editable). Better than blocking the purchase.
+  let stripeCustomer = null;
+  if (email) {
+    try {
+      const list = await stripe.customers.list({ email: email.toLowerCase(), limit: 1 });
+      stripeCustomer = list.data[0]
+        || await stripe.customers.create({
+          email: email.toLowerCase(),
+          ...(heraldName ? { name: heraldName } : {}),
+        });
+    } catch (custErr) {
+      console.error('Stripe customer find-or-create failed (non-fatal, falling back to customer_email):', custErr.message);
+    }
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode,
       payment_method_types: ['card'],
       line_items: [lineItem],
-      // Pre-fill the buyer's email if the herald captured it. Stripe will
-      // still show the field but it'll be filled in for them.
-      ...(email ? { customer_email: email } : {}),
+      // Locked email if we have a Customer; otherwise pre-fill only.
+      // Mutually exclusive — Stripe rejects sessions that pass both.
+      ...(stripeCustomer
+        ? { customer: stripeCustomer.id }
+        : (email ? { customer_email: email } : {})),
       success_url: successUrl,
       cancel_url: cancelUrl,
       // Explicit metadata. The webhook reads metadata.tier first

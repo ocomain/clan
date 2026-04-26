@@ -131,6 +131,28 @@ exports.handler = async (event) => {
   // Truncate message defensively to fit Stripe's 500-char metadata value limit.
   const msg = (personalMessage || '').slice(0, 450);
 
+  // Find or create a Stripe Customer for the GIVER (the buyer paying for
+  // the gift — the recipient never interacts with Stripe directly).
+  // Passing `customer: <id>` locks the email field in Checkout so the
+  // giver can't accidentally type a different address than they used in
+  // the gift form, which would have caused the receipt + payment-confirm
+  // emails to go to the wrong inbox.
+  //
+  // Mirrors the same pattern in create-checkout.js; if a third checkout
+  // endpoint appears we should extract this into a shared helper.
+  // Falls back to customer_email (pre-fill only) if find-or-create fails.
+  let stripeCustomer = null;
+  try {
+    const list = await stripe.customers.list({ email: giverEmail.toLowerCase(), limit: 1 });
+    stripeCustomer = list.data[0]
+      || await stripe.customers.create({
+        email: giverEmail.toLowerCase(),
+        ...(giverName ? { name: giverName } : {}),
+      });
+  } catch (custErr) {
+    console.error('Stripe customer find-or-create failed (non-fatal, falling back to customer_email):', custErr.message);
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: mode === 'recurring' ? 'subscription' : 'payment',
@@ -139,7 +161,10 @@ exports.handler = async (event) => {
       // Customer is the BUYER (giver) - this is who's paying and whose email
       // Stripe will use for the receipt. The recipient never interacts with
       // Stripe directly; they get their welcome email from the webhook.
-      customer_email: giverEmail,
+      // Locked email if we have a Customer; pre-fill only otherwise.
+      ...(stripeCustomer
+        ? { customer: stripeCustomer.id }
+        : { customer_email: giverEmail }),
       success_url: successUrl,
       cancel_url: cancelUrl,
       // All gift-routing info lives in metadata. Webhook reads this.
