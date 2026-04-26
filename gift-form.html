@@ -246,45 +246,16 @@
           <input class="form-input" type="text" id="recipientName2" placeholder="Second adult's full name">
         </div>
       </div>
-      <div id="postalFields">
-      <div class="form-row full">
-        <div class="form-group">
-          <label class="form-label">Postal address for certificate *</label>
-          <input class="form-input" type="text" id="address1" placeholder="Address line 1" required style="margin-bottom:8px">
-          <input class="form-input" type="text" id="address2" placeholder="Address line 2 (optional)">
-        </div>
+      <!-- Postal address note — for tiers that include a physical cert
+           (Guardian, Steward, Life), we ask the RECIPIENT to enter their
+           own address in their members' area when they accept the gift.
+           This avoids the giver having to know/double-check the address
+           and also avoids data being captured/stored with the gift order
+           when the recipient is the eventual user of it. -->
+      <div id="postalNote" style="background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 4px;border-radius:0 2px 2px 0">
+        <p style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">About the physical certificate</p>
+        <p style="font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.85);line-height:1.7;margin:0">A hand-printed certificate signed by the Chief is included with this tier. <strong style="color:var(--gold-pale);font-weight:500">Your recipient will enter their own postal address</strong> when they accept the gift, in their members' area — so you don't need to know or guess it. The certificate is then posted from Newhall House.</p>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">City / Town *</label>
-          <input class="form-input" type="text" id="city" placeholder="City" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Postcode / ZIP</label>
-          <input class="form-input" type="text" id="postcode" placeholder="Postcode">
-        </div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group">
-          <label class="form-label">Country *</label>
-          <select class="form-input" id="country" required>
-            <option value="">Select country…</option>
-            <option>Ireland</option>
-            <option>United States</option>
-            <option>United Kingdom</option>
-            <option>Canada</option>
-            <option>Australia</option>
-            <option>New Zealand</option>
-            <option>France</option>
-            <option>Germany</option>
-            <option>Spain</option>
-            <option>Italy</option>
-            <option>Romania</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
-      </div><!-- /#postalFields -->
     </div>
 
     <!-- PERSONAL MESSAGE -->
@@ -403,18 +374,12 @@ function selectTier(tier) {
   // Hide mode chooser for Life Member (always one-time by nature)
   document.getElementById('giftModeWrap').style.display = (tier === 'life') ? 'none' : 'block';
   if (tier === 'life') currentMode = 'onetime';
-  // Clan Member tier does not include a posted physical certificate, so
-  // the postal address block is hidden and its required-fields become
-  // non-required so form submission isn't blocked. Reappears on switch
-  // to any tier that includes a physical cert.
+  // Clan Member tier doesn't include a posted physical certificate — hide
+  // the explanatory postal note. Other tiers show it so the giver knows
+  // the recipient will be asked for their address later.
   const needsPostal = (tier !== 'clan');
-  const postalWrap = document.getElementById('postalFields');
-  if (postalWrap) postalWrap.style.display = needsPostal ? 'block' : 'none';
-  ['address1', 'city', 'country'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (needsPostal) el.setAttribute('required', ''); else el.removeAttribute('required');
-  });
+  const postalNote = document.getElementById('postalNote');
+  if (postalNote) postalNote.style.display = needsPostal ? 'block' : 'none';
   updateSummary();
 }
 
@@ -467,10 +432,10 @@ document.getElementById('message').addEventListener('input', function() {
 });
 
 async function submitForm() {
-  // Clan Member tier has no posted cert, so postal fields are optional
-  const baseRequired = ['giverName','giverEmail','recipientName','recipientEmail'];
-  const postalRequired = (currentTier !== 'clan') ? ['address1','city','country'] : [];
-  const required = baseRequired.concat(postalRequired);
+  // Postal address is no longer collected here — recipient enters their own
+  // in the members' area when they accept the gift. Only validate the
+  // contact + recipient fields.
+  const required = ['giverName','giverEmail','recipientName','recipientEmail'];
   for (const id of required) {
     const el = document.getElementById(id);
     if (!el.value.trim()) {
@@ -486,15 +451,6 @@ async function submitForm() {
   // Tier key matches GIFT_PRICE_CENTS in create-gift-checkout.js: 'clan-ind', 'guardian-fam', etc.
   const tierKey = `${currentTier}-${type}`;
 
-  // Address only included in payload when tier requires it (physical cert)
-  const addressParts = (currentTier !== 'clan') ? [
-    document.getElementById('address1').value.trim(),
-    document.getElementById('address2').value.trim(),
-    document.getElementById('city').value.trim(),
-    document.getElementById('postcode').value.trim(),
-    document.getElementById('country').value
-  ].filter(Boolean) : [];
-
   const data = {
     tier: TIER_NAMES[currentTier],
     price: PRICES[currentTier][type],
@@ -508,7 +464,8 @@ async function submitForm() {
     recipientName: document.getElementById('recipientName').value.trim(),
     recipientName2: document.getElementById('recipientName2').value.trim(),
     recipientEmail: document.getElementById('recipientEmail').value.trim(),
-    address: addressParts.join(', '),
+    // address intentionally empty — recipient supplies it post-acceptance
+    address: '',
     message: document.getElementById('message').value.trim(),
     connection: document.getElementById('connection').value.trim()
   };
