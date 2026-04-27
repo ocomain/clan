@@ -71,7 +71,7 @@ async function sendInvitation({
   const recipFirst = (recipientName || '').trim().split(/\s+/)[0] || 'friend';
   const inviterFull = (inviterName || '').trim() || inviterFirstName || 'a member of the clan';
 
-  const subject = `A note from ${inviterFull}`;
+  const subject = `${inviterFirstName} would like you to stand with them in Clan Ó Comáin`;
 
   // Optional personal-note block. Sits at the top, above the clan
   // body, signed by the inviter. Renders only when personalNote is
@@ -82,51 +82,74 @@ async function sendInvitation({
     ? `<div style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.7;padding:18px 22px;background:rgba(184,151,90,.08);border-left:3px solid #6B1F1F;margin:0 0 28px;border-radius:0 2px 2px 0">${escapeHtml(personalNote.trim())}<br><span style="font-size:13px;color:#6C5A4A;margin-top:8px;display:inline-block">— ${escapeHtml(inviterFirstName)}</span></div>`
     : '';
 
+  // ── THE LOCKED EMAIL BODY ────────────────────────────────────────
+  // VOICE: written as if {Inviter} has just been let into an old,
+  // private circle and is now turning to a specific friend they
+  // think belongs there too. Warm, not formal. Exclusive-club
+  // register — a personal vouch, not a recruitment pitch. The
+  // Herald is present at the sign-off because he composed the
+  // wording (Gaelic warrant convention), but the FEELING
+  // throughout is of {Inviter} reaching back to bring {Recipient}
+  // along.
+  //
+  // Three short paragraphs:
+  //   1. {Inviter} has lately taken a place and has thought of YOU
+  //      among 'the small number they would wish to see standing
+  //      with them'. Names the recipient as having been
+  //      specifically chosen — this is not a bulk note.
+  //   2. What this place is — a brief, dignified naming of the
+  //      clan, kept short because the recipient already has
+  //      {Inviter}'s vouch. Membership framed as 'by design, a
+  //      quiet thing' — exclusive register without saying so.
+  //   3. {Inviter} would have you among them. Door, opened.
+  //      A friend on the other side. No pressure.
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:560px;margin:0 auto;background:#F8F4EC">
 
-  <!-- Header — quieter than the founder email since this is an
-       introduction, not a warrant. Coat of arms, eyebrow, simple
-       framing line. -->
+  <!-- Header. Eyebrow reads 'By private welcome' (exclusive-club
+       register) and the headline frames this as a personal gesture
+       from {Inviter} keeping a place open — not an institution
+       writing to a prospect. -->
   <div style="background:#0C1A0C;padding:34px 40px 26px;text-align:center;border-bottom:2px solid #B8975A">
     <img src="${SITE_URL}/coat_of_arms.png" width="72" alt="Ó Comáin" style="display:block;margin:0 auto 8px;height:auto">
     <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 14px;text-align:center;max-width:84px">Ó COMÁIN</p>
-    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">An invitation</p>
-    <h1 style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#D4B87A;margin:0;line-height:1.2">For ${escapeHtml(recipFirst)}, from ${escapeHtml(inviterFirstName)}</h1>
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">By private welcome</p>
+    <h1 style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#D4B87A;margin:0;line-height:1.25">${escapeHtml(inviterFirstName)} has kept a place beside them for you</h1>
   </div>
 
-  <!-- Body -->
+  <!-- Body — friend-voicing throughout, locked text below. -->
   <div style="padding:32px 38px">
 
     ${personalNoteBlock}
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 16px">
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
       Dia dhuit, ${escapeHtml(recipFirst)} — God be with you.
     </p>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 16px">
-      ${escapeHtml(inviterFull)}, a member of Clan Ó Comáin, would like you to join them in the clan and has asked us to write to you on their behalf.
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
+      ${escapeHtml(inviterFull)} has lately taken a place in Clan Ó Comáin and has thought of you among the small number they would wish to see standing with them — and has asked me, as Herald, to write to you in their stead.
     </p>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 16px">
-      The clan is an ancient royal house of the Ó Comáin name — Cummins, Commane, Commons, Comyn, Hurley, and many other variants — recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland. After many centuries of silence, it has begun again. Members are entered in the Register at Newhall House, County Clare, and receive a certificate of membership in their own name.
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
+      The clan is an ancient royal house of the Ó Comáin name and its many forms — Cummins, Commane, Commons, Comyn, Hurley, and others. After many centuries of silence it has been formally revived, recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland. Membership is, by design, a quiet thing: a place in the Register at Newhall House, a certificate sealed in your own name, and the company of those who feel the pull of something old and worth keeping.
     </p>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 26px">
-      You are most welcome to read of the clan and, if it speaks to you, take a place of your own. There is no obligation in receiving this note — only an invitation, freely given.
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
+      ${escapeHtml(inviterFirstName)} would have you among them. There is no urgency in it, and no obligation in receiving this note — only the door, opened, and a friend on the other side of it.
     </p>
 
-    <!-- Single CTA. Burgundy, central. -->
+    <!-- Single CTA. Burgundy block, central, foregrounds the
+         inviter's name in the action ('beside {Inviter}'). -->
     <div style="text-align:center;margin:6px 0 28px">
-      <a href="${SITE_URL}/membership.html" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:16px 32px;border-radius:1px;border:1px solid #4A1010">Read of the clan →</a>
+      <a href="${SITE_URL}/membership.html" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:16px 32px;border-radius:1px;border:1px solid #4A1010">Take a place beside ${escapeHtml(inviterFirstName)} →</a>
     </div>
 
-    <!-- Sign-off block — Herald-voiced, single line. Same convention
-         as the founder email; readers who recognise it will read
-         the consistent voice across surfaces. -->
+    <!-- Sign-off — Herald-voiced single line. The inviter is in
+         the body throughout; the signature is the Herald who
+         composed the words, in the Gaelic warrant convention. -->
     <p style="font-family:'Georgia',serif;font-size:13.5px;color:#6C5A4A;line-height:1.6;margin:0;text-align:center;font-style:italic">
       — Clan Herald at Newhall
     </p>
@@ -139,7 +162,7 @@ async function sendInvitation({
       Caithfidh an stair a bheith i réim — History must prevail
     </p>
     <p style="font-family:'Georgia',sans-serif;font-size:10.5px;color:rgba(200,168,117,.7);margin:0;line-height:1.55">
-      You received this because ${escapeHtml(inviterFirstName)} thought you'd like to know. <a href="${unsubscribeUrl}" style="color:#C8A875;text-decoration:underline">Unsubscribe from invitations</a>
+      You received this because ${escapeHtml(inviterFirstName)} thought of you. <a href="${unsubscribeUrl}" style="color:#C8A875;text-decoration:underline">Unsubscribe from invitations</a>
     </p>
   </div>
 
