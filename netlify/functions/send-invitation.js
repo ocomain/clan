@@ -238,8 +238,22 @@ exports.handler = async (event) => {
     .single();
 
   if (insertErr) {
-    console.error('invitation insert failed:', insertErr.message);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Could not record the invitation' }) };
+    console.error('invitation insert failed:', insertErr.message, insertErr.code, insertErr.details);
+    // Surface a more diagnostic error so the operator can tell the
+    // difference between 'table missing (run migration 014)',
+    // 'permission denied', and other DB-level failures. The
+    // friendly message is still safe to show users; the detail
+    // helps when reading server logs or testing.
+    const friendlyMessage = insertErr.code === '42P01'
+      ? 'The invitations table is not yet set up. Please contact clan@ocomain.org to enable invitations.'
+      : 'Could not record the invitation';
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: friendlyMessage,
+        debug_code: insertErr.code || null,
+      }),
+    };
   }
 
   // ── Build unsubscribe URL ───────────────────────────────────────
