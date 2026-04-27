@@ -126,32 +126,48 @@ async function sendSponsorLetter(sponsor, newMember) {
 /**
  * The Title Awarded letter — sent once per threshold crossing.
  *
+ * Voice notes (chivalric warrant register):
+ *   - The CHIEF is the actor throughout the body. The Herald
+ *     composes the letter (Gaelic warrant convention) and signs
+ *     at the foot. Fergus's name is not used directly — he is
+ *     'the Chief', the office, in the same way real warrants
+ *     reference the office rather than the personal name.
+ *   - For Ardchara (the elevation-in-rank tier) the language
+ *     uses the formal chivalric construction: 'It hath pleased
+ *     the Chief to raise you within the clan to the dignity of...'
+ *     'henceforth bear the name', 'place and standing belonging
+ *     to that rank'. Reads as a proper warrant of advancement.
+ *   - Cara and Onóir use lighter recognition language — they
+ *     aren't elevations, they're acknowledgements. Register
+ *     scales with gravity: warm at 1, dignified at 5, formal
+ *     at 15.
+ *   - Closes with 'Le toil an Taoisigh — by the will of the
+ *     Chief' (a brief Irish flourish in the Gaelic warrant
+ *     tradition) above the Herald sign-off.
+ *
  * @param {object} sponsor  — { email, name }
- * @param {object} title    — { irish, english, pronunciation,
- *                              threshold, narrative } from
- *                              SPONSOR_TITLES
+ * @param {object} title    — full title definition from
+ *                            SPONSOR_TITLES, including subjectLine,
+ *                            eyebrow, headline, bestowalIntro,
+ *                            bodyOpening, closingNarrative
  * @param {number} totalCount — current count of converted invites
+ *                              (not currently used in copy — counts
+ *                              are baked into bodyOpening per title
+ *                              — but available for future use)
  */
 async function sendTitleAwardLetter(sponsor, title, totalCount) {
   if (!sponsor?.email || !title) return false;
   const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
 
-  const subject = `Among the kindred, you are now ${title.irish}`;
+  const subject = title.subjectLine;
 
-  // The body is structured as a small ceremonial moment:
-  //   - greeting
-  //   - the count beat ('You have brought N to the clan')
-  //   - the title bestowing line ('We name you {Irish} — {English}')
-  //   - the title's narrative beat (one sentence about what this
-  //     title means, from sponsor-service.js)
-  //   - sign-off
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:560px;margin:0 auto;background:#F8F4EC">
 
-  ${emailHeader('A title bestowed', `You are named ${title.irish}`)}
+  ${emailHeader(title.eyebrow, title.headline)}
 
   <div style="padding:32px 38px">
 
@@ -159,23 +175,48 @@ async function sendTitleAwardLetter(sponsor, title, totalCount) {
       Dia dhuit, ${escapeHtml(sponsorFirst)} — God be with you.
     </p>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 22px">
-      ${escapeHtml(title.narrative)}
+    <!-- Opening paragraph: narrates the Chief's action and sets
+         up the bestowal block. Per-title language drawn from
+         title.bodyOpening — for Cara/Onóir this is recognition;
+         for Ardchara it is the formal raising-in-rank with
+         'henceforth bear the name set out below'. -->
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 24px">
+      ${escapeHtml(title.bodyOpening)}
     </p>
 
-    <!-- Title bestowal block — the ceremonial centrepiece. Set
-         apart visually so the title itself reads as a moment
+    <!-- The bestowal block — the ceremonial centrepiece. The
+         small-caps line carries the per-title bestowal verb (e.g.
+         'It hath pleased the Chief to raise you within the clan
+         to the dignity of') above the Irish title. Visually set
+         apart with thin gold rules so the title reads as a moment
          rather than a sentence. -->
     <div style="text-align:center;padding:22px 18px;margin:0 0 24px;border-top:1px solid rgba(184,151,90,.4);border-bottom:1px solid rgba(184,151,90,.4);background:rgba(184,151,90,.05)">
-      <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:#8B6F32;margin:0 0 8px">In the keeping of the clan, you are now</p>
-      <p style="font-family:'Georgia',serif;font-size:30px;font-weight:400;color:#1A0A0A;margin:0 0 4px;line-height:1.15">${escapeHtml(title.irish)}</p>
+      <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;margin:0 0 12px;line-height:1.5">${escapeHtml(title.bestowalIntro)}</p>
+      <p style="font-family:'Georgia',serif;font-size:32px;font-weight:400;color:#1A0A0A;margin:0 0 4px;line-height:1.15">${escapeHtml(title.irish)}</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0">${escapeHtml(title.pronunciation)} — ${escapeHtml(title.english)}</p>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 22px">
-      Your title is held quietly with the Chief and the Herald — recorded in the clan's keeping at Newhall. There is no fanfare to it; only the recognition of what you have done, in the company of those who do likewise.
+    <!-- Closing narrative beat — one sentence about what this
+         title means in the clan. Drawn from title.closingNarrative.
+         For Ardchara this is the sentence about 'very few in any
+         generation' and the Chief's particular interest. -->
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 24px">
+      ${escapeHtml(title.closingNarrative)}
     </p>
 
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
+      Your title is held quietly with the Chief and the Herald — recorded in the clan\u2019s keeping at Newhall. There is no fanfare to it; only the recognition of what you have done, in the company of those who do likewise.
+    </p>
+
+    <!-- Irish flourish above the Herald sign-off: 'Le toil an
+         Taoisigh' — by the will of the Chief. The Gaelic warrant
+         convention. Pronounced 'leh thill un TWEE-shi'. The
+         pronunciation is NOT included in the email body (would
+         break the gravity); the phrase stands on its own and the
+         English meaning is given for those who don't read Irish. -->
+    <p style="font-family:'Georgia',serif;font-size:13.5px;color:#6C5A4A;line-height:1.6;margin:0 0 4px;text-align:center;font-style:italic">
+      Le toil an Taoisigh — by the will of the Chief
+    </p>
     ${heraldSignoff()}
 
   </div>

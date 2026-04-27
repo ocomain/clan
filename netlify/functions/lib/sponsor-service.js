@@ -41,9 +41,27 @@ const SPONSOR_TITLES = [
     irish: 'Cara',
     english: 'Friend',
     pronunciation: 'KAR-uh',
-    // The narrative beat used in the Herald letter. Keep short —
-    // each is one sentence that fits inside an italic paragraph.
-    narrative: 'You have brought another to the clan, and so the clan has gained one more place at the hearth through you.',
+    // Per-title language for the title-award letter. Each title is
+    // a distinct moment in the member's journey, and the register
+    // shifts as the gravity grows:
+    //   Cara     — RECOGNITION (warm, brief)
+    //   Onóir    — DISTINCTION (slightly more formal)
+    //   Ardchara — ELEVATION   (full chivalric register: 'raised
+    //                           within the clan', 'dignity',
+    //                           'henceforth')
+    // Same Chief-as-actor convention throughout (Gaelic warrant
+    // tradition: Fergus bestows, Herald composes and signs).
+    subjectLine: 'By the Chief\u2019s hand \u2014 a name in your keeping',
+    eyebrow: 'By the Chief\u2019s hand',
+    headline: 'It pleases the Chief',
+    bestowalIntro: 'It pleases the Chief to know you as',
+    // Opening paragraph — narrates the Chief's action, sets up the
+    // bestowal block. Names the count in plain language.
+    bodyOpening: 'You have lately brought another to the Register at Newhall \u2014 and on this account, the Chief has been pleased to recognise you among the kindred by name.',
+    // Closing narrative beat — single sentence about what this
+    // recognition means. Sits between the bestowal block and the
+    // Herald sign-off.
+    closingNarrative: 'To bring even one to the clan is no small thing \u2014 it is the act on which all kinship is built.',
   },
   {
     slug: 'onoir',
@@ -51,7 +69,12 @@ const SPONSOR_TITLES = [
     irish: 'Onóir',
     english: 'One held in honour',
     pronunciation: 'UH-nor',
-    narrative: 'You have brought five to the Register at Newhall. A clan is built by the few who do this — without naming themselves, without asking for it.',
+    subjectLine: 'By the Chief\u2019s hand \u2014 you are marked Onóir',
+    eyebrow: 'By the Chief\u2019s hand',
+    headline: 'The Chief takes notice',
+    bestowalIntro: 'The Chief has been pleased to mark you with the name',
+    bodyOpening: 'Five souls have come to Clan Ó Comáin through your welcome. The Chief has marked this, and has been pleased to confer upon you a name held with weight in the clan\u2019s keeping.',
+    closingNarrative: 'To bring five is the work of a member who has made the clan their own. The Chief is the better for knowing it.',
   },
   {
     slug: 'ardchara',
@@ -59,7 +82,19 @@ const SPONSOR_TITLES = [
     irish: 'Ardchara',
     english: 'Friend of high standing',
     pronunciation: 'ARD-khar-uh',
-    narrative: 'Fifteen souls have come to Clan Ó Comáin through your welcome. There are very few in any generation who do this, and the Chief is the better for knowing it.',
+    subjectLine: 'By the Chief\u2019s hand \u2014 you are raised to Ardchara',
+    eyebrow: 'By the Chief\u2019s hand \u00b7 A raising in rank',
+    headline: 'You are elevated within the clan',
+    // Chivalric register — 'It hath pleased', 'raise', 'dignity',
+    // 'henceforth'. Reads as a proper warrant of advancement.
+    bestowalIntro: 'It hath pleased the Chief to raise you within the clan to the dignity of',
+    // The body opening for Ardchara names the count AND introduces
+    // the elevation framing. The 'henceforth' clause names what
+    // the new rank carries — kept generic enough to be honest
+    // (we don't promise tangible privileges we can't keep), formal
+    // enough to feel real.
+    bodyOpening: 'Fifteen souls have come to the Register at Newhall through your hand. The Chief has long taken an interest in those who carry the welcome of Clan Ó Comáin to others, and on this account he has been pleased to raise you within the clan, recorded under his seal and entered in the clan\u2019s books. By this raising you henceforth bear the name set out below, with the place and standing belonging to that rank in the clan\u2019s keeping.',
+    closingNarrative: 'There are very few in any generation who carry fifteen to the Register at Newhall. You are now among them, and the Chief takes a particular interest in such members.',
   },
 ];
 
