@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Robots: noindex,nofollow during the unlinked window. The page is
+     reachable by URL but doesn't surface in Google searches. When we go
+     publicly linked (after Fergus seeds founders), revisit whether to
+     allow indexing. For now: visible to anyone with the URL, invisible
+     to crawlers. -->
+<meta name="robots" content="noindex,nofollow">
+<title>Register of Clan Ó Comáin — Newhall House</title>
+<meta name="description" content="The Register of Clan Ó Comáin — Guardians, Stewards, and Life Members of the clan, kept by the Herald at Newhall House.">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F7F4ED;
+  --cream-warm:#F0EADC;
+  --ink:#1A1410;
+  --ink-soft:#3D2D1F;
+  --ink-muted:#5A4A3A;
+  --gold:#B8975A;
+  --gold-deep:#8B6F32;
+  --gold-faint:rgba(184,151,90,.18);
+  --burgundy:#6B1F1F;
+  --burgundy-deep:#4A1010;
+  --rule:rgba(26,20,16,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+.wrap{max-width:740px;margin:0 auto;padding:0 28px}
+
+/* HERO */
+.hero{padding:80px 0 60px;text-align:center}
+.hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
+.hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
+.hero-seal{margin:0 auto 38px;display:block}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,7vw,76px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px}
+.hero-title em{font-style:italic;color:var(--burgundy);font-weight:500}
+.hero-title-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.4vw,26px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:6px}
+.hero-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:34px auto;max-width:240px}
+.hero-rule-line{flex:1;height:1px;background:var(--ink);opacity:.25}
+.hero-rule-mark{color:var(--gold);font-family:'EB Garamond',serif;font-size:14px;font-style:italic}
+
+.herald-block{max-width:580px;margin:0 auto 44px;text-align:left;padding:8px 0}
+.herald-greet{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;font-weight:500;color:var(--burgundy);line-height:1.3;margin-bottom:18px;letter-spacing:-0.005em}
+.herald-greet .greet-eng{color:var(--ink-soft);font-weight:400}
+.herald-body{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.78;margin-bottom:14px}
+.herald-body + .herald-body{margin-top:14px}
+.herald-sign{display:flex;align-items:center;gap:14px;margin-top:32px;padding-top:24px;border-top:1px solid var(--rule)}
+.herald-sign-mark{flex-shrink:0;display:block}
+.herald-sign-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--ink);line-height:1.3;font-weight:500}
+.herald-sign-role{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold-deep);margin-top:4px}
+
+.hero-counts{display:flex;align-items:center;justify-content:center;gap:34px;margin-top:6px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-deep)}
+.hero-counts strong{color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:0;display:inline-block;margin-right:8px;font-style:italic}
+.hero-counts-sep{width:4px;height:4px;background:var(--gold-deep);border-radius:50%;opacity:.5}
+
+/* SECTIONS */
+.section{padding:54px 0 60px}
+.section + .section{border-top:1px solid var(--rule);padding-top:60px}
+.section-head{text-align:center;margin-bottom:48px}
+.section-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
+.section-eyebrow-irish{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;font-weight:500;color:var(--gold);letter-spacing:0.04em;margin-bottom:18px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--ink);line-height:1.1;letter-spacing:-0.012em}
+.section-title em{font-style:italic;color:var(--burgundy);font-weight:500}
+.section-blurb{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:14px auto 0}
+
+/* ENTRIES */
+.entries{margin-top:8px}
+.entry{padding:32px 8px 32px;border-top:1px solid var(--rule);position:relative;transition:background .2s}
+.entry:last-child{border-bottom:1px solid var(--rule)}
+.entry:hover{background:rgba(184,151,90,.04)}
+.entry-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:baseline}
+.entry-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--ink);line-height:1.2;letter-spacing:-0.005em}
+.entry-meta{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-deep);text-align:right;line-height:1.5;white-space:nowrap}
+.entry-tier{display:block}
+.entry-year{display:block;color:var(--ink-muted);font-weight:400;margin-top:4px;letter-spacing:0.12em}
+.entry-dedication{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--burgundy);line-height:1.7;margin-top:14px;max-width:560px}
+.entry-children{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);margin-top:10px;line-height:1.6;max-width:560px}
+.entry-children-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-right:8px}
+.founder-mark{font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--burgundy);margin-top:11px;display:inline-block}
+.founder-mark::before{content:'✦';margin-right:7px;color:var(--gold)}
+
+/* EMPTY STATE — for sections with zero members */
+.section-empty{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);text-align:center;padding:32px 20px;line-height:1.7;max-width:480px;margin:0 auto;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+
+/* LOADING + ERROR STATES */
+.loading{text-align:center;padding:60px 20px;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted)}
+.load-error{text-align:center;padding:40px 20px;font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--burgundy);max-width:480px;margin:0 auto;line-height:1.7}
+
+/* FOOTER */
+.foot{padding:80px 0 100px;text-align:center;border-top:1px solid var(--rule);margin-top:50px}
+.foot-quote{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--ink);line-height:1.55;max-width:540px;margin:30px auto 8px;font-weight:500}
+.foot-trans{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--gold-deep);margin-bottom:48px}
+.foot-warrant{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:0 auto 26px}
+.foot-warrant strong{color:var(--ink);font-style:normal;font-weight:500;font-family:'Cormorant Garamond',serif;font-size:16px}
+.foot-loc{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
+.foot-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:14px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
+.foot-cta:hover{background:var(--burgundy-deep)}
+
+/* MOBILE */
+@media (max-width:640px){
+  .entry-row{grid-template-columns:1fr;gap:6px}
+  .entry-meta{text-align:left}
+  .hero-counts{flex-direction:column;gap:14px}
+  .hero-counts-sep{width:32px;height:1px}
+  .herald-block{padding:0 4px}
+  .herald-sign{flex-direction:row;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+
+  <div class="hero-eyebrow">
+    Newhall House <span class="sep">·</span> Co. an Chláir <span class="sep">·</span> Éire
+  </div>
+
+  <!-- Burgundy wax seal (locked design) — see /register-final.html for
+       composition notes. Same SVG used at full size here, scaled-down
+       version next to Herald signature below. -->
+  <svg class="hero-seal" viewBox="0 0 140 140" width="140" height="140" style="filter:drop-shadow(0 6px 14px rgba(20,5,5,.3)) drop-shadow(0 2px 4px rgba(40,10,10,.2))" aria-hidden="true">
+    <defs>
+      <radialGradient id="waxBody" cx="38%" cy="32%">
+        <stop offset="0%" stop-color="#8B2A28"/>
+        <stop offset="55%" stop-color="#6B1F1F"/>
+        <stop offset="100%" stop-color="#3D0E0E"/>
+      </radialGradient>
+      <filter id="waxGrain" x="-2%" y="-2%" width="104%" height="104%">
+        <feTurbulence baseFrequency="1.4" numOctaves="2" seed="3"/>
+        <feColorMatrix values="0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 0 0.02  0 0 0 0.18 0"/>
+        <feComposite in2="SourceGraphic" operator="in"/>
+      </filter>
+      <path id="legendPath" d="M 70,70 m -56,0 a 56,56 0 1,1 112,0 a 56,56 0 1,1 -112,0" fill="none"/>
+    </defs>
+    <ellipse cx="70" cy="70" rx="66" ry="64" fill="url(#waxBody)" stroke="#2A0808" stroke-width="0.8"/>
+    <path d="M 18 42 A 58 58 0 0 1 100 18" stroke="rgba(255,210,180,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="70" cy="70" rx="66" ry="64" fill="#3D0E0E" filter="url(#waxGrain)" opacity=".5"/>
+    <circle cx="70" cy="70" r="61" fill="none" stroke="rgba(20,5,5,.6)" stroke-width="0.8"/>
+    <text font-family="Cormorant Garamond, EB Garamond, serif" font-size="8" font-weight="600" fill="#E8C8A8" letter-spacing="1.5" style="text-transform:uppercase">
+      <textPath href="#legendPath" startOffset="0%">
+        Sigillum · Clan Ó Comáin · Newhall House · Co. Clare ·
+      </textPath>
+    </text>
+    <circle cx="70" cy="70" r="40" fill="none" stroke="rgba(20,5,5,.55)" stroke-width="0.8"/>
+    <g fill="#E8C8A8" opacity=".75">
+      <text x="70" y="29" text-anchor="middle" font-family="EB Garamond, serif" font-size="9" font-weight="500">✦</text>
+      <text x="70" y="118" text-anchor="middle" font-family="EB Garamond, serif" font-size="9" font-weight="500">✦</text>
+    </g>
+    <text x="70" y="86" text-anchor="middle" font-family="Cormorant Garamond, EB Garamond, serif" font-size="50" font-weight="600" fill="rgba(255,220,190,.35)">Ó</text>
+    <text x="70" y="84.5" text-anchor="middle" font-family="Cormorant Garamond, EB Garamond, serif" font-size="50" font-weight="600" fill="#1A0404">Ó</text>
+  </svg>
+
+  <h1 class="hero-title">Register of <em>Clan Ó Comáin</em></h1>
+  <div class="hero-title-irish">Clár Chlainne Uí Chomáin</div>
+
+  <div class="hero-rule">
+    <span class="hero-rule-line"></span>
+    <span class="hero-rule-mark">✦</span>
+    <span class="hero-rule-line"></span>
+  </div>
+
+  <div class="herald-block">
+    <p class="herald-greet"><em>Dia dhuit</em><span class="greet-eng"> — God be with you.</span></p>
+    <p class="herald-body">It is my honour to keep this Register at Newhall House, the seat of Clan Ó Comáin in the County of Clare. Inscribed upon these pages are the names of those who, after eight long centuries of silence, have answered the call of the clan and asked to be publicly counted among its number.</p>
+    <p class="herald-body">Here you will find the Guardians, the Stewards, and the Life Members of Ó Comáin — kindred spread across the wide world, drawn back to one ancient hearth. Their names stand in current standing with the Chief.</p>
+    <p class="herald-body">Of those at the Clan tier, and any who have asked to remain quietly numbered, no name appears in this place — they are kept upon a separate roll in my own keeping at Newhall, where they are no less honoured for being unseen.</p>
+
+    <div class="herald-sign">
+      <svg class="herald-sign-mark" viewBox="0 0 140 140" width="44" height="44" aria-hidden="true">
+        <defs>
+          <radialGradient id="waxBodySm" cx="38%" cy="32%">
+            <stop offset="0%" stop-color="#8B2A28"/>
+            <stop offset="55%" stop-color="#6B1F1F"/>
+            <stop offset="100%" stop-color="#3D0E0E"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="70" cy="70" rx="66" ry="64" fill="url(#waxBodySm)" stroke="#2A0808" stroke-width="1.2"/>
+        <path d="M 18 42 A 58 58 0 0 1 100 18" stroke="rgba(255,210,180,.4)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(20,5,5,.7)" stroke-width="1.5"/>
+        <text x="70" y="92" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="68" font-weight="600" fill="#1A0404">Ó</text>
+      </svg>
+      <div>
+        <div class="herald-sign-name">An tAralt</div>
+        <div class="herald-sign-role">The Clan Herald</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-counts">
+    <span><strong id="totalCount">—</strong>Members</span>
+    <span class="hero-counts-sep"></span>
+    <span><strong>2026</strong>Year of Revival</span>
+  </div>
+</header>
+
+<!-- DYNAMIC SECTIONS — populated by JS from /api/register -->
+<div id="register-body">
+  <div class="loading">Loading the Register…</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <svg width="46" height="40" viewBox="0 0 46 40" aria-hidden="true" style="display:block;margin:0 auto 18px;color:#B8975A">
+    <g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".75">
+      <path d="M 23 4 C 30 14, 30 22, 23 28 C 16 22, 16 14, 23 4 Z"/>
+      <path d="M 6 30 C 16 26, 22 24, 26 32 C 18 36, 10 36, 6 30 Z"/>
+      <path d="M 40 30 C 30 26, 24 24, 20 32 C 28 36, 36 36, 40 30 Z"/>
+      <circle cx="23" cy="22" r="1.5" fill="currentColor"/>
+    </g>
+  </svg>
+  <p class="foot-quote">"Caithfidh an stair a bheith i réim."</p>
+  <p class="foot-trans">History must prevail.</p>
+  <p class="foot-warrant">Inscribed by warrant of Clan Ó Comáin, and kept by the Herald at Newhall House.</p>
+  <div class="foot-loc">Newhall House <span style="color:var(--gold);margin:0 8px">·</span> Co. an Chláir <span style="color:var(--gold);margin:0 8px">·</span> Éire</div>
+  <a href="/membership.html" class="foot-cta">Add your name to the Register →</a>
+</footer>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────────────
+// Register page — fetches /.netlify/functions/register, groups by
+// tier, and renders entries into the dynamic sections below the
+// Herald's address.
+//
+// The function returns members already sorted (Life → Steward →
+// Guardian, founders first within each). We just need to group them
+// by tier-family for the three section headings.
+//
+// Year handling: each entry shows 'Joined [Month] [Year]'. The month
+// can be omitted later if it's too granular (e.g. 60 founders all
+// showing 'Joined March 2026' might look visually flat) — at that
+// point change the formatJoinDate function to return year-only.
+// For now, month + year matches the preview design.
+// ──────────────────────────────────────────────────────────────────
+
+const TIER_GROUPS = {
+  life:    { tiers: ['life-ind', 'life-fam'],    label: 'Life Member',    family_label: 'Life Member · Family' },
+  steward: { tiers: ['steward-ind', 'steward-fam'], label: 'Steward',     family_label: 'Steward · Family' },
+  guardian:{ tiers: ['guardian-ind','guardian-fam'], label: 'Guardian',   family_label: 'Guardian · Family' },
+};
+
+const SECTIONS = [
+  {
+    key: 'life',
+    eyebrow: 'The Roll of Honour',
+    eyebrow_irish: 'Rolla na hOnóra',
+    title: 'Life <em>Members</em>',
+    blurb: 'Their place in the clan is permanent. Their name is here for as long as the Register endures.',
+    empty: 'No Life Members have yet been inscribed in this place. Their names shall stand here when they come.',
+  },
+  {
+    key: 'steward',
+    eyebrow: 'The Sustainers of the Clan',
+    eyebrow_irish: 'Maoir an Chláir',
+    title: '<em>Stewards</em>',
+    blurb: 'Members whose annual commitment sustains the work of the clan, year on year.',
+    empty: 'No Stewards yet stand upon this roll. Their names shall be inscribed when they come.',
+  },
+  {
+    key: 'guardian',
+    eyebrow: 'Members of the Clan',
+    eyebrow_irish: 'Cosantóirí Chlainne Uí Chomáin',
+    title: '<em>Guardians</em>',
+    blurb: 'Members who have chosen to stand with the clan.',
+    empty: 'No Guardians yet stand upon this roll. Their names shall be inscribed when they come.',
+  },
+];
+
+// Founder gating — must match FOUNDING_YEARS in members/index.html
+// and lib/generate-cert.js. Add years here in lock-step when extending.
+const FOUNDING_YEARS = new Set([2026]);
+
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function formatJoinDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const month = d.toLocaleString('en-GB', { month: 'long' });
+  const year = d.getFullYear();
+  return `Joined ${month} ${year}`;
+}
+
+function getJoinYear(iso) {
+  if (!iso) return null;
+  return new Date(iso).getFullYear();
+}
+
+function tierLabelFor(member) {
+  const tier = member.tier;
+  for (const group of Object.values(TIER_GROUPS)) {
+    if (group.tiers.includes(tier)) {
+      return tier.endsWith('-fam') ? group.family_label : group.label;
+    }
+  }
+  return member.tier_label || 'Member';
+}
+
+function renderEntry(member) {
+  const isFounder = FOUNDING_YEARS.has(getJoinYear(member.joined_at));
+  const founderMark = isFounder
+    ? `<span class="founder-mark">Founding Member · ${getJoinYear(member.joined_at)}</span>`
+    : '';
+  const dedication = member.ancestor_dedication
+    ? `<div class="entry-dedication">${escHtml(member.ancestor_dedication)}</div>`
+    : '';
+  const children = member.children
+    ? `<div class="entry-children"><span class="entry-children-label">With</span>${escHtml(member.children)}</div>`
+    : '';
+  return `
+    <div class="entry">
+      <div class="entry-row">
+        <div>
+          <div class="entry-name">${escHtml(member.display_name)}</div>
+          ${dedication}
+          ${children}
+          ${founderMark}
+        </div>
+        <div class="entry-meta">
+          <span class="entry-tier">${escHtml(tierLabelFor(member))}</span>
+          <span class="entry-year">${escHtml(formatJoinDate(member.joined_at))}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSection(section, members) {
+  const inThisSection = members.filter(m => 
+    TIER_GROUPS[section.key].tiers.includes(m.tier)
+  );
+  const body = inThisSection.length > 0
+    ? `<div class="entries">${inThisSection.map(renderEntry).join('')}</div>`
+    : `<div class="section-empty">${escHtml(section.empty)}</div>`;
+  return `
+    <section class="section">
+      <div class="section-head">
+        <div class="section-eyebrow">${section.eyebrow}</div>
+        <div class="section-eyebrow-irish">${section.eyebrow_irish}</div>
+        <h2 class="section-title">${section.title}</h2>
+        <p class="section-blurb">${escHtml(section.blurb)}</p>
+      </div>
+      ${body}
+    </section>
+  `;
+}
+
+async function loadRegister() {
+  const target = document.getElementById('register-body');
+  try {
+    const res = await fetch('/.netlify/functions/register');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const members = data.members || [];
+    document.getElementById('totalCount').textContent = data.count;
+    target.innerHTML = SECTIONS.map(s => renderSection(s, members)).join('');
+  } catch (e) {
+    console.error('Register load failed:', e);
+    target.innerHTML = `
+      <div class="load-error">
+        The Register could not be loaded at this moment. Please try again shortly, or write to <a href="mailto:clan@ocomain.org" style="color:var(--burgundy)">clan@ocomain.org</a> if the difficulty continues.
+      </div>
+    `;
+  }
+}
+
+loadRegister();
+</script>
+
+</body>
+</html>

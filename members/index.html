@@ -271,6 +271,19 @@
         <span class="mfounder-rule"></span>
       </div>
     ` : '';
+    // Comped-by-chief notation. Renders ONLY for members whose row was
+    // created by Fergus's founder admin tool (column comped_by_chief
+    // added in migration 013). Members-only — never appears on the
+    // public register, never in any email signature. A quiet
+    // acknowledgement of the distinct origin of their membership.
+    // Sits just under the founder band so it reads as a subordinate
+    // attribution to the founder status. Italic, smaller, gold —
+    // dignified rather than loud.
+    const heraldNote = member.comped_by_chief ? `
+      <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--gold-deep);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
+        Founding Member by warrant of the Chief
+      </div>
+    ` : '';
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
     // are set together at publication; checking either works.
@@ -301,6 +314,7 @@
           ${statusBadge}
         </div>
         ${founderBand}
+        ${heraldNote}
         <div class="mstatus-rows">
           <div>
             <div class="mstatus-row-label">Name on the Register</div>
@@ -533,7 +547,7 @@
           <span>Yes — show my children's first names alongside our family entry.</span>
         </label>
         ` : ''}
-        <p class="mpriv-note">Untick at any time to remove yourself from the public register. Your changes save automatically and take effect on the next register page load.</p>
+        <p class="mpriv-note">Your name appears on the public Register while your membership is in current standing. Untick at any time to remove yourself; changes take effect within five minutes.</p>
         <div class="mpriv-status" id="prvStatus"></div>
       </section>
       `}
