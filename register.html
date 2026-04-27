@@ -140,6 +140,12 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .foot-warrant{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:0 auto 26px}
 .foot-warrant strong{color:var(--ink);font-style:normal;font-weight:500;font-family:'Cormorant Garamond',serif;font-size:16px}
 .foot-loc{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
+/* Privacy-clarity note above the CTA. Sits between the small-caps
+   location line and the burgundy CTA. Smaller and quieter than
+   .foot-warrant; italic Cormorant Garamond keeps it consistent with
+   the page's other prose elements without competing for attention.
+   Narrow max-width signals 'careful note, not headline'. */
+.foot-privacy-note{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);line-height:1.65;max-width:440px;margin:0 auto 24px}
 .foot-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:14px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
 .foot-cta:hover{background:var(--burgundy-deep)}
 
@@ -300,6 +306,14 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
   <p class="foot-trans">History must prevail.</p>
   <p class="foot-warrant">Inscribed by warrant of Clan Ó Comáin, and kept by the Herald at Newhall House.</p>
   <div class="foot-loc">Newhall House <span style="color:var(--gold);margin:0 8px">·</span> Co. an Chláir <span style="color:var(--gold);margin:0 8px">·</span> Éire</div>
+  <!-- Privacy-clarity line — sits immediately above the 'Add your name'
+       CTA so a prospect considering membership sees the opt-in mechanic
+       at the moment they're about to act. The Herald's address higher up
+       speaks to what's true ('any who have asked to remain quietly
+       numbered'); this line speaks to how it works ('chosen at sealing,
+       changeable any time'). The two together cover the full picture
+       without making the Herald sound procedural. -->
+  <p class="foot-privacy-note">Your appearance on this Register is by your own request — chosen at the moment of sealing your certificate, and changeable at any time from your Members' Area.</p>
   <a href="/membership.html" class="foot-cta">Add your name to the Register →</a>
 </footer>
 
