@@ -53,15 +53,43 @@ async function ensureCertificate(member, clan_id, opts = {}) {
   const GRACE_DAYS = 30;
   const now = new Date();
   if (forceRegenerate && member.cert_locked_at) {
-    // Hard stop - cert is locked. Caller receives a structured refusal.
-    return {
-      storagePath: null,
-      issuedAt: null,
-      certNumber: null,
-      wasGenerated: false,
-      locked: true,
-      lockedAt: member.cert_locked_at,
-    };
+    // Cert is supposedly locked. Before we refuse, verify that a
+    // cert ACTUALLY exists for this member — because a known
+    // half-publish failure mode is: cert_locked_at gets stamped on
+    // the member row but the cert PDF never makes it to storage
+    // (e.g. due to a downstream error on the original publish
+    // attempt). The member is then stuck — they have a 'locked'
+    // row but no PDF to download, and forceRegenerate=true would
+    // be exactly what they need to recover.
+    //
+    // So: only honour the lock if at least one cert row exists for
+    // this member. Otherwise treat it as a half-publish and allow
+    // regeneration to fix the state.
+    const { data: anyExistingCert } = await supa()
+      .from('certificates')
+      .select('id')
+      .eq('clan_id', clan_id)
+      .eq('member_id', member.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (anyExistingCert) {
+      // Real lock — there IS a cert in the DB, and the member is
+      // past the grace window. Refuse regen.
+      return {
+        storagePath: null,
+        issuedAt: null,
+        certNumber: null,
+        wasGenerated: false,
+        locked: true,
+        lockedAt: member.cert_locked_at,
+      };
+    }
+    // No cert exists — this is a half-publish. Fall through and
+    // generate the PDF. The cert_locked_at stamp is preserved
+    // (it correctly records when the publish was first attempted)
+    // but the PDF generation goes ahead so the member isn't stuck.
+    console.warn('half-publish recovery: cert_locked_at set but no cert exists for member', member.id, '— regenerating');
   }
 
   // Look for an existing cert AT THE CURRENT VERSION first (unless forcing).

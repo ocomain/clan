@@ -383,18 +383,27 @@
             ${(() => {
               const hasPartner = !!member.partner_name;
               const hasChildrenList = Array.isArray(member.children_first_names) && member.children_first_names.length > 0;
-              const childrenVisible = !!member.children_visible_on_register && hasChildrenList;
+              // The dashboard is the MEMBER'S OWN view. They always see
+              // their full sealed record — partner and children — even
+              // when the public-register privacy flag is set to hide
+              // children's names. The privacy flag only gates what
+              // appears on the PUBLIC Register render path
+              // (register.js → register.html), not what the member
+              // themselves sees. Was previously gated on
+              // children_visible_on_register, which silently hid the
+              // 'with their child Roger' line on the member's own
+              // dashboard. That was wrong.
               const childCount = hasChildrenList ? member.children_first_names.length : 0;
               const childWord = childCount === 1 ? 'child' : 'children';
               const partnerFirst = hasPartner ? member.partner_name.trim().split(/\s+/).slice(0, -1).join(' ') || member.partner_name.trim() : null;
               let credit = null;
-              if (hasPartner && childrenVisible) {
+              if (hasPartner && hasChildrenList) {
                 const kids = member.children_first_names;
                 const formatted = kids.length === 1 ? kids[0] : kids.length === 2 ? `${kids[0]} and ${kids[1]}` : `${kids.slice(0, -1).join(', ')}, and ${kids[kids.length - 1]}`;
                 credit = `with ${escHtml(partnerFirst)}, and ${escHtml(formatted)}`;
-              } else if (hasPartner && !childrenVisible) {
+              } else if (hasPartner && !hasChildrenList) {
                 credit = `with ${escHtml(partnerFirst)}`;
-              } else if (!hasPartner && childrenVisible) {
+              } else if (!hasPartner && hasChildrenList) {
                 const kids = member.children_first_names;
                 const formatted = kids.length === 1 ? kids[0] : kids.length === 2 ? `${kids[0]} and ${kids[1]}` : `${kids.slice(0, -1).join(', ')}, and ${kids[kids.length - 1]}`;
                 credit = `with their ${childWord} ${escHtml(formatted)}`;
@@ -522,101 +531,7 @@
         ` : ''}
         ${certActionRow(member.ancestor_dedication ? 'Edit certificate details' : 'Add a dedication or correct my name')}
       </section>
-      `) : (() => {
-        // ── POST-PUBLISH RECORD PANEL ──────────────────────────────
-        // Shows the FULL sealed record — what was actually sealed
-        // onto the certificate. For family-tier members this means
-        // the formatted display name ('Peter Commane & Family')
-        // plus the credit line ('with their child Roger'), plus
-        // any ancestor dedication. The dedication WAS being shown
-        // here before but the family display + credit line were
-        // missing — only member.name was rendered, dropping all
-        // the family context. Bug fix.
-        //
-        // Display computation mirrors formatFamilyDisplay() in the
-        // publish modal (defined inline at line ~751) which mirrors
-        // the cert-helper computeFamilyDisplay(). Three places, one
-        // logic. This panel inlines the computation rather than
-        // hoisting the helper because it only needs the displayName
-        // + creditLine output, no DOM bindings, no chip logic.
-        const partnerName = (member.partner_name || '').trim();
-        const childList = Array.isArray(member.children_first_names)
-          ? member.children_first_names.filter(c => c && c.trim())
-          : [];
-        const baseName = member.name || '';
-        let sealedDisplay = baseName;
-        let sealedCredit = '';
-        if (partnerName && childList.length > 0) {
-          // Couple + children — '& Family' with credit listing all named family
-          sealedDisplay = `${baseName} & Family`;
-          const childWord = childList.length === 1 ? 'child' : 'children';
-          // Re-use formatList logic inline: 'A and B' for two, 'A, B, and C' for three+
-          const fmtList = (xs) => xs.length === 1 ? xs[0]
-            : xs.length === 2 ? `${xs[0]} and ${xs[1]}`
-            : `${xs.slice(0, -1).join(', ')}, and ${xs[xs.length - 1]}`;
-          sealedCredit = `with ${partnerName}, and ${fmtList(childList)}`;
-        } else if (partnerName) {
-          // Couple, no children — collapse names if same surname
-          const t1 = baseName.trim().split(/\s+/);
-          const t2 = partnerName.trim().split(/\s+/);
-          if (t1.length >= 2 && t2.length >= 2 &&
-              t1[t1.length - 1].toLowerCase() === t2[t2.length - 1].toLowerCase()) {
-            sealedDisplay = `${t1.slice(0, -1).join(' ')} & ${t2.slice(0, -1).join(' ')} ${t1[t1.length - 1]}`;
-          } else {
-            sealedDisplay = `${baseName.trim()} & ${partnerName.trim()}`;
-          }
-        } else if (childList.length > 0) {
-          // Single + children — '& Family' with their child(ren)
-          sealedDisplay = `${baseName} & Family`;
-          const childWord = childList.length === 1 ? 'child' : 'children';
-          const fmtList = (xs) => xs.length === 1 ? xs[0]
-            : xs.length === 2 ? `${xs[0]} and ${xs[1]}`
-            : `${xs.slice(0, -1).join(', ')}, and ${xs[xs.length - 1]}`;
-          sealedCredit = `with their ${childWord} ${fmtList(childList)}`;
-        }
-        // For solo members (no partner, no children), sealedDisplay
-        // is just the name and sealedCredit is empty. Same as before.
-
-        // Family-tier members also see partner / children rows
-        // broken out individually below the main name, so all the
-        // family context is visible at a glance — both as the
-        // sealed cert format AND as discrete fields.
-        const familyRows = member.tier_family ? `
-          ${partnerName ? `
-            <div class="mfam-row">
-              <div class="mfam-row-label">Partner</div>
-              <div class="mfam-row-value">${escHtml(partnerName)}</div>
-            </div>
-          ` : ''}
-          ${childList.length > 0 ? `
-            <div class="mfam-row">
-              <div class="mfam-row-label">${childList.length === 1 ? 'Child' : 'Children'}</div>
-              <div class="mfam-row-value">${childList.map(escHtml).join(' · ')}</div>
-            </div>
-          ` : ''}
-        ` : '';
-
-        return `
-      <section class="mfam" id="mfam-section">
-        <div class="mfam-eyebrow">Your Membership Record</div>
-        <div class="mfam-title">Sealed at <em>Newhall</em></div>
-        <div class="mfam-list">
-          <div class="mfam-row">
-            <div class="mfam-row-label">Name on cert</div>
-            <div class="mfam-row-value">${escHtml(sealedDisplay)}${sealedCredit ? `<div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:4px">${escHtml(sealedCredit)}</div>` : ''}</div>
-          </div>
-          ${familyRows}
-          ${member.ancestor_dedication ? `
-            <div class="mfam-row">
-              <div class="mfam-row-label">Dedication</div>
-              <div class="mfam-row-value" style="font-style:italic">${escHtml(member.ancestor_dedication)}</div>
-            </div>
-          ` : ''}
-        </div>
-        ${certActionRow(member.tier_family ? 'Edit family details &amp; privacy' : 'Edit privacy settings')}
-      </section>
-        `;
-      })()}
+      `) : ''}
 
       ${(isPublished && member.tier && /^(guardian|steward|life)-/.test(member.tier)) ? `
       <!-- Postal address card — Guardian+ only, AND only after the digital

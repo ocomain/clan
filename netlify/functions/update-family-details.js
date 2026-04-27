@@ -217,7 +217,7 @@ exports.handler = async (event) => {
     }
 
     // ── Generate cert PDF ─────────────────────────────────────────────────
-    // Generate on:
+    // Trigger cert generation when ANY of:
     //   - publishingNow (first publish via dashboard) — this IS the
     //     publication moment, the cert PDF is sealed at this point. Even
     //     if the user clicked Publish without changing any field, we still
@@ -227,11 +227,19 @@ exports.handler = async (event) => {
     //     publishingNow=false is if the member is already published, in
     //     which case ensureCertificate refuses regeneration via its
     //     cert_locked_at check.
+    //   - !privacyOnly  — covers the half-publish recovery path: a
+    //     row may have cert_locked_at stamped from a previous attempt
+    //     that didn't reach storage. ensureCertificate will detect
+    //     'no cert exists for this member' and regenerate even though
+    //     the lock is set, restoring the user from a stuck state.
+    //     Privacy-only saves (the dashboard tickbox autosave) skip
+    //     this so we don't run cert generation on every privacy
+    //     toggle.
     const certAffectingChange = familyChanged || nameChanged || ancestorChanged;
     let certUrl = null;
     let certLocked = false;
     let certResultForEmail = null;
-    if (publishingNow || certAffectingChange) {
+    if (publishingNow || certAffectingChange || !privacyOnly) {
       try {
         const certResult = await ensureCertificate(updated, clan_id, { forceRegenerate: true });
         if (certResult.locked) {
