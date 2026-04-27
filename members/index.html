@@ -154,6 +154,32 @@
     .mpriv-row input{margin-top:4px;width:16px;height:16px;cursor:pointer;flex-shrink:0}
     .mpriv-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:8px 0 0;line-height:1.6}
     .mpriv-status{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:10px;min-height:18px}
+
+    /* Invite-a-friend section. Same layout family as .mpriv but
+       with a form-grid inside. */
+    .minvite{max-width:720px;margin:0 auto 26px;background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:24px 28px;border-radius:2px}
+    .minvite-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+    .minvite-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);font-weight:400;line-height:1.3;margin-bottom:8px}
+    .minvite-sub{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.65;margin:0 0 18px;max-width:540px}
+    .minvite-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .minvite-field-full{grid-column:1 / -1}
+    .minvite-label{display:block;font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 6px}
+    .minvite-input,.minvite-textarea{width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:15.5px;padding:10px 12px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;transition:border-color .15s}
+    .minvite-input:focus,.minvite-textarea:focus{border-color:var(--gold)}
+    .minvite-textarea{resize:vertical;line-height:1.5;min-height:48px}
+    .minvite-help{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:6px 0 0;line-height:1.55}
+    .minvite-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:6px}
+    .minvite-send-btn{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--white);background:#6B1F1F;border:1px solid #4A1010;padding:11px 24px;border-radius:1px;cursor:pointer;transition:background .15s}
+    .minvite-send-btn:hover{background:#4A1010}
+    .minvite-send-btn:disabled{opacity:.55;cursor:wait}
+    .minvite-status{font-family:'EB Garamond',serif;font-size:14.5px;line-height:1.6;padding:12px 14px;border-radius:1px;margin-top:14px;display:none}
+    .minvite-status.show{display:block}
+    .minvite-status.success{background:rgba(184,151,90,.12);border-left:3px solid var(--gold);color:var(--ink-soft)}
+    .minvite-status.error{background:rgba(107,31,31,.07);border-left:3px solid #6B1F1F;color:#4A1010}
+    .minvite-status.warn{background:rgba(184,151,90,.16);border-left:3px solid #8B6F32;color:var(--ink-soft)}
+    @media (max-width:580px){
+      .minvite-grid{grid-template-columns:1fr}
+    }
     /* Upgrade card perks list — used in the clan-tier 'Two more benefits
        await as a Guardian' panel. Same visual register as the gift-tier
        perks on /membership.html: gold ✦ marker + serif body, comfortable
@@ -721,6 +747,43 @@
       </section>
       `}
 
+      <!-- Invite-a-friend section. Available to all active members.
+           Hybrid voicing: form takes recipient name + email + an
+           optional one-line personal note. The send produces a
+           clan-voiced introduction email with the optional note
+           prepended in italic, attributed to the inviter. Spam
+           guards (rate limit + dedup + unsubscribe-aware) live
+           server-side in send-invitation.js — the client is just
+           the form. -->
+      <section class="minvite" id="minvite">
+        <div class="minvite-eyebrow">Bring others to the clan</div>
+        <div class="minvite-title">Invite a family member or friend</div>
+        <p class="minvite-sub">Someone whose story is woven into yours might find a place here. Send them a personal note from your members area; the Herald introduces the clan. There is no obligation on the recipient — only an invitation.</p>
+
+        <form id="inviteForm" onsubmit="return false">
+          <div class="minvite-grid">
+            <div>
+              <label class="minvite-label" for="inviteName">Their name</label>
+              <input type="text" id="inviteName" class="minvite-input" placeholder="e.g. Mary Cummins" required autocomplete="off">
+            </div>
+            <div>
+              <label class="minvite-label" for="inviteEmail">Their email</label>
+              <input type="email" id="inviteEmail" class="minvite-input" placeholder="name@example.com" required autocomplete="off">
+            </div>
+            <div class="minvite-field-full">
+              <label class="minvite-label" for="inviteNote">A line from you <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+              <input type="text" id="inviteNote" class="minvite-input" placeholder="A line of welcome — leave blank for none" maxlength="200" autocomplete="off">
+              <p class="minvite-help">If filled, sits at the top of the email in italic, attributed to you. The Herald's clan introduction follows.</p>
+            </div>
+          </div>
+          <div class="minvite-actions">
+            <button type="submit" class="minvite-send-btn" id="inviteSendBtn">Send invitation →</button>
+            <span class="minvite-help" style="margin:0">Limit 5 per hour, 20 per day.</span>
+          </div>
+          <div class="minvite-status" id="inviteStatus"></div>
+        </form>
+      </section>
+
       <section class="mactions">
         <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/library.html">
           <div class="maction-eyebrow">Members only</div>
@@ -876,6 +939,93 @@
     }
     if (prvDedication) {
       prvDedication.addEventListener('change', savePrivacy);
+    }
+
+    // ── Invite-a-friend form handler ────────────────────────────────────
+    // Submits to /.netlify/functions/send-invitation with the auth
+    // session token. Server validates + applies rate limit + dedup +
+    // unsub gates; this client just renders the response.
+    const inviteForm = document.getElementById('inviteForm');
+    const inviteSendBtn = document.getElementById('inviteSendBtn');
+    const inviteStatus = document.getElementById('inviteStatus');
+    const inviteName = document.getElementById('inviteName');
+    const inviteEmail = document.getElementById('inviteEmail');
+    const inviteNote = document.getElementById('inviteNote');
+
+    function setInviteStatus(klass, html) {
+      inviteStatus.className = 'minvite-status show ' + klass;
+      inviteStatus.innerHTML = html;
+    }
+    function clearInviteStatus() {
+      inviteStatus.className = 'minvite-status';
+      inviteStatus.innerHTML = '';
+    }
+
+    if (inviteForm) {
+      inviteForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearInviteStatus();
+        const name = inviteName.value.trim();
+        const email = inviteEmail.value.trim().toLowerCase();
+        const note = inviteNote.value.trim();
+        if (!name) return setInviteStatus('error', '<strong>Please add their name.</strong>');
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return setInviteStatus('error', "<strong>That email looks off — please double-check.</strong>");
+        }
+        inviteSendBtn.disabled = true;
+        inviteSendBtn.textContent = 'Sending…';
+        try {
+          const session = await currentSession();
+          if (!session) { window.location.href = '/members/login.html'; return; }
+          const r = await fetch('/.netlify/functions/send-invitation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({ name, email, personal_note: note || undefined }),
+          });
+          const data = await r.json().catch(() => ({}));
+          if (r.status === 201 && data.ok) {
+            const remainingTxt = (typeof data.remaining_today === 'number')
+              ? ` You have ${data.remaining_today} invitation${data.remaining_today === 1 ? '' : 's'} left today.`
+              : '';
+            setInviteStatus('success', `<strong>Sent.</strong> The Herald has written to ${escapeHtmlForInvite(name)}.${remainingTxt}`);
+            inviteForm.reset();
+          } else if (r.status === 207) {
+            setInviteStatus('warn', `<strong>Recorded — but the email did not send.</strong> Please try again later or contact <a href="mailto:clan@ocomain.org" style="color:var(--gold-deep)">clan@ocomain.org</a>.`);
+            inviteForm.reset();
+          } else if (r.status === 409) {
+            setInviteStatus('error', `<strong>Cannot send.</strong> ${escapeHtmlForInvite(data.error || 'Already invited or already a member.')}`);
+          } else if (r.status === 429) {
+            setInviteStatus('error', `<strong>Pause needed.</strong> ${escapeHtmlForInvite(data.error || 'Too many invitations.')}`);
+          } else if (r.status === 403) {
+            setInviteStatus('error', `<strong>Cannot send.</strong> ${escapeHtmlForInvite(data.error || 'Access denied.')}`);
+          } else if (r.status === 400) {
+            setInviteStatus('error', `<strong>Check the form.</strong> ${escapeHtmlForInvite(data.error || 'Validation failed.')}`);
+          } else {
+            setInviteStatus('error', `<strong>Could not send.</strong> ${escapeHtmlForInvite(data.error || 'Unknown error.')}`);
+          }
+        } catch (err) {
+          console.error('invitation send failed:', err);
+          setInviteStatus('error', `<strong>Network error.</strong> Could not reach the server.`);
+        } finally {
+          inviteSendBtn.disabled = false;
+          inviteSendBtn.textContent = 'Send invitation →';
+        }
+      });
+    }
+
+    // Local escaper — the page's main escHtml is in a different
+    // scope. Standalone tiny version for invite messages.
+    function escapeHtmlForInvite(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // If the URL hash is #minvite (linked from welcome.html), scroll
+    // the section into view after a short delay so it lands centred.
+    if (window.location.hash === '#minvite') {
+      setTimeout(() => {
+        const sec = document.getElementById('minvite');
+        if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
     }
   }
 
