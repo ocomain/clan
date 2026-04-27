@@ -23,6 +23,7 @@
 const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
+const { computeFamilyDisplay } = require('./lib/generate-cert');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -118,20 +119,16 @@ exports.handler = async (event) => {
       // even if the user didn't edit anything — that's the act of confirming
       // and sealing the record).
       if (certAffectingChange || publishingNow) {
-        // Use the effective (possibly corrected) primary name when computing display_name
+        // Use the effective (possibly corrected) primary name when computing display_name.
+        // Logic centralised in lib/generate-cert.js so the database value matches the
+        // cert PDF and the public register entry — see computeFamilyDisplay() for the
+        // four canonical household types.
         const effectiveName = cleanName || member.name;
-        const hasPartner = !!cleanPartner;
-        const hasChildren = cleanChildren.length > 0;
-        let displayName;
-        if (hasPartner && hasChildren) {
-          displayName = `${effectiveName} & Family`;
-        } else if (hasPartner && !hasChildren) {
-          displayName = combineCoupleNames(effectiveName, cleanPartner);
-        } else if (!hasPartner && hasChildren) {
-          displayName = `${effectiveName} & Family`;
-        } else {
-          displayName = effectiveName;
-        }
+        const { displayName } = computeFamilyDisplay(
+          effectiveName,
+          cleanPartner,
+          cleanChildren
+        );
 
         update.partner_name = cleanPartner;
         update.children_first_names = cleanChildren.length > 0 ? cleanChildren : null;
@@ -298,17 +295,6 @@ exports.handler = async (event) => {
   }
 };
 
-function combineCoupleNames(name1, name2) {
-  const tokens1 = name1.trim().split(/\s+/);
-  const tokens2 = name2.trim().split(/\s+/);
-  if (tokens1.length >= 2 && tokens2.length >= 2) {
-    const surname1 = tokens1[tokens1.length - 1];
-    const surname2 = tokens2[tokens2.length - 1];
-    if (surname1.toLowerCase() === surname2.toLowerCase()) {
-      const first1 = tokens1.slice(0, -1).join(' ');
-      const first2 = tokens2.slice(0, -1).join(' ');
-      return `${first1} & ${first2} ${surname1}`;
-    }
-  }
-  return `${name1.trim()} & ${name2.trim()}`;
-}
+// (combineCoupleNames previously lived here as a local copy of the cert's
+// version. Now imported via computeFamilyDisplay from ./lib/generate-cert.js
+// — single source of truth for cert + register + dashboard.)

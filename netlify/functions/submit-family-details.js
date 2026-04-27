@@ -36,6 +36,7 @@
 const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
+const { computeFamilyDisplay } = require('./lib/generate-cert');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -143,20 +144,16 @@ exports.handler = async (event) => {
     // unchanged; if they edited it, the update is captured.
     const effectiveName = cleanName || member.name;
 
-    // Compute display_name_on_register from family composition, using
-    // the effective (possibly corrected) primary name.
-    const hasPartner = !!cleanPartner;
-    const hasChildren = cleanChildren.length > 0;
-    let displayName;
-    if (hasPartner && hasChildren) {
-      displayName = `${effectiveName} & Family`;
-    } else if (hasPartner && !hasChildren) {
-      displayName = combineCoupleNames(effectiveName, cleanPartner);
-    } else if (!hasPartner && hasChildren) {
-      displayName = `${effectiveName} & Family`;
-    } else {
-      displayName = effectiveName;
-    }
+    // Compute display_name_on_register from family composition via the
+    // shared helper. Same logic the cert generator uses, ensuring the
+    // sealed cert and the dashboard's "Name on the Register" field
+    // always show the same string. (See generate-cert.js for the four
+    // canonical household types this handles.)
+    const { displayName } = computeFamilyDisplay(
+      effectiveName,
+      cleanPartner,
+      cleanChildren
+    );
 
     const wantsPublic = !!publicRegisterVisible && canAppearOnPublicRegister(member.tier);
     const wantsChildrenPublic = !!childrenVisibleOnRegister && wantsPublic;
@@ -349,21 +346,7 @@ exports.handler = async (event) => {
   }
 };
 
-// Helper: combine two adult names. Mirrors the same logic in generate-cert.js
-// so the display_name_on_register stored in the DB matches what the cert
-// renders. If both adults share a final-token surname, collapse to
-// "First1 & First2 SharedSurname"; otherwise keep both full.
-function combineCoupleNames(name1, name2) {
-  const tokens1 = name1.trim().split(/\s+/);
-  const tokens2 = name2.trim().split(/\s+/);
-  if (tokens1.length >= 2 && tokens2.length >= 2) {
-    const surname1 = tokens1[tokens1.length - 1];
-    const surname2 = tokens2[tokens2.length - 1];
-    if (surname1.toLowerCase() === surname2.toLowerCase()) {
-      const first1 = tokens1.slice(0, -1).join(' ');
-      const first2 = tokens2.slice(0, -1).join(' ');
-      return `${first1} & ${first2} ${surname1}`;
-    }
-  }
-  return `${name1.trim()} & ${name2.trim()}`;
-}
+// (combineCoupleNames previously lived here as a local copy of the cert's
+// version. It's now imported from ./lib/generate-cert.js as part of
+// computeFamilyDisplay, ensuring there's one source of truth and the
+// register format can never drift from the cert format.)

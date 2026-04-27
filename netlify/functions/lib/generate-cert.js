@@ -197,8 +197,10 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   });
 
   // ── FAMILY FORMAT: heraldic letters-patent convention ────────────────────
-  // Primary grantee in main body (large), family acknowledged below as
-  // a smaller credit line. Three real-world household types handled:
+  // The four real-world household types are handled by computeFamilyDisplay
+  // (defined at the bottom of this file). Same logic now also drives the
+  // public register page, ensuring sealed-cert and register-listing always
+  // match exactly.
   //
   //   couple + children:   "JOHN CUMMINS & FAMILY"
   //                        with Mary Cummins, and Saoirse, Liam, and Aoife
@@ -207,33 +209,12 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   //                        (no credit line — both adults are in the main body)
   //
   //   single + children:   "MARY CUMMINS & FAMILY"
-  //                        with her children Saoirse, Liam, and Aoife
+  //                        with their children Saoirse, Liam, and Aoife
   //
   //   individual / no family details: just "JOHN CUMMINS"
-  const hasPartner = partnerName && partnerName.trim();
-  const hasChildren = Array.isArray(childrenFirstNames) && childrenFirstNames.filter(c => c && c.trim()).length > 0;
-  const cleanChildren = hasChildren ? childrenFirstNames.filter(c => c && c.trim()).map(c => c.trim()) : [];
-
-  let displayName, creditLine;
-  if (hasPartner && hasChildren) {
-    // Couple + children
-    displayName = `${name} & Family`;
-    creditLine = `with ${partnerName.trim()}, and ${formatNameList(cleanChildren)}`;
-  } else if (hasPartner && !hasChildren) {
-    // Couple, no children — combine surnames intelligently
-    // If both share a surname (likely), render as "John & Mary Cummins"
-    // Otherwise fall back to "John Cummins & Mary [Surname]"
-    displayName = combineCoupleNames(name, partnerName.trim());
-    creditLine = null;
-  } else if (!hasPartner && hasChildren) {
-    // Single parent + children
-    displayName = `${name} & Family`;
-    creditLine = `with their children ${formatNameList(cleanChildren)}`;
-  } else {
-    // Individual member — no family details
-    displayName = name;
-    creditLine = null;
-  }
+  const { displayName, creditLine } = computeFamilyDisplay(
+    name, partnerName, childrenFirstNames
+  );
 
   // Recipient name — large gold italic, the emotional centre of the cert
   const recipientSize = 34;
@@ -597,7 +578,117 @@ function drawArcTextBottom(page, { text, font, size, color, centerX, centerY, ra
   });
 }
 
-module.exports = { generateCertificate };
+// computeFamilyDisplay — given the canonical inputs, return the {displayName,
+// creditLine} pair used on the cert. This is the SOURCE OF TRUTH for how a
+// member's name is rendered; the cert calls this directly, the publish
+// endpoint uses it to compute display_name_on_register, and the register
+// endpoint uses it (via computeRegisterCreditLine below) to build the
+// public-facing entry. Keeping all three in lock-step prevents the kind
+// of drift where the cert says "John Cummins & Family" and the register
+// page says something else.
+//
+// Inputs:
+//   name              - primary member's full name (string, required)
+//   partnerName       - partner's full name (string or null/empty)
+//   childrenFirstNames - array of children's first names (under 18s only,
+//                        per project policy — over-18s buy their own
+//                        memberships and don't appear in this list)
+//
+// Returns: { displayName, creditLine }
+//   displayName - the large heraldic name on the cert (e.g. "JOHN CUMMINS &
+//                 FAMILY"). On the cert it's UPPERCASED at render time; here
+//                 we return the title-cased form, callers uppercase if
+//                 needed.
+//   creditLine  - the small italic line under the displayName on the cert,
+//                 or null when there's no family detail to credit (solo
+//                 member or named couple).
+function computeFamilyDisplay(name, partnerName, childrenFirstNames) {
+  const hasPartner = partnerName && partnerName.trim();
+  const hasChildren = Array.isArray(childrenFirstNames)
+    && childrenFirstNames.filter(c => c && c.trim()).length > 0;
+  const cleanChildren = hasChildren
+    ? childrenFirstNames.filter(c => c && c.trim()).map(c => c.trim())
+    : [];
+
+  if (hasPartner && hasChildren) {
+    return {
+      displayName: `${name} & Family`,
+      creditLine:  `with ${partnerName.trim()}, and ${formatNameList(cleanChildren)}`,
+    };
+  }
+  if (hasPartner && !hasChildren) {
+    return {
+      displayName: combineCoupleNames(name, partnerName.trim()),
+      creditLine:  null,
+    };
+  }
+  if (!hasPartner && hasChildren) {
+    return {
+      displayName: `${name} & Family`,
+      creditLine:  `with their children ${formatNameList(cleanChildren)}`,
+    };
+  }
+  // Individual member — no family details
+  return { displayName: name, creditLine: null };
+}
+
+// computeRegisterCreditLine — like computeFamilyDisplay's creditLine output,
+// but with the additional children-opted-out branch the cert doesn't need.
+// On the cert (private), children's names always appear when they exist.
+// On the public register, the children_visible_on_register flag gates
+// whether the names are shown. When children EXIST but are opted out:
+//
+//   - couple + opted-out kids → "with [Partner], and children"
+//   - single + opted-out kids → "with children"
+//
+// The displayName is always identical to the cert's displayName (always
+// shows "& Family" when children exist) — only the credit line differs.
+//
+// Inputs: same as computeFamilyDisplay PLUS:
+//   childrenVisible - boolean, the public_register's per-row gate for
+//                     whether children's names appear publicly
+//
+// Returns: { displayName, creditLine } with the same shape as
+// computeFamilyDisplay; can be used as a drop-in replacement on the
+// register page.
+function computeRegisterDisplay(name, partnerName, childrenFirstNames, childrenVisible) {
+  const hasPartner = partnerName && partnerName.trim();
+  const hasChildren = Array.isArray(childrenFirstNames)
+    && childrenFirstNames.filter(c => c && c.trim()).length > 0;
+
+  // If children exist AND are opted in, fall through to the cert logic.
+  // (Same output, no divergence between sealed cert and public register.)
+  if (childrenVisible || !hasChildren) {
+    return computeFamilyDisplay(name, partnerName, childrenFirstNames);
+  }
+
+  // Children exist BUT opted out of public register.
+  // Display name still says "& Family" (the family-tier nature of the
+  // entry isn't a privacy issue; only the children's names are).
+  // Credit line gets the redacted form.
+  if (hasPartner) {
+    return {
+      displayName: `${name} & Family`,
+      creditLine:  `with ${partnerName.trim()}, and children`,
+    };
+  }
+  return {
+    displayName: `${name} & Family`,
+    creditLine:  `with children`,
+  };
+}
+
+module.exports = {
+  generateCertificate,
+  // Exported for the publish endpoint and the public register endpoint
+  // so they can compute the same family-display strings without
+  // duplicating the logic. Keep these in sync — drift between them is
+  // exactly the bug we're trying to prevent.
+  computeFamilyDisplay,
+  computeRegisterDisplay,
+  formatNameList,
+  combineCoupleNames,
+};
 
 // ──────────────────────────────────────────────────────────────────────────
 // Name-list helpers used by the family-format rendering above.

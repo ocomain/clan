@@ -41,6 +41,7 @@
 // consented to publish at sealing time.
 
 const { supa, clanId } = require('./lib/supabase');
+const { computeRegisterDisplay } = require('./lib/generate-cert');
 
 const REGISTER_TIERS = [
   'guardian-ind', 'guardian-fam',
@@ -62,12 +63,16 @@ const TIER_WEIGHT = {
 // split on whitespace; takes everything except the last token. Privacy-
 // respecting — keeps the partner's surname out of the public credit line
 // since it's already implicit in the family display name above.
-function extractFirstName(fullName) {
-  if (!fullName) return null;
-  const tokens = fullName.trim().split(/\s+/);
-  if (tokens.length <= 1) return tokens[0] || null;
-  return tokens.slice(0, -1).join(' ');
-}
+//
+// (No longer used here — credit line is now computed by the shared cert
+// helper, which uses the partner's full name. Kept for reference; can
+// remove on next refactor.)
+// function extractFirstName(fullName) {
+//   if (!fullName) return null;
+//   const tokens = fullName.trim().split(/\s+/);
+//   if (tokens.length <= 1) return tokens[0] || null;
+//   return tokens.slice(0, -1).join(' ');
+// }
 
 exports.handler = async (event) => {
   // Reject non-GET — this endpoint is read-only.
@@ -113,40 +118,36 @@ exports.handler = async (event) => {
       return new Date(a.joined_at) - new Date(b.joined_at);
     });
 
-    // Shape the response. Strip raw children list if opt-out, just to
-    // be defensive — the SELECT shouldn't have returned it but we're
-    // being doubly careful given the privacy stakes for kids' names.
-    //
-    // The page renders a credit line that mirrors the cert PDF exactly:
-    //   couple+children → 'with Anita, and Saoirse, Cillian, and Eabha'
-    //   couple no kids  → no credit line (display_name has both adults)
-    //   single+children → 'with their children Saoirse, Cillian, and Eabha'
-    //   solo            → no credit line
-    //
-    // We pass partner_name AND children_first_names_array (arr) so the
-    // page can build the credit line in JS. partner_name is a privacy-
-    // safe disclosure here because it's already on the cert and the
-    // dashboard, AND the member explicitly opted into public visibility
-    // by ticking public_register_visible.
-    const members = sorted.map(m => ({
-      // No 'id' or 'email' returned — public payload, never expose
-      // internal IDs or emails to anonymous viewers.
-      display_name: m.display_name_on_register || m.name,
-      tier:         m.tier,
-      tier_label:   m.tier_label,
-      ancestor_dedication: m.ancestor_dedication || null,
-      joined_at:    m.joined_at,
-      // Partner first name only (privacy-respecting — full surname is
-      // implicit when display_name carries the family surname). If the
-      // partner_name has multiple tokens, take everything except the
-      // last token (handles compound first names like 'Mary Catherine').
-      partner_first: m.partner_name ? extractFirstName(m.partner_name) : null,
-      // Children's first names array, only when opted in. Used by the
-      // page to format with serial commas and 'and' before the last name.
-      children:     m.children_visible_on_register
-                      ? (m.children_first_names || null)
-                      : null,
-    }));
+    // For every row, recompute display + credit_line via the SAME helper
+    // the cert generator uses. This guarantees what's sealed on the cert
+    // matches what appears on the public register, with one exception:
+    // the register's children_visible_on_register gate. When children
+    // exist but are opted out, computeRegisterDisplay returns the
+    // redacted credit line ('with [Partner], and children' or 'with
+    // children') instead of naming them. The cert shows children
+    // unconditionally (it's private to the household), the register
+    // gates them. Display name itself is identical in both cases —
+    // only the credit line under the name differs.
+    const members = sorted.map(m => {
+      const { displayName, creditLine } = computeRegisterDisplay(
+        m.name,
+        m.partner_name,
+        m.children_first_names,
+        m.children_visible_on_register === true
+      );
+      return {
+        // No 'id' or 'email' returned — public payload, never expose
+        // internal IDs or emails to anonymous viewers.
+        display_name: displayName || m.display_name_on_register || m.name,
+        // Optional small italic line under the name. null when no
+        // family detail to credit (solo member or named couple).
+        credit_line:  creditLine,
+        tier:         m.tier,
+        tier_label:   m.tier_label,
+        ancestor_dedication: m.ancestor_dedication || null,
+        joined_at:    m.joined_at,
+      };
+    });
 
     return {
       statusCode: 200,
