@@ -134,4 +134,40 @@ function canAppearOnPublicRegister(tierKey) {
   return !tierKey.startsWith('clan-');
 }
 
-module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister };
+// ─────────────────────────────────────────────────────────────────────────
+// Founder admin tool: auth allowlist
+//
+// The founder-gift admin tool (and any future admin-only endpoints) is
+// scoped to a small set of allowlisted email addresses. For now that's
+// just clan@ocomain.org — Linda's address. Fergus works through her, or
+// via her session, keeping the tool's blast radius small and the access
+// control simple. Adding more addresses later is a one-line edit here.
+//
+// IMPORTANT: this is a defense-in-depth check. The PRIMARY authentication
+// is the standard Supabase JWT verification (auth.getUser). This helper
+// runs AFTER that succeeds, on the verified email, to confirm the
+// authenticated user is one of the allowlisted operators.
+//
+// Usage in a Netlify function:
+//
+//   const authUser = (await supa().auth.getUser(token)).data?.user;
+//   if (!isFounderAdmin(authUser?.email)) {
+//     return { statusCode: 403, body: JSON.stringify({ error: 'Not permitted' }) };
+//   }
+//
+// Returns true ONLY if email is in the allowlist (case-insensitive,
+// whitespace-trimmed). Returns false for any nullish or non-matching
+// input — never throws.
+const FOUNDER_ADMIN_ALLOWLIST = new Set([
+  'clan@ocomain.org',
+  // Add additional admin emails here, lowercase, one per line.
+  // Anyone added here gets full founder-gift admin access — no
+  // tier-of-permission system, no per-action gating. Add carefully.
+]);
+
+function isFounderAdmin(email) {
+  if (!email || typeof email !== 'string') return false;
+  return FOUNDER_ADMIN_ALLOWLIST.has(email.toLowerCase().trim());
+}
+
+module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister, isFounderAdmin };

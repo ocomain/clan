@@ -4,10 +4,15 @@
 // Uses Resend (RESEND_API_KEY env var). Supports optional attachments
 // (used by publication-confirmation email to include the cert PDF).
 //
-// Sender convention: 'Clan Ó Comáin <clan@ocomain.org>'.
+// Sender convention: defaults to 'Clan Ó Comáin <clan@ocomain.org>'
+// for transactional emails. The founder welcome email overrides this
+// to 'Fergus Commane <clan@ocomain.org>' so recipients see Fergus's
+// name in their inbox — important when his network reads the email,
+// since they recognise him personally where the clan name might land
+// as institutional.
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM = 'Clan Ó Comáin <clan@ocomain.org>';
+const DEFAULT_FROM = 'Clan Ó Comáin <clan@ocomain.org>';
 
 /**
  * Send an email via Resend.
@@ -16,18 +21,22 @@ const FROM = 'Clan Ó Comáin <clan@ocomain.org>';
  * @param {string} opts.to            - recipient email address
  * @param {string} opts.subject       - subject line
  * @param {string} opts.html          - HTML body
+ * @param {string} [opts.from]        - optional From-field override (e.g.
+ *                                       'Fergus Commane <clan@ocomain.org>'
+ *                                       for the founder welcome email).
+ *                                       Defaults to 'Clan Ó Comáin <clan@ocomain.org>'.
  * @param {Object[]} [opts.attachments] - optional Resend-format attachments
  *                                        each: { filename, content (base64) }
  * @param {string|string[]} [opts.bcc] - optional BCC
  * @returns {Promise<boolean>} true if 2xx response
  */
-async function sendEmail({ to, subject, html, attachments, bcc }) {
+async function sendEmail({ to, subject, html, from, attachments, bcc }) {
   if (!RESEND_API_KEY) {
     console.error('RESEND_API_KEY not configured — skipping email send');
     return false;
   }
 
-  const body = { from: FROM, to, subject, html };
+  const body = { from: from || DEFAULT_FROM, to, subject, html };
   if (Array.isArray(attachments) && attachments.length) body.attachments = attachments;
   if (bcc) body.bcc = bcc;
 
