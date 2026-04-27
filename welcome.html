@@ -239,30 +239,43 @@
         <div class="wel-look-card-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome — posted from Newhall House. The most enduring Irish gift there is.</div>
       </a>
 
-      <!-- Invite to join. Routes to the dashboard's invitations
-           section (#minvite) where the actual invite form lives.
-           Reason for routing rather than embedding the form here:
-           welcome.html is a post-Stripe landing page and the buyer
-           may not yet have an active Supabase session. The invite
-           form requires auth (rate-limit + dedup keyed on the
-           inviting member). Sending them to the dashboard handles
-           the magic-link sign-in flow automatically and lands them
-           right at the form. -->
-      <a href="/members/#minvite" class="wel-look-card live" style="text-decoration:none;color:inherit;display:block;border-top:3px solid var(--gold);position:relative;padding-top:32px">
+      <!-- Invite to join — inline form. Sends an invitation directly
+           from the welcome page when the visitor has an active
+           Supabase session (the common case post-Stripe-purchase or
+           post-magic-link). When there is no session yet, the form
+           tells the visitor to sign in first via the standard
+           Members' Area button at the bottom of this page; the
+           dashboard's invite section is then ready to use.
+
+           The form posts to the same /.netlify/functions/send-invitation
+           endpoint as the dashboard form. Server enforces all spam
+           guards (rate limit + dedup + unsub-aware). -->
+      <div class="wel-look-card live" id="welInviteCard" style="border-top:3px solid var(--gold);position:relative;padding-top:32px">
         <!-- Envelope-with-flying-arrow icon: 'send' / 'invite' -->
         <svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px" aria-hidden="true">
-          <!-- Envelope body -->
           <rect x="6" y="14" width="30" height="22" rx="1"/>
-          <!-- Envelope flap (open) -->
           <path d="M6 14 L 21 26 L 36 14"/>
-          <!-- Outgoing arrow (suggesting 'send') -->
           <line x1="32" y1="36" x2="44" y2="24"/>
           <polyline points="38 24 44 24 44 30"/>
         </svg>
         <div class="wel-look-card-eyebrow">Invite</div>
-        <div class="wel-look-card-title">Invite a family member to join</div>
-        <div class="wel-look-card-desc">Share the clan with someone who would care about it — a sibling, a parent, a cousin abroad. Send a personal note from your members area; the Herald writes the rest.</div>
-      </a>
+        <div class="wel-look-card-title" style="margin-bottom:8px">Invite a family member or friend</div>
+        <div class="wel-look-card-desc" style="margin-bottom:18px">Send a personal note from your members area; the Herald introduces the clan. There is no obligation on the recipient — only an invitation, freely given.</div>
+
+        <form id="welInviteForm" onsubmit="return false" style="text-align:left">
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px">
+            <input type="text" id="welInviteName" placeholder="Their name" autocomplete="off" required
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+            <input type="email" id="welInviteEmail" placeholder="Their email" autocomplete="off" required
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+            <input type="text" id="welInviteNote" placeholder="A line of welcome (optional)" maxlength="200" autocomplete="off"
+              style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          </div>
+          <button type="submit" id="welInviteSendBtn"
+            style="width:100%;font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--white);background:#6B1F1F;border:1px solid #4A1010;padding:12px 22px;border-radius:1px;cursor:pointer;transition:background .15s">Send invitation →</button>
+          <div id="welInviteStatus" style="display:none;font-family:'EB Garamond',serif;font-size:14px;line-height:1.55;padding:10px 12px;border-radius:1px;margin-top:10px"></div>
+        </form>
+      </div>
 
     </div>
   </div>
@@ -376,6 +389,110 @@
   }
 
 })();
+</script>
+
+<!-- Invite-a-friend module script. Imports the auth helpers from
+     /members/auth.js and wires the inline invite form. Runs only
+     if the form element is present (it's hidden for gift visitors
+     via the existing isGift section toggle). -->
+<script type="module">
+  import { currentSession } from '/members/auth.js';
+
+  const form = document.getElementById('welInviteForm');
+  if (form) {
+    const btn = document.getElementById('welInviteSendBtn');
+    const statusEl = document.getElementById('welInviteStatus');
+    const nameEl = document.getElementById('welInviteName');
+    const emailEl = document.getElementById('welInviteEmail');
+    const noteEl = document.getElementById('welInviteNote');
+
+    function escHtml(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function setStatus(kind, html) {
+      // kind: 'success' | 'error' | 'warn'
+      const colours = {
+        success: { bg: 'rgba(184,151,90,.12)', border: '#B8975A', text: '#3D2D1F' },
+        error:   { bg: 'rgba(107,31,31,.07)',  border: '#6B1F1F', text: '#4A1010' },
+        warn:    { bg: 'rgba(184,151,90,.16)', border: '#8B6F32', text: '#3D2D1F' },
+      };
+      const c = colours[kind] || colours.error;
+      statusEl.style.cssText = `display:block;font-family:'EB Garamond',serif;font-size:14px;line-height:1.55;padding:10px 12px;border-radius:1px;margin-top:10px;background:${c.bg};border-left:3px solid ${c.border};color:${c.text}`;
+      statusEl.innerHTML = html;
+    }
+    function clearStatus() {
+      statusEl.style.display = 'none';
+      statusEl.innerHTML = '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearStatus();
+      const name = nameEl.value.trim();
+      const email = emailEl.value.trim().toLowerCase();
+      const note = noteEl.value.trim();
+
+      if (!name) return setStatus('error', '<strong>Please add their name.</strong>');
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return setStatus('error', '<strong>That email looks off — please double-check.</strong>');
+      }
+
+      // Check for an active session. If none, prompt to sign in
+      // first via the Members' Area button rather than trying to
+      // send unauthenticated.
+      let session;
+      try {
+        session = await currentSession();
+      } catch (err) {
+        console.error('session check failed:', err);
+      }
+      if (!session) {
+        setStatus('warn',
+          '<strong>Sign in first to send.</strong> Open your Members\' Area below — once signed in, send your invitation from the dashboard, or come back here and try again.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const r = await fetch('/.netlify/functions/send-invitation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ name, email, personal_note: note || undefined }),
+        });
+        const data = await r.json().catch(() => ({}));
+
+        if (r.status === 201 && data.ok) {
+          const remainingTxt = (typeof data.remaining_today === 'number')
+            ? ` You have ${data.remaining_today} invitation${data.remaining_today === 1 ? '' : 's'} left today.`
+            : '';
+          setStatus('success', `<strong>Sent.</strong> The Herald has written to ${escHtml(name)}.${remainingTxt}`);
+          form.reset();
+        } else if (r.status === 207) {
+          setStatus('warn', '<strong>Recorded — but the email did not send.</strong> Please try again later, or write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>.');
+          form.reset();
+        } else if (r.status === 409) {
+          setStatus('error', `<strong>Cannot send.</strong> ${escHtml(data.error || 'Already invited or already a member.')}`);
+        } else if (r.status === 429) {
+          setStatus('error', `<strong>Pause needed.</strong> ${escHtml(data.error || 'Too many invitations.')}`);
+        } else if (r.status === 403) {
+          setStatus('error', `<strong>Cannot send.</strong> ${escHtml(data.error || 'Access denied.')}`);
+        } else if (r.status === 401) {
+          setStatus('warn', '<strong>Session expired.</strong> Please open the Members\' Area below to sign in again.');
+        } else if (r.status === 400) {
+          setStatus('error', `<strong>Check the form.</strong> ${escHtml(data.error || 'Validation failed.')}`);
+        } else {
+          setStatus('error', `<strong>Could not send.</strong> ${escHtml(data.error || 'Unknown error.')}`);
+        }
+      } catch (err) {
+        console.error('invitation send failed:', err);
+        setStatus('error', '<strong>Network error.</strong> Could not reach the server.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send invitation →';
+      }
+    });
+  }
 </script>
 
 </body>
