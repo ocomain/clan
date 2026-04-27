@@ -1637,7 +1637,7 @@
           </div>
 
           <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">The Clan Herald</div>
-          <div id="sealMsg" style="font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.5;min-height:60px;max-width:480px;margin:0 auto;transition:opacity .4s">"I take up the quill…"</div>
+          <div id="sealMsg" style="font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.5;min-height:60px;max-width:480px;margin:0 auto;transition:opacity .35s ease">"I take up the quill…"</div>
 
           <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-top:22px">Newhall House · Co. Clare</div>
         </div>
@@ -1645,26 +1645,42 @@
           @keyframes sealSpin { to { transform: rotate(360deg); } }
         </style>
       `;
-      // Three quoted lines from the Herald — narrating the act of sealing
-      // in his voice. Same register as his join-chat lines: ceremonious,
-      // first person, formal Hiberno-English.
+      // Four quoted lines from the Herald — narrating the act of
+      // sealing in his voice. Same register as his join-chat lines:
+      // ceremonious, first person, formal Hiberno-English. The new
+      // third line ('The seal of Ó Comáin is taken to the wax…')
+      // names the physical sealing moment between 'entered in the
+      // Register' and 'done'. User feedback was that the previous
+      // 3-message sequence advanced too quickly to read each line —
+      // hence both more lines AND slower per-line dwell below.
       const messages = [
         '"I take up the quill…"',
         '"Your name is entered in the Register at Newhall…"',
+        '"The seal of Ó Comáin is taken to the wax…"',
         '"It is done. Your certificate is sealed."',
       ];
       const sealMsg = document.getElementById('sealMsg');
+      // Per-message dwell raised from 1.1s → 2.0s and the fade slowed
+      // from 200ms → 350ms (CSS transition matched). Total time
+      // before the final 'It is done' beat: 3 × (2.0 + 0.35) ≈ 7s,
+      // versus ~2.6s previously. The final beat holds during the
+      // actual API call which takes 10-15s, so the whole ceremony
+      // reads as a measured rite — first the quill, then the
+      // register, then the wax, then the seal — rather than a quick
+      // status-message blur before a long pause.
       for (let i = 1; i < messages.length; i++) {
-        await new Promise(r => setTimeout(r, 1100));
+        await new Promise(r => setTimeout(r, 2000));
         if (sealMsg) {
           sealMsg.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 200));
+          await new Promise(r => setTimeout(r, 350));
           sealMsg.textContent = messages[i];
           sealMsg.style.opacity = '1';
         }
       }
-      // Hold the final 'Sealing your certificate.' beat for ~600ms before
-      // the actual save fires. Total ceremony ~3 seconds.
+      // Hold the final beat ~600ms before the actual save fires; the
+      // API call itself then extends this hold for as long as it
+      // takes the server to generate and store the cert PDF. Total
+      // ceremony ~7s of message arc + however long the API takes.
       await new Promise(r => setTimeout(r, 600));
     }
 
