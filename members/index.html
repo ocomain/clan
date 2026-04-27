@@ -797,8 +797,8 @@
 
     const lockedBanner = isPublished ? `
       <div style="background:rgba(184,151,90,.12);border:1px solid rgba(184,151,90,.35);border-left:3px solid var(--gold);padding:14px 18px;margin:0 0 22px;border-radius:2px">
-        <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Certificate sealed</div>
-        <p style="font-family:'EB Garamond',serif;font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:0">A cert is a one-time heraldic instrument. Your name and dedication were sealed onto it at publication and cannot be edited. Family details and Register privacy may still be updated below — those affect your entry in the Register at Newhall House. To request a re-issue with corrections, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>.</p>
+        <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Certificate published</div>
+        <p style="font-family:'EB Garamond',serif;font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:0">A cert is a one-time heraldic instrument. Yours has been published and sealed. Edits here update your entry in the Register at Newhall House but do not regenerate the PDF. To request a re-issue, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>.</p>
       </div>
     ` : '';
 
@@ -812,7 +812,7 @@
       <div style="max-width:680px;width:100%;background:var(--cream);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:32px 32px 28px;border-radius:2px;margin:20px 0">
         <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">${isPublished ? 'Edit your record' : 'Publish your certificate'}</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 10px">${isPublished ? 'Your certificate details' : 'Confirm and publish your certificate'}</h3>
-        <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">${isPublished ? 'Your name and ancestor dedication were sealed onto the certificate and are now permanent. Family details and Register privacy may still be updated below.' : 'Refine the details below — the preview updates live. When the certificate is exactly as you want it, click Publish. Once published, it is sealed.'}</p>
+        <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">${isPublished ? 'Edits here update your entry in the Register at Newhall House. Your published cert PDF is sealed and unchanged.' : 'Refine the details below — the preview updates live. When the certificate is exactly as you want it, click Publish. Once published, it is sealed.'}</p>
 
         ${lockedBanner}
 
@@ -839,19 +839,9 @@
         </div>
         ` : ''}
 
-        <!-- Name on cert. When published, this field is LOCKED — the
-             name was sealed onto the cert and the cert is a one-time
-             instrument. Edits here are not respected by the cert PDF
-             (which is locked) so allowing them would create drift
-             between what's printed on the framed cert and what's in
-             the dashboard. To request a correction, members write to
-             clan@ocomain.org for a manual re-issue.
-             Same gating applies to the ancestor dedication below. -->
-        <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name on the certificate ${isPublished ? '<span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none;font-style:italic">— sealed</span>' : ''}</label>
-        ${isPublished
-          ? `<div style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:rgba(184,151,90,.06);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink-muted);margin-bottom:18px;font-style:italic">${escHtml(member.name || '')}</div><input type="hidden" id="famModalName" value="${escHtml(member.name || '')}">`
-          : `<input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:18px">`
-        }
+        <!-- Name on cert -->
+        <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name on the certificate</label>
+        <input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:18px">
 
         <!-- Ancestor dedication — structured (prefix chooser + name field).
              Splits the dedication into two parts so users can't accidentally
@@ -863,18 +853,9 @@
                 =  "In memory of my grandfather, Patrick Cummins, 1908-1984"
 
              A 4th 'Custom...' option lets advanced users write a fully bespoke
-             dedication if neither 'In memory of' / 'In honour of' / 'For' fits.
-
-             LOCKED post-publish — the dedication is sealed onto the cert
-             alongside the name. Same logic: edits would create drift
-             between cert and Register; sealing means sealing.  -->
-        <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">An ancestor you wish to honour ${isPublished ? '<span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none;font-style:italic">— sealed</span>' : '<span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span>'}</label>
-        ${isPublished
-          ? (member.ancestor_dedication
-              ? `<div style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:rgba(184,151,90,.06);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink-muted);margin-bottom:18px;font-style:italic;line-height:1.5">${escHtml(member.ancestor_dedication)}</div><input type="hidden" id="famModalAncestor" value="${escHtml(member.ancestor_dedication)}">`
-              : `<div style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:14.5px;padding:10px 14px;background:rgba(184,151,90,.04);border:1px dashed var(--gold-border);border-radius:1px;color:var(--ink-muted);margin-bottom:18px;font-style:italic">No dedication was set down at sealing.</div><input type="hidden" id="famModalAncestor" value="">`
-            )
-          : `<div id="famAncestorChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px"></div>
+             dedication if neither 'In memory of' / 'In honour of' / 'For' fits. -->
+        <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">An ancestor you wish to honour <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
+        <div id="famAncestorChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px"></div>
         <input type="text" id="famModalAncestorDetail" value="" placeholder="my grandfather, Patrick Cummins of Ennistymon, 1908&ndash;1984" maxlength="140" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:6px">
         <!-- Hidden input keeps the legacy single-string interface for save-handler compatibility -->
         <input type="hidden" id="famModalAncestor" value="${escHtml(member.ancestor_dedication || '')}">
@@ -886,8 +867,7 @@
             <li style="margin-bottom:4px"><strong style="color:var(--ink);font-style:normal">For</strong> Bridget Comyn of Doonbeg, who kept the name</li>
             <li style="margin-bottom:0">Or write the whole line yourself with <strong style="color:var(--ink);font-style:normal">Custom…</strong></li>
           </ul>
-        </div>`
-        }
+        </div>
 
         ${isFamilyTier ? `
         <!-- Family (only for Family tier) -->
