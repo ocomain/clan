@@ -24,6 +24,8 @@ const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/sup
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 const { computeFamilyDisplay } = require('./lib/generate-cert');
+const { recordConversion, evaluateSponsorTitles } = require('./lib/sponsor-service');
+const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -285,6 +287,83 @@ exports.handler = async (event) => {
         }
       } catch (keepsakeErr) {
         console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
+      }
+
+      // SPONSORSHIP CHAIN — if this newly-published member came
+      // through an invitation, record the conversion and reward
+      // the sponsor. Three steps, all best-effort:
+      //
+      //   1. recordConversion: stamp invitations.converted_member_id
+      //      so the count is accurate. Returns the inviter's row if
+      //      this member came through an invitation, null otherwise.
+      //
+      //   2. sendSponsorLetter: short Herald-voiced email to the
+      //      sponsor naming the new member. Fires every conversion.
+      //
+      //   3. evaluateSponsorTitles + sendTitleAwardLetter: check
+      //      whether the new conversion crossed any of the title
+      //      thresholds (1/5/15) and, for each newly-earned title,
+      //      send the title-award letter and stamp
+      //      sponsor_titles_awarded so it doesn't fire again.
+      try {
+        const inviter = await recordConversion(updated, clan_id);
+        if (inviter) {
+          // Send the sponsor letter
+          try {
+            await sendSponsorLetter(inviter, updated);
+            await logEvent({
+              clan_id,
+              member_id: inviter.id,
+              event_type: 'sponsor_letter_sent',
+              payload: { converted_member_id: updated.id },
+            });
+          } catch (letterErr) {
+            console.error('sponsor letter send failed (non-fatal):', letterErr.message);
+          }
+
+          // Evaluate and award titles. The evaluation reads the
+          // current conversion count + the inviter's existing
+          // sponsor_titles_awarded JSONB, returning any titles
+          // that have been earned but not yet recorded.
+          try {
+            const { count, newlyEarned } = await evaluateSponsorTitles(inviter);
+            if (newlyEarned.length > 0) {
+              const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
+              const nowIso = new Date().toISOString();
+              for (const title of newlyEarned) {
+                // Send the title-award letter for this threshold
+                try {
+                  await sendTitleAwardLetter(inviter, title, count);
+                  await logEvent({
+                    clan_id,
+                    member_id: inviter.id,
+                    event_type: 'sponsor_title_awarded',
+                    payload: { title_slug: title.slug, count },
+                  });
+                  stampedAwarded[title.slug] = nowIso;
+                } catch (titleErr) {
+                  console.error(`title-award letter '${title.slug}' send failed (non-fatal):`, titleErr.message);
+                  // Don't stamp this title — let it retry on the
+                  // next conversion. Better to send twice than to
+                  // mark awarded when the email never arrived.
+                }
+              }
+              // Persist the awarded JSONB only after all the
+              // letters succeeded (or each failure was logged
+              // and skipped).
+              if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+                await supa()
+                  .from('members')
+                  .update({ sponsor_titles_awarded: stampedAwarded })
+                  .eq('id', inviter.id);
+              }
+            }
+          } catch (titleEvalErr) {
+            console.error('title evaluation failed (non-fatal):', titleEvalErr.message);
+          }
+        }
+      } catch (sponsorErr) {
+        console.error('sponsorship flow failed (non-fatal):', sponsorErr.message);
       }
     }
 

@@ -37,6 +37,8 @@ const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/sup
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 const { computeFamilyDisplay } = require('./lib/generate-cert');
+const { recordConversion, evaluateSponsorTitles } = require('./lib/sponsor-service');
+const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -334,6 +336,61 @@ exports.handler = async (event) => {
         }
       } catch (keepsakeErr) {
         console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
+      }
+
+      // SPONSORSHIP CHAIN — if this newly-published member came
+      // through an invitation, record the conversion and reward
+      // the sponsor. Mirrors the same logic in
+      // update-family-details.js (the dashboard publish path).
+      // Both paths route here on first-publish; the sponsorship
+      // chain handles its own idempotency.
+      try {
+        const inviter = await recordConversion(updated, clan_id);
+        if (inviter) {
+          try {
+            await sendSponsorLetter(inviter, updated);
+            await logEvent({
+              clan_id,
+              member_id: inviter.id,
+              event_type: 'sponsor_letter_sent',
+              payload: { converted_member_id: updated.id },
+            });
+          } catch (letterErr) {
+            console.error('sponsor letter send failed (non-fatal):', letterErr.message);
+          }
+
+          try {
+            const { count, newlyEarned } = await evaluateSponsorTitles(inviter);
+            if (newlyEarned.length > 0) {
+              const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
+              const nowIso = new Date().toISOString();
+              for (const title of newlyEarned) {
+                try {
+                  await sendTitleAwardLetter(inviter, title, count);
+                  await logEvent({
+                    clan_id,
+                    member_id: inviter.id,
+                    event_type: 'sponsor_title_awarded',
+                    payload: { title_slug: title.slug, count },
+                  });
+                  stampedAwarded[title.slug] = nowIso;
+                } catch (titleErr) {
+                  console.error(`title-award letter '${title.slug}' send failed (non-fatal):`, titleErr.message);
+                }
+              }
+              if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+                await supa()
+                  .from('members')
+                  .update({ sponsor_titles_awarded: stampedAwarded })
+                  .eq('id', inviter.id);
+              }
+            }
+          } catch (titleEvalErr) {
+            console.error('title evaluation failed (non-fatal):', titleEvalErr.message);
+          }
+        }
+      } catch (sponsorErr) {
+        console.error('sponsorship flow failed (non-fatal):', sponsorErr.message);
       }
     }
 

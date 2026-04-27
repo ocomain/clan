@@ -675,6 +675,30 @@
         <div class="minvite-title">Keep a place beside you for someone</div>
         <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. If there is someone in your life — a sibling, a cousin, an old friend — who belongs in the Register beside you, write them in below. The Herald carries the welcome in your name; the rest is theirs to take up, in their own time.</p>
 
+        ${(() => {
+          // ── Sponsor recognition block ──
+          // Quiet count line + (if held) the member's highest Gaelic
+          // honorific. Renders only if the member has at least one
+          // converted invitation OR holds a title. Single italic
+          // line in the dashboard's standard register — no badge,
+          // no progress bar, no leaderboard. The voice keeps faith
+          // with 'by design, a quiet thing'.
+          const count = Number(member.sponsorCount) || 0;
+          const title = member.sponsorTitle || null; // { irish, english, pronunciation } or null
+          if (count === 0 && !title) return '';
+          const sponsorWord = count === 1 ? 'member' : 'members';
+          const countLine = count > 0
+            ? `You have stood as sponsor to ${count} ${sponsorWord} of the clan.`
+            : '';
+          const titleLine = title
+            ? `In the keeping of the clan, you are <strong style="font-weight:500;color:var(--ink);font-style:normal">${escHtml(title.irish)}</strong> — ${escHtml(title.english)}.`
+            : '';
+          return `<div style="border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);padding:14px 0;margin:0 0 22px;font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7">
+            ${countLine ? `<div>${countLine}</div>` : ''}
+            ${titleLine ? `<div${countLine ? ' style="margin-top:4px"' : ''}>${titleLine}</div>` : ''}
+          </div>`;
+        })()}
+
         <form id="inviteForm" onsubmit="return false">
           <div class="minvite-grid">
             <div>
