@@ -170,4 +170,4 @@ function isFounderAdmin(email) {
   return FOUNDER_ADMIN_ALLOWLIST.has(email.toLowerCase().trim());
 }
 
-module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister, isFounderAdmin };
+module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister, isFounderAdmin, TIER_BY_SLUG };
