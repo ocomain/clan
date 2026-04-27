@@ -214,6 +214,11 @@
   </div>
 </main>
 
+<!-- Gaelic name converter — classic script so it can register on
+     window. Used by the publish modal's name field to suggest Irish
+     forms of the member's first name and (clan-adjacent) surname. -->
+<script src="./gaelic-name-converter.js"></script>
+
 <script type="module">
   import { currentSession, getMemberProfile, signOut } from './auth.js';
 
@@ -996,7 +1001,19 @@
 
         <!-- Name on cert -->
         <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name on the certificate</label>
-        <input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:18px">
+        <!-- Name input + Gaelic-suggester button. The button sits at
+             the trailing edge of the input, opens a small popover
+             below with suggested Irish forms for the first name and
+             (when relevant) the surname. Members can pick a
+             suggestion to substitute it into the input, or write
+             their own — the converter is purely additive. The
+             popover is keyboard-dismissable (Esc) and click-outside
+             dismissable. -->
+        <div style="position:relative;margin-bottom:18px">
+          <input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 90px 12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+          <button type="button" id="famGaelicBtn" title="Suggest the Irish form of this name" aria-label="Suggest the Irish form of this name" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);background:rgba(184,151,90,.12);border:1px solid var(--gold-border);padding:7px 10px;border-radius:1px;cursor:pointer;transition:background .15s">✦ As Gaeilge</button>
+          <div id="famGaelicPopover" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:6px;background:var(--white);border:1px solid var(--gold-border);border-top:2px solid var(--gold);box-shadow:0 8px 28px rgba(12,26,12,.12);padding:14px 16px;z-index:50;border-radius:1px"></div>
+        </div>
 
         <!-- Ancestor dedication — structured (prefix chooser + name field).
              Splits the dedication into two parts so users can't accidentally
@@ -1064,6 +1081,112 @@
       const prevName = document.getElementById('prevName');
       const prevAncestor = document.getElementById('prevAncestor');
       const prevCreditLine = document.getElementById('prevCreditLine');
+
+      // ── Gaelic name converter wiring ────────────────────────────
+      // Lookup-based suggester for Irish forms of the member's name.
+      // Behaviours:
+      //   - Click '✦ As Gaeilge' button → opens a popover below the
+      //     input with up to N suggestions for first name and (when
+      //     the surname is clan-adjacent) up to 4 surname forms
+      //   - Click any suggestion → substitutes that part of the name
+      //     into the input, fires an 'input' event so live preview
+      //     updates immediately, and closes the popover
+      //   - Click '✕ Close' or outside the popover → dismiss without
+      //     change
+      //   - If no suggestions (e.g. unrecognised first name AND
+      //     non-clan surname), the popover shows a friendly message
+      const gaelicBtn = document.getElementById('famGaelicBtn');
+      const gaelicPopover = document.getElementById('famGaelicPopover');
+      if (gaelicBtn && gaelicPopover && window.GaelicNameConverter) {
+        const G = window.GaelicNameConverter;
+
+        function buildPopoverHtml() {
+          const parts = G.parseName(nameEl.value);
+          const firstSuggestions = G.suggestionsForFirstName(parts.firstNameRaw);
+          const surnameSuggestions = G.suggestionsForSurname(parts.surnameRaw);
+          // Helper to render one suggestion button. data-* attributes
+          // carry both the new value AND the kind ('first'/'surname')
+          // so the click handler can substitute the right token.
+          const renderSugg = (s, kind) => {
+            const note = s.note ? ` <span style="color:var(--ink-muted);font-style:italic">· ${escHtml(s.note)}</span>` : '';
+            return `<button type="button" class="g-sug" data-kind="${kind}" data-irish="${escHtml(s.irish)}" style="display:block;width:100%;text-align:left;font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;margin:0 0 4px;background:rgba(184,151,90,.06);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(184,151,90,.14)'" onmouseout="this.style.background='rgba(184,151,90,.06)'"><strong style="font-weight:500">${escHtml(s.irish)}</strong> <span style="color:var(--ink-muted);font-size:13px">— ${escHtml(s.pronunciation)}</span>${note}</button>`;
+          };
+
+          // Build sections
+          let html = `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep)">As Gaeilge — Irish forms</div><button type="button" id="famGaelicClose" style="background:transparent;border:none;color:var(--ink-muted);cursor:pointer;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.1em">Close ✕</button></div>`;
+
+          if (firstSuggestions.length === 0 && surnameSuggestions.length === 0) {
+            html += `<p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:6px 0 0;line-height:1.6">No suggestions for <strong style="color:var(--ink);font-style:normal;font-weight:500">${escHtml(parts.original || '—')}</strong>. We only suggest names we're confident in — for everything else, you're welcome to write your own Irish form here.</p>`;
+            return html;
+          }
+
+          if (firstSuggestions.length > 0) {
+            html += `<div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:0 0 6px">First name <em>(${escHtml(parts.firstNameRaw)})</em></div>`;
+            html += firstSuggestions.map(s => renderSugg(s, 'first')).join('');
+          }
+
+          if (surnameSuggestions.length > 0) {
+            html += `<div style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin:14px 0 6px">Surname <em>(${escHtml(parts.surnameRaw)})</em> — descendant of Ó Comáin</div>`;
+            html += surnameSuggestions.map(s => renderSugg(s, 'surname')).join('');
+          }
+
+          html += `<p style="font-family:'EB Garamond',serif;font-size:12.5px;font-style:italic;color:var(--ink-muted);margin:14px 0 0;line-height:1.55;border-top:1px solid var(--gold-border);padding-top:10px">Click a suggestion to substitute that part of your name. The rest of your name stays as you typed it. Pronunciations are approximate guides.</p>`;
+          return html;
+        }
+
+        function openPopover() {
+          gaelicPopover.innerHTML = buildPopoverHtml();
+          gaelicPopover.style.display = 'block';
+          // Wire suggestion-click handlers
+          gaelicPopover.querySelectorAll('.g-sug').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const kind = btn.dataset.kind;
+              const irish = btn.dataset.irish;
+              const parts = G.parseName(nameEl.value);
+              const newName = kind === 'first'
+                ? G.rebuildName(parts, irish, null)
+                : G.rebuildName(parts, null, irish);
+              nameEl.value = newName;
+              // Fire input event so the live-preview wiring updates.
+              nameEl.dispatchEvent(new Event('input', { bubbles: true }));
+              closePopover();
+            });
+          });
+          const closeBtn = document.getElementById('famGaelicClose');
+          if (closeBtn) closeBtn.addEventListener('click', closePopover);
+        }
+
+        function closePopover() {
+          gaelicPopover.style.display = 'none';
+          gaelicPopover.innerHTML = '';
+        }
+
+        gaelicBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (gaelicPopover.style.display === 'block') {
+            closePopover();
+          } else {
+            openPopover();
+          }
+        });
+
+        // Click-outside dismiss. Bound at document level; checks
+        // whether the click landed inside the popover OR the button,
+        // and only dismisses if neither.
+        document.addEventListener('click', (e) => {
+          if (gaelicPopover.style.display !== 'block') return;
+          if (gaelicPopover.contains(e.target) || gaelicBtn.contains(e.target)) return;
+          closePopover();
+        });
+
+        // Esc-key dismiss.
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && gaelicPopover.style.display === 'block') {
+            closePopover();
+          }
+        });
+      }
+      // ── End Gaelic converter wiring ─────────────────────────────
 
       // Ancestor dedication: prefix chips + detail input. The saved value
       // in ancestorEl (hidden) is rebuilt as `prefix + ' ' + detail` on
