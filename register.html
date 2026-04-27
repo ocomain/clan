@@ -38,10 +38,27 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
 .hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
 .hero-seal{margin:0 auto 38px;display:block}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,7vw,76px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,7vw,76px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
+  /* Allow the hero title to escape the .wrap (740px) container width
+     so 'Register of Clan Ó Comáin' fits on a single line at full size
+     on desktop. The hero is centered text, so widening just this one
+     element doesn't disturb the rest of the column-bound page.
+     Counter the parent's 28px padding too, to genuinely use the
+     viewport edge-to-edge minus a small breathing margin.
+
+     min: 38px so it actually fits on the smallest mobile viewports
+     when the wrap is enabled below.
+     mid: 7vw so it scales smoothly with viewport.
+     max: 76px so it doesn't get absurd on huge desktops. */
+  width:max-content;
+  max-width:calc(100vw - 32px);
+  margin-left:auto;margin-right:auto;
+}
 .hero-title em{font-style:italic;color:var(--burgundy);font-weight:500}
-/* Desktop: title on one line. .title-line halves stay together
-   (nowrap), the optional <br> stays hidden so they sit side-by-side. */
+/* Desktop: the title is one line, sized to its content. .title-line
+   nowrap on each half keeps 'Register of' and 'Clan Ó Comáin' as
+   indivisible units — important for mobile where they wrap to two
+   lines but neither half should ever break internally. */
 .hero-title .title-line{white-space:nowrap}
 .hero-title .desktop-only-br{display:none}
 .hero-title-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.4vw,26px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:6px}
@@ -118,9 +135,16 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
      stack on narrow screens. .title-line nowrap continues to keep each
      half together (avoids the awkward 'Comáin' on its own line). */
   .hero-title .desktop-only-br{display:inline}
-  /* Slightly tighten line-height on the wrapped title so the two lines
-     look like one stanza, not two paragraphs. */
-  .hero-title{line-height:1.05}
+  /* Mobile: revert from width:max-content (which would let the title
+     overflow the viewport) back to natural width so the inserted <br>
+     can do its work and the title respects screen width. */
+  .hero-title{
+    width:auto;
+    max-width:100%;
+    /* Slightly tighten line-height on the wrapped title so the two
+       lines look like one stanza, not two paragraphs. */
+    line-height:1.05;
+  }
 }
 </style>
 </head>
