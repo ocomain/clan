@@ -75,11 +75,17 @@ async function sendFounderWelcome({ to, recipientName, personalNote }) {
     : '';
 
   // Claim button URL — points at the founder welcome landing page
-  // which orchestrates the actual sign-in. Includes the email as a
-  // querystring hint so the landing page can pre-fill the magic-link
-  // form. (Pre-fill is a UX nicety; the user could still type their
-  // email manually.)
-  const claimUrl = `${SITE_URL}/founder-welcome.html?email=${encodeURIComponent(to)}`;
+  // which orchestrates the actual sign-in. Includes:
+  //   - email: pre-fills the magic-link form on /members/login.html
+  //     after the recipient clicks 'Continue' on the landing page
+  //   - name: lets the landing page greet by first name
+  //     ('Welcome home, Antoin') without needing a backend lookup.
+  //     The name is already in the email; passing it via URL is the
+  //     simplest path to personalising the landing without auth.
+  // URL-encoded for safety.
+  const claimUrl = `${SITE_URL}/founder-welcome.html`
+    + `?email=${encodeURIComponent(to)}`
+    + `&name=${encodeURIComponent(firstName)}`;
 
   // ── THE LOCKED EMAIL BODY ────────────────────────────────────────
   // This is the body verbatim from the chat lock. Every paragraph has
