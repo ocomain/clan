@@ -105,6 +105,7 @@ exports.handler = async (event) => {
           tier,
           tier_label,
           ancestor_dedication,
+          dedication_visible_on_register,
           joined_at,
           partner_name,
           children_visible_on_register,
@@ -172,7 +173,17 @@ exports.handler = async (event) => {
         credit_line:  creditLine,
         tier:         m.tier,
         tier_label:   m.tier_label,
-        ancestor_dedication: m.ancestor_dedication || null,
+        // Dedication only included when the member has explicitly
+        // opted it in via dedication_visible_on_register. Otherwise
+        // null even if a dedication is set on the cert. The cert PDF
+        // (private to the member) always shows their dedication; the
+        // public Register only shows it when they've ticked the box.
+        // Default of FALSE means existing members with dedications
+        // start hidden after this migration deploys — the previous
+        // unconditional exposure was unintentional.
+        ancestor_dedication: m.dedication_visible_on_register === true
+          ? (m.ancestor_dedication || null)
+          : null,
         joined_at:    m.joined_at,
       };
     });

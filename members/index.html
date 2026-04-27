@@ -372,14 +372,6 @@
                 ? `<div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:6px;line-height:1.5">${credit}</div>`
                 : '';
             })()}
-            ${member.ancestor_dedication ? `
-              <!-- Dedication line — was missing from the membership-record
-                   panel even though it's part of the sealed cert. Reads
-                   in italic gold-deep below the credit line, gives the
-                   member's membership record visible parity with what's
-                   on the cert PDF. -->
-              <div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--gold-deep);margin-top:6px;line-height:1.55">${escHtml(member.ancestor_dedication)}</div>
-            ` : ''}
           </div>
           <div>
             <div class="mstatus-row-label">Email</div>
@@ -669,16 +661,56 @@
       <section class="mpriv">
         <div class="mpriv-eyebrow">Privacy & Public Register</div>
         <div class="mpriv-title">Your visibility on the public register</div>
+        <!-- Public register checkbox.
+             Pre-tick logic: a brand-new member who has never touched
+             these settings (no public_register_settings_updated_at
+             stamp, no public_register_opted_in_at stamp) sees the
+             box pre-ticked. The default is opt-IN — they can untick
+             before/instead of saving if they prefer privacy. Once
+             the member has saved any privacy settings (either
+             direction), we respect their stored value verbatim. -->
+        ${(() => {
+          const hasMadeDecision = !!(member.public_register_settings_updated_at || member.public_register_opted_in_at);
+          const shouldCheck = hasMadeDecision ? !!member.public_register_visible : true;
+          return `
         <label class="mpriv-row">
-          <input type="checkbox" id="prvPublic" ${member.public_register_visible ? 'checked' : ''}>
+          <input type="checkbox" id="prvPublic" ${shouldCheck ? 'checked' : ''}>
           <span><strong>Yes — include my name in the Founding Members Register at <em>ocomain.org/register</em>. I'm proud to be counted.</strong></span>
-        </label>
-        ${member.tier_family ? `
-        <label class="mpriv-row" id="prvChildrenWrap" style="margin-left:28px;${member.public_register_visible ? '' : 'opacity:.5;pointer-events:none'}">
-          <input type="checkbox" id="prvChildren" ${member.children_visible_on_register ? 'checked' : ''} ${member.public_register_visible ? '' : 'disabled'}>
+        </label>`;
+        })()}
+        ${member.tier_family ? (() => {
+          // Children tickbox follows the parent — pre-ticked when the
+          // public-register parent box is pre-ticked. If the member
+          // has saved settings, respect those.
+          const hasMadeDecision = !!(member.public_register_settings_updated_at || member.public_register_opted_in_at);
+          const parentChecked = hasMadeDecision ? !!member.public_register_visible : true;
+          const childrenChecked = hasMadeDecision ? !!member.children_visible_on_register : true;
+          return `
+        <label class="mpriv-row" id="prvChildrenWrap" style="margin-left:28px;${parentChecked ? '' : 'opacity:.5;pointer-events:none'}">
+          <input type="checkbox" id="prvChildren" ${childrenChecked ? 'checked' : ''} ${parentChecked ? '' : 'disabled'}>
           <span>Yes — show my children's first names alongside our family entry.</span>
-        </label>
-        ` : ''}
+        </label>`;
+        })() : ''}
+        ${member.ancestor_dedication ? (() => {
+          // Dedication-on-register tickbox. Only rendered when the
+          // member has a dedication set — otherwise there's nothing
+          // to show or hide. Default for new members: ticked, because
+          // the dedication is part of their sealed cert and most
+          // members will be happy to have it visible. Members can
+          // untick if they prefer the dedication to remain a private
+          // detail of their cert PDF only.
+          //
+          // Same parent-gating as children: disabled when the public
+          // register parent box is unticked.
+          const hasMadeDecision = !!(member.public_register_settings_updated_at || member.public_register_opted_in_at);
+          const parentChecked = hasMadeDecision ? !!member.public_register_visible : true;
+          const dedicationChecked = hasMadeDecision ? !!member.dedication_visible_on_register : true;
+          return `
+        <label class="mpriv-row" id="prvDedicationWrap" style="margin-left:28px;${parentChecked ? '' : 'opacity:.5;pointer-events:none'}">
+          <input type="checkbox" id="prvDedication" ${dedicationChecked ? 'checked' : ''} ${parentChecked ? '' : 'disabled'}>
+          <span>Yes — show my dedication alongside my entry: <em style="color:var(--gold-deep)">"${escHtml(member.ancestor_dedication)}"</em></span>
+        </label>`;
+        })() : ''}
         <p class="mpriv-note">Your name appears on the public Register while your membership is in current standing. Untick at any time to remove yourself; changes take effect within five minutes.</p>
         <div class="mpriv-status" id="prvStatus"></div>
       </section>
@@ -783,6 +815,8 @@
     const prvPublic = document.getElementById('prvPublic');
     const prvChildren = document.getElementById('prvChildren');
     const prvChildrenWrap = document.getElementById('prvChildrenWrap');
+    const prvDedication = document.getElementById('prvDedication');
+    const prvDedicationWrap = document.getElementById('prvDedicationWrap');
     const prvStatus = document.getElementById('prvStatus');
 
     async function savePrivacy() {
@@ -796,6 +830,10 @@
           body: JSON.stringify({
             publicRegisterVisible: prvPublic.checked,
             childrenVisibleOnRegister: prvChildren ? (prvChildren.checked && prvPublic.checked) : false,
+            // Dedication-on-register: only meaningful if the parent
+            // public-register box is ticked. Server-side gate also
+            // enforces this so the column stays consistent.
+            dedicationVisibleOnRegister: prvDedication ? (prvDedication.checked && prvPublic.checked) : false,
             privacyOnly: true,
           }),
         });
@@ -810,18 +848,29 @@
 
     if (prvPublic) {
       prvPublic.addEventListener('change', () => {
+        const enabled = prvPublic.checked;
+        // Cascade enable/disable to the children sub-toggle.
         if (prvChildren && prvChildrenWrap) {
-          const enabled = prvPublic.checked;
           prvChildren.disabled = !enabled;
           prvChildrenWrap.style.opacity = enabled ? '1' : '.5';
           prvChildrenWrap.style.pointerEvents = enabled ? 'auto' : 'none';
           if (!enabled) prvChildren.checked = false;
+        }
+        // Same cascade for the dedication sub-toggle.
+        if (prvDedication && prvDedicationWrap) {
+          prvDedication.disabled = !enabled;
+          prvDedicationWrap.style.opacity = enabled ? '1' : '.5';
+          prvDedicationWrap.style.pointerEvents = enabled ? 'auto' : 'none';
+          if (!enabled) prvDedication.checked = false;
         }
         savePrivacy();
       });
     }
     if (prvChildren) {
       prvChildren.addEventListener('change', savePrivacy);
+    }
+    if (prvDedication) {
+      prvDedication.addEventListener('change', savePrivacy);
     }
   }
 

@@ -56,6 +56,7 @@ exports.handler = async (event) => {
     childrenFirstNames,
     publicRegisterVisible,
     childrenVisibleOnRegister,
+    dedicationVisibleOnRegister,
   } = body;
 
   if (!email && !sessionId) {
@@ -157,6 +158,12 @@ exports.handler = async (event) => {
 
     const wantsPublic = !!publicRegisterVisible && canAppearOnPublicRegister(member.tier);
     const wantsChildrenPublic = !!childrenVisibleOnRegister && wantsPublic;
+    // Same gating shape as wantsChildrenPublic — only honoured when
+    // the member is on the public register at all. Member can also
+    // tick the dedication box without having a dedication set; the
+    // flag will simply have no rendered effect. Cleaner to always
+    // store what the member asked for than to silently override.
+    const wantsDedicationPublic = !!dedicationVisibleOnRegister && wantsPublic;
     // Stamp opted_in_at the FIRST TIME public visibility is set true
     const optedInAt = wantsPublic && !member.public_register_opted_in_at
       ? now.toISOString()
@@ -205,6 +212,7 @@ exports.handler = async (event) => {
       family_details_completed_at:           now.toISOString(),
       public_register_visible:               wantsPublic,
       children_visible_on_register:          wantsChildrenPublic,
+      dedication_visible_on_register:        wantsDedicationPublic,
       public_register_opted_in_at:           optedInAt,
       public_register_settings_updated_at:   settingsUpdatedAt,
       cert_version:                          newVersion,

@@ -53,6 +53,7 @@ exports.handler = async (event) => {
     childrenFirstNames,
     publicRegisterVisible,
     childrenVisibleOnRegister,
+    dedicationVisibleOnRegister,
     privacyOnly,
   } = body;
 
@@ -161,8 +162,12 @@ exports.handler = async (event) => {
       const eligible = canAppearOnPublicRegister(member.tier);
       const wantsPublic = !!publicRegisterVisible && eligible;
       const wantsChildrenPublic = !!childrenVisibleOnRegister && wantsPublic;
+      // Dedication visibility — same gating shape as the children
+      // visibility flag. Only meaningful when wantsPublic is true.
+      const wantsDedicationPublic = !!dedicationVisibleOnRegister && wantsPublic;
       update.public_register_visible = wantsPublic;
       update.children_visible_on_register = wantsChildrenPublic;
+      update.dedication_visible_on_register = wantsDedicationPublic;
       if (wantsPublic && !member.public_register_opted_in_at) {
         update.public_register_opted_in_at = now.toISOString();
       }
