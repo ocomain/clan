@@ -101,6 +101,13 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .entry-tier{display:block}
 .entry-year{display:block;color:var(--ink-muted);font-weight:400;margin-top:4px;letter-spacing:0.12em}
 .entry-dedication{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--burgundy);line-height:1.7;margin-top:14px;max-width:560px}
+/* Family credit line — italic muted serif, sits just below the display
+   name. Mirrors the cert PDF's credit line ('with Anita, and Saoirse,
+   Cillian, and Eabha'). Same italic voice as the cert. Less prominent
+   than the ancestor dedication (which is burgundy + larger) so it
+   reads as a quiet annotation on the family entry, not as the
+   emotional focus of the row. */
+.entry-credit{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
 .entry-children{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);margin-top:10px;line-height:1.6;max-width:560px}
 .entry-children-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-right:8px}
 .founder-mark{font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--burgundy);margin-top:11px;display:inline-block}
@@ -332,6 +339,53 @@ function escHtml(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Format a list of names with serial commas + 'and' before the last.
+// Mirrors formatNameList() in lib/generate-cert.js so the credit line
+// on the register reads identically to the credit line on the sealed cert.
+//   ['Aoife']                    → 'Aoife'
+//   ['Aoife', 'Liam']            → 'Aoife and Liam'
+//   ['Aoife', 'Liam', 'Saoirse'] → 'Aoife, Liam, and Saoirse'
+function formatNameList(names) {
+  if (!names || names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  const last = names[names.length - 1];
+  const rest = names.slice(0, -1).join(', ');
+  return `${rest}, and ${last}`;
+}
+
+// Build the credit line beneath the family display name. Mirrors the cert
+// PDF's credit line logic exactly (see generate-cert.js lines around the
+// hasPartner/hasChildren branching).
+//   couple + children          → 'with Anita, and Saoirse, Cillian, and Eabha'
+//   couple, no children        → null (display name carries both adults)
+//   single parent + children   → 'with their children Saoirse, Cillian, and Eabha'
+//   solo                       → null
+//
+// member.children may be null (opted out) even when partner_first is set.
+// In that case the credit line still mentions the partner alone, since
+// the spouse opt-in is implied by membership type, not by the children
+// privacy toggle.
+function buildCreditLine(member) {
+  const hasPartner = !!member.partner_first;
+  const childrenList = Array.isArray(member.children) ? member.children : null;
+  const hasChildren = childrenList && childrenList.length > 0;
+  if (hasPartner && hasChildren) {
+    return `with ${escHtml(member.partner_first)}, and ${escHtml(formatNameList(childrenList))}`;
+  }
+  if (hasPartner && !hasChildren) {
+    // Couple, but children opted out (or none). Credit line still names
+    // the partner — they exist on the cert and the dashboard, so they
+    // should exist here too. Without this, family entries with private
+    // children would visually lose the partner entirely.
+    return `with ${escHtml(member.partner_first)}`;
+  }
+  if (!hasPartner && hasChildren) {
+    return `with their children ${escHtml(formatNameList(childrenList))}`;
+  }
+  return null;
+}
+
 function formatJoinDate(iso) {
   if (!iso) return '';
   const d = new Date(iso);
@@ -363,16 +417,22 @@ function renderEntry(member) {
   const dedication = member.ancestor_dedication
     ? `<div class="entry-dedication">${escHtml(member.ancestor_dedication)}</div>`
     : '';
-  const children = member.children
-    ? `<div class="entry-children"><span class="entry-children-label">With</span>${escHtml(member.children)}</div>`
+  // Credit line mirrors the cert PDF: 'with [Spouse], and [Children]' for
+  // couple+children, 'with their children [Children]' for single+children,
+  // 'with [Spouse]' for couple+private-children, and absent otherwise.
+  // The italic 'with…' phrasing matches the cert exactly so the public
+  // register reads as a faithful rendering of the sealed instrument.
+  const creditLine = buildCreditLine(member);
+  const credit = creditLine
+    ? `<div class="entry-credit">${creditLine}</div>`
     : '';
   return `
     <div class="entry">
       <div class="entry-row">
         <div>
           <div class="entry-name">${escHtml(member.display_name)}</div>
+          ${credit}
           ${dedication}
-          ${children}
           ${founderMark}
         </div>
         <div class="entry-meta">

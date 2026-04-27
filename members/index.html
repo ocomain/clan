@@ -342,6 +342,32 @@
                  line ('X & Family') always shows; only the listing of
                  children's names is privacy-gated. -->
             <div class="mstatus-row-value">${escHtml(member.display_name_on_register || member.name || '—')}</div>
+            <!-- Credit line — mirrors the cert PDF and the public register.
+                 Same buildDashboardCredit() result the page renders with;
+                 keeps all three views (cert PDF / dashboard / register) in
+                 visual lock-step. Only renders for family entries that
+                 have a partner and/or children to credit. -->
+            ${(() => {
+              const hasPartner = !!member.partner_name;
+              const hasChildrenList = Array.isArray(member.children_first_names) && member.children_first_names.length > 0;
+              const childrenVisible = !!member.children_visible_on_register && hasChildrenList;
+              const partnerFirst = hasPartner ? member.partner_name.trim().split(/\s+/).slice(0, -1).join(' ') || member.partner_name.trim() : null;
+              let credit = null;
+              if (hasPartner && childrenVisible) {
+                const kids = member.children_first_names;
+                const formatted = kids.length === 1 ? kids[0] : kids.length === 2 ? `${kids[0]} and ${kids[1]}` : `${kids.slice(0, -1).join(', ')}, and ${kids[kids.length - 1]}`;
+                credit = `with ${escHtml(partnerFirst)}, and ${escHtml(formatted)}`;
+              } else if (hasPartner && !childrenVisible) {
+                credit = `with ${escHtml(partnerFirst)}`;
+              } else if (!hasPartner && childrenVisible) {
+                const kids = member.children_first_names;
+                const formatted = kids.length === 1 ? kids[0] : kids.length === 2 ? `${kids[0]} and ${kids[1]}` : `${kids.slice(0, -1).join(', ')}, and ${kids[kids.length - 1]}`;
+                credit = `with their children ${escHtml(formatted)}`;
+              }
+              return credit
+                ? `<div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:6px;line-height:1.5">${credit}</div>`
+                : '';
+            })()}
           </div>
           <div>
             <div class="mstatus-row-label">Email</div>

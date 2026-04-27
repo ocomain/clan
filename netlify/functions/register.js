@@ -57,6 +57,18 @@ const TIER_WEIGHT = {
   'guardian-ind': 3, 'guardian-fam': 3,
 };
 
+// Extract first name(s) from a full name string. For 'Anita Smith' returns
+// 'Anita'; for 'Mary Catherine O'Brien' returns 'Mary Catherine'. Naive
+// split on whitespace; takes everything except the last token. Privacy-
+// respecting — keeps the partner's surname out of the public credit line
+// since it's already implicit in the family display name above.
+function extractFirstName(fullName) {
+  if (!fullName) return null;
+  const tokens = fullName.trim().split(/\s+/);
+  if (tokens.length <= 1) return tokens[0] || null;
+  return tokens.slice(0, -1).join(' ');
+}
+
 exports.handler = async (event) => {
   // Reject non-GET — this endpoint is read-only.
   if (event.httpMethod !== 'GET') {
@@ -76,6 +88,7 @@ exports.handler = async (event) => {
         tier_label,
         ancestor_dedication,
         joined_at,
+        partner_name,
         children_visible_on_register,
         children_first_names
       `)
@@ -103,6 +116,18 @@ exports.handler = async (event) => {
     // Shape the response. Strip raw children list if opt-out, just to
     // be defensive — the SELECT shouldn't have returned it but we're
     // being doubly careful given the privacy stakes for kids' names.
+    //
+    // The page renders a credit line that mirrors the cert PDF exactly:
+    //   couple+children → 'with Anita, and Saoirse, Cillian, and Eabha'
+    //   couple no kids  → no credit line (display_name has both adults)
+    //   single+children → 'with their children Saoirse, Cillian, and Eabha'
+    //   solo            → no credit line
+    //
+    // We pass partner_name AND children_first_names_array (arr) so the
+    // page can build the credit line in JS. partner_name is a privacy-
+    // safe disclosure here because it's already on the cert and the
+    // dashboard, AND the member explicitly opted into public visibility
+    // by ticking public_register_visible.
     const members = sorted.map(m => ({
       // No 'id' or 'email' returned — public payload, never expose
       // internal IDs or emails to anonymous viewers.
@@ -111,6 +136,13 @@ exports.handler = async (event) => {
       tier_label:   m.tier_label,
       ancestor_dedication: m.ancestor_dedication || null,
       joined_at:    m.joined_at,
+      // Partner first name only (privacy-respecting — full surname is
+      // implicit when display_name carries the family surname). If the
+      // partner_name has multiple tokens, take everything except the
+      // last token (handles compound first names like 'Mary Catherine').
+      partner_first: m.partner_name ? extractFirstName(m.partner_name) : null,
+      // Children's first names array, only when opted in. Used by the
+      // page to format with serial commas and 'and' before the last name.
       children:     m.children_visible_on_register
                       ? (m.children_first_names || null)
                       : null,
