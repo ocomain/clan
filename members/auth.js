@@ -50,6 +50,17 @@ export async function sendMagicLink(email, nextUrl) {
     email: cleanEmail,
     options: { emailRedirectTo: redirectTo },
   });
+  // Diagnostic log so the requested redirect destination is visible
+  // in the browser console. If Supabase silently overrides this value
+  // (e.g. because `redirectTo` isn't in the project's Redirect URLs
+  // allowlist and Supabase falls back to the Site URL), this log
+  // makes the discrepancy obvious. Symptoms of an override: user
+  // clicks the magic link in their inbox and lands on a URL different
+  // from this logged value — typically the project's Site URL, which
+  // could be 'http://localhost:3000' on a freshly-set-up project.
+  // Resolution lives in the Supabase Dashboard, not in code:
+  //   Authentication → URL Configuration → Site URL + Redirect URLs.
+  console.log('[auth] magic link requested with emailRedirectTo:', redirectTo);
   // Cache the email locally so the expired-link recovery flow can offer to
   // send a fresh link without making the member retype it.
   if (!error) {
