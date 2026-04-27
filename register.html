@@ -40,6 +40,10 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-seal{margin:0 auto 38px;display:block}
 .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,7vw,76px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px}
 .hero-title em{font-style:italic;color:var(--burgundy);font-weight:500}
+/* Desktop: title on one line. .title-line halves stay together
+   (nowrap), the optional <br> stays hidden so they sit side-by-side. */
+.hero-title .title-line{white-space:nowrap}
+.hero-title .desktop-only-br{display:none}
 .hero-title-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.4vw,26px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:6px}
 .hero-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:34px auto;max-width:240px}
 .hero-rule-line{flex:1;height:1px;background:var(--ink);opacity:.25}
@@ -110,6 +114,13 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
   .hero-counts-sep{width:32px;height:1px}
   .herald-block{padding:0 4px}
   .herald-sign{flex-direction:row;align-items:center}
+  /* Reveal the desktop-hidden break so 'Register of' and 'Clan Ó Comáin'
+     stack on narrow screens. .title-line nowrap continues to keep each
+     half together (avoids the awkward 'Comáin' on its own line). */
+  .hero-title .desktop-only-br{display:inline}
+  /* Slightly tighten line-height on the wrapped title so the two lines
+     look like one stanza, not two paragraphs. */
+  .hero-title{line-height:1.05}
 }
 </style>
 </head>
@@ -159,7 +170,17 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
     <text x="70" y="84.5" text-anchor="middle" font-family="Cormorant Garamond, EB Garamond, serif" font-size="50" font-weight="600" fill="#1A0404">Ó</text>
   </svg>
 
-  <h1 class="hero-title">Register of <em>Clan Ó Comáin</em></h1>
+  <!-- Title with a viewport-controlled line break.
+       Desktop: 'Register of Clan Ó Comáin' on one line, the natural
+                editorial reading.
+       Mobile: breaks to 'Register of' / 'Clan Ó Comáin' over two lines
+                so the clan name is unmistakeable on narrow screens
+                (was wrapping awkwardly before).
+       The .desktop-only-br span is set to display:none by default, then
+       flipped to inline at the mobile breakpoint via the @media query
+       in the stylesheet. Wrapped in white-space:nowrap on each segment
+       to be doubly sure the browser doesn't re-break elsewhere. -->
+  <h1 class="hero-title"><span class="title-line">Register of</span><span class="desktop-only-br"><br></span> <em class="title-line">Clan Ó Comáin</em></h1>
   <div class="hero-title-irish">Clár Chlainne Uí Chomáin</div>
 
   <div class="hero-rule">
