@@ -1530,8 +1530,12 @@
       // step. Fix: snapshot all four fields here as a frozen object.)
       const formSnapshot = readModalFormValues();
 
-      // Build the overlay
-      const card = modal.querySelector('div[style*="max-width:680px"]');
+      // Build the overlay. The modal body is now styled via the
+      // .famModalBody CSS class (introduced for the desktop two-column
+      // layout) — selecting by class is more robust than the previous
+      // inline-style selector ('div[style*="max-width:680px"]'), which
+      // broke when the inline width was moved into a media-query rule.
+      const card = modal.querySelector('.famModalBody');
       const original = card.innerHTML;
       // Compute the FULL family display the same way the live preview
       // does, so this confirmation step shows what will actually be
