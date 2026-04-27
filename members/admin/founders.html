@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Founder Admin — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    /* HEADER — same chrome as the rest of /members so the admin tool
+       feels like a sibling page rather than a separate app. Only
+       difference: the title eyebrow says 'Admin', signalling
+       privileged context. */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    /* PAGE LAYOUT */
+    .wrap{max-width:880px;margin:0 auto;padding:48px 24px 80px}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .page-title{font-family:'EB Garamond',serif;font-size:38px;font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:8px}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:580px;margin-bottom:36px}
+
+    /* AUTH GATE — shown while we verify the operator. If they're not
+       allowed, this stays visible with the access-denied message. */
+    .gate{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-muted);text-align:center;padding:60px 24px;font-style:italic}
+    .gate-denied{color:var(--burgundy);background:rgba(107,31,31,.06);border:1px solid rgba(107,31,31,.18);padding:32px;border-radius:2px;max-width:480px;margin:60px auto;text-align:center}
+    .gate-denied h2{font-family:'EB Garamond',serif;font-size:24px;font-weight:400;font-style:italic;margin-bottom:12px;color:var(--burgundy)}
+    .gate-denied p{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.7;margin-bottom:6px}
+    .gate-denied a{color:var(--burgundy);font-weight:500}
+
+    /* FORM CARD */
+    .form-card{background:#FFF;border:1px solid var(--gold-faint);border-top:3px solid var(--burgundy);padding:32px 36px;border-radius:2px;margin-bottom:48px;box-shadow:0 2px 6px rgba(20,5,5,.04)}
+    .form-card h2{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px}
+    .form-card-sub{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-bottom:24px;max-width:560px}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .form-row-full{grid-column:1 / -1}
+
+    .form-label{display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 6px}
+    .form-input,.form-select,.form-textarea{
+      width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;
+      background:var(--cream);border:1px solid var(--gold-faint);border-radius:1px;color:var(--ink);
+      outline:none;transition:border-color .15s
+    }
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold)}
+    .form-textarea{resize:vertical;line-height:1.5;min-height:54px}
+    .form-help{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);line-height:1.55;margin:6px 0 0}
+
+    .form-actions{margin-top:28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .btn-send{
+      font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--cream);background:var(--burgundy);padding:14px 30px;border:1px solid var(--burgundy-deep);
+      border-radius:1px;cursor:pointer;transition:background .15s
+    }
+    .btn-send:hover{background:var(--burgundy-deep)}
+    .btn-send:disabled{opacity:.55;cursor:wait;background:var(--burgundy)}
+
+    /* INLINE STATUS — shown after a send, replaces the form briefly */
+    .status-line{font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;padding:14px 18px;border-radius:1px;margin-top:18px;display:none}
+    .status-line.show{display:block}
+    .status-success{background:rgba(184,151,90,.1);border-left:3px solid var(--gold);color:var(--ink-soft)}
+    .status-success strong{color:var(--burgundy)}
+    .status-error{background:rgba(107,31,31,.07);border-left:3px solid var(--burgundy);color:var(--burgundy-deep)}
+    .status-warn{background:rgba(184,151,90,.12);border-left:3px solid var(--gold-deep);color:var(--ink-soft)}
+
+    /* STATUS TABLE — list of all founder gifts ever sent */
+    .table-card{background:#FFF;border:1px solid var(--gold-faint);padding:32px 36px;border-radius:2px;box-shadow:0 2px 6px rgba(20,5,5,.04)}
+    .table-card h2{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px}
+    .table-card-sub{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-bottom:18px}
+
+    .summary-strip{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px;padding:14px 18px;background:rgba(184,151,90,.06);border-radius:2px}
+    .summary-stat{display:flex;flex-direction:column;align-items:flex-start}
+    .summary-stat-num{font-family:'EB Garamond',serif;font-size:24px;font-style:italic;color:var(--burgundy);line-height:1}
+    .summary-stat-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-top:4px}
+
+    .gifts-table{width:100%;border-collapse:collapse;font-family:'EB Garamond',serif}
+    .gifts-table th{
+      font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+      color:var(--gold-deep);text-align:left;padding:10px 8px;border-bottom:1px solid var(--gold-faint)
+    }
+    .gifts-table td{padding:14px 8px;border-bottom:1px solid var(--rule);font-size:15px;color:var(--ink-soft);vertical-align:top}
+    .gifts-table td:first-child,.gifts-table th:first-child{padding-left:0}
+    .gifts-table td:last-child,.gifts-table th:last-child{padding-right:0}
+    .gifts-name{color:var(--ink);font-weight:500;display:block}
+    .gifts-email{font-size:13px;color:var(--ink-muted);display:block;margin-top:2px}
+    .gifts-tier{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--burgundy);text-transform:uppercase;font-weight:600}
+    .gifts-date{font-size:13px;color:var(--ink-muted);font-style:italic}
+    .gifts-note{font-size:13px;font-style:italic;color:var(--gold-deep);max-width:240px}
+
+    .pill{display:inline-block;font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:11px;background:var(--cream);border:1px solid var(--gold-faint);color:var(--ink-muted)}
+    .pill-pending{background:rgba(184,151,90,.12);color:var(--gold-deep);border-color:var(--gold-faint)}
+    .pill-sent{background:rgba(184,151,90,.18);color:var(--burgundy);border-color:rgba(107,31,31,.18)}
+    .pill-claimed{background:rgba(46,93,46,.12);color:#2E5D2E;border-color:rgba(46,93,46,.25)}
+    .pill-sealed{background:var(--burgundy);color:var(--cream);border-color:var(--burgundy-deep)}
+
+    .empty-state{text-align:center;padding:40px 20px;font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted)}
+
+    @media (max-width:680px){
+      .form-grid{grid-template-columns:1fr}
+      .gifts-table thead{display:none}
+      .gifts-table,.gifts-table tbody,.gifts-table tr,.gifts-table td{display:block;width:100%}
+      .gifts-table tr{padding:14px 0;border-bottom:1px solid var(--rule)}
+      .gifts-table td{padding:4px 0;border:none}
+      .form-card,.table-card{padding:24px 22px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER — keeps members-area continuity. Sign-out button hooks to
+     the same auth.js used elsewhere. -->
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- AUTH GATE — visible until JS verifies. Three states:
+     1. 'Verifying...' (default text on load)
+     2. Hidden if user is admin (form + table become visible)
+     3. 'Access denied' if user is not on the allowlist          -->
+<div class="wrap" id="authGate">
+  <div class="gate" id="gateLoading">Verifying your access…</div>
+  <div class="gate-denied" id="gateDenied" style="display:none">
+    <h2>This area is reserved</h2>
+    <p>Sign-in is required, and only specific addresses may use this tool. If you believe you should have access, please write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.</p>
+    <p style="margin-top:18px"><a href="/members/">← Return to dashboard</a></p>
+  </div>
+</div>
+
+<!-- ADMIN BODY — shown only after auth verifies the operator -->
+<main class="wrap" id="adminBody" style="display:none">
+
+  <div class="page-eyebrow">Founder Admin</div>
+  <h1 class="page-title">Founding Gifts <em>by warrant of the Chief</em></h1>
+  <p class="page-sub">
+    Each founding place is set down by hand, one at a time. The recipient receives a personal welcome from the Chief, voiced by the Herald, and a single link by which to claim their place on the new platform.
+  </p>
+
+  <!-- FORM CARD ─────────────────────────────────────────────────── -->
+  <div class="form-card">
+    <h2>Send a founding gift</h2>
+    <p class="form-card-sub">Enter the recipient's name and email, choose the tier the Chief wishes to gift, and (if you wish) add a single line of personal greeting that will sit above the Herald's letter. The send is final once confirmed.</p>
+
+    <form id="giftForm" onsubmit="return false">
+      <div class="form-grid">
+
+        <div>
+          <label class="form-label" for="recipientName">Recipient's full name</label>
+          <input type="text" id="recipientName" class="form-input" placeholder="e.g. Antoin Commane" required autocomplete="off">
+          <p class="form-help">Used as the recipient's full name on the certificate. They may correct the spelling later from their dashboard.</p>
+        </div>
+
+        <div>
+          <label class="form-label" for="recipientEmail">Recipient's email</label>
+          <input type="email" id="recipientEmail" class="form-input" placeholder="name@example.com" required autocomplete="off">
+          <p class="form-help">The welcome email is sent here. Once-only — duplicates are refused.</p>
+        </div>
+
+        <div>
+          <label class="form-label" for="recipientTier">Tier</label>
+          <select id="recipientTier" class="form-select" required>
+            <option value="" disabled selected>— Choose tier —</option>
+            <optgroup label="Clan tier (private members only)">
+              <option value="clan-ind">Clan Member</option>
+              <option value="clan-fam">Clan Member · Family</option>
+            </optgroup>
+            <optgroup label="Guardian">
+              <option value="guardian-ind">Guardian of the Clan</option>
+              <option value="guardian-fam">Guardian of the Clan · Family</option>
+            </optgroup>
+            <optgroup label="Steward">
+              <option value="steward-ind">Steward of the Clan</option>
+              <option value="steward-fam">Steward of the Clan · Family</option>
+            </optgroup>
+            <optgroup label="Life Member">
+              <option value="life-ind">Life Member</option>
+              <option value="life-fam">Life Member · Family</option>
+            </optgroup>
+          </select>
+          <p class="form-help">Clan-tier founders never appear on the public Register, by policy.</p>
+        </div>
+
+        <div>
+          <label class="form-label" for="personalNote">Personal note <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <input type="text" id="personalNote" class="form-input" placeholder="A line from the Chief — leave blank for none" maxlength="200" autocomplete="off">
+          <p class="form-help">If filled, sits above the Herald letter, signed "— Fergus".</p>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-send" id="sendBtn">Send founding gift →</button>
+        <span class="form-help" style="margin:0;font-style:italic">The recipient is created and emailed in one step.</span>
+      </div>
+
+      <div class="status-line" id="formStatus"></div>
+    </form>
+  </div>
+
+  <!-- TABLE CARD ────────────────────────────────────────────────── -->
+  <div class="table-card">
+    <h2>Founding gifts sent</h2>
+    <p class="table-card-sub">Reverse-chronological. Each recipient's status is derived from their actions: Sent → Claimed (signed in) → Sealed (cert published).</p>
+
+    <!-- Summary strip — counts by status -->
+    <div class="summary-strip" id="summaryStrip" style="display:none">
+      <div class="summary-stat">
+        <span class="summary-stat-num" id="statTotal">0</span>
+        <span class="summary-stat-label">Total</span>
+      </div>
+      <div class="summary-stat">
+        <span class="summary-stat-num" id="statSent">0</span>
+        <span class="summary-stat-label">Sent</span>
+      </div>
+      <div class="summary-stat">
+        <span class="summary-stat-num" id="statClaimed">0</span>
+        <span class="summary-stat-label">Claimed</span>
+      </div>
+      <div class="summary-stat">
+        <span class="summary-stat-num" id="statSealed">0</span>
+        <span class="summary-stat-label">Sealed</span>
+      </div>
+    </div>
+
+    <table class="gifts-table" id="giftsTable" style="display:none">
+      <thead>
+        <tr>
+          <th>Recipient</th>
+          <th>Tier</th>
+          <th>Sent</th>
+          <th>Status</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="giftsTbody"></tbody>
+    </table>
+
+    <div class="empty-state" id="emptyState" style="display:none">
+      No founding gifts sent yet. The first one's the hardest.
+    </div>
+
+    <div class="empty-state" id="loadingState">Loading the roll…</div>
+  </div>
+
+</main>
+
+<script type="module">
+  // ────────────────────────────────────────────────────────────────
+  // Founder admin tool — auth + form + table
+  //
+  // Two backend endpoints power this page:
+  //   POST /.netlify/functions/send-founder-gift   (creates + emails)
+  //   GET  /.netlify/functions/list-founder-gifts  (status table)
+  //
+  // Both require Bearer auth + admin allowlist (clan@ocomain.org).
+  // We get the JWT via auth.js's currentSession(); the email is
+  // verified server-side and 403 is returned if not on the
+  // allowlist. The same allowlist check happens client-side too,
+  // for a faster denied-state UX — but the server check is the
+  // authoritative gate.
+  // ────────────────────────────────────────────────────────────────
+
+  import { currentSession, signOut } from '../auth.js';
+
+  // ── Auth gate ──────────────────────────────────────────────────
+  const ADMIN_ALLOWLIST = new Set([
+    'clan@ocomain.org',
+  ]);
+
+  const gateLoading = document.getElementById('gateLoading');
+  const gateDenied = document.getElementById('gateDenied');
+  const adminBody = document.getElementById('adminBody');
+  const authGate = document.getElementById('authGate');
+
+  let session = null;
+  let accessToken = null;
+
+  async function verifyAccess() {
+    session = await currentSession();
+    if (!session) {
+      // Not signed in at all — bounce to login with return URL.
+      window.location.href = '/members/login.html?next=' + encodeURIComponent('/members/admin/founders.html');
+      return;
+    }
+    accessToken = session.access_token;
+    const userEmail = (session.user.email || '').toLowerCase().trim();
+
+    if (!ADMIN_ALLOWLIST.has(userEmail)) {
+      // Signed in but not on the allowlist — show denied state.
+      gateLoading.style.display = 'none';
+      gateDenied.style.display = 'block';
+      return;
+    }
+
+    // Allowed — hide gate, show admin body, load gifts.
+    authGate.style.display = 'none';
+    adminBody.style.display = 'block';
+    loadGifts();
+  }
+
+  // ── Sign out ───────────────────────────────────────────────────
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await signOut();
+  });
+
+  // ── Form handling ─────────────────────────────────────────────
+  const form = document.getElementById('giftForm');
+  const sendBtn = document.getElementById('sendBtn');
+  const formStatus = document.getElementById('formStatus');
+
+  function setStatus(klass, html) {
+    formStatus.className = 'status-line show ' + klass;
+    formStatus.innerHTML = html;
+  }
+  function clearStatus() {
+    formStatus.className = 'status-line';
+    formStatus.innerHTML = '';
+  }
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearStatus();
+
+    const name = document.getElementById('recipientName').value.trim();
+    const email = document.getElementById('recipientEmail').value.trim().toLowerCase();
+    const tier = document.getElementById('recipientTier').value;
+    const personalNote = document.getElementById('personalNote').value.trim();
+
+    if (!name) return setStatus('status-error', '<strong>Recipient name is required.</strong>');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setStatus('status-error', '<strong>Recipient email looks invalid.</strong> Check for typos.');
+    }
+    if (!tier) return setStatus('status-error', '<strong>Choose a tier.</strong>');
+
+    // Confirmation step — final guard against typos before the send.
+    // Send is irreversible (member row created, email fires), so we
+    // make Linda explicitly confirm the name+email+tier before firing.
+    const confirmed = confirm(
+      `Send founding gift now?\n\n` +
+      `Recipient: ${name}\n` +
+      `Email:     ${email}\n` +
+      `Tier:      ${tier}\n` +
+      (personalNote ? `\nWith personal note:\n  "${personalNote}"\n` : '') +
+      `\nThis cannot be undone from this tool.`
+    );
+    if (!confirmed) return;
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch('/.netlify/functions/send-founder-gift', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          tier,
+          personal_note: personalNote || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 201 && data.ok) {
+        // Full success — row created AND email sent.
+        setStatus('status-success',
+          `<strong>Sent.</strong> ${escapeHtml(name)} has been welcomed by the Herald, with a founding place at ${escapeHtml(data.member.tier_label)}.`);
+        form.reset();
+        loadGifts();  // Refresh the status table
+      } else if (res.status === 207) {
+        // Member created but email failed — partial success warning.
+        setStatus('status-warn',
+          `<strong>Member created — but the email did not send.</strong> ${escapeHtml(name)}'s founding place is recorded, but the welcome email failed to deliver. Check Resend logs and contact them by another means, or retry from the dashboard.`);
+        form.reset();
+        loadGifts();
+      } else if (res.status === 409) {
+        // Duplicate.
+        setStatus('status-error',
+          `<strong>This email is already on the clan rolls.</strong> ${escapeHtml(email)} was registered on ${formatDate(data.existing?.joined_at)}` +
+          (data.existing?.comped_by_chief ? ' as a previous founder gift.' : '.') +
+          ' If this is unexpected, write to clan@ocomain.org before retrying.');
+      } else if (res.status === 401 || res.status === 403) {
+        setStatus('status-error', '<strong>Access denied.</strong> Try signing out and signing back in, or contact clan@ocomain.org.');
+      } else {
+        // Any other error.
+        setStatus('status-error', `<strong>Could not send.</strong> ${escapeHtml(data.error || 'Unknown error')}`);
+      }
+    } catch (err) {
+      console.error('founder gift send failed:', err);
+      setStatus('status-error', `<strong>Network error.</strong> Could not reach the server. Try again in a moment.`);
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send founding gift →';
+    }
+  });
+
+  // ── Status table loading ───────────────────────────────────────
+  const giftsTable = document.getElementById('giftsTable');
+  const giftsTbody = document.getElementById('giftsTbody');
+  const summaryStrip = document.getElementById('summaryStrip');
+  const emptyState = document.getElementById('emptyState');
+  const loadingState = document.getElementById('loadingState');
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function tierBadge(tierSlug, tierLabel) {
+    return `<span class="gifts-tier">${escapeHtml(tierLabel || tierSlug || '—')}</span>`;
+  }
+
+  function statusPill(status) {
+    const klass = 'pill pill-' + (status || 'pending');
+    const label = (status || 'pending').replace(/^./, c => c.toUpperCase());
+    return `<span class="${klass}">${escapeHtml(label)}</span>`;
+  }
+
+  async function loadGifts() {
+    loadingState.style.display = 'block';
+    giftsTable.style.display = 'none';
+    emptyState.style.display = 'none';
+    summaryStrip.style.display = 'none';
+
+    try {
+      const res = await fetch('/.netlify/functions/list-founder-gifts', {
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+      const gifts = data.gifts || [];
+      const counts = data.counts_by_status || {};
+
+      // Summary strip
+      document.getElementById('statTotal').textContent = data.count || 0;
+      document.getElementById('statSent').textContent = (counts.sent || 0) + (counts.pending || 0);
+      document.getElementById('statClaimed').textContent = counts.claimed || 0;
+      document.getElementById('statSealed').textContent = counts.sealed || 0;
+
+      loadingState.style.display = 'none';
+
+      if (gifts.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      summaryStrip.style.display = 'flex';
+      giftsTable.style.display = 'table';
+      giftsTbody.innerHTML = gifts.map(g => `
+        <tr>
+          <td>
+            <span class="gifts-name">${escapeHtml(g.name)}</span>
+            <span class="gifts-email">${escapeHtml(g.email)}</span>
+          </td>
+          <td>${tierBadge(g.tier, g.tier_label)}</td>
+          <td><span class="gifts-date">${formatDate(g.comped_at)}</span></td>
+          <td>${statusPill(g.status)}</td>
+          <td>${g.comped_note ? `<span class="gifts-note">"${escapeHtml(g.comped_note)}"</span>` : '<span style="color:var(--ink-muted)">—</span>'}</td>
+        </tr>
+      `).join('');
+    } catch (err) {
+      console.error('list-founder-gifts failed:', err);
+      loadingState.style.display = 'none';
+      emptyState.style.display = 'block';
+      emptyState.innerHTML = `Could not load the roll. <a href="javascript:void(0)" onclick="window.location.reload()" style="color:var(--burgundy)">Try again</a>.`;
+    }
+  }
+
+  // Kick off
+  verifyAccess();
+</script>
+
+</body>
+</html>
