@@ -623,9 +623,14 @@ function computeFamilyDisplay(name, partnerName, childrenFirstNames) {
     };
   }
   if (!hasPartner && hasChildren) {
+    // 'child' singular when there's exactly one child name; 'children'
+    // plural for two or more. English grammar requires this and the
+    // bug bit on a real publish ('with their children Roger' instead
+    // of 'with their child Roger').
+    const childWord = cleanChildren.length === 1 ? 'child' : 'children';
     return {
       displayName: `${name} & Family`,
-      creditLine:  `with their children ${formatNameList(cleanChildren)}`,
+      creditLine:  `with their ${childWord} ${formatNameList(cleanChildren)}`,
     };
   }
   // Individual member — no family details
@@ -665,16 +670,20 @@ function computeRegisterDisplay(name, partnerName, childrenFirstNames, childrenV
   // Children exist BUT opted out of public register.
   // Display name still says "& Family" (the family-tier nature of the
   // entry isn't a privacy issue; only the children's names are).
-  // Credit line gets the redacted form.
+  // Credit line gets the redacted form. Pluralization matches the
+  // visible-children path for consistency: 'child' singular vs
+  // 'children' plural even when names are redacted.
+  const cleanChildren = childrenFirstNames.filter(c => c && c.trim());
+  const childWord = cleanChildren.length === 1 ? 'child' : 'children';
   if (hasPartner) {
     return {
       displayName: `${name} & Family`,
-      creditLine:  `with ${partnerName.trim()}, and children`,
+      creditLine:  `with ${partnerName.trim()}, and ${childWord}`,
     };
   }
   return {
     displayName: `${name} & Family`,
-    creditLine:  `with children`,
+    creditLine:  `with ${childWord}`,
   };
 }
 

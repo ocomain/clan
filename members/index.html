@@ -781,7 +781,11 @@
         return { displayName: combineCoupleNames(cleanName, partner), creditLine: null };
       }
       if (!hasPartner && hasChildren) {
-        return { displayName: cleanName + ' & Family', creditLine: 'with their children ' + formatList(cleanChildren) };
+        // 'child' singular for one, 'children' plural for two or more.
+        // Mirrors the same fix in lib/generate-cert.js — keep these
+        // two implementations in lock-step.
+        const childWord = cleanChildren.length === 1 ? 'child' : 'children';
+        return { displayName: cleanName + ' & Family', creditLine: 'with their ' + childWord + ' ' + formatList(cleanChildren) };
       }
       return { displayName: cleanName, creditLine: null };
     };
@@ -1056,7 +1060,19 @@
       // Build the overlay
       const card = modal.querySelector('div[style*="max-width:680px"]');
       const original = card.innerHTML;
-      const nameVal = formSnapshot.name || (member.name || '');
+      // Compute the FULL family display the same way the live preview
+      // does, so this confirmation step shows what will actually be
+      // sealed on the cert. Was previously just rendering the bare
+      // primary name ('Peter Commane') instead of the full family
+      // line ('Peter Commane & Family' + 'with their child Roger').
+      // The preview already used formatFamilyDisplay; this screen
+      // didn't, and they diverged. Now they match.
+      const sealNameFromForm = formSnapshot.name || (member.name || '');
+      const sealPartner = formSnapshot.partner || (member.partner_name || '');
+      const sealChildren = Array.isArray(formSnapshot.children) && formSnapshot.children.length
+        ? formSnapshot.children
+        : (Array.isArray(member.children_first_names) ? member.children_first_names : []);
+      const sealDisplay = formatFamilyDisplay(sealNameFromForm, sealPartner, sealChildren);
       const ancestorVal = formSnapshot.ancestor;
       card.innerHTML = `
         <!-- Herald-led ceremonial confirmation. The Clan Herald is the
@@ -1139,11 +1155,15 @@
           </div>
         </div>
 
-        <!-- Summary of what's about to be sealed -->
+        <!-- Summary of what's about to be sealed. Shows the FULL
+             family display (display name + credit line if applicable)
+             so Linda/Fergus see the same thing the cert will print.
+             Was a bug where only the bare primary name showed up. -->
         <div style="background:var(--white);border:1px solid var(--gold-border);border-top:2px solid var(--gold);padding:24px 28px;margin:0 auto 28px;border-radius:1px;max-width:520px">
           <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:10px">To be sealed in your name</div>
-          <div style="font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);text-align:center;line-height:1.3">${escHtml(nameVal)}</div>
-          ${ancestorVal ? `<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--gold-deep);text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--gold-border)">${escHtml(ancestorVal)}</div>` : ''}
+          <div style="font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);text-align:center;line-height:1.3">${escHtml(sealDisplay.displayName)}</div>
+          ${sealDisplay.creditLine ? `<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--ink-muted);text-align:center;margin-top:6px;line-height:1.5">${escHtml(sealDisplay.creditLine)}</div>` : ''}
+          ${ancestorVal ? `<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--gold-deep);text-align:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--gold-border)">${escHtml(ancestorVal)}</div>` : ''}
         </div>
 
         <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
