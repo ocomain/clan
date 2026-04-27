@@ -24,9 +24,28 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON, {
   },
 });
 
-export async function sendMagicLink(email) {
+export async function sendMagicLink(email, nextUrl) {
   const cleanEmail = email.toLowerCase().trim();
-  const redirectTo = window.location.origin + '/members/';
+  // The post-magic-link destination defaults to the regular member
+  // dashboard. Callers can pass a `nextUrl` (e.g. '/members/admin/...'
+  // for admin sign-ins) to land somewhere else after the round-trip.
+  // We resolve any relative path against the current origin so a
+  // path-only argument like '/members/admin/founders.html' works.
+  // Defence-in-depth: only allow same-origin destinations to prevent
+  // an open-redirect via a maliciously-crafted ?next= on the login
+  // page. Anything that doesn't resolve to the same origin falls back
+  // to the dashboard.
+  let redirectTo = window.location.origin + '/members/';
+  if (nextUrl) {
+    try {
+      const resolved = new URL(nextUrl, window.location.origin);
+      if (resolved.origin === window.location.origin) {
+        redirectTo = resolved.toString();
+      }
+    } catch {
+      // malformed URL — keep the safe default
+    }
+  }
   const { error } = await supabase.auth.signInWithOtp({
     email: cleanEmail,
     options: { emailRedirectTo: redirectTo },

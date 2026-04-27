@@ -1981,6 +1981,22 @@
         return;
       }
       if (member.notAMember) {
+        // Admins (e.g. clan@ocomain.org) sign in via the same magic-
+        // link flow as members but have no row in the members table.
+        // Without this branch they'd land on the regular dashboard
+        // and see 'is not on the clan's register of members' — which
+        // is technically true but unhelpful. Redirect them to the
+        // admin tool. The allowlist mirrors the server-side
+        // FOUNDER_ADMIN_ALLOWLIST in lib/supabase.js (kept small;
+        // duplicating one canonical value is acceptable). The admin
+        // page itself does its own server-side auth check, so this
+        // client-side hint is just for UX, not security.
+        const ADMIN_EMAILS = new Set(['clan@ocomain.org']);
+        const signedInEmail = (member.email || '').toLowerCase().trim();
+        if (ADMIN_EMAILS.has(signedInEmail)) {
+          window.location.href = '/members/admin/founders.html';
+          return;
+        }
         loading.style.display = 'none';
         errorMsg.innerHTML = `The email <strong>${escHtml(member.email)}</strong> is signed in, but is not on the clan's register of members. If you believe this is an error, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>. Otherwise, you're welcome to <a href="/membership.html" style="color:var(--gold)">apply for membership</a>.`;
         errorBox.style.display = 'block';

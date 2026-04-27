@@ -140,17 +140,29 @@
 <script type="module">
   import { sendMagicLink, currentSession, getLastEmail } from './auth.js';
 
-  // If already logged in, go straight to the dashboard.
+  const params = new URLSearchParams(window.location.search);
+
+  // Read the ?next= URL param early so we can use it both for the
+  // already-signed-in shortcut below AND for sendMagicLink. Same-origin
+  // sanitisation lives inside sendMagicLink, but we apply a basic shape
+  // check here so the already-signed-in branch doesn't redirect to a
+  // bare 'http://evil.com' or whatever.
+  const rawNext = params.get('next') || '';
+  const nextUrl = (rawNext && rawNext.startsWith('/')) ? rawNext : '';
+
+  // If already logged in, go straight to the destination (next param if
+  // present, else regular dashboard). This matters for admin links
+  // ('/members/admin/founders.html') so a returning admin doesn't get
+  // bounced through the regular member dashboard first.
   (async () => {
     const session = await currentSession();
-    if (session) window.location.href = '/members/';
+    if (session) window.location.href = nextUrl || '/members/';
   })();
 
   const form = document.getElementById('loginForm');
   const emailInput = document.getElementById('email');
   const submitBtn = document.getElementById('submitBtn');
   const status = document.getElementById('status');
-  const params = new URLSearchParams(window.location.search);
 
   // Pre-fill the email field. Priority order:
   //   1. ?email= URL param  — the user just clicked a personalised
@@ -190,7 +202,7 @@
     submitBtn.textContent = 'Sending…';
     status.className = 'mlogin-status';
 
-    const { ok, error } = await sendMagicLink(email);
+    const { ok, error } = await sendMagicLink(email, nextUrl);
 
     if (ok) {
       status.className = 'mlogin-status show success';
