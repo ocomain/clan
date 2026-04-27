@@ -174,29 +174,29 @@ async function sendGiftRenewalReminder({ recipientEmail, recipientName, buyerNam
 
   <div style="background:#0C1A0C;padding:40px;text-align:center;border-bottom:2px solid #B8975A">
     <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
-    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Clan Ó Comáin</p>
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">A note from Newhall</p>
     <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0;line-height:1.2">Your year with the clan</h1>
   </div>
 
   <div style="padding:40px">
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dia dhuit, ${escapeHtml(firstName)} — God be with you.</p>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">It is almost a year since <strong>${escapeHtml(giverName)}</strong> gifted you a place in Clan Ó Comáin. Your gift membership was a one-year ${escapeHtml(tier).toLowerCase()}, and it will quietly end on <strong>${escapeHtml(expiresDate)}</strong>.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">It is almost a year since <strong>${escapeHtml(giverName)}</strong> set a place for you in Clan Ó Comáin. Your gift membership was a one-year ${escapeHtml(tier).toLowerCase()}, and it will quietly come to its end on <strong>${escapeHtml(expiresDate)}</strong> — at which point your name will move from active standing into the keeping of the clan archive.</p>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 28px">We wanted to write in good time — so that, if you would like to continue on your own terms, there is space to decide without pressure.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 28px">We wanted to write in good time — so that, if you would like to remain in current standing on your own terms, there is space to decide without pressure.</p>
 
-    <!-- Quiet pull-quote -->
+    <!-- Quiet pull-quote — the line that does the real work -->
     <div style="border-left:3px solid #B8975A;padding:4px 0 4px 20px;margin:0 0 28px;background:rgba(184,151,90,0.05)">
       <p style="font-family:'Georgia',serif;font-size:15px;font-style:italic;color:#3C2A1A;line-height:1.75;margin:0">A year is enough to learn what Ó Comáin feels like from the inside. What comes next is yours to shape.</p>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 24px">If you would like to continue, the door remains open. You are welcome to take up any tier that fits — year by year, or for life. Founder status for 2026 is carried by your current certificate; continuing your membership keeps that distinction alive.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 24px">If you would like to continue, the door remains open. You are welcome to take up any tier that fits — year by year, or for life. Continuing your membership keeps your name in current standing on the Register, and your founder distinction (carried by your 2026 certificate) alongside it.</p>
 
     <div style="text-align:center;margin:0 0 28px">
       <a href="https://www.ocomain.org/membership.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Continue your membership →</a>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">And if now is not the time — that's also all right. Your place in the Register stays with you, and you can return whenever the moment feels right. If you have any questions, write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and I will respond on behalf of the Chief.</p>
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">And if now is not the time — that is also all right. Your certificate remains yours, and the clan keeps a record of every name it has called its own. You are welcome back at any point you wish to return to the Register in current standing. If you have any questions, write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and I will respond on behalf of the Chief.</p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;margin:0 0 28px">Go raibh míle maith agat for the year you have given the clan.</p>
 

@@ -306,6 +306,15 @@ async function generateCertificate({ name, tierLabel, joinedAt, certNumber, shie
   // but neither encroaches on the signature area (which starts at margin+110).
   let cursorY = ruleY - 240 + regOffset;
 
+  // Local 'has children' check used by both the inheritance-line block
+  // below and the dedication-spacing tweak further down. Was previously
+  // referenced as a free variable (causing 'hasChildren is not defined'
+  // ReferenceError) — that name only exists inside the helper functions
+  // computeFamilyDisplay() and computeRegisterDisplay(), not in the
+  // main generateCertificate scope. This declaration restores it.
+  const hasChildren = Array.isArray(childrenFirstNames)
+    && childrenFirstNames.filter(c => c && c.trim()).length > 0;
+
   // ── INHERITANCE LINE — only for families with children ────────────────
   // Heraldic letters-patent convention: the cert names the inheritors.
   // Rendered as two short italic lines in muted ink, wrapping naturally.
