@@ -22,9 +22,20 @@
 //      clan, not getting a personal note from a friend pretending
 //      to be the friend's organisation.
 //
-// SUBJECT: includes the inviter's first name, naming the recipient
-// — 'A note from {Inviter} — Clan Ó Comáin'. Personal enough to
-// open, formal enough to recognise the institutional source.
+// SUBJECT: 'A note from {Inviter Full Name}'. Names the sender by
+// their full name. The clan name is intentionally NOT in the
+// subject — the From field already shows 'Clan Ó Comáin', so
+// putting the clan in the subject again would be redundant and
+// would push the sender's name back. The recipient should see
+// '{Sender}' in their inbox preview, not '{Sender} — Clan Ó Comáin'.
+//
+// OPENING: leads with the sender's identity AS a member of Clan Ó
+// Comáin and their direct intent — they would like the recipient
+// to join them in the clan. The Herald narrates this on the
+// member's behalf in standard warrant convention. The straight
+// 'would like you to join them' phrasing makes the want explicit;
+// earlier drafts had the more abstract 'has thought of you' which
+// was felt to underplay the personal-invitation nature.
 //
 // LINK: /invitation?token={token} where the token is signed via
 // HMAC of the invitation row id + secret. The link routes to a
@@ -60,7 +71,7 @@ async function sendInvitation({
   const recipFirst = (recipientName || '').trim().split(/\s+/)[0] || 'friend';
   const inviterFull = (inviterName || '').trim() || inviterFirstName || 'a member of the clan';
 
-  const subject = `A note from ${inviterFirstName} — Clan Ó Comáin`;
+  const subject = `A note from ${inviterFull}`;
 
   // Optional personal-note block. Sits at the top, above the clan
   // body, signed by the inviter. Renders only when personalNote is
@@ -97,7 +108,11 @@ async function sendInvitation({
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 16px">
-      ${escapeHtml(inviterFull)}, a member of Clan Ó Comáin, has thought of you and has asked us to write. The clan is an ancient royal house of the Ó Comáin name — Cummins, Commane, Commons, Comyn, Hurley, and many other variants — recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland. After many centuries of silence, it has begun again. Members are entered in the Register at Newhall House, County Clare, and receive a certificate of membership in their own name.
+      ${escapeHtml(inviterFull)}, a member of Clan Ó Comáin, would like you to join them in the clan and has asked us to write to you on their behalf.
+    </p>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 16px">
+      The clan is an ancient royal house of the Ó Comáin name — Cummins, Commane, Commons, Comyn, Hurley, and many other variants — recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland. After many centuries of silence, it has begun again. Members are entered in the Register at Newhall House, County Clare, and receive a certificate of membership in their own name.
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 26px">
