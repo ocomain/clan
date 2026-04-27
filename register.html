@@ -76,9 +76,20 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .herald-sign-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--ink);line-height:1.3;font-weight:500}
 .herald-sign-role{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold-deep);margin-top:4px}
 
-.hero-counts{display:flex;align-items:center;justify-content:center;gap:34px;margin-top:6px;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-deep)}
-.hero-counts strong{color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:0;display:inline-block;margin-right:8px;font-style:italic}
-.hero-counts-sep{width:4px;height:4px;background:var(--gold-deep);border-radius:50%;opacity:.5}
+/* Counts panel — two stacked stat blocks with a midpoint dot between
+   them. Each block: large italic number, small-caps label below, then
+   (Members block only) a quiet breakdown line beneath. */
+.hero-counts{display:flex;align-items:flex-start;justify-content:center;gap:34px;margin-top:6px}
+.hero-count{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center}
+.hero-count strong{color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:0;font-style:italic;line-height:1}
+.hero-count-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-deep);margin-top:6px}
+/* Breakdown line: smaller, italic, muted, sits below the small-caps
+   label. Uses Cormorant Garamond italic to harmonise with the headline
+   above rather than the small-caps label. Empty by default — populated
+   only when the register endpoint returns counts. */
+.hero-count-breakdown{font-family:'Cormorant Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);margin-top:8px;letter-spacing:0;line-height:1.4;display:none}
+.hero-count-breakdown.show{display:block}
+.hero-counts-sep{width:4px;height:4px;background:var(--gold-deep);border-radius:50%;opacity:.5;margin-top:9px}
 
 /* SECTIONS */
 .section{padding:54px 0 60px}
@@ -250,9 +261,23 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
   </div>
 
   <div class="hero-counts">
-    <span><strong id="totalCount">—</strong>Members</span>
+    <div class="hero-count">
+      <strong id="totalCount">—</strong>
+      <span class="hero-count-label">Members</span>
+      <!-- Breakdown line — populated by JS once the register loads.
+           Reads e.g. '60 Individual · 30 Family · 20 Private'. The
+           three figures sum to the headline above. 'Private' counts
+           members the Herald keeps but doesn't display here (Clan
+           tier, opted-out, or unpublished) — visitor sees the count
+           paired with the Herald's introduction above which already
+           explains why some are kept on a separate roll. -->
+      <span class="hero-count-breakdown" id="memberBreakdown"></span>
+    </div>
     <span class="hero-counts-sep"></span>
-    <span><strong>2026</strong>Year of Revival</span>
+    <div class="hero-count">
+      <strong>2026</strong>
+      <span class="hero-count-label">Year of Revival</span>
+    </div>
   </div>
 </header>
 
@@ -449,7 +474,29 @@ async function loadRegister() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const members = data.members || [];
-    document.getElementById('totalCount').textContent = data.count;
+
+    // Headline number — total active members (incl. private).
+    // Falls back to old payload shape (data.count) for backwards-compat
+    // in case any cached older response sneaks through during deploy.
+    const counts = data.counts || {};
+    const total = counts.total ?? data.count ?? members.length;
+    document.getElementById('totalCount').textContent = total;
+
+    // Breakdown line — populated only when we have all three figures.
+    // Each part hidden if zero, to avoid '0 Family · 0 Private' clutter
+    // on a page that only has individual members. Min friction render.
+    const breakdown = document.getElementById('memberBreakdown');
+    if (counts.individual != null && counts.family != null && counts.private != null) {
+      const parts = [];
+      if (counts.individual > 0) parts.push(`${counts.individual} Individual`);
+      if (counts.family     > 0) parts.push(`${counts.family} Family`);
+      if (counts.private    > 0) parts.push(`${counts.private} Private`);
+      if (parts.length > 0) {
+        breakdown.textContent = parts.join(' · ');
+        breakdown.classList.add('show');
+      }
+    }
+
     target.innerHTML = SECTIONS.map(s => renderSection(s, members)).join('');
   } catch (e) {
     console.error('Register load failed:', e);

@@ -83,29 +83,57 @@ exports.handler = async (event) => {
   try {
     const cid = await clanId();
 
-    const { data, error } = await supa()
-      .from('members')
-      .select(`
-        id,
-        display_name_on_register,
-        name,
-        tier,
-        tier_label,
-        ancestor_dedication,
-        joined_at,
-        partner_name,
-        children_visible_on_register,
-        children_first_names
-      `)
-      .eq('clan_id', cid)
-      .eq('public_register_visible', true)
-      .eq('status', 'active')
-      .in('tier', REGISTER_TIERS);
+    // ── Two parallel queries ───────────────────────────────────────
+    // (a) The visible roll — members who'll appear on the register page.
+    //     Filtered by tier (Guardian/Steward/Life only), opt-in, and
+    //     active status.
+    // (b) The total active member count — for the 'X Private' figure
+    //     in the counts panel. 'Private' = total - visible. Honest
+    //     framing: a visitor sees how many people are visible AND
+    //     gets a count of those the Herald keeps but doesn't display
+    //     here (Clan tier + opt-outs + unpublished).
+    //
+    // Run in parallel via Promise.all; the count query is cheap and
+    // doesn't materially affect endpoint latency.
+    const [visibleRes, totalRes] = await Promise.all([
+      supa()
+        .from('members')
+        .select(`
+          id,
+          display_name_on_register,
+          name,
+          tier,
+          tier_label,
+          ancestor_dedication,
+          joined_at,
+          partner_name,
+          children_visible_on_register,
+          children_first_names
+        `)
+        .eq('clan_id', cid)
+        .eq('public_register_visible', true)
+        .eq('status', 'active')
+        .in('tier', REGISTER_TIERS),
+      supa()
+        .from('members')
+        .select('id', { count: 'exact', head: true })
+        .eq('clan_id', cid)
+        .eq('status', 'active'),
+    ]);
 
-    if (error) {
-      console.error('register query failed:', error.message);
+    if (visibleRes.error) {
+      console.error('register query failed:', visibleRes.error.message);
       return { statusCode: 500, body: JSON.stringify({ error: 'Could not load register' }) };
     }
+    if (totalRes.error) {
+      // Non-fatal — log and proceed without the privacy breakdown rather
+      // than returning 500 to the page. Better to render the visible roll
+      // with the simpler 'X Members' counter than to break the entire
+      // page on what is essentially a stat lookup.
+      console.warn('register total-count query failed:', totalRes.error.message);
+    }
+    const data = visibleRes.data;
+    const totalActive = totalRes.count || (data ? data.length : 0);
 
     // Sort: tier weight first, then joined_at ASC. Done in JS rather
     // than via Supabase's .order() because we want a CASE-style ordering
@@ -149,6 +177,16 @@ exports.handler = async (event) => {
       };
     });
 
+    // Privacy-breakdown counts for the Members panel.
+    // Individual = members on the visible roll at -ind tiers
+    // Family     = members on the visible roll at -fam tiers
+    // Private    = total active members minus those on the visible roll
+    //              (covers Clan tier, opted-out, and unpublished)
+    const individualCount = members.filter(m => m.tier && m.tier.endsWith('-ind')).length;
+    const familyCount     = members.filter(m => m.tier && m.tier.endsWith('-fam')).length;
+    const visibleCount    = members.length;
+    const privateCount    = Math.max(0, totalActive - visibleCount);
+
     return {
       statusCode: 200,
       headers: {
@@ -159,7 +197,20 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({
         members,
-        count: members.length,
+        count: visibleCount,        // Kept for backwards compatibility
+        counts: {
+          // Total membership across all tiers and visibility states.
+          // This is the headline figure ('110 Members') in the page UI.
+          total:      totalActive,
+          // Public roll breakdown — sums to visibleCount.
+          individual: individualCount,
+          family:     familyCount,
+          // Members the Herald keeps but doesn't display here. Includes
+          // Clan-tier (excluded by policy), opted-out, and unpublished.
+          // The Herald's introduction explains this on the page itself —
+          // visitors see the count + the explanation together.
+          private:    privateCount,
+        },
         generated_at: new Date().toISOString(),
       }),
     };
