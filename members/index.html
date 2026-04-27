@@ -756,9 +756,9 @@
            server-side in send-invitation.js — the client is just
            the form. -->
       <section class="minvite" id="minvite">
-        <div class="minvite-eyebrow">Bring others to the clan</div>
-        <div class="minvite-title">Invite a family member or friend</div>
-        <p class="minvite-sub">Someone whose story is woven into yours might find a place here. Send them a personal note from your members area; the Herald introduces the clan. There is no obligation on the recipient — only an invitation.</p>
+        <div class="minvite-eyebrow">By private welcome</div>
+        <div class="minvite-title">Keep a place beside you for someone</div>
+        <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. If there is someone in your life — a sibling, a cousin, an old friend — who belongs in the Register beside you, write them in below. The Herald carries the welcome in your name; the rest is theirs to take up, in their own time.</p>
 
         <form id="inviteForm" onsubmit="return false">
           <div class="minvite-grid">
@@ -771,14 +771,14 @@
               <input type="email" id="inviteEmail" class="minvite-input" placeholder="name@example.com" required autocomplete="off">
             </div>
             <div class="minvite-field-full">
-              <label class="minvite-label" for="inviteNote">A line from you <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-              <input type="text" id="inviteNote" class="minvite-input" placeholder="A line of welcome — leave blank for none" maxlength="200" autocomplete="off">
-              <p class="minvite-help">If filled, sits at the top of the email in italic, attributed to you. The Herald's clan introduction follows.</p>
+              <label class="minvite-label" for="inviteNote">A word from you <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+              <input type="text" id="inviteNote" class="minvite-input" placeholder="A line of welcome, in your own voice — leave blank for none" maxlength="200" autocomplete="off">
+              <p class="minvite-help">If you write something here, it sits at the head of the letter in your name. The Herald's introduction follows below.</p>
             </div>
           </div>
           <div class="minvite-actions">
             <button type="submit" class="minvite-send-btn" id="inviteSendBtn">Send invitation →</button>
-            <span class="minvite-help" style="margin:0">Limit 5 per hour, 20 per day.</span>
+            <span class="minvite-help" style="margin:0">A handful at a time — five an hour, twenty a day.</span>
           </div>
           <div class="minvite-status" id="inviteStatus"></div>
         </form>
