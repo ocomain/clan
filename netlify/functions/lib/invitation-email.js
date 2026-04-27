@@ -134,7 +134,7 @@ async function sendInvitation({
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
-      The clan is an ancient royal house of the Ó Comáin name and its many forms — Cummins, Commane, Commons, Comyn, Hurley, and others. After many centuries of silence it has been formally revived, recognised by Clans of Ireland in 2025 under the patronage of the President of Ireland. Membership is, by design, a quiet thing: a place in the Register at Newhall House, a certificate sealed in your own name, and the company of those who feel the pull of something old and worth keeping.
+      Clan Ó Comáin is an ancient Gaelic royal house, formally revived in 2025 and recognised by Clans of Ireland under the patronage of the President of Ireland. After many centuries of silence it has been gathered again — and, as in the old Brehon tradition where clans were never built on blood alone, its doors are open to all who feel a pull toward Ireland, her story, and the company of those who keep faith with her. Membership is, by design, a quiet thing: a place in the Register at Newhall House, a certificate sealed in your own name, and a standing among the wider clan family wherever in the world it has been carried.
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
