@@ -117,8 +117,8 @@ function autoFixName(input) {
  *   - Ampersand   ('John & Mary Smith')
  *   - Plus sign   ('John + Mary')
  *   - Slash       ('John / Mary Smith')
- *   - Comma       ('John, Mary Smith')
- *   - Word 'and'  ('John and Mary Smith') — surrounded by spaces
+ *   - Word 'and'  ('John and Mary Smith') — surrounded by spaces,
+ *                  with capital-letter words on each side
  *
  * Does NOT trigger on:
  *   - Multiple words alone (middle names: 'John Patrick Anthony Smith')
@@ -126,6 +126,11 @@ function autoFixName(input) {
  *   - Apostrophes ('Mary O'Connor')
  *   - Mac/Mc surnames ('John MacDonald')
  *   - Multi-word particle surnames ('Mary van der Berg')
+ *   - Comma — explicitly NOT a trigger, because comma is a
+ *     legitimate single-person construct for post-nominals
+ *     ('John Smith, OBE', 'James Smith, PhD', 'Mary O'Connor, FRCS').
+ *     Two-people-with-only-a-comma is rare in real input — almost
+ *     anyone writing two names uses '&' or 'and'.
  *
  * @param {string} name
  * @returns {boolean} true if the input looks like multiple people
@@ -135,9 +140,9 @@ function looksLikeMultipleNames(name) {
   const s = name.trim();
   if (!s) return false;
 
-  // Punctuation connectors — any of these signals 'two people'
+  // Punctuation connectors — any of these signals 'two people'.
+  // Comma is deliberately NOT here (post-nominals).
   if (/[&+/]/.test(s)) return true;
-  if (/,/.test(s)) return true;
 
   // Word 'and' as a connector — must be surrounded by whitespace
   // on both sides AND have alphabetic content on both sides.

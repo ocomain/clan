@@ -1673,7 +1673,6 @@
      *   - Ampersand   ('John & Mary Smith')
      *   - Plus sign   ('John + Mary')
      *   - Slash       ('John / Mary Smith')
-     *   - Comma       ('John, Mary Smith')
      *   - Word 'and'  ('John and Mary Smith') — surrounded by spaces
      *
      * Does NOT trigger on:
@@ -1682,6 +1681,10 @@
      *   - Apostrophes ('O'Connor')
      *   - Mac/Mc surnames ('MacDonald', 'McCarthy')
      *   - Dutch/Irish multi-word surnames ('van der Berg', 'O'Connor')
+     *   - Comma — deliberately NOT a trigger, as it's a legitimate
+     *     single-person construct for post-nominals ('John Smith, OBE',
+     *     'James Smith, PhD'). Mirrors the server-side helper in
+     *     lib/name-format.js.
      *
      * Returns true if the input looks like multiple people.
      */
@@ -1689,9 +1692,9 @@
       if (!name || typeof name !== 'string') return false;
       const s = name.trim();
       if (!s) return false;
-      // Punctuation connectors — any of these signals 'two people'
+      // Punctuation connectors — any of these signals 'two people'.
+      // Comma is deliberately NOT here (post-nominals).
       if (/[&+/]/.test(s)) return true;
-      if (/,/.test(s)) return true;
       // Word 'and' as a connector — must be surrounded by whitespace
       // on both sides AND have alphabetic content on both sides. The
       // word-boundary regex ensures we don't false-positive on names
@@ -1729,7 +1732,7 @@
           ? 'The certificate names ONE primary member. If you want to add a partner or family, please use the partner and children fields below — leave this field as your own name only.'
           : 'An individual-tier certificate names ONE person. If you wish to record a partner or family, that requires a Family-tier membership.';
         const proceed = confirm(
-          `The name "${nameValue}" looks like it contains more than one person.\n\n${guidance}\n\nIf this really is one person's name (and we have it wrong), click OK to proceed anyway.`
+          `The name "${nameValue}" looks like it contains more than one person.\n\n${guidance}\n\nIf this really is one person\u2019s name and we have it wrong, click OK to proceed anyway. For special cases (e.g. legal name with \u201cand\u201d in it), you can also write to clan@ocomain.org.`
         );
         if (!proceed) return;
       }
@@ -2116,7 +2119,7 @@
             ? 'The certificate names ONE primary member. If you want to add a partner or family, please use the partner and children fields below — leave this field as your own name only.'
             : 'An individual-tier certificate names ONE person. If you wish to record a partner or family, that requires a Family-tier membership.';
           const proceed = confirm(
-            `The name "${nameValue}" looks like it contains more than one person.\n\n${guidance}\n\nIf this really is one person's name (and we have it wrong), click OK to proceed anyway.`
+            `The name "${nameValue}" looks like it contains more than one person.\n\n${guidance}\n\nIf this really is one person\u2019s name and we have it wrong, click OK to proceed anyway. For special cases (e.g. legal name with \u201cand\u201d in it), you can also write to clan@ocomain.org.`
           );
           if (!proceed) return;
         }
