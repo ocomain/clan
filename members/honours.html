@@ -79,7 +79,12 @@
        introduce the women + gender-neutrality + courtesy-use note as
        a distinct sub-section under the broader 'A note on the order'
        umbrella. */
-    .closing-subhead{font-family:'EB Garamond',serif;font-size:14px;font-weight:500;font-style:normal;color:var(--gold-deep);letter-spacing:.04em;margin:24px 0 12px;padding-top:20px;border-top:1px solid var(--gold-faint);text-transform:none}
+    /* closing-subhead — was a within-section divider when 'A note on
+       the order' had paragraphs above it; now stands as the lead
+       heading of the closing block, so the top-border + padding-top
+       are dropped (the .closing wrapper's own gold-top accent is the
+       section divider). Margin tightened too. */
+    .closing-subhead{font-family:'EB Garamond',serif;font-size:14px;font-weight:500;font-style:normal;color:var(--gold-deep);letter-spacing:.04em;margin:0 0 12px;text-transform:none}
     .closing-signoff{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:14px}
 
     .back-link{display:inline-block;margin-top:32px;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.35);padding-bottom:2px}
@@ -218,13 +223,16 @@
     </div>
 
     <!-- ── CLOSING NOTE ─────────────────────────────────────── -->
+    <!-- Repetitive 'A note on the order' opener and its two
+         paragraphs were removed 2026-04-28 — they restated material
+         already laid out in the page-sub at top (the laying-by of
+         the lower dignity, the keeping under the Chief's seal,
+         held with the Herald). The closing now carries only the
+         distinct material that wasn't covered above: the women /
+         gender-neutral courtesy-titles note, plus the signoff. -->
     <div class="closing">
-      <div class="closing-eyebrow">A note on the order</div>
       <div class="closing-body">
-        <p style="margin:0 0 12px">The honours follow one another: when a higher dignity is conferred, the lower is laid by. The clan's keeping records every raising — but only the current dignity is held and shown. This is the older convention, by which a member's standing is named by what they currently are, not by everything they have ever been.</p>
-        <p style="margin:0">Titles are held quietly with the Chief and the Herald — recorded under the Chief's seal at Newhall. There is no fanfare to them; only the recognition of what has been done, in the company of those who do likewise.</p>
-
-        <!-- Sub-section: women in Gaelic tradition + gender-neutrality
+        <!-- Women in Gaelic tradition + gender-neutrality
              + courtesy-use clarification. Three threads woven into
              one paragraph. Careful framing on women's status —
              'respected standing' rather than 'equal' (defensible
