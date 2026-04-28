@@ -241,29 +241,51 @@
     .mgift-cta-btn:hover{background:var(--gold-light)}
     .mgift-cta-note{font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:.08em;color:rgba(12,26,12,.45);margin-top:14px}
 
-    /* Order of Honours bridge block — sits between the invite
-       section above and the gift CTA below. Same gold-accent
-       visual family as the gift CTA (left-side gold rule, cream
-       background) so it visually belongs in the honours-related
-       cluster of surfaces, but smaller and text-forward — no big
-       icon, no big CTA button. Informational, not a CTA. */
-    .mhonours-bridge{max-width:720px;margin:0 auto 36px;background:rgba(184,151,90,.04);border-left:3px solid var(--gold);padding:24px 28px;border-radius:0 2px 2px 0}
-    .mhonours-bridge-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
-    .mhonours-bridge-body{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.75}
+    /* The Order of Honours — repositioned 2026-04-28 from a 'bridge'
+       between invite/gift to a leading ceremonial block above the
+       unified action card. Restyled to match the heritage register
+       used on /members/honours.html: white card with gold-top border
+       (same family as .minvite below, so the two stack as a
+       connected composition), italic burgundy 'Order of Honours'
+       title, small ornamental flourish below the title. The eyebrow
+       borrows the 'In the clan's keeping' phrasing from honours.html
+       so members read this and feel they are entering the same
+       institutional vocabulary they'll find on the deeper page.
+       Tight bottom margin (12px) lets the small visual ornament
+       below it bridge to the action card. */
+    .mhonours-bridge{max-width:720px;margin:0 auto 12px;background:var(--white);border:1px solid var(--gold-faint);border-top:3px solid var(--gold);padding:32px 36px 28px;border-radius:2px}
+    .mhonours-bridge-head{text-align:center;margin-bottom:18px}
+    .mhonours-bridge-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
+    .mhonours-bridge-title{font-family:'EB Garamond',serif;font-size:30px;font-weight:400;color:var(--ink);line-height:1.15;margin:0 0 14px;letter-spacing:-0.005em}
+    .mhonours-bridge-title em{font-style:italic;color:var(--burgundy)}
+    /* Ornamental flourish — three small dots in gold, a restrained
+       Irish-manuscript-style decorative break. Not a heavy heraldic
+       device; the dignity titles themselves carry the ceremony. */
+    .mhonours-bridge-flourish{font-family:'EB Garamond',serif;color:var(--gold);font-size:14px;letter-spacing:0.6em;line-height:1;opacity:0.65;display:inline-block;padding-left:0.6em}
+    .mhonours-bridge-body{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.8;text-align:left}
     .mhonours-bridge-body em{color:var(--burgundy);font-style:italic}
     /* Dignity ladder — three rows, hairline gold dividers, baseline-aligned.
        Designed as a clean ceremonial reference table, not a feature grid:
        no badges, no checkmarks, no progress bar. The status line beneath
        carries the personal "you are here" without needing visual markers
        in the ladder itself. */
-    .mhonours-ladder{margin:18px 0 16px;border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border)}
-    .mhonours-rank{display:flex;justify-content:space-between;align-items:baseline;padding:11px 2px;border-bottom:1px solid var(--gold-border);gap:18px}
+    .mhonours-ladder{margin:20px 0 18px;border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border)}
+    .mhonours-rank{display:flex;justify-content:space-between;align-items:baseline;padding:13px 2px;border-bottom:1px solid var(--gold-border);gap:18px}
     .mhonours-rank:last-child{border-bottom:none}
-    .mhonours-rank-name{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink)}
+    .mhonours-rank-name{font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--burgundy)}
     .mhonours-rank-req{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap}
-    .mhonours-status{margin:0 0 16px;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);line-height:1.65}
+    .mhonours-status{margin:0 0 18px;font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-soft);line-height:1.7;text-align:center}
     .mhonours-bridge-link{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:13px 28px;border-radius:1px;text-decoration:none;margin-top:6px;transition:background .15s}
     .mhonours-bridge-link:hover{background:var(--gold-light)}
+    .mhonours-bridge-cta{text-align:center}
+    /* Centered ornament that sits BETWEEN the honours box and the
+       action card below. Small gold diamond flanked by short gold
+       hairlines — visually unites the two cards as a composition
+       rather than two unrelated items. ~30px tall, tight margins.
+       Pure CSS via flex, no SVG or unicode dependency. */
+    .mflourish-link{max-width:720px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--gold);opacity:0.55;height:18px}
+    .mflourish-link::before,.mflourish-link::after{content:'';display:block;width:32px;height:1px;background:var(--gold)}
+    .mflourish-link span{display:inline-block;width:6px;height:6px;background:var(--gold);transform:rotate(45deg)}
 
     /* Loading / error states */
     .mloading,.merror{text-align:center;padding:120px 24px;font-family:'EB Garamond',serif;color:var(--ink-soft);font-size:17px}
@@ -800,7 +822,11 @@
            the class would touch many style rules without behavioural
            gain. -->
       <section class="mhonours-bridge">
-        <div class="mhonours-bridge-eyebrow">The Order of Honours</div>
+        <div class="mhonours-bridge-head">
+          <div class="mhonours-bridge-eyebrow">In the clan's keeping</div>
+          <h2 class="mhonours-bridge-title">The <em>Order of Honours</em></h2>
+          <div class="mhonours-bridge-flourish">· · ·</div>
+        </div>
         <div class="mhonours-bridge-body">
           ${(() => {
             const count = Number(member.sponsorCount) || 0;
@@ -827,29 +853,30 @@
             } else {
               statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Ardchara</em> — the highest dignity of the order.`;
             }
-            // Opening paragraph rewritten 2026-04-28 to address the
-            // reader's potential rather than describe the institution.
-            // Was: 'Both invitations and gifts of membership are
-            // recognised by the Chief as acts of bringing another to
-            // the clan. Cara, Onóir, Ardchara — titles of dignity
-            // bestowed by the Chief's hand and recognised by the
-            // kindred within and beyond the boundaries of Newhall.'
-            // Now leads with 'three dignities you may earn' and
-            // surfaces the most visceral incentive (your name on the
-            // public Register prefixed by the title) to make the
-            // honours system feel earnable rather than abstract.
+            // Opening paragraph addresses the reader's potential
+            // (rather than describing the institution) and surfaces
+            // the most visceral incentive — the title borne before
+            // the member's name on the public Register — to make
+            // the honours system feel earnable rather than abstract.
             return `
-              <p style="margin:0 0 14px">Three dignities you may earn by bringing others to the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
+              <p style="margin:0 0 16px;text-align:center">Three dignities you may earn by bringing others to the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
               <div class="mhonours-ladder">
                 <div class="mhonours-rank"><span class="mhonours-rank-name">Cara</span><span class="mhonours-rank-req">One sponsorship</span></div>
                 <div class="mhonours-rank"><span class="mhonours-rank-name">Onóir</span><span class="mhonours-rank-req">Five sponsorships</span></div>
                 <div class="mhonours-rank"><span class="mhonours-rank-name">Ardchara</span><span class="mhonours-rank-req">Fifteen sponsorships</span></div>
               </div>
               <p class="mhonours-status">${statusLine}</p>
-              <a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a>`;
+              <div class="mhonours-bridge-cta"><a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a></div>`;
           })()}
         </div>
       </section>
+
+      <!-- Ornamental link between the honours box above and the
+           action card below — small gold diamond flanked by thin
+           gold hairlines, centered. Visually unites the two cards
+           as a single sequence: 'here is the dignity you may earn
+           [diamond] here is how you earn it'. Pure CSS, no SVG. -->
+      <div class="mflourish-link" aria-hidden="true"><span></span></div>
 
       <!-- UNIFIED ACTION CARD — restructured 2026-04-28 from two
            separate cards (open invite form + gift CTA below the
@@ -865,8 +892,8 @@
            since the toggle now does part of the explanatory work. -->
       <section class="minvite" id="minvite">
         <div class="minvite-eyebrow">By private welcome</div>
-        <div class="minvite-title">Keep a place beside you for someone</div>
-        <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. Bring them in by invitation, or gift their first year as a doorway.</p>
+        <div class="minvite-title">Refer a Friend</div>
+        <p class="minvite-sub">Keep a place beside you for someone — a clan is best when it gathers the few who would answer its pull as you have.</p>
 
         <!-- Mode toggle — two-segment button, gold-bordered. Active
              segment is solid gold; inactive is transparent with gold
