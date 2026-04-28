@@ -37,12 +37,43 @@ exports.handler = async (event) => {
     const clan_id = await clanId();
 
     // First: look up by auth_user_id (faster once linked).
+    //
+    // The SELECT list deliberately does NOT include
+    // sponsor_titles_awarded. If migration 015 hasn't been run yet
+    // in a given environment, that column is absent and the SELECT
+    // would fail entirely — which would silently fall through to
+    // the 404 'not a member' branch and lock every member out of
+    // the dashboard. Instead we fetch the JSONB separately in the
+    // sponsor-enrichment block below, where the read is already
+    // wrapped in try/catch and a missing column degrades to
+    // sponsorTitle=null without breaking sign-in.
     let { data: member, error } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, dedication_visible_on_register, cert_version, cert_locked_at, cert_published_at, cert_publish_reminder_sent_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at, comped_by_chief, comped_at, sponsor_titles_awarded')
+      .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, dedication_visible_on_register, cert_version, cert_locked_at, cert_published_at, cert_publish_reminder_sent_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at, comped_by_chief, comped_at')
       .eq('clan_id', clan_id)
       .eq('auth_user_id', authUser.id)
       .maybeSingle();
+
+    // Surface real Postgres errors (e.g. schema problems, table
+    // missing) as 500s with diagnostic detail rather than silently
+    // falling through to the 'not a member' 404 branch. The previous
+    // behaviour locked legitimate members out of their dashboard
+    // when a schema change had been pushed but not yet applied —
+    // very hard to diagnose because the symptom looked identical to
+    // 'user genuinely not in the table'. Now the operator sees
+    // exactly what failed.
+    if (error) {
+      console.error('member-info: lookup-by-auth_user_id failed:', error.message);
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: 'Member lookup failed',
+          detail: error.message,
+          email,
+        }),
+      };
+    }
 
     // `isFirstActivation` means this member's auth_user_id is being linked for
     // the VERY FIRST TIME on this API call. That's the "recipient signed in
@@ -53,10 +84,23 @@ exports.handler = async (event) => {
     if (!member) {
       ({ data: member, error } = await supa()
         .from('members')
-        .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, dedication_visible_on_register, cert_version, cert_locked_at, cert_published_at, cert_publish_reminder_sent_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at, comped_by_chief, comped_at, sponsor_titles_awarded')
+        .select('id, email, name, tier, tier_label, tier_family, status, joined_at, renewed_at, expires_at, auth_user_id, partner_name, children_first_names, display_name_on_register, family_details_completed_at, public_register_visible, children_visible_on_register, dedication_visible_on_register, cert_version, cert_locked_at, cert_published_at, cert_publish_reminder_sent_at, ancestor_dedication, name_confirmed_on_cert, postal_address, postal_address_provided_at, cert_posted_at, comped_by_chief, comped_at')
         .eq('clan_id', clan_id)
         .eq('email', email)
         .maybeSingle());
+
+      if (error) {
+        console.error('member-info: lookup-by-email failed:', error.message);
+        return {
+          statusCode: 500,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            error: 'Member lookup failed',
+            detail: error.message,
+            email,
+          }),
+        };
+      }
 
       if (member && !member.auth_user_id) {
         await supa().from('members').update({ auth_user_id: authUser.id }).eq('id', member.id);
@@ -133,14 +177,32 @@ exports.handler = async (event) => {
     //     this member. Powers the quiet 'You have stood as sponsor
     //     to N members of the clan.' line.
     //   - sponsorTitle: the highest-tier title currently held
-    //     (Cara/Onóir/Ardchara), or null if none. Powers the title
-    //     line on the dashboard.
-    // Both best-effort — failure here doesn't block sign-in.
+    //     (Cara/Onóir/Ardchara), or null if none. Powers the
+    //     'Held in Honour' row on the dashboard.
+    //
+    // Both best-effort — failure here doesn't block sign-in. The
+    // sponsor_titles_awarded JSONB is fetched here as a SEPARATE
+    // query (not in the main SELECT above) so that if the column
+    // doesn't exist yet — e.g. migration 015 hasn't been run in a
+    // given environment — the main lookups still succeed and the
+    // member can sign in. We just degrade to sponsorTitle=null.
     let sponsorCount = 0;
     let sponsorTitle = null;
     try {
       sponsorCount = await countSponsoredBy(member.id);
-      sponsorTitle = highestAwardedTitle(member.sponsor_titles_awarded);
+      const { data: titlesRow, error: titlesErr } = await supa()
+        .from('members')
+        .select('sponsor_titles_awarded')
+        .eq('id', member.id)
+        .maybeSingle();
+      if (titlesErr) {
+        // Likely 'column does not exist' on a pre-migration-015
+        // environment. Swallow — sponsorTitle stays null. Log so
+        // the operator knows to run the migration.
+        console.warn('sponsor_titles_awarded fetch failed (probably missing column — run migration 015):', titlesErr.message);
+      } else if (titlesRow?.sponsor_titles_awarded) {
+        sponsorTitle = highestAwardedTitle(titlesRow.sponsor_titles_awarded);
+      }
     } catch (sponsorErr) {
       console.error('sponsor enrichment failed (non-fatal):', sponsorErr.message);
     }
