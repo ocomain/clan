@@ -834,27 +834,40 @@
             // fall through to digits since Ardchara has no upper
             // bound and very high counts in word-form get unwieldy.
             const wordForm = (n) => ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen'][n] || String(n);
+            // Sentence-initial capitalised form for the next-rank
+            // tease ('Four more, to Onóir.').
+            const wordFormCap = (n) => {
+              const w = wordForm(n);
+              return w.charAt(0).toUpperCase() + w.slice(1);
+            };
 
-            // Single-tier-focus structure 2026-04-28: opening
-            // paragraph speaks only to Cara as the doorway, status
-            // line below it speaks honestly to where the reader is.
-            // No ladder, no 'X more to the next dignity' tease —
-            // those live on the deeper /members/honours.html page,
-            // reached via the button below.
+            // Status line — names the current dignity, the act
+            // performed, and the next-rank tease. The 'X more, to Y'
+            // formulation is borrowed from the earlier copy
+            // (chivalric-progression register) and grafted onto the
+            // newer 'You stand in the dignity of X' opening so the
+            // line speaks both to where the reader IS and where they
+            // could BE. Ardchara, having no further rank, closes
+            // with finality ('the highest of the order').
             let statusLine;
             if (count === 0) {
-              statusLine = 'One sponsorship of another raises you to the dignity <em>Cara</em>.';
-            } else {
-              let dignity;
-              if (count < 5) dignity = 'Cara';
-              else if (count < 15) dignity = 'Onóir';
-              else dignity = 'Ardchara';
-              const ardcharaSuffix = dignity === 'Ardchara' ? ', the highest of the order' : '';
-              // count=1 reads naturally as 'another'; count=2+
-              // takes the noun 'others'. Avoids the slightly stilted
-              // 'having brought one other to the clan' at count=1.
+              statusLine = 'One sponsorship of another raises you to the dignity of <em>Cara</em>.';
+            } else if (count < 5) {
+              // Cara — count between 1 and 4. Tease toward Onóir.
+              // count=1 reads naturally as 'another' rather than
+              // 'one other to the clan'.
               const broughtPhrase = count === 1 ? 'another' : `${wordForm(count)} others`;
-              statusLine = `You stand in the dignity <em>${dignity}</em>${ardcharaSuffix}, having brought ${broughtPhrase} to the clan.`;
+              const remaining = 5 - count;
+              statusLine = `You stand in the dignity of <em>Cara</em>, having brought ${broughtPhrase} to the clan. ${wordFormCap(remaining)} more, to <em>Onóir</em>.`;
+            } else if (count < 15) {
+              // Onóir — count between 5 and 14. Tease toward Ardchara.
+              const remaining = 15 - count;
+              statusLine = `You stand in the dignity of <em>Onóir</em>, having brought ${wordForm(count)} others to the clan. ${wordFormCap(remaining)} more, to <em>Ardchara</em>.`;
+            } else {
+              // Ardchara — count 15+. No further rank; close with
+              // finality. Word-form for exactly 15, digits beyond.
+              const broughtCount = count > 15 ? String(count) : 'fifteen';
+              statusLine = `You stand in the dignity of <em>Ardchara</em>, the highest of the order, having brought ${broughtCount} others to the clan.`;
             }
             return `
               <p style="margin:0 0 14px;text-align:center">A title of dignity conferred for bringing another into the clan — by invitation or by gift. From the moment of raising, the Chief recognises you in the dignity now held — entered under his seal at Newhall, and borne before your name on the public Register.</p>
