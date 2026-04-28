@@ -230,6 +230,19 @@
     .mgift-cta-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:13px 28px;border-radius:1px;text-decoration:none}
     .mgift-cta-btn:hover{background:var(--gold-light)}
 
+    /* Order of Honours bridge block — sits between the invite
+       section above and the gift CTA below. Same gold-accent
+       visual family as the gift CTA (left-side gold rule, cream
+       background) so it visually belongs in the honours-related
+       cluster of surfaces, but smaller and text-forward — no big
+       icon, no big CTA button. Informational, not a CTA. */
+    .mhonours-bridge{max-width:720px;margin:0 auto 36px;background:rgba(184,151,90,.04);border-left:3px solid var(--gold);padding:24px 28px;border-radius:0 2px 2px 0}
+    .mhonours-bridge-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
+    .mhonours-bridge-body{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.75}
+    .mhonours-bridge-body em{color:var(--burgundy);font-style:italic}
+    .mhonours-bridge-link{display:inline-block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.4);padding-bottom:2px}
+    .mhonours-bridge-link:hover{color:var(--burgundy);border-bottom-color:var(--burgundy)}
+
     /* Loading / error states */
     .mloading,.merror{text-align:center;padding:120px 24px;font-family:'EB Garamond',serif;color:var(--ink-soft);font-size:17px}
     .merror{color:var(--ink)}
@@ -754,43 +767,6 @@
         <div class="minvite-title">Keep a place beside you for someone</div>
         <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. If there is someone in your life — a sibling, a cousin, an old friend — who belongs in the Register beside you, write them in below. The Herald carries the welcome in your name; the rest is theirs to take up, in their own time.</p>
 
-        ${(() => {
-          // ── Sponsor count + order-of-honours link ──
-          // The TITLE itself now displays in the 'Held in Honour'
-          // row of the mstatus panel above (alongside Name on the
-          // Register, Email, etc.) — that's its proper place
-          // because the title is ABOUT the member, not about the
-          // act of inviting. What stays here in the invite section
-          // is the COUNT (because it's the count that earns the
-          // titles) and a quiet link to the explainer page.
-          //
-          // Renders only if there's a count to show OR a link to
-          // offer. The link is shown to all members regardless of
-          // count — the explainer page is something the clan keeps
-          // for those who want to know how the order of honours
-          // works.
-          const count = Number(member.sponsorCount) || 0;
-          const sponsorWord = count === 1 ? 'member' : 'members';
-          const countLine = count > 0
-            ? `You have stood as sponsor to ${count} ${sponsorWord} of the clan.`
-            : '';
-          // Quiet line clarifying that BOTH invitations and gifts of
-          // membership count toward the order of honours. Without
-          // this line, a member reading the count + link inside the
-          // invite section would assume only invitations are
-          // credited — which is technically misleading because the
-          // sponsor count unions invitations and gifts (gift-wins
-          // precedence). Reads as a single calm statement.
-          const bothCountLine = 'Both invitations sent and gifts of membership are credited toward the order of honours.';
-          // Always show the link; the count line is conditional.
-          const linkLine = `<a href="/members/honours.html" style="color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.35)">Read the order of honours →</a>`;
-          return `<div style="border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);padding:14px 0;margin:0 0 22px;font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7">
-            ${countLine ? `<div>${countLine}</div>` : ''}
-            <div${countLine ? ' style="margin-top:4px"' : ''}>${bothCountLine}</div>
-            <div style="margin-top:4px">${linkLine}</div>
-          </div>`;
-        })()}
-
         <form id="inviteForm" onsubmit="return false">
           <div class="minvite-grid">
             <div>
@@ -815,6 +791,37 @@
         </form>
       </section>
 
+      <!-- THE ORDER OF HONOURS — standalone block bridging the invite
+           section above and the gift CTA below. Pulled OUT of the
+           invite section because the honours system is BIGGER than
+           inviting alone — both invitations and gifts contribute to
+           it. Nesting it inside the invite section was misleading;
+           a member reading it there would reasonably assume only
+           invites count. As its own block, it visually says: 'these
+           two acts (above and below) both feed into this'.
+           Visual: gold-accent border (matches the family of
+           honour-related surfaces — Held in Honour row, gift CTA
+           card top-accent, etc.) but smaller and text-forward —
+           informational rather than a CTA. -->
+      <section class="mhonours-bridge">
+        <div class="mhonours-bridge-eyebrow">The Order of Honours</div>
+        <div class="mhonours-bridge-body">
+          ${(() => {
+            const count = Number(member.sponsorCount) || 0;
+            const sponsorWord = count === 1 ? 'member' : 'members';
+            // Conditional count line — only renders when the member
+            // has stood as sponsor for at least one. Personal
+            // recognition that what they've done has been counted.
+            const countLine = count > 0
+              ? `<p style="margin:0 0 14px;font-style:italic;color:var(--ink-soft)">You have stood as sponsor to ${count} ${sponsorWord} of the clan.</p>`
+              : '';
+            return `${countLine}
+              <p style="margin:0 0 14px">Both invitations and gifts of membership are recognised by the Chief as acts of bringing another to the clan. The order of honours — <em>Cara</em>, <em>Onóir</em>, <em>Ardchara</em> — is conferred upon members whose welcome has carried others to the Register at Newhall.</p>
+              <a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a>`;
+          })()}
+        </div>
+      </section>
+
       <!-- GIFT A MEMBERSHIP — companion CTA to the invite section.
            Mirrors welcome.html's pairing of invite + gift as 'two
            ways to bring others to the clan'. Sits between the
@@ -837,13 +844,6 @@
         <div class="mgift-cta-eyebrow">A gift in their name</div>
         <div class="mgift-cta-title">Gift a membership to someone you love</div>
         <div class="mgift-cta-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome. The most enduring Irish gift there is.</div>
-        <!-- Quiet honours-credit note. Mirrors the line on the
-             invite-section honours block. Keeps the dashboard
-             consistent: a member browsing only the gift CTA still
-             learns that this act counts toward the order of
-             honours. Italic, smaller than the desc, ink-muted —
-             reads as a footnote rather than a sales pitch. -->
-        <div style="font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin:0 auto 20px;max-width:520px">Gifts of membership are credited toward the order of honours, alongside invitations.</div>
         <span class="mgift-cta-btn">Gift a membership →</span>
       </a>
 
