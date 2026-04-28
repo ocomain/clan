@@ -105,4 +105,53 @@ function autoFixName(input) {
   return working;
 }
 
-module.exports = { autoFixName };
+/**
+ * Detect if a name field looks like it contains multiple people
+ * rather than one person's full name. The cert names ONE primary
+ * grantee — even on family tier, where partner and children are
+ * recorded in separate fields. The single name field should always
+ * contain ONE person's name.
+ *
+ * Detection looks for the specific connectors that almost always
+ * indicate two people glued together:
+ *   - Ampersand   ('John & Mary Smith')
+ *   - Plus sign   ('John + Mary')
+ *   - Slash       ('John / Mary Smith')
+ *   - Comma       ('John, Mary Smith')
+ *   - Word 'and'  ('John and Mary Smith') — surrounded by spaces
+ *
+ * Does NOT trigger on:
+ *   - Multiple words alone (middle names: 'John Patrick Anthony Smith')
+ *   - Hyphenated names ('Anne-Marie Smith', 'Smith-Jones')
+ *   - Apostrophes ('Mary O'Connor')
+ *   - Mac/Mc surnames ('John MacDonald')
+ *   - Multi-word particle surnames ('Mary van der Berg')
+ *
+ * @param {string} name
+ * @returns {boolean} true if the input looks like multiple people
+ */
+function looksLikeMultipleNames(name) {
+  if (!name || typeof name !== 'string') return false;
+  const s = name.trim();
+  if (!s) return false;
+
+  // Punctuation connectors — any of these signals 'two people'
+  if (/[&+/]/.test(s)) return true;
+  if (/,/.test(s)) return true;
+
+  // Word 'and' as a connector — must be surrounded by whitespace
+  // on both sides AND have alphabetic content on both sides.
+  // Word-boundary regex ensures we don't false-positive on names
+  // like 'Anders' or 'Ferdinand'. Both halves must START with a
+  // capital letter to look like proper names rather than a phrase.
+  if (/\s+and\s+/i.test(s)) {
+    const parts = s.split(/\s+and\s+/i);
+    if (parts.length >= 2 && parts.every(p => /^[A-Z]/.test(p.trim()))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+module.exports = { autoFixName, looksLikeMultipleNames };

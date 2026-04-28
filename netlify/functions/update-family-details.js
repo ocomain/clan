@@ -26,6 +26,7 @@ const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./li
 const { computeFamilyDisplay } = require('./lib/generate-cert');
 const { recordConversion, evaluateSponsorTitles, highestAwardedTitle } = require('./lib/sponsor-service');
 const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
+const { looksLikeMultipleNames } = require('./lib/name-format');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -107,6 +108,23 @@ exports.handler = async (event) => {
       const cleanAncestor = ancestorDedication !== undefined
         ? ((ancestorDedication || '').trim() || null)
         : member.ancestor_dedication;  // undefined means "don't change"
+
+      // Server-side multi-name detection backstop. Client warns +
+      // requires confirmation before reaching this endpoint; this
+      // logs when a name still looks suspicious so admins can review.
+      // Doesn't block — see comment in submit-family-details.js for
+      // reasoning (no security exploit, only the user's own cert
+      // affected, fixable by admin).
+      if (looksLikeMultipleNames(cleanName)) {
+        try {
+          await logEvent({
+            clan_id,
+            member_id: member.id,
+            event_type: 'multi_name_in_cert_submit',
+            payload: { name: cleanName, tier: member.tier, path: 'update-family-details' },
+          });
+        } catch {} // non-fatal — best-effort observability
+      }
 
       nameChanged = !!cleanName && cleanName !== member.name;
       ancestorChanged = (cleanAncestor || null) !== (member.ancestor_dedication || null);

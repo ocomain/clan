@@ -1658,7 +1658,82 @@
       updatePreview(); // initial render
     }
 
+    /**
+     * Detect if a name field looks like it contains multiple people
+     * rather than one person's full name. Two-people-on-one-cert is
+     * not allowed: individual tier is for one primary grantee, and
+     * family tier records partner/children in separate fields. The
+     * SINGLE name field should always contain ONE person's name —
+     * even if that name has many middle names ('John Patrick Anthony
+     * Smith') or unusual punctuation ('Mary O'Connor', 'Anne-Marie
+     * van der Berg').
+     *
+     * Detection looks for the specific connectors that almost always
+     * indicate two people glued together:
+     *   - Ampersand   ('John & Mary Smith')
+     *   - Plus sign   ('John + Mary')
+     *   - Slash       ('John / Mary Smith')
+     *   - Comma       ('John, Mary Smith')
+     *   - Word 'and'  ('John and Mary Smith') — surrounded by spaces
+     *
+     * Does NOT trigger on:
+     *   - Multiple words alone (middle names)
+     *   - Hyphenated names ('Anne-Marie', 'Smith-Jones')
+     *   - Apostrophes ('O'Connor')
+     *   - Mac/Mc surnames ('MacDonald', 'McCarthy')
+     *   - Dutch/Irish multi-word surnames ('van der Berg', 'O'Connor')
+     *
+     * Returns true if the input looks like multiple people.
+     */
+    function looksLikeMultipleNames(name) {
+      if (!name || typeof name !== 'string') return false;
+      const s = name.trim();
+      if (!s) return false;
+      // Punctuation connectors — any of these signals 'two people'
+      if (/[&+/]/.test(s)) return true;
+      if (/,/.test(s)) return true;
+      // Word 'and' as a connector — must be surrounded by whitespace
+      // on both sides AND have alphabetic content on both sides. The
+      // word-boundary regex ensures we don't false-positive on names
+      // like 'Anders' or 'Ferdinand'.
+      if (/\b\s+and\s+\b/i.test(' ' + s + ' ')) {
+        // Must have at least one capital-letter word on each side of
+        // 'and' to look like two names rather than one phrase. Defensive
+        // — false positive on something like 'Land and Sea' would be a
+        // weird name but still possible.
+        const parts = s.split(/\s+and\s+/i);
+        if (parts.length >= 2 && parts.every(p => /^[A-Z]/.test(p.trim()))) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     document.getElementById('famModalSave').addEventListener('click', async () => {
+      // ── Multi-name detection (pre-submit) ──
+      // Catches accidents where someone types 'John & Mary Smith' or
+      // 'John and Mary Smith' into the single primary-name field. The
+      // sponsorship title attaches to ONE primary grantee — multiple
+      // names in this slot would corrupt the cert AND any future title
+      // record. Soft warning: detect, ask, let them confirm if they
+      // really mean it (very rare false positive — e.g. someone who
+      // genuinely has 'and' in their legal name).
+      const nameInputEl = document.getElementById('famModalName');
+      const nameValue = nameInputEl ? nameInputEl.value.trim() : '';
+      if (looksLikeMultipleNames(nameValue)) {
+        // Tier-aware message. Family tier has dedicated partner/
+        // children fields; individual tier doesn't have anywhere
+        // else to put a second name — they'd need to upgrade tier.
+        const isFamilyTier = !!member.tier_family;
+        const guidance = isFamilyTier
+          ? 'The certificate names ONE primary member. If you want to add a partner or family, please use the partner and children fields below — leave this field as your own name only.'
+          : 'An individual-tier certificate names ONE person. If you wish to record a partner or family, that requires a Family-tier membership.';
+        const proceed = confirm(
+          `The name "${nameValue}" looks like it contains more than one person.\n\n${guidance}\n\nIf this really is one person's name (and we have it wrong), click OK to proceed anyway.`
+        );
+        if (!proceed) return;
+      }
+
       // Two-step ceremony for the FIRST publish (one-time, irreversible).
       // Subsequent saves (already-published members editing register only)
       // skip the ceremony — they go straight to save.
@@ -2031,6 +2106,20 @@
     function wireModalAfterRebuild() {
       document.getElementById('famModalCancel')?.addEventListener('click', close);
       document.getElementById('famModalSave')?.addEventListener('click', async () => {
+        // Multi-name pre-submit check — same as the original handler
+        // above. See looksLikeMultipleNames() for detection logic.
+        const nameInputEl = document.getElementById('famModalName');
+        const nameValue = nameInputEl ? nameInputEl.value.trim() : '';
+        if (looksLikeMultipleNames(nameValue)) {
+          const isFamilyTier = !!member.tier_family;
+          const guidance = isFamilyTier
+            ? 'The certificate names ONE primary member. If you want to add a partner or family, please use the partner and children fields below — leave this field as your own name only.'
+            : 'An individual-tier certificate names ONE person. If you wish to record a partner or family, that requires a Family-tier membership.';
+          const proceed = confirm(
+            `The name "${nameValue}" looks like it contains more than one person.\n\n${guidance}\n\nIf this really is one person's name (and we have it wrong), click OK to proceed anyway.`
+          );
+          if (!proceed) return;
+        }
         if (!isPublished) {
           await runPublishCeremony();
           return;

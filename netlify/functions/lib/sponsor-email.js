@@ -200,17 +200,14 @@ async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount)
   if (!sponsor?.email || !title) return false;
   const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
 
-  // Title-aware greeting: address by the dignity the recipient
-  // CURRENTLY holds (priorTitleIrish), not the new dignity being
-  // conferred. This honours their existing standing while elevating
-  // them — and reads beautifully ('Dia dhuit, Cara James — ... It
-  // hath pleased the Chief to raise you from Cara to Onóir').
-  // For first raisings (no prior title), greet by first name only;
-  // the letter IS the bestowal, so greeting them as the new title
-  // would be circular.
-  const greetingAddress = priorTitleIrish
-    ? `${priorTitleIrish} ${sponsorFirst}`
-    : sponsorFirst;
+  // The greeting addresses the recipient by the NEW title being
+  // conferred. The letter IS the moment of bestowal, and from the
+  // moment they read it they bear the new dignity. So 'Dia dhuit,
+  // Onóir James' is correct on the letter raising James to Onóir,
+  // and 'Dia dhuit, Cara James' on the letter conferring Cara
+  // (their first raising). Reads consistently across all three
+  // titles whether it's a first raising or a raising-from-prior.
+  const greetingAddress = `${title.irish} ${sponsorFirst}`;
 
   // Resolve the per-title language by calling each template
   // function with the prior-title argument. Each function returns

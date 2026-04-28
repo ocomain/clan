@@ -39,6 +39,7 @@ const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./li
 const { computeFamilyDisplay } = require('./lib/generate-cert');
 const { recordConversion, evaluateSponsorTitles, highestAwardedTitle } = require('./lib/sponsor-service');
 const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
+const { looksLikeMultipleNames } = require('./lib/name-format');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -141,6 +142,26 @@ exports.handler = async (event) => {
       : [];
     const cleanName = (nameOnCert || '').trim();
     const cleanAncestor = (ancestorDedication || '').trim() || null;
+
+    // Server-side multi-name detection backstop.
+    // Client-side validation in the publish modal warns the user and
+    // requires confirmation when the primary-name field looks like
+    // multiple people ('John & Mary Smith', 'John and Mary Smith').
+    // This is the server-side safety net for cases where someone
+    // bypasses the client check (DevTools, direct API call, an old
+    // cached client). We don't BLOCK — there's no security reason to,
+    // since users can only corrupt their own cert — but we log the
+    // event so admins can review and reach out to fix the record.
+    if (looksLikeMultipleNames(cleanName)) {
+      try {
+        await logEvent({
+          clan_id,
+          member_id: member.id,
+          event_type: 'multi_name_in_cert_submit',
+          payload: { name: cleanName, tier: member.tier, path: 'submit-family-details' },
+        });
+      } catch {} // non-fatal — best-effort observability
+    }
 
     // Use the corrected name (if supplied) as the member.name for cert
     // purposes. If the member just confirmed their existing name, it's
