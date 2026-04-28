@@ -39,14 +39,7 @@
     .page-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:12px}
     .page-title{font-family:'EB Garamond',serif;font-size:42px;font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:14px}
     .page-title em{font-style:italic;color:var(--burgundy)}
-    .page-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-muted);line-height:1.75;max-width:620px;margin-bottom:24px}
-    /* Supplementary explanatory note — sits below the main page-sub,
-       set off by a thin gold rule above. Smaller than page-sub and
-       not italic, marking it as discursive/explanatory rather than
-       voiced as the Herald. Carries the women-in-Gaelic-tradition
-       framing + the gender-neutrality decision + the formal-vs-
-       courtesy distinction. */
-    .page-note{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.8;max-width:620px;margin:0 0 48px;padding-top:20px;border-top:1px solid var(--gold-faint)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-muted);line-height:1.75;max-width:620px;margin-bottom:48px}
 
     /* AUTH GATE */
     .gate{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-muted);text-align:center;padding:80px 24px;font-style:italic}
@@ -81,6 +74,12 @@
     .closing{margin-top:52px;padding:32px 36px;border-top:2px solid var(--gold);background:rgba(184,151,90,.06)}
     .closing-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
     .closing-body{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.8}
+    /* Sub-section heading inside the closing block. Smaller than the
+       main eyebrow, set off by a thin gold rule above. Used to
+       introduce the women + gender-neutrality + courtesy-use note as
+       a distinct sub-section under the broader 'A note on the order'
+       umbrella. */
+    .closing-subhead{font-family:'EB Garamond',serif;font-size:14px;font-weight:500;font-style:normal;color:var(--gold-deep);letter-spacing:.04em;margin:24px 0 12px;padding-top:20px;border-top:1px solid var(--gold-faint);text-transform:none}
     .closing-signoff{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:14px}
 
     .back-link{display:inline-block;margin-top:32px;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.35);padding-bottom:2px}
@@ -117,21 +116,6 @@
     <div class="page-eyebrow">In the clan's keeping</div>
     <h1 class="page-title">The <em>Order of Honours</em></h1>
     <p class="page-sub">Three honours are conferred by the Chief upon members who bring others to the Register at Newhall. Each is a raising in rank within Clan Ó Comáin — recorded under the Chief's seal, held quietly with the Herald, and carried by the member as a mark of what they have built. The honours follow one another: the higher is taken up; the lower is laid by.</p>
-
-    <!-- Gender-neutrality + courtesy-use note. Two threads woven into
-         one paragraph: (1) the Brehon/Gaelic-tradition framing of
-         women's standing (carefully phrased — 'respected' rather
-         than 'equal', defensible against any clan-circles reader
-         who knows Fergus Kelly's Guide to Early Irish Law); (2)
-         the gender-neutral decision; (3) the formal-vs-courtesy
-         distinction mirroring British peerage. The dignity itself
-         attaches to ONE named primary grantee — but in social use,
-         by the kindred's courtesy, the spouse may be addressed by
-         the same word ('Cara Jane' alongside 'Cara James'), in the
-         same way Lady Smith is addressed alongside Sir John Smith.
-         The formal record names one; the social use extends to
-         the household. -->
-    <p class="page-note">In the older Gaelic tradition, women held a respected standing uncommon in mediaeval Europe — owning property in their own right, retaining their lineage in marriage, and at times leading clans as Chiefs. The honours of Cara, Onóir and Ardchara are accordingly conferred without distinction of gender: the dignity is granted to whichever member — man, woman, or otherwise — has earned it by their welcome to the clan. The honour itself attaches to that named primary grantee alone, and is recorded under their name. By the kindred's courtesy, however, the spouse of the bearer (whether wife, husband or partner) may be addressed by the same dignity in social usage — as in the older European convention by which Lady is addressed alongside Sir, the household's standing reflecting the bearer's own.</p>
 
     <!-- ── CARA ─────────────────────────────────────────────── -->
     <div class="honour">
@@ -239,6 +223,19 @@
       <div class="closing-body">
         <p style="margin:0 0 12px">The honours follow one another: when a higher dignity is conferred, the lower is laid by. The clan's keeping records every raising — but only the current dignity is held and shown. This is the older convention, by which a member's standing is named by what they currently are, not by everything they have ever been.</p>
         <p style="margin:0">Titles are held quietly with the Chief and the Herald — recorded under the Chief's seal at Newhall. There is no fanfare to them; only the recognition of what has been done, in the company of those who do likewise.</p>
+
+        <!-- Sub-section: women in Gaelic tradition + gender-neutrality
+             + courtesy-use clarification. Three threads woven into
+             one paragraph. Careful framing on women's status —
+             'respected standing' rather than 'equal' (defensible
+             against any clan-circles reader who knows Fergus Kelly's
+             Guide to Early Irish Law). The courtesy-use clause
+             mirrors the British peerage convention by which 'Lady'
+             is used alongside 'Sir' — same word in social use, but
+             the formal record names one person. -->
+        <div class="closing-subhead">On women and gender-neutral courtesy titles</div>
+        <p style="margin:0">In the older Gaelic tradition, women held a respected standing uncommon in mediaeval Europe — owning property in their own right, retaining their lineage in marriage, and at times leading clans as Chiefs. The honours of Cara, Onóir and Ardchara are accordingly conferred without distinction of gender: the dignity is granted to whichever member — man, woman, or otherwise — has earned it by their welcome to the clan. The honour itself attaches to that named primary grantee alone, and is recorded under their name. By the kindred's courtesy, however, the spouse of the bearer (whether wife, husband or partner) may be addressed by the same dignity in social usage — as in the older European convention by which Lady is addressed alongside Sir, the household's standing reflecting the bearer's own.</p>
+
         <div class="closing-signoff">— Clan Herald at Newhall</div>
       </div>
     </div>
