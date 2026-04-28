@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register preview — with dignities (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F7F4ED;
+  --cream-warm:#F0EADC;
+  --ink:#1A1410;
+  --ink-soft:#3D2D1F;
+  --ink-muted:#5A4A3A;
+  --gold:#B8975A;
+  --gold-deep:#8B6F32;
+  --gold-faint:rgba(184,151,90,.18);
+  --burgundy:#6B1F1F;
+  --burgundy-deep:#4A1010;
+  --rule:rgba(26,20,16,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+.wrap{max-width:740px;margin:0 auto;padding:0 28px}
+
+.preview-banner{background:var(--cream-warm);border-bottom:1px solid var(--rule);padding:16px 28px;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-align:center}
+.preview-banner em{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink-muted);font-weight:400;display:block;margin-top:4px}
+
+.hero{padding:60px 0 40px;text-align:center}
+.hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:24px}
+.hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,7vw,64px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px}
+.hero-title em{font-style:italic;color:var(--burgundy);font-weight:500}
+.hero-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-muted);max-width:520px;margin:0 auto;line-height:1.7}
+
+.section{padding:40px 0 50px}
+.section + .section{border-top:1px solid var(--rule);padding-top:50px}
+.section-head{text-align:center;margin-bottom:36px}
+.section-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
+.section-eyebrow-irish{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;font-weight:500;color:var(--gold);letter-spacing:0.04em;margin-bottom:14px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;color:var(--ink);line-height:1.1;letter-spacing:-0.012em}
+.section-title em{font-style:italic;color:var(--burgundy);font-weight:500}
+.section-blurb{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:12px auto 0}
+
+.entries{margin-top:8px}
+.entry{padding:32px 8px 32px;border-top:1px solid var(--rule);position:relative;transition:background .2s}
+.entry:last-child{border-bottom:1px solid var(--rule)}
+.entry:hover{background:rgba(184,151,90,.04)}
+.entry-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:baseline}
+.entry-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--ink);line-height:1.2;letter-spacing:-0.005em}
+.entry-meta{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-deep);text-align:right;line-height:1.5;white-space:nowrap}
+.entry-tier{display:block}
+.entry-year{display:block;color:var(--ink-muted);font-weight:400;margin-top:4px;letter-spacing:0.12em}
+.entry-dedication{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--burgundy);line-height:1.7;margin-top:14px;max-width:560px}
+.entry-credit{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
+.entry-dignity{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--gold-deep);line-height:1.65;margin-top:10px;letter-spacing:.005em;max-width:560px}
+.entry-founder{display:block;font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--burgundy);margin-top:8px}
+.entry-founder::before{content:'✦';margin-right:7px;color:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="preview-banner">
+  Public Register — Preview with Dignities
+  <em>Mock data showing how members holding Cara, Onóir, and Ardchara appear publicly</em>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span>Tigh Uí Chomáin</span>
+      <span class="sep">·</span>
+      <span>Newhall House</span>
+    </div>
+    <h1 class="hero-title">Register of <em>Clan Ó Comáin</em></h1>
+    <p class="hero-sub">Kept by the Herald, sealed by the Chief — the names of those who stand with the clan.</p>
+  </div>
+
+  <!-- ─────────────── LIFE MEMBERS ─────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-eyebrow">The Roll of Honour</div>
+      <div class="section-eyebrow-irish">Rolla na hOnóra</div>
+      <h2 class="section-title">Life <em>Members</em></h2>
+      <p class="section-blurb">Their place in the clan is permanent. Their name is here for as long as the Register endures.</p>
+    </div>
+
+    <div class="entries">
+
+      <!-- Solo Life Member, Ardchara, founder, with dedication -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Margaret O'Connor</div>
+            <div class="entry-dignity">Holder of the dignity Ardchara of Ó Comáin</div>
+            <div class="entry-dedication">In memory of my grandfather Patrick O'Connor of Ennistymon, 1903–1981.</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Life Member</span>
+            <span class="entry-year">Joined 2026</span>
+            <span class="entry-founder">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Family Life Member, couple + kids visible, Onóir -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">James Smith &amp; Family</div>
+            <div class="entry-dignity">James Smith — Holder of the dignity Onóir of Ó Comáin</div>
+            <div class="entry-credit">with Jane Smith, and Saoirse and Liam</div>
+            <div class="entry-dedication">For the Cummins line of West Clare, who came through the famine.</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Life Member · Family</span>
+            <span class="entry-year">Joined 2026</span>
+            <span class="entry-founder">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo Life Member, Cara, no dedication -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Eoin MacCarthy</div>
+            <div class="entry-dignity">Holder of the dignity Cara of Ó Comáin</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Life Member</span>
+            <span class="entry-year">Joined 2026</span>
+            <span class="entry-founder">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─────────────── STEWARDS ─────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-eyebrow">The Sustainers of the Clan</div>
+      <div class="section-eyebrow-irish">Maoir an Chláir</div>
+      <h2 class="section-title"><em>Stewards</em></h2>
+      <p class="section-blurb">Members whose annual commitment sustains the work of the clan, year on year.</p>
+    </div>
+
+    <div class="entries">
+
+      <!-- Couple, same surname, Cara, no kids -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">James &amp; Jane Smith</div>
+            <div class="entry-dignity">James Smith — Holder of the dignity Cara of Ó Comáin</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Steward · Family</span>
+            <span class="entry-year">Joined 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Family with kids opted OUT (default), Onóir -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Anne-Marie Cummins &amp; Family</div>
+            <div class="entry-dignity">Anne-Marie Cummins — Holder of the dignity Onóir of Ó Comáin</div>
+            <div class="entry-credit">with Liam Cummins, and children</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Steward · Family</span>
+            <span class="entry-year">Joined 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Couple, different surnames, Cara -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">John Smith &amp; Mary Doherty</div>
+            <div class="entry-dignity">John Smith — Holder of the dignity Cara of Ó Comáin</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Steward · Family</span>
+            <span class="entry-year">Joined 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo Steward, no title (showing how an entry without dignity reads alongside titled ones) -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Niall Hurley</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Steward</span>
+            <span class="entry-year">Joined 2026</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─────────────── GUARDIANS ─────────────── -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-eyebrow">Members of the Clan</div>
+      <div class="section-eyebrow-irish">Cosantóirí Chlainne Uí Chomáin</div>
+      <h2 class="section-title"><em>Guardians</em></h2>
+      <p class="section-blurb">Members who have chosen to stand with the clan.</p>
+    </div>
+
+    <div class="entries">
+
+      <!-- Solo Guardian with Cara -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Aoife Comyn</div>
+            <div class="entry-dignity">Holder of the dignity Cara of Ó Comáin</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Guardian</span>
+            <span class="entry-year">Joined 2026</span>
+            <span class="entry-founder">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Family Guardian, kids opted IN, Cara, with dedication -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Patrick Cummins &amp; Family</div>
+            <div class="entry-dignity">Patrick Cummins — Holder of the dignity Cara of Ó Comáin</div>
+            <div class="entry-credit">with their children Saoirse, Cillian, and Éabha</div>
+            <div class="entry-dedication">In memory of my mother Bridget, who carried the family's stories.</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Guardian · Family</span>
+            <span class="entry-year">Joined 2026</span>
+            <span class="entry-founder">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo Guardian, no title — showing baseline rendering -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Síle Ní Chuimín</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Guardian</span>
+            <span class="entry-year">Joined 2026</span>
+            <span class="entry-founder">Founding Member</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Couple, no title — baseline family entry -->
+      <div class="entry">
+        <div class="entry-row">
+          <div>
+            <div class="entry-name">Brendan &amp; Cara Hurley</div>
+          </div>
+          <div class="entry-meta">
+            <span class="entry-tier">Guardian · Family</span>
+            <span class="entry-year">Joined 2026</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div style="padding:60px 0 80px;text-align:center;border-top:1px solid var(--rule);font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);line-height:1.7">
+    <p>This is a preview rendered from mock data.</p>
+    <p>The live register at <strong>ocomain.org/register</strong> shows real members only.</p>
+  </div>
+
+</div>
+
+</body>
+</html>
