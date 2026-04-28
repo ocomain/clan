@@ -241,6 +241,17 @@
     .mhonours-bridge-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
     .mhonours-bridge-body{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.75}
     .mhonours-bridge-body em{color:var(--burgundy);font-style:italic}
+    /* Dignity ladder — three rows, hairline gold dividers, baseline-aligned.
+       Designed as a clean ceremonial reference table, not a feature grid:
+       no badges, no checkmarks, no progress bar. The status line beneath
+       carries the personal "you are here" without needing visual markers
+       in the ladder itself. */
+    .mhonours-ladder{margin:18px 0 16px;border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border)}
+    .mhonours-rank{display:flex;justify-content:space-between;align-items:baseline;padding:11px 2px;border-bottom:1px solid var(--gold-border);gap:18px}
+    .mhonours-rank:last-child{border-bottom:none}
+    .mhonours-rank-name{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink)}
+    .mhonours-rank-req{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);white-space:nowrap}
+    .mhonours-status{margin:0 0 16px;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);line-height:1.65}
     .mhonours-bridge-link{display:inline-block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.4);padding-bottom:2px}
     .mhonours-bridge-link:hover{color:var(--burgundy);border-bottom-color:var(--burgundy)}
 
@@ -823,14 +834,36 @@
           ${(() => {
             const count = Number(member.sponsorCount) || 0;
             const sponsorWord = count === 1 ? 'member' : 'members';
-            // Conditional count line — only renders when the member
-            // has stood as sponsor for at least one. Personal
-            // recognition that what they've done has been counted.
-            const countLine = count > 0
-              ? `<p style="margin:0 0 14px;font-style:italic;color:var(--ink-soft)">You have stood as sponsor to ${count} ${sponsorWord} of the clan.</p>`
-              : '';
-            return `${countLine}
+            // Word-form numbers up to 14 — used for the "X more, to..."
+            // remainder. The threshold gap is always 1-14, so we never
+            // need to fall through to digits in practice. Capitalised
+            // because they begin a sentence.
+            const remainingWord = (n) => ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen'][n] || String(n);
+
+            // Status line — names the title held and the gap to the
+            // next, in the ceremonial register. "raised to" is the
+            // locked verb. Em-dash isolates the closing flourish at
+            // Ardchara so it reads as the natural endpoint.
+            let statusLine;
+            if (count === 0) {
+              statusLine = `One sponsorship raises you to <em>Cara</em>.`;
+            } else if (count < 5) {
+              const r = 5 - count;
+              statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Cara</em>. ${remainingWord(r)} more, to <em>Onóir</em>.`;
+            } else if (count < 15) {
+              const r = 15 - count;
+              statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Onóir</em>. ${remainingWord(r)} more, to <em>Ardchara</em>.`;
+            } else {
+              statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Ardchara</em> — the highest dignity of the order.`;
+            }
+            return `
               <p style="margin:0 0 14px">Both invitations and gifts of membership are recognised by the Chief as acts of bringing another to the clan. <em>Cara</em>, <em>Onóir</em>, <em>Ardchara</em> — titles of dignity bestowed by the Chief's hand and recognised by the kindred within and beyond the boundaries of Newhall.</p>
+              <div class="mhonours-ladder">
+                <div class="mhonours-rank"><span class="mhonours-rank-name">Cara</span><span class="mhonours-rank-req">One sponsorship</span></div>
+                <div class="mhonours-rank"><span class="mhonours-rank-name">Onóir</span><span class="mhonours-rank-req">Five sponsorships</span></div>
+                <div class="mhonours-rank"><span class="mhonours-rank-name">Ardchara</span><span class="mhonours-rank-req">Fifteen sponsorships</span></div>
+              </div>
+              <p class="mhonours-status">${statusLine}</p>
               <a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a>`;
           })()}
         </div>
@@ -858,7 +891,7 @@
         <div class="mgift-cta-eyebrow">A gift in their name</div>
         <div class="mgift-cta-title">Gift a membership to someone you love</div>
         <div class="mgift-cta-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome. The most enduring Irish gift there is.</div>
-        <span class="mgift-cta-btn">Gift a membership →</span>
+        <span class="mgift-cta-btn">Gift a membership — from €49 →</span>
         <div class="mgift-cta-note">One-year gift · No auto-renewal · One-time payment</div>
       </a>
 
