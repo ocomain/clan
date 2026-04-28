@@ -842,27 +842,28 @@
             };
 
             // Status line — names the current dignity, the act
-            // performed, and the next-rank tease. The 'X more, to Y'
-            // formulation is borrowed from the earlier copy
-            // (chivalric-progression register) and grafted onto the
-            // newer 'You stand in the dignity of X' opening so the
-            // line speaks both to where the reader IS and where they
-            // could BE. Ardchara, having no further rank, closes
-            // with finality ('the highest of the order').
+            // performed, and the next-rank tease, with each tier
+            // tagged by its position in the order so a reader who
+            // does not recognise the Irish names (Onóir, Ardchara)
+            // understands the hierarchy. Tags borrowed from the
+            // /members/honours.html canonical copy: 'the first of
+            // the honours', 'the second of the honours', 'the
+            // highest of the order'. Ardchara's tag closes with
+            // finality — no further rank to tease.
             let statusLine;
             if (count === 0) {
-              statusLine = 'One sponsorship of another raises you to the dignity of <em>Cara</em>.';
+              statusLine = 'One sponsorship of another raises you to the dignity of <em>Cara</em>, the first of the honours.';
             } else if (count < 5) {
               // Cara — count between 1 and 4. Tease toward Onóir.
               // count=1 reads naturally as 'another' rather than
               // 'one other to the clan'.
               const broughtPhrase = count === 1 ? 'another' : `${wordForm(count)} others`;
               const remaining = 5 - count;
-              statusLine = `You stand in the dignity of <em>Cara</em>, having brought ${broughtPhrase} to the clan. ${wordFormCap(remaining)} more, to <em>Onóir</em>.`;
+              statusLine = `You stand in the dignity of <em>Cara</em>, having brought ${broughtPhrase} to the clan. ${wordFormCap(remaining)} more, to <em>Onóir</em>, the second of the honours.`;
             } else if (count < 15) {
               // Onóir — count between 5 and 14. Tease toward Ardchara.
               const remaining = 15 - count;
-              statusLine = `You stand in the dignity of <em>Onóir</em>, having brought ${wordForm(count)} others to the clan. ${wordFormCap(remaining)} more, to <em>Ardchara</em>.`;
+              statusLine = `You stand in the dignity of <em>Onóir</em>, having brought ${wordForm(count)} others to the clan. ${wordFormCap(remaining)} more, to <em>Ardchara</em>, the highest of the order.`;
             } else {
               // Ardchara — count 15+. No further rank; close with
               // finality. Word-form for exactly 15, digits beyond.
