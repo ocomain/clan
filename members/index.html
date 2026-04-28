@@ -193,16 +193,42 @@
 
     /* Action cards */
     .mactions{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-    .maction{background:var(--white);border:1px solid var(--border);padding:26px 26px 22px;border-radius:2px;text-align:center;transition:border-color .2s,transform .15s}
-    .maction.live:hover{border-color:var(--gold);transform:translateY(-2px)}
+    /* Action cards now carry a 3px gold top accent + an SVG icon
+       above the eyebrow. The accent matches the heraldic 'frame'
+       used on the cert-publish modal and the welcome.html
+       gift/invite cards — gives the dashboard's exploration grid
+       a unified visual language with the rest of the clan's
+       chrome rather than reading as plain content boxes. */
+    .maction{background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:30px 26px 24px;border-radius:2px;text-align:center;transition:border-color .2s,transform .15s,box-shadow .2s;display:flex;flex-direction:column;align-items:center}
+    .maction.live:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(184,151,90,.10)}
+    .maction.live:hover{border-top-color:var(--gold-deep)}
+    /* Icon sits at the top of the card. 44×44 viewport (matches
+       the welcome.html precedent), gold stroke 1.4, no fill. */
+    .maction-icon{display:block;margin:0 auto 14px;width:44px;height:44px;flex-shrink:0}
+    .maction-icon svg{display:block;width:100%;height:100%}
     .maction-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
     .maction.coming .maction-eyebrow{color:rgba(184,151,90,.55)}
-    .maction-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);margin-bottom:10px}
-    .maction-desc{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px}
-    .maction-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:10px 20px;border-radius:1px;text-decoration:none;border:0;cursor:pointer}
+    .maction-title{font-family:'EB Garamond',serif;font-size:19px;color:var(--ink);margin-bottom:10px;line-height:1.25}
+    .maction-desc{font-family:'EB Garamond',serif;font-size:13.5px;color:var(--ink-soft);line-height:1.65;margin-bottom:16px;flex:1}
+    .maction-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:10px 20px;border-radius:1px;text-decoration:none;border:0;cursor:pointer;align-self:center}
     .maction-btn:hover{background:var(--gold-light)}
     .maction-btn.secondary{background:transparent;color:var(--gold);border:1px solid var(--gold)}
     .maction-btn:disabled,.maction.coming .maction-btn{opacity:.5;cursor:not-allowed;background:rgba(184,151,90,.15);color:rgba(12,26,12,.5)}
+
+    /* Gift section — sits between the invite section and the action
+       grid, mirroring how welcome.html pairs invite + gift as the
+       'two ways to bring others to the clan'. Single card centred
+       below the invite section, restrained but visually distinct
+       (3px gold top accent matching the action cards, larger icon
+       than the inline action cards because this is its own moment). */
+    .mgift-cta{max-width:720px;margin:0 auto 36px;background:var(--white);border:1px solid var(--gold-faint);border-top:3px solid var(--gold);padding:34px 36px;border-radius:2px;text-align:center;transition:border-color .2s,transform .15s,box-shadow .2s}
+    .mgift-cta:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(184,151,90,.10);border-top-color:var(--gold-deep)}
+    .mgift-cta-icon{display:block;margin:0 auto 16px;width:48px;height:48px}
+    .mgift-cta-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .mgift-cta-title{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);margin-bottom:10px;line-height:1.3}
+    .mgift-cta-desc{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.7;margin:0 auto 20px;max-width:520px;font-style:italic}
+    .mgift-cta-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:13px 28px;border-radius:1px;text-decoration:none}
+    .mgift-cta-btn:hover{background:var(--gold-light)}
 
     /* Loading / error states */
     .mloading,.merror{text-align:center;padding:120px 24px;font-family:'EB Garamond',serif;color:var(--ink-soft);font-size:17px}
@@ -766,38 +792,172 @@
         </form>
       </section>
 
+      <!-- GIFT A MEMBERSHIP — companion CTA to the invite section.
+           Mirrors welcome.html's pairing of invite + gift as 'two
+           ways to bring others to the clan'. Sits between the
+           invite form and the exploration grid because gifting is
+           an act of bringing-in (semantically a sibling of
+           inviting), whereas the action grid below is for
+           exploring what the clan already has. Routes to /gift.html
+           which handles the gift Stripe checkout — same flow used
+           by the public pages. -->
+      <a href="/gift.html" class="mgift-cta" style="display:block;text-decoration:none;color:inherit">
+        <!-- Wrapped gift box with ribbon — same icon used on welcome.html's gift card -->
+        <svg class="mgift-cta-icon" viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="20" width="36" height="22" rx="1"/>
+          <rect x="4" y="14" width="40" height="8" rx="1"/>
+          <line x1="24" y1="14" x2="24" y2="42"/>
+          <path d="M24 14 C 18 8, 12 8, 14 14 Q 16 18, 24 14"/>
+          <path d="M24 14 C 30 8, 36 8, 34 14 Q 32 18, 24 14"/>
+          <circle cx="24" cy="14" r="1.6" fill="var(--gold-deep)"/>
+        </svg>
+        <div class="mgift-cta-eyebrow">A gift in their name</div>
+        <div class="mgift-cta-title">Gift a membership to someone you love</div>
+        <div class="mgift-cta-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome. The most enduring Irish gift there is.</div>
+        <span class="mgift-cta-btn">Gift a membership →</span>
+      </a>
+
       <section class="mactions">
-        <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/library.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/library.html">
+          <span class="maction-icon">
+            <!-- Open book — the library. Two pages with a centre spine
+                 + suggestion of text lines. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 10 C 6 10, 14 10, 24 14 C 34 10, 42 10, 42 10 L 42 38 C 42 38, 34 38, 24 42 C 14 38, 6 38, 6 38 Z"/>
+              <line x1="24" y1="14" x2="24" y2="42"/>
+              <line x1="11" y1="18" x2="20" y2="20"/>
+              <line x1="11" y1="24" x2="20" y2="26"/>
+              <line x1="11" y1="30" x2="20" y2="32"/>
+              <line x1="28" y1="20" x2="37" y2="18"/>
+              <line x1="28" y1="26" x2="37" y2="24"/>
+              <line x1="28" y1="32" x2="37" y2="30"/>
+            </svg>
+          </span>
           <div class="maction-eyebrow">Members only</div>
           <div class="maction-title">The clan library</div>
           <div class="maction-desc">Private access to primary scholarship on the clan — including Gibson's 1990 UCLA doctoral dissertation <em>Tulach Commáin</em>, his 2008 peer-reviewed article, and Cotter's 1999 Cahercommaun re-assessment.</div>
           <span class="maction-btn">Open library →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/contact.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/contact.html">
+          <span class="maction-icon">
+            <!-- Quill on a scroll — formal correspondence. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Scroll body -->
+              <path d="M10 14 L 10 38 C 10 40.2 11.8 42 14 42 L 36 42"/>
+              <path d="M14 14 L 38 14 L 38 38 C 38 40.2 36.2 42 34 42"/>
+              <line x1="14" y1="20" x2="32" y2="20"/>
+              <line x1="14" y1="26" x2="32" y2="26"/>
+              <line x1="14" y1="32" x2="28" y2="32"/>
+              <!-- Quill diagonal -->
+              <path d="M30 8 L 42 4 L 38 16 Z"/>
+              <line x1="36" y1="10" x2="32" y2="14"/>
+            </svg>
+          </span>
           <div class="maction-eyebrow">Members only</div>
           <div class="maction-title">Reach the Council</div>
           <div class="maction-desc">Lineage &amp; DNA queries for the Craoibhscríobhaí, general correspondence to any office, and apply to serve on the Privy Council. All triaged by the Office of the Private Secretary.</div>
           <span class="maction-btn">Write to the Council →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/your-line.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/your-line.html">
+          <span class="maction-icon">
+            <!-- Branching tree of descent — your own line. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Root node at top -->
+              <circle cx="24" cy="8" r="2.4"/>
+              <!-- Vertical down to first split -->
+              <line x1="24" y1="10.4" x2="24" y2="18"/>
+              <!-- Horizontal split -->
+              <line x1="14" y1="18" x2="34" y2="18"/>
+              <!-- Two parent branches down -->
+              <line x1="14" y1="18" x2="14" y2="26"/>
+              <line x1="34" y1="18" x2="34" y2="26"/>
+              <circle cx="14" cy="28.4" r="2.4"/>
+              <circle cx="34" cy="28.4" r="2.4"/>
+              <!-- From left parent down to two children -->
+              <line x1="14" y1="30.8" x2="14" y2="36"/>
+              <line x1="8" y1="36" x2="20" y2="36"/>
+              <line x1="8" y1="36" x2="8" y2="42"/>
+              <line x1="20" y1="36" x2="20" y2="42"/>
+              <circle cx="8" cy="42" r="1.6"/>
+              <circle cx="20" cy="42" r="1.6"/>
+              <!-- From right parent down -->
+              <line x1="34" y1="30.8" x2="34" y2="42"/>
+              <circle cx="34" cy="42" r="1.6"/>
+            </svg>
+          </span>
           <div class="maction-eyebrow">Members only · Bloodline</div>
           <div class="maction-title">Your line in the clan</div>
           <div class="maction-desc">Record what you know of your line — parents, grandparents, earliest Ó Comáin ancestor, DNA status, family stories. Reviewed by the Office and, where the connection is clear, entered into the master pedigree.</div>
           <span class="maction-btn">Submit your line →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/year.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/year.html">
+          <span class="maction-icon">
+            <!-- Ribbon scroll — the year's chronicle. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Top scroll roll -->
+              <ellipse cx="24" cy="10" rx="14" ry="3"/>
+              <line x1="10" y1="10" x2="10" y2="38"/>
+              <line x1="38" y1="10" x2="38" y2="38"/>
+              <!-- Bottom scroll roll -->
+              <ellipse cx="24" cy="38" rx="14" ry="3"/>
+              <!-- Text lines on the parchment -->
+              <line x1="15" y1="18" x2="33" y2="18"/>
+              <line x1="15" y1="24" x2="33" y2="24"/>
+              <line x1="15" y1="30" x2="29" y2="30"/>
+            </svg>
+          </span>
           <div class="maction-eyebrow">Members' Chronicle · 2026</div>
           <div class="maction-title">The year so far</div>
           <div class="maction-desc">A word from the Chief, the Council taking shape, the Dublin gathering, the library begun, the pedigree written, and what the second year is pointing toward.</div>
           <span class="maction-btn">Read the chronicle →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/members/pedigree.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/pedigree.html">
+          <span class="maction-icon">
+            <!-- Tall pedigree spine — the clan line, ancient and continuous.
+                 Vertical lineage with branches at intervals, suggesting
+                 generations stacked in time. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Central spine -->
+              <line x1="24" y1="6" x2="24" y2="42"/>
+              <!-- Top crown node -->
+              <circle cx="24" cy="6" r="2.2" fill="var(--gold-deep)"/>
+              <!-- Generation marks down the spine -->
+              <line x1="18" y1="14" x2="30" y2="14"/>
+              <circle cx="18" cy="14" r="1.4"/>
+              <circle cx="30" cy="14" r="1.4"/>
+              <line x1="18" y1="22" x2="30" y2="22"/>
+              <circle cx="18" cy="22" r="1.4"/>
+              <circle cx="30" cy="22" r="1.4"/>
+              <line x1="18" y1="30" x2="30" y2="30"/>
+              <circle cx="18" cy="30" r="1.4"/>
+              <circle cx="30" cy="30" r="1.4"/>
+              <!-- Bottom node — present generation -->
+              <circle cx="24" cy="42" r="2.2" fill="var(--gold-deep)"/>
+            </svg>
+          </span>
           <div class="maction-eyebrow">Members' Edition</div>
           <div class="maction-title">The clan pedigree</div>
           <div class="maction-desc">Eleven chapters of the clan line, from Bronze Age Ireland to today — navigate the full pedigree by era, with the spine of the line visible at a glance.</div>
           <span class="maction-btn">Open pedigree →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit;display:block" href="/privy-council.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/privy-council.html">
+          <span class="maction-icon">
+            <!-- Heraldic shield — council authority, the clan's standing.
+                 Cleaner than a crown for a "council" (collective body
+                 rather than monarchical). -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Shield outline -->
+              <path d="M24 6 L 38 10 L 38 24 C 38 32 32 38 24 42 C 16 38 10 32 10 24 L 10 10 Z"/>
+              <!-- Cross or chief band -->
+              <line x1="10" y1="18" x2="38" y2="18"/>
+              <!-- Three small marks on the chief -->
+              <circle cx="17" cy="13" r="1.2" fill="var(--gold-deep)"/>
+              <circle cx="24" cy="13" r="1.2" fill="var(--gold-deep)"/>
+              <circle cx="31" cy="13" r="1.2" fill="var(--gold-deep)"/>
+              <!-- Vertical pale below -->
+              <line x1="24" y1="22" x2="24" y2="36"/>
+            </svg>
+          </span>
           <div class="maction-eyebrow">Live · open</div>
           <div class="maction-title">The Privy Council</div>
           <div class="maction-desc">The Chief's council — and the open positions available to members.</div>
