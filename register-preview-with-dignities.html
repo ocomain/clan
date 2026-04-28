@@ -56,6 +56,17 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .entry-dedication{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--burgundy);line-height:1.7;margin-top:14px;max-width:560px}
 .entry-credit{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
 .entry-dignity{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--gold-deep);line-height:1.65;margin-top:10px;letter-spacing:.005em;max-width:560px}
+/* Dignity prefix — appears before the name as an honorific. Burgundy
+   italic, slightly smaller than the name. Hover/focus reveals tooltip
+   with pronunciation, English meaning, and provenance line. Tabbable
+   for keyboard access; tooltip uses pure CSS pseudo-elements so no JS
+   dependency. The dotted gold underline signals that hovering will
+   reveal something. */
+.entry-dignity-prefix{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--burgundy);font-size:0.78em;letter-spacing:.01em;margin-right:.18em;position:relative;cursor:help;border-bottom:1px dotted var(--gold);padding-bottom:1px;outline:none}
+.entry-dignity-prefix:focus-visible{box-shadow:0 0 0 2px var(--gold-faint);border-radius:2px}
+.entry-dignity-prefix::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:0;background:var(--ink);color:var(--cream);padding:11px 15px 12px;font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:13.5px;line-height:1.55;white-space:pre-line;width:max-content;max-width:300px;border-radius:2px;box-shadow:0 6px 22px rgba(0,0,0,.18);letter-spacing:0;text-align:left;opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s,transform .15s,visibility 0s linear .15s;pointer-events:none;z-index:20}
+.entry-dignity-prefix::before{content:'';position:absolute;top:calc(100% + 4px);left:14px;width:0;height:0;border:6px solid transparent;border-bottom-color:var(--ink);opacity:0;visibility:hidden;transition:opacity .15s,visibility 0s linear .15s;z-index:21}
+.entry-dignity-prefix:hover::after,.entry-dignity-prefix:focus-visible::after,.entry-dignity-prefix:hover::before,.entry-dignity-prefix:focus-visible::before{opacity:1;visibility:visible;transform:translateY(0);transition:opacity .15s,transform .15s,visibility 0s}
 .entry-founder{display:block;font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--burgundy);margin-top:8px}
 .entry-founder::before{content:'✦';margin-right:7px;color:var(--gold)}
 </style>
@@ -63,8 +74,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 <body>
 
 <div class="preview-banner">
-  Public Register — Preview with Dignities
-  <em>Mock data showing how members holding Cara, Onóir, and Ardchara appear publicly</em>
+  Public Register — Preview with Dignities (title-prefix format)
+  <em>The dignity sits before the name as an honorific. Hover any title for pronunciation and meaning.</em>
 </div>
 
 <div class="wrap">
@@ -94,8 +105,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">Margaret O'Connor</div>
-            <div class="entry-dignity">Holder of the dignity Ardchara of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Ardchara — ARD-khar-uh, 'friend of high standing'. An order of honour conferred by the Chief." data-tip="ARD-khar-uh · ‘friend of high standing’
+An order of honour conferred by the Chief.">Ardchara</span> Margaret O'Connor</div>
             <div class="entry-dedication">In memory of my grandfather Patrick O'Connor of Ennistymon, 1903–1981.</div>
           </div>
           <div class="entry-meta">
@@ -110,8 +121,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">James Smith &amp; Family</div>
-            <div class="entry-dignity">James Smith — Holder of the dignity Onóir of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Onóir — UH-nor, 'one held in honour'. An order of honour conferred by the Chief." data-tip="UH-nor · ‘one held in honour’
+An order of honour conferred by the Chief.">Onóir</span> James Smith &amp; Family</div>
             <div class="entry-credit">with Jane Smith, and Saoirse and Liam</div>
             <div class="entry-dedication">For the Cummins line of West Clare, who came through the famine.</div>
           </div>
@@ -127,8 +138,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">Eoin MacCarthy</div>
-            <div class="entry-dignity">Holder of the dignity Cara of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Cara — KAR-uh, 'friend'. An order of honour conferred by the Chief." data-tip="KAR-uh · ‘friend’
+An order of honour conferred by the Chief.">Cara</span> Eoin MacCarthy</div>
           </div>
           <div class="entry-meta">
             <span class="entry-tier">Life Member</span>
@@ -156,8 +167,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">James &amp; Jane Smith</div>
-            <div class="entry-dignity">James Smith — Holder of the dignity Cara of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Cara — KAR-uh, 'friend'. An order of honour conferred by the Chief." data-tip="KAR-uh · ‘friend’
+An order of honour conferred by the Chief.">Cara</span> James &amp; Jane Smith</div>
           </div>
           <div class="entry-meta">
             <span class="entry-tier">Steward · Family</span>
@@ -170,8 +181,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">Anne-Marie Cummins &amp; Family</div>
-            <div class="entry-dignity">Anne-Marie Cummins — Holder of the dignity Onóir of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Onóir — UH-nor, 'one held in honour'. An order of honour conferred by the Chief." data-tip="UH-nor · ‘one held in honour’
+An order of honour conferred by the Chief.">Onóir</span> Anne-Marie Cummins &amp; Family</div>
             <div class="entry-credit">with Liam Cummins, and children</div>
           </div>
           <div class="entry-meta">
@@ -185,8 +196,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">John Smith &amp; Mary Doherty</div>
-            <div class="entry-dignity">John Smith — Holder of the dignity Cara of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Cara — KAR-uh, 'friend'. An order of honour conferred by the Chief." data-tip="KAR-uh · ‘friend’
+An order of honour conferred by the Chief.">Cara</span> John Smith &amp; Mary Doherty</div>
           </div>
           <div class="entry-meta">
             <span class="entry-tier">Steward · Family</span>
@@ -226,8 +237,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">Aoife Comyn</div>
-            <div class="entry-dignity">Holder of the dignity Cara of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Cara — KAR-uh, 'friend'. An order of honour conferred by the Chief." data-tip="KAR-uh · ‘friend’
+An order of honour conferred by the Chief.">Cara</span> Aoife Comyn</div>
           </div>
           <div class="entry-meta">
             <span class="entry-tier">Guardian</span>
@@ -241,8 +252,8 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
       <div class="entry">
         <div class="entry-row">
           <div>
-            <div class="entry-name">Patrick Cummins &amp; Family</div>
-            <div class="entry-dignity">Patrick Cummins — Holder of the dignity Cara of Ó Comáin</div>
+            <div class="entry-name"><span class="entry-dignity-prefix" tabindex="0" title="Cara — KAR-uh, 'friend'. An order of honour conferred by the Chief." data-tip="KAR-uh · ‘friend’
+An order of honour conferred by the Chief.">Cara</span> Patrick Cummins &amp; Family</div>
             <div class="entry-credit">with their children Saoirse, Cillian, and Éabha</div>
             <div class="entry-dedication">In memory of my mother Bridget, who carried the family's stories.</div>
           </div>
