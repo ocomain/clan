@@ -323,8 +323,31 @@ exports.handler = async (event) => {
       //      thresholds (1/5/15) and, for each newly-earned title,
       //      send the title-award letter and stamp
       //      sponsor_titles_awarded so it doesn't fire again.
+      //
+      // DEDUP GATE (2026-04-28): the chain ALSO fires from
+      // stripe-webhook.js the moment the invitee pays, so for any
+      // member who paid after that fix shipped, the conversion is
+      // already recorded by the time the dashboard publish flow
+      // runs. Skip in that case to avoid double sponsor letter +
+      // double title-award letter. Pre-fix members (who paid before
+      // the webhook chain existed) still trigger the chain here as
+      // a recovery path — converted_member_id stays null until
+      // someone runs it.
       try {
-        const inviter = await recordConversion(updated, clan_id);
+        const updEmailLower = String(updated.email || '').toLowerCase().trim();
+        let alreadyProcessed = false;
+        if (updEmailLower) {
+          const { data: priorInv } = await supa()
+            .from('invitations')
+            .select('converted_member_id')
+            .eq('clan_id', clan_id)
+            .ilike('recipient_email', updEmailLower)
+            .order('sent_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          alreadyProcessed = !!priorInv?.converted_member_id;
+        }
+        const inviter = alreadyProcessed ? null : await recordConversion(updated, clan_id);
         if (inviter) {
           // Send the sponsor letter — pass the inviter's current
           // highest title so the greeting can address them by it

@@ -5,8 +5,8 @@
 const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, ensureAuthUser, sanitizeFilename } = require('./lib/cert-service');
 const { sendEmail } = require('./lib/email');
-const { evaluateSponsorTitles } = require('./lib/sponsor-service');
-const { sendTitleAwardLetter } = require('./lib/sponsor-email');
+const { evaluateSponsorTitles, recordConversion, highestAwardedTitle } = require('./lib/sponsor-service');
+const { sendTitleAwardLetter, sendSponsorLetter } = require('./lib/sponsor-email');
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLAN_EMAIL = 'clan@ocomain.org';
@@ -545,6 +545,117 @@ exports.handler = async (event) => {
           // Pre-create Supabase auth user so first login is magic-link (not
           // confirm-signup). Best-effort — doesn't block payment flow.
           await ensureAuthUser(customerEmail, customerName);
+
+          // ── INVITATION-AS-SPONSOR TITLE AWARD ────────────────────
+          // Mirror of the gift-buyer chain (line ~280). If this new
+          // member came through an invitation from an existing clan
+          // member, that inviter is the sponsor — credit them NOW
+          // (on payment), not later when the invitee happens to
+          // publish their cert from the dashboard. The previous
+          // architecture wired the chain to update-family-details.js
+          // (publish-time), which left the sponsor uncredited and
+          // un-emailed for as long as the invitee delayed publishing
+          // — possibly indefinitely.
+          //
+          // Pre-check: skip if invitations.converted_member_id is
+          // already set (idempotency — webhook can be redelivered;
+          // also defends against the rare case of a member who paid
+          // before this fix shipped and is being re-processed).
+          //
+          // recordConversion does both the lookup AND the stamping
+          // of invitations.converted_member_id, so calling it inside
+          // the !already-converted gate gives us the inviter while
+          // closing the door against double-fire.
+          //
+          // Intentionally placed AFTER the application-row update
+          // and ensureAuthUser so the auth user exists by the time
+          // any post-process surfaces (sponsor letter, member link)
+          // are generated.
+          try {
+            const memberEmailLower = String(member.email || '').toLowerCase().trim();
+            if (memberEmailLower) {
+              const { data: priorInv } = await supa()
+                .from('invitations')
+                .select('id, converted_member_id')
+                .eq('clan_id', clan_id)
+                .ilike('recipient_email', memberEmailLower)
+                .order('sent_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+              if (priorInv && !priorInv.converted_member_id) {
+                const inviter = await recordConversion(member, clan_id);
+                if (inviter) {
+                  // Sponsor letter — short Herald-voiced note to the
+                  // inviter naming the new member. Title-aware
+                  // greeting ('Dia dhuit, Cara James' if inviter
+                  // already holds a dignity).
+                  const inviterCurrentTitle = highestAwardedTitle(inviter.sponsor_titles_awarded);
+                  try {
+                    await sendSponsorLetter(inviter, member, inviterCurrentTitle);
+                    await logEvent({
+                      clan_id,
+                      member_id: inviter.id,
+                      event_type: 'sponsor_letter_sent',
+                      payload: { converted_member_id: member.id, source: 'invitation_paid' },
+                    });
+                  } catch (letterErr) {
+                    console.error('invitation sponsor letter send failed (non-fatal):', letterErr.message);
+                  }
+
+                  // Title evaluation + award — same pattern as the
+                  // gift branch above and as submit/update-family-
+                  // details. Stamp ALL newly earned slugs in one
+                  // sweep (so the audit trail captures titles
+                  // crossed in a single conversion, e.g. someone who
+                  // jumps from 4 to 6 conversions in a day).
+                  try {
+                    const { count: sponsorCount, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
+                      await evaluateSponsorTitles(inviter);
+                    if (allNewlyEarned.length > 0) {
+                      const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
+                      const nowIso = new Date().toISOString();
+                      let letterSent = false;
+                      if (highestNewlyEarned) {
+                        try {
+                          await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, sponsorCount);
+                          await logEvent({
+                            clan_id,
+                            member_id: inviter.id,
+                            event_type: 'sponsor_title_awarded',
+                            payload: {
+                              title_slug: highestNewlyEarned.slug,
+                              previous_title: previousTitleIrish,
+                              count: sponsorCount,
+                              source: 'invitation_paid',
+                              invitee_member_id: member.id,
+                            },
+                          });
+                          letterSent = true;
+                        } catch (titleErr) {
+                          console.error(`invitation title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
+                        }
+                      }
+                      if (letterSent || !highestNewlyEarned) {
+                        for (const t of allNewlyEarned) stampedAwarded[t.slug] = nowIso;
+                        if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+                          await supa()
+                            .from('members')
+                            .update({ sponsor_titles_awarded: stampedAwarded })
+                            .eq('id', inviter.id);
+                        }
+                      }
+                    }
+                  } catch (titleEvalErr) {
+                    console.error('invitation title evaluation failed (non-fatal):', titleEvalErr.message);
+                  }
+                }
+              }
+            }
+          } catch (invSponsorErr) {
+            console.error('invitation sponsor chain failed (non-fatal):', invSponsorErr.message);
+          }
+          // ─────────────────────────────────────────────────────────
 
           // CERT GENERATION DELIBERATELY OMITTED HERE.
           // Per the publication model (migration 011), the cert is a
