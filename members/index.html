@@ -426,6 +426,45 @@
             <div class="mstatus-row-value">${fmtDate(member.joined_at)}</div>
           </div>
         </div>
+        ${(() => {
+          // ── HELD IN HONOUR row ──
+          // Renders only if the member holds a sponsor title. The
+          // 'Name on the Register' row above is the cert-sealed
+          // identity — that's locked at publish and never carries a
+          // post-cert title (Reading B: cert is the founding warrant,
+          // titles are post-cert recognition).
+          //
+          // This separate row is where the member's HONOUR is
+          // surfaced. Three lines:
+          //   1. Eyebrow label 'HELD IN HONOUR' (same Jost
+          //      letter-spacing as the other row labels — the
+          //      visual sibling of 'Name on the Register').
+          //   2. Named line 'James Cummins, Ardchara' — the honour
+          //      sits as a comma-suffix to the member's regular name,
+          //      mirroring how postnominals work in real heraldic
+          //      registers ('John Smith, KBE'). Suffix not prefix:
+          //      avoids looking like a Sir/Dame/Lord claim, and ages
+          //      better as more members hold each title.
+          //   3. Explanatory italic 'Recognised by the Chief in the
+          //      dignity of {Title} — {English}.' Single phrasing
+          //      that scales across all three tiers.
+          //
+          // Only the HIGHEST title held is displayed. Lower titles
+          // were laid by when the member was raised — chivalric
+          // replacement model, not peerage accretion. The audit
+          // trail (sponsor_titles_awarded JSONB) preserves all
+          // award timestamps, but only the current dignity is on
+          // public/dashboard show.
+          const t = member.sponsorTitle;
+          if (!t) return '';
+          const baseName = (member.display_name_on_register || member.name || '').trim();
+          if (!baseName) return '';
+          return `<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gold-border)">
+          <div class="mstatus-row-label">Held in Honour</div>
+          <div class="mstatus-row-value" style="margin-bottom:6px">${escHtml(baseName)}, ${escHtml(t.irish)}</div>
+          <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6">Recognised by the Chief in the dignity of ${escHtml(t.irish)} — ${escHtml(t.english)}.</div>
+        </div>`;
+        })()}
       </section>
 
       ${member.gift ? `
@@ -676,26 +715,30 @@
         <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. If there is someone in your life — a sibling, a cousin, an old friend — who belongs in the Register beside you, write them in below. The Herald carries the welcome in your name; the rest is theirs to take up, in their own time.</p>
 
         ${(() => {
-          // ── Sponsor recognition block ──
-          // Quiet count line + (if held) the member's highest Gaelic
-          // honorific. Renders only if the member has at least one
-          // converted invitation OR holds a title. Single italic
-          // line in the dashboard's standard register — no badge,
-          // no progress bar, no leaderboard. The voice keeps faith
-          // with 'by design, a quiet thing'.
+          // ── Sponsor count + order-of-honours link ──
+          // The TITLE itself now displays in the 'Held in Honour'
+          // row of the mstatus panel above (alongside Name on the
+          // Register, Email, etc.) — that's its proper place
+          // because the title is ABOUT the member, not about the
+          // act of inviting. What stays here in the invite section
+          // is the COUNT (because it's the count that earns the
+          // titles) and a quiet link to the explainer page.
+          //
+          // Renders only if there's a count to show OR a link to
+          // offer. The link is shown to all members regardless of
+          // count — the explainer page is something the clan keeps
+          // for those who want to know how the order of honours
+          // works.
           const count = Number(member.sponsorCount) || 0;
-          const title = member.sponsorTitle || null; // { irish, english, pronunciation } or null
-          if (count === 0 && !title) return '';
           const sponsorWord = count === 1 ? 'member' : 'members';
           const countLine = count > 0
             ? `You have stood as sponsor to ${count} ${sponsorWord} of the clan.`
             : '';
-          const titleLine = title
-            ? `In the keeping of the clan, you are <strong style="font-weight:500;color:var(--ink);font-style:normal">${escHtml(title.irish)}</strong> — ${escHtml(title.english)}.`
-            : '';
+          // Always show the link; the count line is conditional.
+          const linkLine = `<a href="/members/honours.html" style="color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.35)">Read the order of honours →</a>`;
           return `<div style="border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);padding:14px 0;margin:0 0 22px;font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7">
             ${countLine ? `<div>${countLine}</div>` : ''}
-            ${titleLine ? `<div${countLine ? ' style="margin-top:4px"' : ''}>${titleLine}</div>` : ''}
+            <div${countLine ? ' style="margin-top:4px"' : ''}>${linkLine}</div>
           </div>`;
         })()}
 

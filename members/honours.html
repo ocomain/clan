@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Order of Honours — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    /* HEADER — same chrome as the rest of /members so this page
+       feels like a sibling. */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+
+    /* PAGE LAYOUT */
+    .wrap{max-width:760px;margin:0 auto;padding:56px 24px 80px}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:12px}
+    .page-title{font-family:'EB Garamond',serif;font-size:42px;font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:14px}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-muted);line-height:1.75;max-width:620px;margin-bottom:48px}
+
+    /* AUTH GATE */
+    .gate{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-muted);text-align:center;padding:80px 24px;font-style:italic}
+
+    /* TITLE CARDS — one per dignity */
+    .honour{background:#FFF;border:1px solid var(--gold-faint);border-top:3px solid var(--burgundy);padding:36px 38px;border-radius:2px;margin-bottom:32px;box-shadow:0 2px 6px rgba(20,5,5,.03)}
+    .honour-head{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--gold-faint)}
+    .honour-irish{font-family:'EB Garamond',serif;font-size:38px;font-weight:400;color:var(--ink);line-height:1.05}
+    .honour-pron{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted)}
+    .honour-english{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);font-style:italic}
+    .honour-threshold{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.20em;text-transform:uppercase;color:var(--burgundy);margin-left:auto}
+
+    .honour-body{font-family:'EB Garamond',serif;font-size:16.5px;line-height:1.8;color:var(--ink)}
+    .honour-body p{margin:0 0 14px}
+    .honour-body p:last-child{margin-bottom:0}
+    .honour-body em{color:var(--burgundy);font-style:italic}
+
+    /* CLOSING NOTE — matches the Herald's voice across other pages */
+    .closing{margin-top:52px;padding:32px 36px;border-top:2px solid var(--gold);background:rgba(184,151,90,.06)}
+    .closing-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
+    .closing-body{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.8}
+    .closing-signoff{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:14px}
+
+    .back-link{display:inline-block;margin-top:32px;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.35);padding-bottom:2px}
+    .back-link:hover{color:var(--burgundy)}
+  </style>
+</head>
+<body>
+
+<!-- HEADER chrome — same as members/index.html -->
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <div class="mhdr-brand-text">Clan <em>Ó Comáin</em></div>
+    </a>
+    <nav class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <a href="/members/library.html">Library</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="authGate" class="gate">Verifying your place in the clan…</div>
+  <div id="pageBody" style="display:none">
+
+    <div class="page-eyebrow">In the clan's keeping</div>
+    <h1 class="page-title">The <em>Order of Honours</em></h1>
+    <p class="page-sub">Three honours are conferred by the Chief upon members who bring others to the Register at Newhall. Each is a raising in rank within Clan Ó Comáin — recorded under the Chief's seal, held quietly with the Herald, and carried by the member as a mark of what they have built. The honours follow one another: the higher is taken up; the lower is laid by.</p>
+
+    <!-- ── CARA ─────────────────────────────────────────────── -->
+    <div class="honour">
+      <div class="honour-head">
+        <div class="honour-irish">Cara</div>
+        <div>
+          <div class="honour-pron">KAR-uh</div>
+          <div class="honour-english">Friend</div>
+        </div>
+        <div class="honour-threshold">Conferred at one</div>
+      </div>
+      <div class="honour-body">
+        <p>The first of the honours, conferred when a member welcomes their first soul into the Register at Newhall. <em>Cara</em> is the older Irish word for a friend — and in Brehon-law tradition, the Chief's <em>cairde</em> were the trusted kin-allies who carried his interests outward into the wider world. The dignity of Cara names exactly that role: a member through whom the clan reaches another.</p>
+        <p>To bring even one to the clan is no small thing — it is the act on which all kinship is built.</p>
+      </div>
+    </div>
+
+    <!-- ── ONÓIR ────────────────────────────────────────────── -->
+    <div class="honour">
+      <div class="honour-head">
+        <div class="honour-irish">Onóir</div>
+        <div>
+          <div class="honour-pron">UH-nor</div>
+          <div class="honour-english">One held in honour</div>
+        </div>
+        <div class="honour-threshold">Conferred at five</div>
+      </div>
+      <div class="honour-body">
+        <p>The second of the honours, a raising in rank from Cara. <em>Onóir</em> carries the weight of its meaning: a member whose contribution has been marked, and who is now held by the Chief and the Herald as one of the clan's standing-bearers. To be raised to Onóir is to have made the clan one's own — to have shaped it, by patient welcome, into something larger than it was.</p>
+        <p>To bring five is the work of a member who has made the clan their own. The Chief is the better for knowing it.</p>
+      </div>
+    </div>
+
+    <!-- ── ARDCHARA ─────────────────────────────────────────── -->
+    <div class="honour">
+      <div class="honour-head">
+        <div class="honour-irish">Ardchara</div>
+        <div>
+          <div class="honour-pron">ARD-khar-uh</div>
+          <div class="honour-english">Friend of high standing</div>
+        </div>
+        <div class="honour-threshold">Conferred at fifteen</div>
+      </div>
+      <div class="honour-body">
+        <p>The highest of the honours conferred within Clan Ó Comáin. <em>Ardchara</em> joins the prefix <em>ard-</em> (high, lofty) to <em>cara</em> (friend) — so the title reads, by its parts, as <em>Friend of high standing</em>. It is conferred upon a member who has brought fifteen souls to the Register at Newhall, and the language of the warrant is the formal chivalric register: <em>"It hath pleased the Chief to raise you within the clan to the dignity of Ardchara."</em></p>
+        <p>By this raising the member henceforth bears the title Ardchara, with the place and standing belonging to that rank in the clan's keeping. There are very few in any generation who carry fifteen to the Register, and the Chief takes a particular interest in such members.</p>
+      </div>
+    </div>
+
+    <!-- ── CLOSING NOTE ─────────────────────────────────────── -->
+    <div class="closing">
+      <div class="closing-eyebrow">A note on the order</div>
+      <div class="closing-body">
+        <p style="margin:0 0 12px">The honours follow one another: when a higher dignity is conferred, the lower is laid by. The clan's keeping records every raising — but only the current dignity is held and shown. This is the older convention, by which a member's standing is named by what they currently are, not by everything they have ever been.</p>
+        <p style="margin:0">Titles are held quietly with the Chief and the Herald — recorded under the Chief's seal at Newhall. There is no fanfare to them; only the recognition of what has been done, in the company of those who do likewise.</p>
+        <div class="closing-signoff">— Clan Herald at Newhall</div>
+      </div>
+    </div>
+
+    <a href="/members/" class="back-link">← Back to your dashboard</a>
+
+  </div>
+</div>
+
+<script type="module">
+  // Same auth pattern as members/admin/founders.html — verify the
+  // member is signed in, otherwise bounce to login. We don't need
+  // the admin allowlist check here; this page is open to any signed-in
+  // member.
+  import { currentSession } from './auth.js';
+
+  (async () => {
+    const session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent('/members/honours.html');
+      return;
+    }
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('pageBody').style.display = 'block';
+  })();
+</script>
+
+</body>
+</html>

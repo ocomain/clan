@@ -321,41 +321,74 @@ exports.handler = async (event) => {
             console.error('sponsor letter send failed (non-fatal):', letterErr.message);
           }
 
-          // Evaluate and award titles. The evaluation reads the
-          // current conversion count + the inviter's existing
-          // sponsor_titles_awarded JSONB, returning any titles
-          // that have been earned but not yet recorded.
+          // Evaluate and award titles. The new evaluation returns:
+          //   - count: current converted-invite count
+          //   - allNewlyEarned: every title whose threshold was
+          //     just crossed (1+ entries on a leapfrog from
+          //     4 → 6+ in one event)
+          //   - highestNewlyEarned: the single highest of those,
+          //     or null if none. We email this one ONLY, even on
+          //     a leapfrog — no awkward double-letter on the same
+          //     raising day. Lower titles in the same batch are
+          //     silently stamped to the audit trail.
+          //   - previousTitleIrish: the Irish form of the title
+          //     this member ALREADY HELD before the raising, or
+          //     null if they held none. The email's bestowal
+          //     language uses this for the 'raised from {prior}
+          //     to the dignity of {new}' clause.
           try {
-            const { count, newlyEarned } = await evaluateSponsorTitles(inviter);
-            if (newlyEarned.length > 0) {
+            const { count, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
+              await evaluateSponsorTitles(inviter);
+            if (allNewlyEarned.length > 0) {
               const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
               const nowIso = new Date().toISOString();
-              for (const title of newlyEarned) {
-                // Send the title-award letter for this threshold
+
+              // Send the title-award letter ONLY for the highest
+              // newly-earned title. Pass priorTitleIrish so the
+              // letter can construct 'raised from {prior} to {new}'.
+              let letterSent = false;
+              if (highestNewlyEarned) {
                 try {
-                  await sendTitleAwardLetter(inviter, title, count);
+                  await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, count);
                   await logEvent({
                     clan_id,
                     member_id: inviter.id,
                     event_type: 'sponsor_title_awarded',
-                    payload: { title_slug: title.slug, count },
+                    payload: {
+                      title_slug: highestNewlyEarned.slug,
+                      previous_title: previousTitleIrish,
+                      count,
+                      // Note: any leapfrogged titles are recorded
+                      // in the audit-trail stamp below, not in this
+                      // event's payload — the event is about the
+                      // single email that was sent.
+                    },
                   });
-                  stampedAwarded[title.slug] = nowIso;
+                  letterSent = true;
                 } catch (titleErr) {
-                  console.error(`title-award letter '${title.slug}' send failed (non-fatal):`, titleErr.message);
-                  // Don't stamp this title — let it retry on the
-                  // next conversion. Better to send twice than to
-                  // mark awarded when the email never arrived.
+                  console.error(`title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
                 }
               }
-              // Persist the awarded JSONB only after all the
-              // letters succeeded (or each failure was logged
-              // and skipped).
-              if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
-                await supa()
-                  .from('members')
-                  .update({ sponsor_titles_awarded: stampedAwarded })
-                  .eq('id', inviter.id);
+
+              // Stamp ALL newly-earned slugs into the JSONB so
+              // the audit trail records every milestone, even
+              // ones that were leapfrogged (no email but the
+              // member did genuinely cross that threshold).
+              // Only stamp if at least the headline letter sent
+              // (or if there's no letter to send, which shouldn't
+              // happen but defensive). If letter failed, retry
+              // on next conversion — better than marking awarded
+              // when nothing arrived.
+              if (letterSent || !highestNewlyEarned) {
+                for (const t of allNewlyEarned) {
+                  stampedAwarded[t.slug] = nowIso;
+                }
+                if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+                  await supa()
+                    .from('members')
+                    .update({ sponsor_titles_awarded: stampedAwarded })
+                    .eq('id', inviter.id);
+                }
               }
             }
           } catch (titleEvalErr) {

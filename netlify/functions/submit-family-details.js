@@ -360,29 +360,42 @@ exports.handler = async (event) => {
           }
 
           try {
-            const { count, newlyEarned } = await evaluateSponsorTitles(inviter);
-            if (newlyEarned.length > 0) {
+            const { count, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
+              await evaluateSponsorTitles(inviter);
+            if (allNewlyEarned.length > 0) {
               const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
               const nowIso = new Date().toISOString();
-              for (const title of newlyEarned) {
+
+              let letterSent = false;
+              if (highestNewlyEarned) {
                 try {
-                  await sendTitleAwardLetter(inviter, title, count);
+                  await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, count);
                   await logEvent({
                     clan_id,
                     member_id: inviter.id,
                     event_type: 'sponsor_title_awarded',
-                    payload: { title_slug: title.slug, count },
+                    payload: {
+                      title_slug: highestNewlyEarned.slug,
+                      previous_title: previousTitleIrish,
+                      count,
+                    },
                   });
-                  stampedAwarded[title.slug] = nowIso;
+                  letterSent = true;
                 } catch (titleErr) {
-                  console.error(`title-award letter '${title.slug}' send failed (non-fatal):`, titleErr.message);
+                  console.error(`title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
                 }
               }
-              if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
-                await supa()
-                  .from('members')
-                  .update({ sponsor_titles_awarded: stampedAwarded })
-                  .eq('id', inviter.id);
+
+              if (letterSent || !highestNewlyEarned) {
+                for (const t of allNewlyEarned) {
+                  stampedAwarded[t.slug] = nowIso;
+                }
+                if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+                  await supa()
+                    .from('members')
+                    .update({ sponsor_titles_awarded: stampedAwarded })
+                    .eq('id', inviter.id);
+                }
               }
             }
           } catch (titleEvalErr) {

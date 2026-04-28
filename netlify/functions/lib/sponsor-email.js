@@ -126,40 +126,67 @@ async function sendSponsorLetter(sponsor, newMember) {
 /**
  * The Title Awarded letter — sent once per threshold crossing.
  *
- * Voice notes (chivalric warrant register):
+ * Voice notes (chivalric warrant register, raising-and-replacement
+ * model — like an Order of Chivalry, NOT like peerage):
+ *
  *   - The CHIEF is the actor throughout the body. The Herald
  *     composes the letter (Gaelic warrant convention) and signs
  *     at the foot. Fergus's name is not used directly — he is
  *     'the Chief', the office, in the same way real warrants
  *     reference the office rather than the personal name.
- *   - For Ardchara (the elevation-in-rank tier) the language
- *     uses the formal chivalric construction: 'It hath pleased
- *     the Chief to raise you within the clan to the dignity of...'
- *     'henceforth bear the name', 'place and standing belonging
- *     to that rank'. Reads as a proper warrant of advancement.
- *   - Cara and Onóir use lighter recognition language — they
- *     aren't elevations, they're acknowledgements. Register
- *     scales with gravity: warm at 1, dignified at 5, formal
- *     at 15.
+ *
+ *   - Every title is a RAISING. Cara is the first raising into
+ *     honour from no-title. Onóir is a raising from Cara.
+ *     Ardchara is a raising from Onóir to the highest dignity.
+ *     The lower title is LAID BY (set down) when the higher is
+ *     taken up — chivalric replacement model, not peerage
+ *     accretion. KBE replaces CBE; CBE replaces MBE; MBE
+ *     replaces no-title.
+ *
+ *   - Gravity scales with the dignity: Cara is warm, Onóir is
+ *     a measured raising-in-rank, Ardchara is the formal 'It
+ *     hath pleased' chivalric warrant of advancement to the
+ *     highest rank, with the henceforth-clause and the
+ *     'place and standing belonging to that rank' privilege-
+ *     clause.
+ *
+ *   - 'Title' is used throughout, NEVER 'name'. The user's name
+ *     is what their parents gave them. The TITLE is what the
+ *     Chief confers. (Earlier draft confused these — fixed.)
+ *
  *   - Closes with 'Le toil an Taoisigh — by the will of the
  *     Chief' (a brief Irish flourish in the Gaelic warrant
  *     tradition) above the Herald sign-off.
  *
- * @param {object} sponsor  — { email, name }
- * @param {object} title    — full title definition from
- *                            SPONSOR_TITLES, including subjectLine,
- *                            eyebrow, headline, bestowalIntro,
- *                            bodyOpening, closingNarrative
- * @param {number} totalCount — current count of converted invites
- *                              (not currently used in copy — counts
- *                              are baked into bodyOpening per title
- *                              — but available for future use)
+ * @param {object} sponsor             — { email, name }
+ * @param {object} title               — full title definition from
+ *                                       SPONSOR_TITLES, with each
+ *                                       per-title language field a
+ *                                       function of priorTitleIrish
+ * @param {string|null} priorTitleIrish — Irish form of the title
+ *                                       the member held BEFORE
+ *                                       this raising, or null if
+ *                                       this is the first raising
+ *                                       (i.e. they held no title).
+ *                                       Drives the 'from {prior}'
+ *                                       clauses throughout.
+ * @param {number} totalCount          — current converted-invite
+ *                                       count (available for
+ *                                       future use; copy currently
+ *                                       names counts inline in
+ *                                       bodyOpening per title).
  */
-async function sendTitleAwardLetter(sponsor, title, totalCount) {
+async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount) {
   if (!sponsor?.email || !title) return false;
   const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
 
-  const subject = title.subjectLine;
+  // Resolve the per-title language by calling each template
+  // function with the prior-title argument. Each function returns
+  // the right form for first-raising vs raising-from-prior.
+  const subject          = title.subjectLine(priorTitleIrish);
+  const bodyOpening      = title.bodyOpening(priorTitleIrish);
+  const bestowalIntro    = title.bestowalIntro(priorTitleIrish);
+  const replacementText  = title.replacementSentence(priorTitleIrish); // null for Cara, or for any first-raising
 
   const html = `<!DOCTYPE html>
 <html>
@@ -175,45 +202,52 @@ async function sendTitleAwardLetter(sponsor, title, totalCount) {
       Dia dhuit, ${escapeHtml(sponsorFirst)} — God be with you.
     </p>
 
-    <!-- Opening paragraph: narrates the Chief's action and sets
-         up the bestowal block. Per-title language drawn from
-         title.bodyOpening — for Cara/Onóir this is recognition;
-         for Ardchara it is the formal raising-in-rank with
-         'henceforth bear the name set out below'. -->
+    <!-- Opening paragraph: narrates the Chief's act, names the
+         count, and (for non-first raisings) names the previous
+         dignity being laid by. Per-title bodyOpening is a
+         function of priorTitleIrish. -->
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 24px">
-      ${escapeHtml(title.bodyOpening)}
+      ${escapeHtml(bodyOpening)}
     </p>
 
     <!-- The bestowal block — the ceremonial centrepiece. The
-         small-caps line carries the per-title bestowal verb (e.g.
-         'It hath pleased the Chief to raise you within the clan
-         to the dignity of') above the Irish title. Visually set
-         apart with thin gold rules so the title reads as a moment
-         rather than a sentence. -->
+         small-caps line carries the per-title bestowal verb
+         ('It pleases the Chief to raise you from Onóir to the
+         dignity of', or for Ardchara 'It hath pleased the Chief
+         to raise you from Onóir to the dignity of'). Visually
+         set apart with thin gold rules so the title reads as a
+         moment rather than a sentence. -->
     <div style="text-align:center;padding:22px 18px;margin:0 0 24px;border-top:1px solid rgba(184,151,90,.4);border-bottom:1px solid rgba(184,151,90,.4);background:rgba(184,151,90,.05)">
-      <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;margin:0 0 12px;line-height:1.5">${escapeHtml(title.bestowalIntro)}</p>
+      <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;margin:0 0 12px;line-height:1.5">${escapeHtml(bestowalIntro)}</p>
       <p style="font-family:'Georgia',serif;font-size:32px;font-weight:400;color:#1A0A0A;margin:0 0 4px;line-height:1.15">${escapeHtml(title.irish)}</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0">${escapeHtml(title.pronunciation)} — ${escapeHtml(title.english)}</p>
     </div>
 
-    <!-- Closing narrative beat — one sentence about what this
-         title means in the clan. Drawn from title.closingNarrative.
-         For Ardchara this is the sentence about 'very few in any
-         generation' and the Chief's particular interest. -->
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 24px">
+    <!-- Closing narrative beat — what this dignity means in the
+         clan. Single sentence, drawn from title.closingNarrative.
+         Constant per title (doesn't depend on prior). -->
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 ${replacementText ? '18' : '24'}px">
       ${escapeHtml(title.closingNarrative)}
     </p>
+
+    ${replacementText ? `<!-- Replacement sentence — the chivalric 'laid by / taken
+         up' formulation. Names what's happening to the prior
+         dignity. Only present for raisings from a prior title;
+         omitted on first raisings (where there's nothing to lay
+         by). -->
+    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.85;margin:0 0 24px">
+      ${escapeHtml(replacementText)}
+    </p>` : ''}
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
       Your title is held quietly with the Chief and the Herald — recorded in the clan\u2019s keeping at Newhall. There is no fanfare to it; only the recognition of what you have done, in the company of those who do likewise.
     </p>
 
     <!-- Irish flourish above the Herald sign-off: 'Le toil an
-         Taoisigh' — by the will of the Chief. The Gaelic warrant
-         convention. Pronounced 'leh thill un TWEE-shi'. The
-         pronunciation is NOT included in the email body (would
-         break the gravity); the phrase stands on its own and the
-         English meaning is given for those who don't read Irish. -->
+         Taoisigh' — by the will of the Chief. The phrase stands
+         on its own and the English meaning is given for those
+         who don't read Irish. Pronunciation NOT included in the
+         email body itself (would break the gravity). -->
     <p style="font-family:'Georgia',serif;font-size:13.5px;color:#6C5A4A;line-height:1.6;margin:0 0 4px;text-align:center;font-style:italic">
       Le toil an Taoisigh — by the will of the Chief
     </p>
