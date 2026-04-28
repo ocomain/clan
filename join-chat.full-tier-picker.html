@@ -1,3 +1,14 @@
+<!-- BACKUP — full tier picker version (pre-2026-04-28).
+     This file is NOT linked from anywhere. It exists as the
+     editable canonical of the tier-picker completion panel that
+     /join-chat.html used to render at end of chat (8 tier buttons:
+     Clan Ind/Fam, Guardian Ind/Fam, Steward Ind/Fam, Life Ind/Fam).
+     The live /join-chat.html now defaults to clan-ind (€49) only
+     when no tier is in URL — single CTA, no picker — to remove
+     decision-paralysis at the conversion moment after a real
+     applicant (Hannah Commins) completed Herald but bailed at the
+     picker. Restore this file's logic into join-chat.html when the
+     full picker is wanted again. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -473,23 +484,12 @@ function showCompletion() {
     });
   } catch(e) { /* non-blocking */ }
 
-  // Show correct CTA based on whether tier was selected.
-  //
-  // CONVERSION FOCUS (2026-04-28): when no tier is in the URL we
-  // used to show an inline picker with 8 tier buttons (Clan Ind/Fam,
-  // Guardian Ind/Fam, Steward Ind/Fam, Life Ind/Fam). A real
-  // applicant completed the Herald conversation and then bailed at
-  // the picker — too many choices at the moment of conversion is a
-  // classic funnel-killer. We now default to clan-ind (€49) when no
-  // tier is pre-selected, showing a single pay button instead. The
-  // full tier picker is preserved at /membership.html for browsers
-  // wanting to compare tiers, and the original picker logic is
-  // archived in /join-chat.full-tier-picker.html for reinstatement.
-  // The Herald greeting itself remains tier-agnostic — only the
-  // completion panel changes.
+  // Show correct CTA based on whether tier was selected
   const payBtn = document.getElementById('stripePayBtn');
-  const effectiveTier = tierInfo || STRIPE_LINKS['clan-ind'];
-  if (payBtn) {
+  if (tierInfo && payBtn) {
+    // Append email to /api/create-checkout. The endpoint passes it to
+    // Stripe as customer_email, so the buyer sees their email pre-filled
+    // on the Stripe checkout page.
     // Append email AND herald-captured name to /api/create-checkout. The
     // endpoint passes email as customer_email (pre-fills Stripe form) and
     // sets metadata.herald_name on the session — the latter is read by
@@ -499,26 +499,37 @@ function showCompletion() {
     const params = [];
     if (collected.email) params.push('email=' + encodeURIComponent(collected.email));
     if (collected.name)  params.push('name='  + encodeURIComponent(collected.name));
-    const checkoutUrl = effectiveTier.url + (params.length ? '&' + params.join('&') : '');
+    const checkoutUrl = tierInfo.url + (params.length ? '&' + params.join('&') : '');
     payBtn.href = checkoutUrl;
-    payBtn.textContent = 'Complete payment — ' + effectiveTier.label + ' →';
+    payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
     payBtn.style.display = 'inline-block';
-    // Show cancel note for annual tiers only. Default-fallback is
-    // clan-ind which is annual, so 'Annual subscription · cancel
-    // anytime' shows beneath the button in that case too.
-    const isLifeTier = (urlTier || 'clan-ind') === 'life-ind' || (urlTier || 'clan-ind') === 'life-fam';
+    // Show cancel note for annual tiers only
+    const isLifeTier = urlTier === 'life-ind' || urlTier === 'life-fam';
     if (!isLifeTier) {
       const cancelNote = document.createElement('p');
       cancelNote.textContent = 'Annual subscription · cancel anytime';
       cancelNote.style.cssText = 'font-family:var(--font-sans);font-size:14px;font-weight:400;color:rgba(184,151,90,.7);letter-spacing:.06em;text-align:center;margin-top:12px';
       payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
     }
+  } else {
+    // Show inline tier picker — inject herald-collected email AND name
+    // into every tier button so they reach Stripe metadata regardless of
+    // which tier the user ultimately picks.
+    const tierPicker = document.getElementById('tierPicker');
+    if (collected.email || collected.name) {
+      tierPicker.querySelectorAll('a[href*="/api/create-checkout"]').forEach(a => {
+        let href = a.getAttribute('href');
+        const append = (k, v) => {
+          if (!v) return;
+          href += (href.includes('?') ? '&' : '?') + k + '=' + encodeURIComponent(v);
+        };
+        append('email', collected.email);
+        append('name',  collected.name);
+        a.setAttribute('href', href);
+      });
+    }
+    tierPicker.style.display = 'block';
   }
-  // tierPicker element is intentionally left hidden — see
-  // join-chat.full-tier-picker.html for the archived logic that
-  // populated and revealed it. Removing the markup entirely would
-  // make a future restore harder, so it stays in the DOM but
-  // permanently display:none.
 
   document.getElementById('completion').classList.add('show');
 }
