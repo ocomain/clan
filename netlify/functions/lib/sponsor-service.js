@@ -173,33 +173,81 @@ const SPONSOR_TITLES = [
 ];
 
 /**
- * Find the inviter for a freshly-converted member, if any. Stamps
- * the invitations row with converted_member_id so the link is
- * recorded.
+ * Find the sponsor for a freshly-published member, if any.
  *
- * Idempotency: if the row is already stamped (converted_member_id
- * already set), this is a no-op and the existing inviter row is
- * still returned. Safe to call from the publish flow on every
- * publish, including re-publishes.
+ * Two paths: a gift, or an invitation. Gift takes precedence because
+ * it's a stronger act (the giver paid for the membership, not just
+ * sent a link). If a member came through both — invited by friend A,
+ * then later gifted by friend B — friend B is credited.
+ *
+ * For the gift path, no extra stamping is needed: the
+ * gifts.member_id link is set at redemption time and never changes,
+ * so the conversion is durably recorded by the existing schema.
+ *
+ * For the invitation path, the function stamps invitations.
+ * converted_member_id (and status='accepted') so that the conversion
+ * is recorded once and won't double-count if the publish flow runs
+ * again.
+ *
+ * Idempotent: safe to call from the publish flow on every publish,
+ * including re-publishes. Already-stamped invitations are a no-op.
  *
  * @param {object} member  — the freshly-published member row, must
  *                           have { id, email, clan_id }
  * @param {string} clan_id
- * @returns {Promise<object|null>} inviter member row if a
- *   conversion was found/recorded, or null if the member didn't
- *   come through an invitation.
+ * @returns {Promise<object|null>} sponsor's member row if a
+ *   conversion was found/recorded, or null if the member came in
+ *   via self-purchase / a non-member gift-giver / no invitation.
  */
 async function recordConversion(member, clan_id) {
   if (!member || !member.email) return null;
   const memberEmail = String(member.email).toLowerCase().trim();
 
+  // ── PATH 1 — gift recipient ──
+  // Was this member created through a gift? Look up the gifts row by
+  // member_id (set at redemption time) and find the buyer's email.
+  // If the buyer is themselves a clan member, they are this member's
+  // sponsor. Gift wins over invitation by precedence.
+  try {
+    const { data: gift } = await supa()
+      .from('gifts')
+      .select('id, buyer_email')
+      .eq('member_id', member.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (gift?.buyer_email) {
+      const buyerEmail = String(gift.buyer_email).toLowerCase().trim();
+      const { data: sponsor } = await supa()
+        .from('members')
+        .select('id, email, name, sponsor_titles_awarded')
+        .eq('clan_id', clan_id)
+        .ilike('email', buyerEmail)
+        .maybeSingle();
+      if (sponsor) {
+        // Gift sponsorship recorded. Return the sponsor — the publish
+        // flow will send them the Sponsor's Letter and evaluate
+        // titles. No state to stamp; the gifts.member_id link IS the
+        // conversion record.
+        return sponsor;
+      }
+      // Buyer isn't a clan member — gift still happened, but no
+      // sponsor to credit. Fall through to the invitation path
+      // (defensive: maybe an inviter ALSO invited them and that
+      // sponsor IS a member).
+    }
+  } catch (giftErr) {
+    console.warn('recordConversion: gift lookup failed (non-fatal):', giftErr.message);
+    // Fall through to invitation path
+  }
+
+  // ── PATH 2 — invitation recipient ──
   // Find the most recent invitation sent to this email address that
-  // hasn't yet been converted — most recent because if multiple
-  // people invited them, we credit whoever got them across the line
-  // (which is most likely the most recent inviter, by simple
-  // recency heuristic. If we wanted, we could try to detect the
-  // exact inviting link they clicked — but recency is good enough
-  // for v1 and avoids storing click-attribution).
+  // hasn't yet been converted. Most recent because if multiple people
+  // invited them, we credit whoever got them across the line —
+  // recency is a defensible heuristic and avoids storing click
+  // attribution.
   const { data: invitation, error: lookupErr } = await supa()
     .from('invitations')
     .select('id, inviter_member_id, converted_member_id, sent_at')
@@ -253,24 +301,74 @@ async function recordConversion(member, clan_id) {
 }
 
 /**
- * Count converted invitations credited to this sponsor.
+ * Count distinct recipients sponsored by this member, across BOTH
+ * paths (gifts and invitations). 'Distinct' matters because the
+ * same recipient could conceivably be both invited and gifted by
+ * the same sponsor — that should count as one act of bringing-in,
+ * not two.
+ *
+ * Implementation: union the two member_id sets in JS rather than a
+ * SQL UNION, because the gifts and invitations tables don't share
+ * a common shape and we'd need a UNION ALL with column aliasing.
+ * For the volumes involved (a sponsor has at most a few dozen
+ * conversions), the JS-side union is trivial.
  *
  * @param {string} memberId — the sponsor's id
  * @returns {Promise<number>}
  */
 async function countSponsoredBy(memberId) {
   if (!memberId) return 0;
-  const { count, error } = await supa()
-    .from('invitations')
-    .select('id', { count: 'exact', head: true })
-    .eq('inviter_member_id', memberId)
-    .not('converted_member_id', 'is', null);
 
-  if (error) {
-    console.warn('countSponsoredBy failed:', error.message);
-    return 0;
+  // Gather both sets of recipient member_ids in parallel.
+  const [invQuery, giftQuery] = await Promise.all([
+    // Invitations credited to this sponsor (converted only)
+    supa()
+      .from('invitations')
+      .select('converted_member_id')
+      .eq('inviter_member_id', memberId)
+      .not('converted_member_id', 'is', null),
+    // Gifts credited to this sponsor (recipient must have redeemed
+    // and be linked via member_id; pending/abandoned gifts don't
+    // count). Lookup is by buyer_email matching the sponsor's email.
+    // We need the sponsor's email first — fetch it once.
+    supa()
+      .from('members')
+      .select('email')
+      .eq('id', memberId)
+      .maybeSingle(),
+  ]);
+
+  if (invQuery.error) {
+    console.warn('countSponsoredBy: invitations lookup failed:', invQuery.error.message);
   }
-  return count || 0;
+  const invertedIds = new Set(
+    (invQuery.data || [])
+      .map((r) => r.converted_member_id)
+      .filter(Boolean)
+  );
+
+  // Now fetch gifts by buyer_email — we need the sponsor's email.
+  let giftMemberIds = [];
+  if (giftQuery.data?.email) {
+    const sponsorEmail = String(giftQuery.data.email).toLowerCase().trim();
+    const { data: gifts, error: giftsErr } = await supa()
+      .from('gifts')
+      .select('member_id')
+      .ilike('buyer_email', sponsorEmail)
+      .not('member_id', 'is', null);
+    if (giftsErr) {
+      console.warn('countSponsoredBy: gifts lookup failed:', giftsErr.message);
+    } else {
+      giftMemberIds = (gifts || []).map((r) => r.member_id).filter(Boolean);
+    }
+  }
+
+  // Union the two sets — distinct recipient member_ids.
+  for (const id of giftMemberIds) {
+    invertedIds.add(id);
+  }
+
+  return invertedIds.size;
 }
 
 /**

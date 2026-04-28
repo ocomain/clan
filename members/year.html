@@ -22,6 +22,15 @@
     .mhdr-nav{display:flex;align-items:center;gap:22px}
     .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
     .mhdr-nav a:hover{color:var(--gold-light)}
+    /* Back-to-dashboard button — sits on the far left of the header,
+       before the coat-of-arms brand. The brand also links to /members/
+       but a labelled back-button is more discoverable than 'click the
+       logo'. On narrow screens (<520px) the label hides and only the
+       arrow shows so the header doesn't crowd. */
+    .mhdr-back{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.7);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s,border-color .15s}
+    .mhdr-back:hover{color:var(--gold-light);border-color:var(--gold)}
+    .mhdr-back-arrow{font-size:13px;line-height:1}
+    @media (max-width:520px){.mhdr-back-label{display:none} .mhdr-back{padding:8px 10px}}
     .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
     .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
 
@@ -86,6 +95,13 @@
 
 <header class="mhdr">
   <div class="mhdr-inner">
+      <!-- Back-to-dashboard button — discoverable on every members
+           sub-page so members can return without realising the
+           coat-of-arms is also a link to /members/. -->
+      <a href="/members/" class="mhdr-back">
+        <span class="mhdr-back-arrow" aria-hidden="true">←</span>
+        <span class="mhdr-back-label">Back to dashboard</span>
+      </a>
     <a href="/members/" class="mhdr-brand">
       <img src="/coat_of_arms.png" alt="Clan Ó Comáin coat of arms">
       <div class="mhdr-brand-text">Clan <em>Ó Comáin</em></div>
