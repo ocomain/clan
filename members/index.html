@@ -368,10 +368,23 @@
       </div>
     `;
 
+    // Title-aware welcome heading. When the member holds a
+    // sponsorship title (Cara/Onóir/Ardchara), the greeting reads
+    // 'Dia dhuit, Cara Antóin' with the title styled IDENTICALLY
+    // to the first name — both inside a single <em> so the burgundy
+    // italic colouring applies to the whole address. Mirrors the
+    // 'Sir John' chivalric salutation form used in the email
+    // greetings (sponsor letter, title-bestowal letter, renewal
+    // email). Untitled members see 'Dia dhuit, Antóin' as before.
+    const heldTitle = member.sponsorTitle;
+    const greetingAddress = heldTitle
+      ? `${heldTitle.irish} ${firstName(member)}`
+      : firstName(member);
+
     dashboard.innerHTML = `
       <div class="mwelcome">
         <div class="mwelcome-eyebrow">Welcome home</div>
-        <h1 class="mwelcome-title">Dia dhuit, <em>${escHtml(firstName(member))}</em></h1>
+        <h1 class="mwelcome-title">Dia dhuit, <em>${escHtml(greetingAddress)}</em></h1>
         <p class="mwelcome-sub">Your place in the Register of Clan Ó Comáin is confirmed. This is where the clan keeps its promises to you.</p>
       </div>
 
@@ -816,7 +829,7 @@
               ? `<p style="margin:0 0 14px;font-style:italic;color:var(--ink-soft)">You have stood as sponsor to ${count} ${sponsorWord} of the clan.</p>`
               : '';
             return `${countLine}
-              <p style="margin:0 0 14px">Both invitations and gifts of membership are recognised by the Chief as acts of bringing another to the clan. The order of honours — <em>Cara</em>, <em>Onóir</em>, <em>Ardchara</em> — is conferred upon members whose welcome has carried others to the Register at Newhall.</p>
+              <p style="margin:0 0 14px">Both invitations and gifts of membership are recognised by the Chief as acts of bringing another to the clan. <em>Cara</em>, <em>Onóir</em>, <em>Ardchara</em> — three dignities conferred by the Chief, and held in regard by the kindred and all who keep the clan's name.</p>
               <a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a>`;
           })()}
         </div>
