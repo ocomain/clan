@@ -127,6 +127,19 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
    reads as a quiet annotation on the family entry, not as the
    emotional focus of the row. */
 .entry-credit{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
+/* Dignity-holder line — sits immediately under the headline name,
+   above the family credit-line. Gold colour marks 'recognised by
+   the Chief' (same palette used for the Held in Honour row on the
+   dashboard). Italic for ceremonial feel without competing with
+   the bold serif headline. Slightly larger letter-spacing than the
+   credit-line gives it a touch more presence.
+   Only rendered when the member holds a sponsorship title (Cara/
+   Onóir/Ardchara). For family-tier members, the line includes the
+   primary grantee's name explicitly ('James Smith — Holder of the
+   dignity Cara of Ó Comáin') because the dignity attaches to the
+   individual, not the family unit. For individual-tier members,
+   the line drops the name (the headline already names them). */
+.entry-dignity{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--gold-deep);line-height:1.65;margin-top:10px;letter-spacing:.005em;max-width:560px}
 /* .entry-founder lives in the right meta column, immediately under
    'Joined 2026'. Drops the redundant '· 2026' from the mark text since
    the year is right above. Burgundy + small caps + leading flourish
@@ -447,11 +460,26 @@ function renderEntry(member) {
   const credit = member.credit_line
     ? `<div class="entry-credit">${escHtml(member.credit_line)}</div>`
     : '';
+  // Dignity-holder line — only present for members who hold a
+  // sponsorship title (Cara/Onóir/Ardchara). Sits between the
+  // headline name and the credit/dedication lines because the
+  // dignity attaches directly to the primary grantee, so its
+  // place is visually adjacent to who-they-are. Gold colour marks
+  // 'recognised by the Chief' through the same palette used for
+  // the Held in Honour row on the dashboard. Form varies:
+  //   - 'Holder of the dignity Cara of Ó Comáin' (individual)
+  //   - 'James Smith — Holder of the dignity Cara of Ó Comáin' (family)
+  // Server (register.js) decides which form by comparing
+  // member.name to the family-display string.
+  const dignity = member.dignity_holder_line
+    ? `<div class="entry-dignity">${escHtml(member.dignity_holder_line)}</div>`
+    : '';
   return `
     <div class="entry">
       <div class="entry-row">
         <div>
           <div class="entry-name">${escHtml(member.display_name)}</div>
+          ${dignity}
           ${credit}
           ${dedication}
         </div>

@@ -42,6 +42,7 @@
 
 const { supa, clanId } = require('./lib/supabase');
 const { computeRegisterDisplay } = require('./lib/generate-cert');
+const { highestAwardedTitle } = require('./lib/sponsor-service');
 
 const REGISTER_TIERS = [
   'guardian-ind', 'guardian-fam',
@@ -109,7 +110,8 @@ exports.handler = async (event) => {
           joined_at,
           partner_name,
           children_visible_on_register,
-          children_first_names
+          children_first_names,
+          sponsor_titles_awarded
         `)
         .eq('clan_id', cid)
         .eq('public_register_visible', true)
@@ -164,6 +166,35 @@ exports.handler = async (event) => {
         m.children_first_names,
         m.children_visible_on_register === true
       );
+
+      // Dignity holder line — only renders when the member holds a
+      // sponsorship title (Cara/Onóir/Ardchara). Architectural rule:
+      // the title attaches to the INDIVIDUAL primary grantee, NEVER
+      // to the family unit. Wife/husband/children do NOT earn the
+      // dignity through the family membership. So:
+      //   - For individual-tier (or family-tier where the display
+      //     happens to be just the member's own name with no partner
+      //     or children): line reads 'Holder of the dignity Cara of
+      //     Ó Comáin' — no name needed, the headline above already
+      //     names them.
+      //   - For family-tier where the display includes a partner or
+      //     '& Family' suffix: line reads 'James Smith — Holder of
+      //     the dignity Cara of Ó Comáin' — names the primary
+      //     grantee specifically, distinguishing them from the
+      //     family unit named in the headline.
+      // Decision rule: include the name ONLY if the family-display
+      // string differs from member.name.
+      const heldTitle = highestAwardedTitle(m.sponsor_titles_awarded);
+      let dignityHolderLine = null;
+      if (heldTitle) {
+        const familyDisplay = (displayName || m.display_name_on_register || m.name || '').trim();
+        const primaryName = (m.name || '').trim();
+        const titleSuffix = `Holder of the dignity ${heldTitle.irish} of Ó Comáin`;
+        dignityHolderLine = familyDisplay && primaryName && familyDisplay !== primaryName
+          ? `${primaryName} — ${titleSuffix}`
+          : titleSuffix;
+      }
+
       return {
         // No 'id' or 'email' returned — public payload, never expose
         // internal IDs or emails to anonymous viewers.
@@ -171,6 +202,10 @@ exports.handler = async (event) => {
         // Optional small italic line under the name. null when no
         // family detail to credit (solo member or named couple).
         credit_line:  creditLine,
+        // Optional dignity-holder line — only present when the
+        // member holds a sponsorship title. See computation above
+        // for the per-tier shape.
+        dignity_holder_line: dignityHolderLine,
         tier:         m.tier,
         tier_label:   m.tier_label,
         // Dedication only included when the member has explicitly
