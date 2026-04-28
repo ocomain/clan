@@ -163,7 +163,17 @@ const SPONSOR_TITLES = [
         ? `It hath pleased the Chief to raise you from ${priorIrish} to the dignity of`
         : 'It hath pleased the Chief to raise you to the dignity of',
 
-    closingNarrative: 'There are very few in any generation who carry fifteen to the Register at Newhall. You are now among them, and the Chief takes a particular interest in such members.',
+    // The closing narrative for Ardchara extends to two sentences:
+    // first the rarity-of-rank sentence ('few in any generation'),
+    // then the role-meaning sentence ('Chief's named champion of
+    // welcome'). The second sentence names what Ardchara IS in role
+    // terms, not just as a dignity — the bearer is recognised as
+    // the specific champion of bringing-others-in (the act the
+    // title rewards), not as a generic champion of arms. 'Of
+    // welcome' is the qualifier that keeps the line honest and
+    // distinctive. Only Ardchara has this extension; Cara and
+    // Onóir close on a single sentence.
+    closingNarrative: 'There are very few in any generation who carry fifteen to the Register at Newhall. You are now among them, and the Chief takes a particular interest in such members. From this raising, you stand in the kindred\u2019s keeping as the Chief\u2019s named champion of welcome — the member through whom the clan most reaches outward.',
 
     replacementSentence: (priorIrish) =>
       priorIrish
