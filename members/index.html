@@ -161,6 +161,16 @@
     .minvite-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
     .minvite-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);font-weight:400;line-height:1.3;margin-bottom:8px}
     .minvite-sub{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.65;margin:0 0 18px;max-width:540px}
+    /* Unified action toggle — two equal-segment buttons inside one
+       gold-bordered pill. Active segment gets solid gold + dark ink;
+       inactive is transparent with gold text. Click switches which
+       panel is visible (JS at bottom of file). */
+    .munified-toggle{display:flex;border:1px solid var(--gold);border-radius:1px;overflow:hidden;max-width:100%;margin:0 0 22px}
+    .munified-toggle-btn{flex:1;background:transparent;border:0;border-right:1px solid var(--gold);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-deep);padding:13px 14px;cursor:pointer;transition:background .15s,color .15s;line-height:1.3}
+    .munified-toggle-btn:last-child{border-right:0}
+    .munified-toggle-btn.active{background:var(--gold);color:var(--ink)}
+    .munified-toggle-btn:not(.active):hover{background:rgba(184,151,90,.08)}
+    .munified-panel[hidden]{display:none}
     .minvite-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
     .minvite-field-full{grid-column:1 / -1}
     .minvite-label{display:block;font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 6px}
@@ -779,55 +789,16 @@
       </section>
       `}
 
-      <!-- Invite-a-friend section. Available to all active members.
-           Hybrid voicing: form takes recipient name + email + an
-           optional one-line personal note. The send produces a
-           clan-voiced introduction email with the optional note
-           prepended in italic, attributed to the inviter. Spam
-           guards (rate limit + dedup + unsubscribe-aware) live
-           server-side in send-invitation.js — the client is just
-           the form. -->
-      <section class="minvite" id="minvite">
-        <div class="minvite-eyebrow">By private welcome</div>
-        <div class="minvite-title">Keep a place beside you for someone</div>
-        <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. If there is someone in your life — a sibling, a cousin, an old friend — who belongs in the Register beside you, write them in below. The Herald carries the welcome in your name; the rest is theirs to take up, in their own time.</p>
-
-        <form id="inviteForm" onsubmit="return false">
-          <div class="minvite-grid">
-            <div>
-              <label class="minvite-label" for="inviteName">Their name</label>
-              <input type="text" id="inviteName" class="minvite-input" placeholder="e.g. Mary Cummins" required autocomplete="off">
-            </div>
-            <div>
-              <label class="minvite-label" for="inviteEmail">Their email</label>
-              <input type="email" id="inviteEmail" class="minvite-input" placeholder="name@example.com" required autocomplete="off">
-            </div>
-            <div class="minvite-field-full">
-              <label class="minvite-label" for="inviteNote">A word from you <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-              <input type="text" id="inviteNote" class="minvite-input" placeholder="A line of welcome, in your own voice — leave blank for none" maxlength="200" autocomplete="off">
-              <p class="minvite-help">If you write something here, it sits at the head of the letter in your name. The Herald's introduction follows below.</p>
-            </div>
-          </div>
-          <div class="minvite-actions">
-            <button type="submit" class="minvite-send-btn" id="inviteSendBtn">Send invitation →</button>
-            <span class="minvite-help" style="margin:0">A handful at a time — five an hour, twenty a day.</span>
-          </div>
-          <div class="minvite-status" id="inviteStatus"></div>
-        </form>
-      </section>
-
-      <!-- THE ORDER OF HONOURS — standalone block bridging the invite
-           section above and the gift CTA below. Pulled OUT of the
-           invite section because the honours system is BIGGER than
-           inviting alone — both invitations and gifts contribute to
-           it. Nesting it inside the invite section was misleading;
-           a member reading it there would reasonably assume only
-           invites count. As its own block, it visually says: 'these
-           two acts (above and below) both feed into this'.
-           Visual: gold-accent border (matches the family of
-           honour-related surfaces — Held in Honour row, gift CTA
-           card top-accent, etc.) but smaller and text-forward —
-           informational rather than a CTA. -->
+      <!-- THE ORDER OF HONOURS — sits at the top of the act-of-bringing
+           sequence. Repositioned 2026-04-28 from a 'bridge' between the
+           invite and gift cards (where it was nested ambiguously) to a
+           lead block ABOVE the unified action card below. The visual
+           reading is now: 'here is the dignity ladder you may climb,
+           and here is how you climb' — sell first, then act. Note the
+           CSS class is still .mhonours-bridge for backwards-compatible
+           styling; functionally it's no longer a bridge, but renaming
+           the class would touch many style rules without behavioural
+           gain. -->
       <section class="mhonours-bridge">
         <div class="mhonours-bridge-eyebrow">The Order of Honours</div>
         <div class="mhonours-bridge-body">
@@ -856,8 +827,19 @@
             } else {
               statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Ardchara</em> — the highest dignity of the order.`;
             }
+            // Opening paragraph rewritten 2026-04-28 to address the
+            // reader's potential rather than describe the institution.
+            // Was: 'Both invitations and gifts of membership are
+            // recognised by the Chief as acts of bringing another to
+            // the clan. Cara, Onóir, Ardchara — titles of dignity
+            // bestowed by the Chief's hand and recognised by the
+            // kindred within and beyond the boundaries of Newhall.'
+            // Now leads with 'three dignities you may earn' and
+            // surfaces the most visceral incentive (your name on the
+            // public Register prefixed by the title) to make the
+            // honours system feel earnable rather than abstract.
             return `
-              <p style="margin:0 0 14px">Both invitations and gifts of membership are recognised by the Chief as acts of bringing another to the clan. <em>Cara</em>, <em>Onóir</em>, <em>Ardchara</em> — titles of dignity bestowed by the Chief's hand and recognised by the kindred within and beyond the boundaries of Newhall.</p>
+              <p style="margin:0 0 14px">Three dignities you may earn by bringing others to the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
               <div class="mhonours-ladder">
                 <div class="mhonours-rank"><span class="mhonours-rank-name">Cara</span><span class="mhonours-rank-req">One sponsorship</span></div>
                 <div class="mhonours-rank"><span class="mhonours-rank-name">Onóir</span><span class="mhonours-rank-req">Five sponsorships</span></div>
@@ -869,31 +851,88 @@
         </div>
       </section>
 
-      <!-- GIFT A MEMBERSHIP — companion CTA to the invite section.
-           Mirrors welcome.html's pairing of invite + gift as 'two
-           ways to bring others to the clan'. Sits between the
-           invite form and the exploration grid because gifting is
-           an act of bringing-in (semantically a sibling of
-           inviting), whereas the action grid below is for
-           exploring what the clan already has. Routes to /gift.html
-           which handles the gift Stripe checkout — same flow used
-           by the public pages. -->
-      <a href="/gift.html" class="mgift-cta" style="display:block;text-decoration:none;color:inherit">
-        <!-- Wrapped gift box with ribbon — same icon used on welcome.html's gift card -->
-        <svg class="mgift-cta-icon" viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="6" y="20" width="36" height="22" rx="1"/>
-          <rect x="4" y="14" width="40" height="8" rx="1"/>
-          <line x1="24" y1="14" x2="24" y2="42"/>
-          <path d="M24 14 C 18 8, 12 8, 14 14 Q 16 18, 24 14"/>
-          <path d="M24 14 C 30 8, 36 8, 34 14 Q 32 18, 24 14"/>
-          <circle cx="24" cy="14" r="1.6" fill="var(--gold-deep)"/>
-        </svg>
-        <div class="mgift-cta-eyebrow">A gift in their name</div>
-        <div class="mgift-cta-title">Gift a membership to someone you love</div>
-        <div class="mgift-cta-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome. The most enduring Irish gift there is.</div>
-        <span class="mgift-cta-btn">Gift a membership — from €49 →</span>
-        <div class="mgift-cta-note">One-year gift · No auto-renewal · One-time payment</div>
-      </a>
+      <!-- UNIFIED ACTION CARD — restructured 2026-04-28 from two
+           separate cards (open invite form + gift CTA below the
+           honours bridge). Both acts feed the same honours ladder
+           (the Chief recognises both as acts of bringing-in), so a
+           unified card with a paying-model toggle reflects the truth
+           and removes the meta-decision (which card?) before the
+           real decision (who pays?). The toggle is two equal-weight
+           buttons; the active panel renders inline below. Default
+           selection is 'Invite' because it's the clan-voiced, more
+           common act; gift is the alternative. The copy mirrors the
+           previous invite-card warm headline, with the body shortened
+           since the toggle now does part of the explanatory work. -->
+      <section class="minvite" id="minvite">
+        <div class="minvite-eyebrow">By private welcome</div>
+        <div class="minvite-title">Keep a place beside you for someone</div>
+        <p class="minvite-sub">A clan is best when it gathers the few who would answer its pull as you have. Bring them in by invitation, or gift their first year as a doorway.</p>
+
+        <!-- Mode toggle — two-segment button, gold-bordered. Active
+             segment is solid gold; inactive is transparent with gold
+             text. JS at bottom of file handles the click + panel
+             swap. role=tablist for accessibility. -->
+        <div class="munified-toggle" role="tablist" aria-label="Choose how to bring them in">
+          <button type="button" class="munified-toggle-btn active" data-mode="invite" role="tab" aria-selected="true" aria-controls="munified-panel-invite">Invite by name</button>
+          <button type="button" class="munified-toggle-btn" data-mode="gift" role="tab" aria-selected="false" aria-controls="munified-panel-gift">Gift their first year — €49</button>
+        </div>
+
+        <!-- INVITE PANEL — the existing invitation form. Default
+             active. Untouched from the previous standalone invite
+             card except for the parent wrapping. -->
+        <div class="munified-panel" id="munified-panel-invite" role="tabpanel" data-panel="invite">
+          <form id="inviteForm" onsubmit="return false">
+            <div class="minvite-grid">
+              <div>
+                <label class="minvite-label" for="inviteName">Their name</label>
+                <input type="text" id="inviteName" class="minvite-input" placeholder="e.g. Mary Cummins" required autocomplete="off">
+              </div>
+              <div>
+                <label class="minvite-label" for="inviteEmail">Their email</label>
+                <input type="email" id="inviteEmail" class="minvite-input" placeholder="name@example.com" required autocomplete="off">
+              </div>
+              <div class="minvite-field-full">
+                <label class="minvite-label" for="inviteNote">A word from you <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+                <input type="text" id="inviteNote" class="minvite-input" placeholder="A line of welcome, in your own voice — leave blank for none" maxlength="200" autocomplete="off">
+                <p class="minvite-help">If you write something here, it sits at the head of the letter in your name. The Herald's introduction follows below.</p>
+              </div>
+            </div>
+            <div class="minvite-actions">
+              <button type="submit" class="minvite-send-btn" id="inviteSendBtn">Send invitation →</button>
+              <span class="minvite-help" style="margin:0">A handful at a time — five an hour, twenty a day.</span>
+            </div>
+            <div class="minvite-status" id="inviteStatus"></div>
+          </form>
+        </div>
+
+        <!-- GIFT PANEL — folds in what used to be the standalone
+             .mgift-cta block. Same gift icon + descriptive italic +
+             gold pill button + meta line, but rendered inside the
+             unified card and only visible when the toggle is on
+             'gift'. Routes to /gift.html for the gift checkout flow. -->
+        <div class="munified-panel" id="munified-panel-gift" role="tabpanel" data-panel="gift" hidden>
+          <div style="text-align:center;padding:8px 0 4px">
+            <svg style="display:inline-block;width:44px;height:44px;margin-bottom:14px" viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="6" y="20" width="36" height="22" rx="1"/>
+              <rect x="4" y="14" width="40" height="8" rx="1"/>
+              <line x1="24" y1="14" x2="24" y2="42"/>
+              <path d="M24 14 C 18 8, 12 8, 14 14 Q 16 18, 24 14"/>
+              <path d="M24 14 C 30 8, 36 8, 34 14 Q 32 18, 24 14"/>
+              <circle cx="24" cy="14" r="1.6" fill="var(--gold-deep)"/>
+            </svg>
+            <p style="font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.7;max-width:520px;margin:0 auto 22px">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome. The most enduring Irish gift there is.</p>
+            <a href="/gift.html" class="minvite-send-btn" style="text-decoration:none;display:inline-block">Gift a membership — from €49 →</a>
+            <p style="font-family:'Jost',sans-serif;font-size:11px;font-weight:400;letter-spacing:.08em;color:rgba(12,26,12,.45);margin:14px 0 0">One-year gift · No auto-renewal · One-time payment</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- GIFT-A-MEMBERSHIP standalone CTA was removed 2026-04-28 —
+           its content now lives in the gift panel of the unified
+           action card above. The previous markup (a clickable
+           .mgift-cta card linking to /gift.html with gold-top
+           accent, gift icon, and 'A gift in their name' eyebrow)
+           was redundant once the unified card was introduced. -->
 
       <section class="mactions">
         <a class="maction live" style="text-decoration:none;color:inherit" href="/members/library.html">
@@ -1160,6 +1199,29 @@
     if (prvDedication) {
       prvDedication.addEventListener('change', savePrivacy);
     }
+
+    // ── Unified action card mode toggle ───────────────────────────────
+    // Wires up the two-button toggle (Invite by name / Gift their first
+    // year — €49) so that clicking either button switches the active
+    // panel. Toggles the .active class on the buttons (which controls
+    // the gold-fill styling) and the [hidden] attribute on the two
+    // .munified-panel divs (which hides/shows them). aria-selected is
+    // kept in sync for screen-reader users. No analytics yet — when
+    // we add them, this is the natural place to log mode_picked events
+    // so we can see invite-vs-gift conversion ratios.
+    document.querySelectorAll('.munified-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.getAttribute('data-mode');
+        document.querySelectorAll('.munified-toggle-btn').forEach(b => {
+          const isActive = b === btn;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        document.querySelectorAll('.munified-panel').forEach(p => {
+          p.hidden = p.getAttribute('data-panel') !== mode;
+        });
+      });
+    });
 
     // ── Invite-a-friend form handler ────────────────────────────────────
     // Submits to /.netlify/functions/send-invitation with the auth
