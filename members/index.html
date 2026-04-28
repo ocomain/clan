@@ -828,20 +828,40 @@
           <div class="mhonours-bridge-flourish">· · ·</div>
         </div>
         <div class="mhonours-bridge-body">
-          <!-- Single-tier focus 2026-04-28: the dashboard surface
-               sells only the entry to the order (Cara). The deeper
-               Order-of-Honours page (/members/honours.html) carries
-               full ladder detail for members who want to see what
-               follows. Static copy — same line for all members
-               regardless of current sponsorship count. The Held in
-               Honour row at the top of the member-status section
-               still shows higher-tier members the dignity they
-               actually hold, so they are not addressed past on the
-               dashboard; this block is the entry-sell, not the
-               personal-status surface. -->
-          <p style="margin:0 0 16px;text-align:center">A title of dignity you may earn by bringing another into the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
-          <p class="mhonours-status">One sponsorship of another raises you to the dignity <em>Cara</em>.</p>
-          <div class="mhonours-bridge-cta"><a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a></div>
+          ${(() => {
+            const count = Number(member.sponsorCount) || 0;
+            // Word-form numbers up to fifteen read more ceremonial
+            // than digits; beyond fifteen (Ardchara threshold) we
+            // fall through to digits since Ardchara has no upper
+            // bound and very high counts in word-form get unwieldy.
+            const wordForm = (n) => ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen'][n] || String(n);
+
+            // Single-tier-focus structure 2026-04-28: opening
+            // paragraph speaks only to Cara as the doorway, status
+            // line below it speaks honestly to where the reader is.
+            // No ladder, no 'X more to the next dignity' tease —
+            // those live on the deeper /members/honours.html page,
+            // reached via the button below.
+            let statusLine;
+            if (count === 0) {
+              statusLine = 'One sponsorship of another raises you to the dignity <em>Cara</em>.';
+            } else {
+              let dignity;
+              if (count < 5) dignity = 'Cara';
+              else if (count < 15) dignity = 'Onóir';
+              else dignity = 'Ardchara';
+              const ardcharaSuffix = dignity === 'Ardchara' ? ', the highest of the order' : '';
+              // count=1 reads naturally as 'another'; count=2+
+              // takes the noun 'others'. Avoids the slightly stilted
+              // 'having brought one other to the clan' at count=1.
+              const broughtPhrase = count === 1 ? 'another' : `${wordForm(count)} others`;
+              statusLine = `You stand in the dignity <em>${dignity}</em>${ardcharaSuffix}, having brought ${broughtPhrase} to the clan.`;
+            }
+            return `
+              <p style="margin:0 0 16px;text-align:center">A title of dignity you may earn by bringing another into the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
+              <p class="mhonours-status">${statusLine}</p>
+              <div class="mhonours-bridge-cta"><a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a></div>`;
+          })()}
         </div>
       </section>
 
