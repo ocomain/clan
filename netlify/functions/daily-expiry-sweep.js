@@ -29,6 +29,7 @@
 // - 50-member batch cap per run so a backlog can't melt the function timeout.
 
 const { supa, clanId, logEvent } = require('./lib/supabase');
+const { highestAwardedTitle } = require('./lib/sponsor-service');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -44,7 +45,7 @@ exports.handler = async () => {
     // makes this lookup cheap.
     const { data: candidates, error: candidatesErr } = await supa()
       .from('members')
-      .select('id, email, name, tier, tier_label, expires_at')
+      .select('id, email, name, tier, tier_label, expires_at, sponsor_titles_awarded')
       .eq('clan_id', clan_id)
       .eq('status', 'active')
       .is('gift_renewal_reminded_at', null)
@@ -115,6 +116,12 @@ exports.handler = async () => {
         await sendGiftRenewalReminder({
           recipientEmail: member.email,
           recipientName: member.name,
+          // The member's current highest sponsorship title (Cara/
+          // Onóir/Ardchara) — used to address them by dignity in
+          // the greeting if held. Null for members who haven't yet
+          // earned one. Computed from the sponsor_titles_awarded
+          // JSONB which is now in the candidate SELECT.
+          recipientTitle: highestAwardedTitle(member.sponsor_titles_awarded),
           buyerName: gift.buyer_name,
           tierLabel: member.tier_label,
           expiresAt: member.expires_at,
@@ -154,12 +161,19 @@ exports.handler = async () => {
 // continue on their own terms. Mentions the original giver by name to
 // anchor the emotional connection.
 // ──────────────────────────────────────────────────────────────────────────
-async function sendGiftRenewalReminder({ recipientEmail, recipientName, buyerName, tierLabel, expiresAt }) {
+async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipientTitle, buyerName, tierLabel, expiresAt }) {
   if (!RESEND_API_KEY) {
     console.warn('RESEND_API_KEY not configured — cannot send renewal reminder');
     return;
   }
   const firstName = recipientName ? recipientName.split(' ')[0] : 'friend';
+  // Title-aware greeting: 'Dia dhuit, Cara James' if a sponsorship
+  // title is held, 'Dia dhuit, James' otherwise. Mirrors the
+  // 'Sir John' chivalric salutation convention used in the
+  // sponsor letter.
+  const greetingAddress = recipientTitle
+    ? `${recipientTitle.irish} ${firstName}`
+    : firstName;
   const giverName = buyerName || 'a friend';
   const tier = tierLabel || 'Clan Member';
   const expiresDate = expiresAt
@@ -179,7 +193,7 @@ async function sendGiftRenewalReminder({ recipientEmail, recipientName, buyerNam
   </div>
 
   <div style="padding:40px">
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dia dhuit, ${escapeHtml(firstName)} — God be with you.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dia dhuit, ${escapeHtml(greetingAddress)} — God be with you.</p>
 
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">It is almost a year since <strong>${escapeHtml(giverName)}</strong> set a place for you in Clan Ó Comáin. Your gift membership was a one-year ${escapeHtml(tier).toLowerCase()}, and it will quietly come to its end on <strong>${escapeHtml(expiresDate)}</strong> — at which point your name will move from active standing into the keeping of the clan archive.</p>
 

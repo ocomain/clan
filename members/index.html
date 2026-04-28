@@ -483,11 +483,25 @@
           // public/dashboard show.
           const t = member.sponsorTitle;
           if (!t) return '';
-          const baseName = (member.display_name_on_register || member.name || '').trim();
+          // CRITICAL: use member.name, NOT display_name_on_register.
+          // The sponsorship title attaches to the INDIVIDUAL who did
+          // the inviting, not to their family unit. For family-tier
+          // members whose display_name_on_register reads
+          // 'John Smith & Family' or 'John & Jane Smith', the wife,
+          // husband, and children do NOT earn the dignity through
+          // the family membership — only the named member who holds
+          // the account does. So the title-bearing line uses just
+          // member.name. (Earlier draft fell through to
+          // display_name_on_register and would have rendered
+          // 'John Smith & Family, Cara of Ó Comáin' which is wrong.)
+          const baseName = (member.name || '').trim();
           if (!baseName) return '';
+          // Format: 'James Comyn, Cara of Ó Comáin' — matches the
+          // canonical format used in emails and on the honours page
+          // (see formatTitledName in lib/sponsor-service.js).
           return `<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gold-border)">
           <div class="mstatus-row-label">Held in Honour</div>
-          <div class="mstatus-row-value" style="margin-bottom:6px">${escHtml(baseName)}, ${escHtml(t.irish)}</div>
+          <div class="mstatus-row-value" style="margin-bottom:6px">${escHtml(baseName)}, ${escHtml(t.irish)} of Ó Comáin</div>
           <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6">Recognised by the Chief in the dignity of ${escHtml(t.irish)} — ${escHtml(t.english)}.</div>
         </div>`;
         })()}

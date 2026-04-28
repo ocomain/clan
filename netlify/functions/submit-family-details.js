@@ -37,7 +37,7 @@ const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/sup
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 const { computeFamilyDisplay } = require('./lib/generate-cert');
-const { recordConversion, evaluateSponsorTitles } = require('./lib/sponsor-service');
+const { recordConversion, evaluateSponsorTitles, highestAwardedTitle } = require('./lib/sponsor-service');
 const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
 
 exports.handler = async (event) => {
@@ -347,8 +347,12 @@ exports.handler = async (event) => {
       try {
         const inviter = await recordConversion(updated, clan_id);
         if (inviter) {
+          // Pass the inviter's current highest title so the greeting
+          // can address them by dignity (mirrors update-family-
+          // details.js).
+          const inviterCurrentTitle = highestAwardedTitle(inviter.sponsor_titles_awarded);
           try {
-            await sendSponsorLetter(inviter, updated);
+            await sendSponsorLetter(inviter, updated, inviterCurrentTitle);
             await logEvent({
               clan_id,
               member_id: inviter.id,

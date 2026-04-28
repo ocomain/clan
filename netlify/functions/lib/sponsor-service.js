@@ -468,10 +468,44 @@ function highestAwardedTitle(awardedJson) {
   return null;
 }
 
+/**
+ * Format the title-bearing name of a member for display in the
+ * dashboard's Held in Honour row, in email salutations to titled
+ * members, and anywhere else the member is addressed by dignity.
+ *
+ * CRITICAL: uses member.name (the primary grantee's individual name)
+ * NOT member.display_name_on_register (which is the family-display
+ * string like 'John Smith & Family' or 'John & Jane Smith'). The
+ * sponsorship title attaches to the INDIVIDUAL who did the inviting,
+ * not to their family unit. The wife/husband and children do not
+ * earn the dignity through the family membership — only the member
+ * who holds the account.
+ *
+ * Examples:
+ *   formatTitledName({name: 'John Smith'}, 'Cara')
+ *     → 'John Smith, Cara of Ó Comáin'
+ *   formatTitledName({name: 'John Smith', display_name_on_register: 'John Smith & Family'}, 'Onóir')
+ *     → 'John Smith, Onóir of Ó Comáin'
+ *     (NOT 'John Smith & Family, Onóir of Ó Comáin')
+ *   formatTitledName({name: 'John Smith'}, null)
+ *     → 'John Smith'
+ *
+ * @param {object} member       — must have { name }
+ * @param {string|null} titleIrish — the Irish title form, or null
+ * @returns {string}
+ */
+function formatTitledName(member, titleIrish) {
+  if (!member?.name) return '';
+  const name = String(member.name).trim();
+  if (!titleIrish) return name;
+  return `${name}, ${titleIrish} of Ó Comáin`;
+}
+
 module.exports = {
   SPONSOR_TITLES,
   recordConversion,
   countSponsoredBy,
   evaluateSponsorTitles,
   highestAwardedTitle,
+  formatTitledName,
 };

@@ -71,12 +71,32 @@ function heraldSignoff() {
  * member and frames the moment in terms of 'their name now stands
  * beside yours.'
  *
- * @param {object} sponsor    — { email, name }
- * @param {object} newMember  — { name, display_name_on_register }
+ * If the sponsor already holds a sponsorship title, the salutation
+ * acknowledges that dignity using the 'Title FirstName' convention
+ * (like 'Sir John' for a knight) — e.g. 'Dia dhuit, Cara James'.
+ * This is the salutation form; the full record-form 'James Comyn,
+ * Cara of Ó Comáin' is reserved for the dashboard's Held in Honour
+ * row and the honours-page example. Salutations are warmer and
+ * tighter.
+ *
+ * @param {object} sponsor      — { email, name, sponsorTitle? }
+ * @param {object} newMember    — { name, display_name_on_register }
+ * @param {object|null} sponsorTitle — title definition object
+ *                                     (Cara/Onóir/Ardchara) if the
+ *                                     sponsor holds one, else null.
+ *                                     Caller should pass
+ *                                     highestAwardedTitle(sponsor.
+ *                                     sponsor_titles_awarded).
  */
-async function sendSponsorLetter(sponsor, newMember) {
+async function sendSponsorLetter(sponsor, newMember, sponsorTitle) {
   if (!sponsor?.email) return false;
   const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
+  // Title-aware greeting: 'Dia dhuit, Cara James' if title held,
+  // 'Dia dhuit, James' otherwise. The Title-FirstName form mirrors
+  // the chivalric 'Sir John' convention.
+  const greetingAddress = sponsorTitle
+    ? `${sponsorTitle.irish} ${sponsorFirst}`
+    : sponsorFirst;
   // Use the sealed display name if we have it (covers family-tier
   // entries like 'Mary Cummins & Family'); otherwise fall back to
   // the bare name.
@@ -95,7 +115,7 @@ async function sendSponsorLetter(sponsor, newMember) {
   <div style="padding:32px 38px">
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
-      Dia dhuit, ${escapeHtml(sponsorFirst)} — God be with you.
+      Dia dhuit, ${escapeHtml(greetingAddress)} — God be with you.
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
@@ -180,6 +200,18 @@ async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount)
   if (!sponsor?.email || !title) return false;
   const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
 
+  // Title-aware greeting: address by the dignity the recipient
+  // CURRENTLY holds (priorTitleIrish), not the new dignity being
+  // conferred. This honours their existing standing while elevating
+  // them — and reads beautifully ('Dia dhuit, Cara James — ... It
+  // hath pleased the Chief to raise you from Cara to Onóir').
+  // For first raisings (no prior title), greet by first name only;
+  // the letter IS the bestowal, so greeting them as the new title
+  // would be circular.
+  const greetingAddress = priorTitleIrish
+    ? `${priorTitleIrish} ${sponsorFirst}`
+    : sponsorFirst;
+
   // Resolve the per-title language by calling each template
   // function with the prior-title argument. Each function returns
   // the right form for first-raising vs raising-from-prior.
@@ -199,7 +231,7 @@ async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount)
   <div style="padding:32px 38px">
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
-      Dia dhuit, ${escapeHtml(sponsorFirst)} — God be with you.
+      Dia dhuit, ${escapeHtml(greetingAddress)} — God be with you.
     </p>
 
     <!-- Opening paragraph: narrates the Chief's act, names the
