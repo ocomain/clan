@@ -774,11 +774,20 @@
           const countLine = count > 0
             ? `You have stood as sponsor to ${count} ${sponsorWord} of the clan.`
             : '';
+          // Quiet line clarifying that BOTH invitations and gifts of
+          // membership count toward the order of honours. Without
+          // this line, a member reading the count + link inside the
+          // invite section would assume only invitations are
+          // credited — which is technically misleading because the
+          // sponsor count unions invitations and gifts (gift-wins
+          // precedence). Reads as a single calm statement.
+          const bothCountLine = 'Both invitations sent and gifts of membership are credited toward the order of honours.';
           // Always show the link; the count line is conditional.
           const linkLine = `<a href="/members/honours.html" style="color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.35)">Read the order of honours →</a>`;
           return `<div style="border-top:1px solid var(--gold-border);border-bottom:1px solid var(--gold-border);padding:14px 0;margin:0 0 22px;font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7">
             ${countLine ? `<div>${countLine}</div>` : ''}
-            <div${countLine ? ' style="margin-top:4px"' : ''}>${linkLine}</div>
+            <div${countLine ? ' style="margin-top:4px"' : ''}>${bothCountLine}</div>
+            <div style="margin-top:4px">${linkLine}</div>
           </div>`;
         })()}
 
@@ -828,6 +837,13 @@
         <div class="mgift-cta-eyebrow">A gift in their name</div>
         <div class="mgift-cta-title">Gift a membership to someone you love</div>
         <div class="mgift-cta-desc">A heraldic certificate in their name, a place in the clan's living register, and the Chief's personal welcome. The most enduring Irish gift there is.</div>
+        <!-- Quiet honours-credit note. Mirrors the line on the
+             invite-section honours block. Keeps the dashboard
+             consistent: a member browsing only the gift CTA still
+             learns that this act counts toward the order of
+             honours. Italic, smaller than the desc, ink-muted —
+             reads as a footnote rather than a sales pitch. -->
+        <div style="font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin:0 auto 20px;max-width:520px">Gifts of membership are credited toward the order of honours, alongside invitations.</div>
         <span class="mgift-cta-btn">Gift a membership →</span>
       </a>
 
