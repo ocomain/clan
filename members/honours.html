@@ -48,6 +48,19 @@
     .honour-body p:last-child{margin-bottom:0}
     .honour-body em{color:var(--burgundy);font-style:italic}
 
+    /* ADDRESS BLOCK — the formatted-name block at the bottom of each
+       title card. Mirrors the bestowal block in the Herald's title-
+       award letter (gold rules above and below, EB Garamond serif
+       for the name itself, light italic pronunciation/meaning pair
+       above). The 'James Comyn, Cara of Ó Comáin' line is the
+       visual centrepiece — sets out exactly how the bearer is
+       henceforth named. Per the Georgian-patent reference structure:
+       'do acknowledge and address ... henceforth as'. */
+    .honour-address-intro{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-soft);line-height:1.75;margin:18px 0 0;padding-top:18px;border-top:1px solid var(--gold-faint)}
+    .honour-address-name{margin:18px 0 0;padding:18px 0;text-align:center;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);background:rgba(184,151,90,.05)}
+    .honour-address-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.20em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
+    .honour-address-formatted{font-family:'EB Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);line-height:1.2;letter-spacing:.01em}
+
     /* CLOSING NOTE — matches the Herald's voice across other pages */
     .closing{margin-top:52px;padding:32px 36px;border-top:2px solid var(--gold);background:rgba(184,151,90,.06)}
     .closing-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
@@ -95,6 +108,22 @@
       <div class="honour-body">
         <p>The first of the honours, conferred when a member welcomes their first soul into the Register at Newhall. <em>Cara</em> is the older Irish word for a friend — and in Brehon-law tradition, the Chief's <em>cairde</em> were the trusted kin-allies who carried his interests outward into the wider world. The dignity of Cara names exactly that role: a member through whom the clan reaches another.</p>
         <p>To bring even one to the clan is no small thing — it is the act on which all kinship is built.</p>
+        <!-- Address-formula closing — drawn from the structure of a real
+             letters patent of nobility (the privileges-clause naming
+             who the bearer is to be addressed by). Three circles
+             named: the Privy Council (inner court), the Office of the
+             Private Secretary (the Chief's official channel), and the
+             kindred of Ó Comáin (the wider clan, including diaspora —
+             the 'within and without' phrase mirrors the Georgian-
+             patent original 'within and without the boundaries of Our
+             historic dominions'). The CHIEF commands; the kindred
+             addresses. Distinct from a sovereign's authority — this
+             is intra-clan, not over a polity. -->
+        <p class="honour-address-intro">By the Chief's command, the Privy Council, the Office of the Private Secretary, and the kindred of Ó Comáin, both within and without the boundaries of the clan's historic seat at Newhall, do acknowledge and address a Cara henceforth as:</p>
+        <div class="honour-address-name">
+          <div class="honour-address-eyebrow">For example</div>
+          <div class="honour-address-formatted">James Comyn, Cara of Ó Comáin</div>
+        </div>
       </div>
     </div>
 
@@ -111,6 +140,12 @@
       <div class="honour-body">
         <p>The second of the honours, a raising in rank from Cara. <em>Onóir</em> carries the weight of its meaning: a member whose contribution has been marked, and who is now held by the Chief and the Herald as one of the clan's standing-bearers. To be raised to Onóir is to have made the clan one's own — to have shaped it, by patient welcome, into something larger than it was.</p>
         <p>To bring five is the work of a member who has made the clan their own. The Chief is the better for knowing it.</p>
+        <!-- Same address-formula construction, distinction register -->
+        <p class="honour-address-intro">By the Chief's command, the Privy Council, the Office of the Private Secretary, and the kindred of Ó Comáin, both within and without the boundaries of the clan's historic seat at Newhall, do acknowledge and address an Onóir henceforth as:</p>
+        <div class="honour-address-name">
+          <div class="honour-address-eyebrow">For example</div>
+          <div class="honour-address-formatted">James Comyn, Onóir of Ó Comáin</div>
+        </div>
       </div>
     </div>
 
@@ -127,6 +162,17 @@
       <div class="honour-body">
         <p>The highest of the honours conferred within Clan Ó Comáin. <em>Ardchara</em> joins the prefix <em>ard-</em> (high, lofty) to <em>cara</em> (friend) — so the title reads, by its parts, as <em>Friend of high standing</em>. It is conferred upon a member who has brought fifteen souls to the Register at Newhall, and the language of the warrant is the formal chivalric register: <em>"It hath pleased the Chief to raise you within the clan to the dignity of Ardchara."</em></p>
         <p>By this raising the member henceforth bears the title Ardchara, with the place and standing belonging to that rank in the clan's keeping. There are very few in any generation who carry fifteen to the Register, and the Chief takes a particular interest in such members.</p>
+        <!-- Address-formula at full chivalric register. The 'with the
+             place and standing belonging to that rank' phrase echoes
+             the privileges-clause from the bestowal letter — bringing
+             the highest-tier formality through into the honours page
+             consistently. 'Sovereign command' replaces 'command' to
+             match the elevated register. -->
+        <p class="honour-address-intro">By the Chief's sovereign command, the Privy Council, the Office of the Private Secretary, and all the kindred of Ó Comáin, both within and without the boundaries of the clan's historic seat at Newhall, do acknowledge and address an Ardchara henceforth, with the place and standing belonging to that rank, as:</p>
+        <div class="honour-address-name">
+          <div class="honour-address-eyebrow">For example</div>
+          <div class="honour-address-formatted">James Comyn, Ardchara of Ó Comáin</div>
+        </div>
       </div>
     </div>
 
