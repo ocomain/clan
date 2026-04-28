@@ -62,7 +62,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
    for keyboard access; tooltip uses pure CSS pseudo-elements so no JS
    dependency. The dotted gold underline signals that hovering will
    reveal something. */
-.entry-dignity-prefix{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--burgundy);font-size:0.78em;letter-spacing:.01em;margin-right:.18em;position:relative;cursor:help;border-bottom:1px dotted var(--gold);padding-bottom:1px;outline:none}
+.entry-dignity-prefix{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--gold-deep);position:relative;cursor:help;outline:none}
 .entry-dignity-prefix:focus-visible{box-shadow:0 0 0 2px var(--gold-faint);border-radius:2px}
 .entry-dignity-prefix::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:0;background:var(--ink);color:var(--cream);padding:11px 15px 12px;font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:13.5px;line-height:1.55;white-space:pre-line;width:max-content;max-width:300px;border-radius:2px;box-shadow:0 6px 22px rgba(0,0,0,.18);letter-spacing:0;text-align:left;opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s,transform .15s,visibility 0s linear .15s;pointer-events:none;z-index:20}
 .entry-dignity-prefix::before{content:'';position:absolute;top:calc(100% + 4px);left:14px;width:0;height:0;border:6px solid transparent;border-bottom-color:var(--ink);opacity:0;visibility:hidden;transition:opacity .15s,visibility 0s linear .15s;z-index:21}
