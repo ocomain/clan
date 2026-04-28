@@ -828,46 +828,20 @@
           <div class="mhonours-bridge-flourish">· · ·</div>
         </div>
         <div class="mhonours-bridge-body">
-          ${(() => {
-            const count = Number(member.sponsorCount) || 0;
-            const sponsorWord = count === 1 ? 'member' : 'members';
-            // Word-form numbers up to 14 — used for the "X more, to..."
-            // remainder. The threshold gap is always 1-14, so we never
-            // need to fall through to digits in practice. Capitalised
-            // because they begin a sentence.
-            const remainingWord = (n) => ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen'][n] || String(n);
-
-            // Status line — names the title held and the gap to the
-            // next, in the ceremonial register. "raised to" is the
-            // locked verb. Em-dash isolates the closing flourish at
-            // Ardchara so it reads as the natural endpoint.
-            let statusLine;
-            if (count === 0) {
-              statusLine = `One sponsorship raises you to <em>Cara</em>.`;
-            } else if (count < 5) {
-              const r = 5 - count;
-              statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Cara</em>. ${remainingWord(r)} more, to <em>Onóir</em>.`;
-            } else if (count < 15) {
-              const r = 15 - count;
-              statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Onóir</em>. ${remainingWord(r)} more, to <em>Ardchara</em>.`;
-            } else {
-              statusLine = `You have stood as sponsor to ${count} ${sponsorWord} of the clan, raised to <em>Ardchara</em> — the highest dignity of the order.`;
-            }
-            // Opening paragraph addresses the reader's potential
-            // (rather than describing the institution) and surfaces
-            // the most visceral incentive — the title borne before
-            // the member's name on the public Register — to make
-            // the honours system feel earnable rather than abstract.
-            return `
-              <p style="margin:0 0 16px;text-align:center">Three dignities you may earn by bringing others to the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
-              <div class="mhonours-ladder">
-                <div class="mhonours-rank"><span class="mhonours-rank-name">Cara</span><span class="mhonours-rank-req">One sponsorship</span></div>
-                <div class="mhonours-rank"><span class="mhonours-rank-name">Onóir</span><span class="mhonours-rank-req">Five sponsorships</span></div>
-                <div class="mhonours-rank"><span class="mhonours-rank-name">Ardchara</span><span class="mhonours-rank-req">Fifteen sponsorships</span></div>
-              </div>
-              <p class="mhonours-status">${statusLine}</p>
-              <div class="mhonours-bridge-cta"><a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a></div>`;
-          })()}
+          <!-- Single-tier focus 2026-04-28: the dashboard surface
+               sells only the entry to the order (Cara). The deeper
+               Order-of-Honours page (/members/honours.html) carries
+               full ladder detail for members who want to see what
+               follows. Static copy — same line for all members
+               regardless of current sponsorship count. The Held in
+               Honour row at the top of the member-status section
+               still shows higher-tier members the dignity they
+               actually hold, so they are not addressed past on the
+               dashboard; this block is the entry-sell, not the
+               personal-status surface. -->
+          <p style="margin:0 0 16px;text-align:center">A title of dignity you may earn by bringing another into the clan — by invitation or by gift. Bestowed by the Chief's hand, borne before your name on the public Register.</p>
+          <p class="mhonours-status">One sponsorship of another raises you to the dignity <em>Cara</em>.</p>
+          <div class="mhonours-bridge-cta"><a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a></div>
         </div>
       </section>
 
