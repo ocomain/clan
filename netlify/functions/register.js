@@ -167,32 +167,33 @@ exports.handler = async (event) => {
         m.children_visible_on_register === true
       );
 
-      // Dignity holder line — only renders when the member holds a
+      // Held dignity — only present when the member holds a
       // sponsorship title (Cara/Onóir/Ardchara). Architectural rule:
       // the title attaches to the INDIVIDUAL primary grantee, NEVER
       // to the family unit. Wife/husband/children do NOT earn the
-      // dignity through the family membership. So:
-      //   - For individual-tier (or family-tier where the display
-      //     happens to be just the member's own name with no partner
-      //     or children): line reads 'Holder of the dignity Cara of
-      //     Ó Comáin' — no name needed, the headline above already
-      //     names them.
-      //   - For family-tier where the display includes a partner or
-      //     '& Family' suffix: line reads 'James Smith — Holder of
-      //     the dignity Cara of Ó Comáin' — names the primary
-      //     grantee specifically, distinguishing them from the
-      //     family unit named in the headline.
-      // Decision rule: include the name ONLY if the family-display
-      // string differs from member.name.
+      // dignity through the family membership — though by the
+      // kindred's courtesy convention (per honours.html), the spouse
+      // may be addressed by the same dignity in social usage.
+      // Returns a structured object so the front-end can render the
+      // title as a prefix to the family-display name with a hover
+      // tooltip carrying pronunciation, English meaning, and degree.
+      // Degree mapping mirrors the threshold ladder: cara=1st,
+      // onoir=2nd, ardchara=3rd.
       const heldTitle = highestAwardedTitle(m.sponsor_titles_awarded);
-      let dignityHolderLine = null;
+      let heldDignity = null;
       if (heldTitle) {
-        const familyDisplay = (displayName || m.display_name_on_register || m.name || '').trim();
-        const primaryName = (m.name || '').trim();
-        const titleSuffix = `Holder of the dignity ${heldTitle.irish} of Ó Comáin`;
-        dignityHolderLine = familyDisplay && primaryName && familyDisplay !== primaryName
-          ? `${primaryName} — ${titleSuffix}`
-          : titleSuffix;
+        const degreeMap = { cara: '1st', onoir: '2nd', ardchara: '3rd' };
+        heldDignity = {
+          slug: heldTitle.slug,
+          irish: heldTitle.irish,
+          pronunciation: heldTitle.pronunciation,
+          // English meaning lowercased so it reads as a definition
+          // gloss inside single quotes ('friend', 'one held in
+          // honour', 'friend of high standing') rather than as a
+          // proper noun.
+          english: (heldTitle.english || '').toLowerCase(),
+          degree: degreeMap[heldTitle.slug] || '',
+        };
       }
 
       return {
@@ -202,10 +203,11 @@ exports.handler = async (event) => {
         // Optional small italic line under the name. null when no
         // family detail to credit (solo member or named couple).
         credit_line:  creditLine,
-        // Optional dignity-holder line — only present when the
-        // member holds a sponsorship title. See computation above
-        // for the per-tier shape.
-        dignity_holder_line: dignityHolderLine,
+        // Held dignity object — null when member holds no
+        // sponsorship title. Front-end renders the irish name as a
+        // prefix to display_name with a hover tooltip showing
+        // pronunciation, English meaning, and degree of honour.
+        held_dignity: heldDignity,
         tier:         m.tier,
         tier_label:   m.tier_label,
         // Dedication only included when the member has explicitly
