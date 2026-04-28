@@ -5,6 +5,8 @@
 const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, ensureAuthUser, sanitizeFilename } = require('./lib/cert-service');
 const { sendEmail } = require('./lib/email');
+const { evaluateSponsorTitles } = require('./lib/sponsor-service');
+const { sendTitleAwardLetter } = require('./lib/sponsor-email');
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLAN_EMAIL = 'clan@ocomain.org';
@@ -268,6 +270,80 @@ exports.handler = async (event) => {
               });
             }
             await logEvent({ clan_id, member_id: member.id, event_type: 'gift_paid', payload: { tier: tierInfo.tier, amount, recipient_email: recipientEmail, buyer_email: buyerEmail } });
+
+            // ── BUYER-AS-SPONSOR TITLE AWARD ─────────────────────────
+            // The conversion is COMPLETE the moment the gift is paid:
+            // the buyer has done their part by bringing another to the
+            // clan. Their honours-ladder progress (Cara at 1, Onóir at
+            // 5, Ardchara at 15) and the title-award letter must fire
+            // here, NOT later when the recipient completes their family
+            // details. Otherwise the buyer is left in suspense (count
+            // shows on dashboard but the dignity field, Held in Honour
+            // row, register prefix, and email recognition never trigger
+            // until the recipient happens to publish — which may be
+            // days, weeks, or never).
+            //
+            // This block mirrors the post-conversion sequence in
+            // submit-family-details.js (lines ~387-428) — same evaluate,
+            // letter-send, stamp-on-success pattern. Kept inline rather
+            // than extracted to a helper because the two call sites
+            // have different surrounding context (clan_id + supa
+            // closure, error handling, etc.); a helper extraction is a
+            // good refactor but not blocking for this fix.
+            //
+            // Only runs if the buyer is themselves a clan member.
+            // Non-member gift buyers (giftors who haven't joined the
+            // clan) earn no title — they never appear in the honours
+            // ladder.
+            try {
+              const { data: buyer } = await supa()
+                .from('members')
+                .select('id, email, name, sponsor_titles_awarded')
+                .eq('clan_id', clan_id)
+                .ilike('email', buyerEmail)
+                .maybeSingle();
+              if (buyer) {
+                const { count: sponsorCount, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
+                  await evaluateSponsorTitles(buyer);
+                if (allNewlyEarned.length > 0) {
+                  const stampedAwarded = { ...(buyer.sponsor_titles_awarded || {}) };
+                  const nowIso = new Date().toISOString();
+                  let letterSent = false;
+                  if (highestNewlyEarned) {
+                    try {
+                      await sendTitleAwardLetter(buyer, highestNewlyEarned, previousTitleIrish, sponsorCount);
+                      await logEvent({
+                        clan_id,
+                        member_id: buyer.id,
+                        event_type: 'sponsor_title_awarded',
+                        payload: {
+                          title_slug: highestNewlyEarned.slug,
+                          previous_title: previousTitleIrish,
+                          count: sponsorCount,
+                          source: 'gift_paid',
+                          recipient_member_id: member.id,
+                        },
+                      });
+                      letterSent = true;
+                    } catch (titleErr) {
+                      console.error(`gift title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
+                    }
+                  }
+                  if (letterSent || !highestNewlyEarned) {
+                    for (const t of allNewlyEarned) stampedAwarded[t.slug] = nowIso;
+                    if (Object.keys(stampedAwarded).length > Object.keys(buyer.sponsor_titles_awarded || {}).length) {
+                      await supa()
+                        .from('members')
+                        .update({ sponsor_titles_awarded: stampedAwarded })
+                        .eq('id', buyer.id);
+                    }
+                  }
+                }
+              }
+            } catch (giftSponsorErr) {
+              console.error('gift sponsor title-award failed (non-fatal):', giftSponsorErr.message);
+            }
+            // ─────────────────────────────────────────────────────────
 
             // 3. Pre-create auth user for the recipient so first login is magic-link.
             await ensureAuthUser(recipientEmail, recipientName);

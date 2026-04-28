@@ -71,7 +71,7 @@ async function sendInvitation({
   const recipFirst = (recipientName || '').trim().split(/\s+/)[0] || 'friend';
   const inviterFull = (inviterName || '').trim() || inviterFirstName || 'a member of the clan';
 
-  const subject = `${inviterFirstName} would like you to stand with them in Clan Ó Comáin`;
+  const subject = `${inviterFull} has recommended you for membership`;
 
   // Optional personal-note block. Sits at the top, above the clan
   // body, signed by the inviter. Renders only when personalNote is
@@ -116,7 +116,7 @@ async function sendInvitation({
   <div style="background:#0C1A0C;padding:34px 40px 26px;text-align:center;border-bottom:2px solid #B8975A">
     <img src="${SITE_URL}/coat_of_arms.png" width="72" alt="Ó Comáin" style="display:block;margin:0 auto 8px;height:auto">
     <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 14px;text-align:center;max-width:84px">Ó COMÁIN</p>
-    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">By private welcome</p>
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">By private welcome to an Irish clan</p>
     <h1 style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#D4B87A;margin:0;line-height:1.25">${escapeHtml(inviterFirstName)} has kept a place beside them for you</h1>
   </div>
 
