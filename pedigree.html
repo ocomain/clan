@@ -157,11 +157,13 @@ sup a:hover{text-decoration:underline}
 #mobileActions{display:none;position:fixed;top:58px;left:0;right:0;z-index:97;transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #mobileActions.visible{transform:translateY(0);pointer-events:all}
 .endorsement-layout{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap}
-.endorsement-portrait{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;width:160px}
+.endorsement-portrait{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px}
 .endorsement-photo{width:120px;height:120px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);padding:3px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0}
 .endorsement-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
-.endorsement-caption{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-mid);line-height:1.45;text-align:center}
+.endorsement-caption{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-mid);line-height:1.45}
 .endorsement-quote{flex:1 1 320px;min-width:0}
+.caption-desktop{display:block}
+.caption-mobile{display:none}
 @media(max-width:768px){
   #giftStrip{display:none}
   #mobileActions{display:block}
@@ -170,7 +172,9 @@ sup a:hover{text-decoration:underline}
   .endorsement-layout{gap:18px}
   .endorsement-portrait{flex-direction:row;align-items:center;width:100%;gap:16px;text-align:left}
   .endorsement-photo{width:80px;height:80px}
-  .endorsement-caption{text-align:left;flex:1 1 auto;font-size:13px}
+  .endorsement-caption{font-size:13px}
+  .caption-mobile{display:block;flex:1 1 auto;text-align:left}
+  .caption-desktop{display:none}
   .endorsement-quote{flex:1 1 100%}
 }
 </style>
@@ -231,7 +235,7 @@ function toggleMenu(){
     <div style="max-width:780px;margin:0 auto">
       <p style="font-family:'EB Garamond',serif;font-size:21px;line-height:1.55;color:var(--ink);margin-bottom:22px">Clan Ó Comáin is one of the older Gaelic kindreds of early medieval Ireland — a sept whose documented royal pedigree, preserved in the medieval Irish genealogical manuscripts of both Munster and Connacht, is now corroborated by an unbroken Y-DNA male line stretching back over four thousand years.</p>
       <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">Documented lineage includes the kings of the <strong>Déisi Muman</strong> (the Déisi of Munster) — a federation of allied septs whose royal line bore the Comáin name as early as 658 AD — and through the royal pedigree of <strong>Uí Maine</strong> in Connacht, where the medieval Irish genealogists preserved the line of chiefs under its own named segment, <em>Clann Comáin</em>, in the great fifteenth-century Book of Lecan. The clan's spiritual heritage is bound to <strong>Saint Commán</strong> — founder of Roscommon and the ancient church at Kinvara on the southern edge of the Burren — patron saint of the clan.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">The ancestral capital, <strong>Cahercommane</strong>, stands today on the Burren in County Clare: a triple-ring stone fort, occupied through the 7th to 9th centuries, and one of the great early-medieval high-status sites of western Ireland. A short distance away rises the ceremonial mound where chiefs were formally inaugurated. Together they were the seat of a <strong>Déisi Muman, Ó Comáin sept</strong> holding the <strong>Chiefdom of Tulach Commáin</strong> on the Burren frontier — before it was overshadowed by the rise of the Dál gCais, the dynasty of Brian Boru and the O'Briens of Thomond, into which Clan Ó Comáin did not descend.</p>
+      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">The ancestral capital, <strong>Cahercommane</strong>, stands today on the Burren in County Clare: a triple-ring stone fort, occupied through the 7th to 9th centuries, and one of the great early-medieval high-status sites of western Ireland. A short distance away rises the ceremonial mound where chiefs were formally inaugurated. Together they were the seat of a Déisi Muman sept holding the <strong>Chiefdom of Tulach Commáin</strong> on the Burren frontier — before it was overshadowed by the rise of the Dál gCais, the dynasty of Brian Boru and the O'Briens of Thomond, into which Clan Ó Comáin did not descend.</p>
       <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">Clan Ó Comáin belongs to the older Munster peoples of Clare — pre-Dalcassian kindreds politically eclipsed by the rise of the Dál gCais in the 9th–10th centuries. Without status in the new order, the clan's name appears in the later Clare records most often as <strong>Comyn</strong> rather than Ó Comáin. Edward MacLysaght, the first Chief Herald of Ireland, identified the Clare Comyns as Gaelic-anglicised rather than Norman-descended — a position now corroborated by Y-DNA testing, which places the Ó Comáin male line on a deep Irish patriline alongside other Munster families bearing Norman-era surnames.</p>
       <p style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.65;color:var(--ink-muted);margin-bottom:0;padding-top:14px;border-top:1px solid var(--border);font-style:italic">This page presents, for the first time in a single integrated treatment, the documentary, archaeological and genetic evidence for the Ó Comáin kindred. It draws on the foundational work of Séamus Pender on the Déisi genealogies, Claire Cotter on Cahercommane, Blair Gibson on the Tulach Commáin chiefdom, and Edward MacLysaght on the Munster Comyn-anglicisation; it adds Big-Y DNA evidence not previously available; and it follows an evidence-based methodology — separating what is well evidenced from what should be treated as plausible tradition or as an open scholarly question. Footnotes carry the primary sources and the principal modern scholarship.</p>
     </div>
@@ -247,13 +251,17 @@ function toggleMenu(){
           <div class="endorsement-photo">
             <img src="dick_cronin.jpg" alt="Risteárd Ua Cróinín (Dick Cronin), author of O'Dea: The Story of a Rebel Clan" loading="lazy">
           </div>
-          <div class="endorsement-caption">
+          <div class="endorsement-caption caption-mobile">
             <strong style="color:var(--ink)">Risteárd Ua Cróinín</strong> (Dick Cronin)<br>
             <em>Author of</em> O'Dea: The Story of a Rebel Clan
           </div>
         </div>
         <div class="endorsement-quote">
-          <p style="font-family:'EB Garamond',serif;font-size:19px;line-height:1.6;color:var(--ink);font-style:italic;margin:0">"Fantastic, professional and most impressive, based on proven authentic historical sources. A well researched and detailed piece of work. It covers the genealogical, ecclesiastical, historical and archaeological aspects of this ancient family linked to both the Connacht Uí Maine and Munster Déisi royal families. Expertly compiled and designed to appeal to the more learned and academic members of the diaspora."</p>
+          <p style="font-family:'EB Garamond',serif;font-size:19px;line-height:1.6;color:var(--ink);font-style:italic;margin:0 0 18px">"Fantastic, professional and most impressive, based on proven authentic historical sources. A well researched and detailed piece of work. It covers the genealogical, ecclesiastical, historical and archaeological aspects of this ancient family linked to both the Connacht Uí Maine and Munster Déisi royal families. Expertly compiled and designed to appeal to the more learned and academic members of the diaspora."</p>
+          <div class="endorsement-caption caption-desktop">
+            <strong style="color:var(--ink)">Risteárd Ua Cróinín</strong> (Dick Cronin)<br>
+            <em>Author of</em> O'Dea: The Story of a Rebel Clan
+          </div>
         </div>
       </div>
     </div>
@@ -554,6 +562,8 @@ function toggleMenu(){
       <p>In 1619, <strong>James Comyn</strong> received Doonbeg Castle from Daniel O'Brien — evidence that a family bearing the Comyn name retained sufficient standing in Clare to receive a castle grant from the O'Brien lordship, centuries after the formal loss of their chiefdom territory.<sup><a href="#fn32">32</a></sup></p>
       <p>Pender's Census of 1659 records <strong>"Comane &c"</strong> — 11 persons — in the Barony of Tulla, County Clare: the first confirmed post-medieval population record placing the family in Clare following the centuries-long documentary gap.<sup><a href="#fn33">33</a></sup></p>
       <p>Edward MacLysaght, the first Chief Herald of Ireland and author of <em>Irish Families</em> (1985), confirmed that the name appears as Ó Comáin in Munster — "whence come the majority of present day Cumminses (also called Commane) now found in Counties Tipperary and Cork."<sup><a href="#fn34">34</a></sup> Big-Y testing of the modern Ó Comáin male line confirms MacLysaght's reading from an independent direction: the patriline sits in a deep Irish Y-line cluster also carrying Norman-era surnames such as Burke and Walsh — the documented pattern of Gaelic Irish kindreds who adopted Norman-era surnames after the 12th century. The name <em>Na Comáin</em> is confirmed by Logainm.ie as a townland in the Iveragh barony of Kerry, in the Gaeltacht area of Dromod parish, confirming the family's geographic distribution across the Munster seaboard.<sup><a href="#fn35">35</a></sup></p>
+
+      <p>It should be acknowledged that not every Irish Comyn family descends from the Gaelic Ó Comáin line. The Comyn name was also borne by Anglo-Norman settlers in Ireland — including descendants of the Comyns of Buchan in Scotland — who arrived in the 13th and 14th centuries. MacLysaght's identification of Clare and Munster Comyns as Gaelic-anglicised is a regional finding, not a blanket claim about all Irish Comyns. For any individual Comyn family today, Y-DNA testing remains the definitive way to confirm whether the patriline descends from the Gaelic Ó Comáin lineage or from one of the Anglo-Norman Comyn lines.</p>
       </div>
       <div>
         <img src="newhall_dusk.png" alt="Newhall House at dusk — clan seat" style="width:100%;display:block;border-radius:2px;border:1px solid var(--border);margin-bottom:8px" loading="lazy">
@@ -574,6 +584,14 @@ function toggleMenu(){
         <div class="gold-rule"></div>
         <div class="history-body">
           <p>Among the individuals identified in the documented modern Commane line is <strong>John Commane, of Newhall</strong>, recorded as a tenant in Ballyea townland, Killone parish, County Clare in the <a href="https://www.clarelibrary.ie/eolas/coclare/genealogy/tithe_applot/killone_tab.htm" target="_blank" rel="noopener" style="color:var(--gold-strong);text-decoration:underline">Tithe Applotment Book of 1828</a> — Ballyea and Killone lying in the same immediate territory as Newhall, marking a subtle but resonant historic connection to the clan's present seat. His neighbour in the same townland was Mich'l Hehir — a remarkable echo across more than a millennium of the two ancient Clare families of the Burren sharing territory.<sup><a href="#fn36">36</a></sup></p>
+
+          <figure style="margin:24px 0 28px;max-width:560px">
+            <div style="background:var(--white);border:1px solid var(--border);padding:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)">
+              <img src="tithe_applotment_killone_1828.jpg" alt="Tithe Applotment Book entry showing John Commane of Ballyea, Killone parish, 1828" style="width:100%;height:auto;display:block" loading="lazy">
+            </div>
+            <figcaption style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);font-style:italic;margin-top:10px;line-height:1.45">Occupiers of land Ballyea, Parish of Killone 1828. <span style="font-style:normal">John Commane is recorded with 6¾ acres; his neighbour in the same townland is Mich'l Hehir.</span></figcaption>
+          </figure>
+
           <p>John Commane is absent from Griffith's Valuation of 1855 for Killone parish. A common scholarly reading is that he either died during the Great Famine of 1845–1852 or emigrated in the Famine period — as so many Clare families did. A Commane Road in Baldwinsville, New York (Onondaga County) testifies to Famine-era emigration of the family to upstate New York, where the family left a road name as their legacy in the American landscape.<sup><a href="#fn37">37</a></sup></p>
 
           <p>It is also worth noting, however, that absence from a 19th-century government survey is not in itself proof of death or emigration. A third possibility, preserved in the family's own oral tradition, is that some Commane households were simply not recorded. Mistrust of British administrative surveys ran deep among the Gaelic tenantry of Clare — born of fear of eviction, rent increases, conscription, and the long memory of the Penal Laws — and it was not uncommon for heads of household to quietly instruct their families not to give their names when officials came to the door. Stories of this practice survive in the living Commane line to the present day. Continuity in place therefore remains a possibility alongside the death and emigration readings of the 1855 record.</p>
