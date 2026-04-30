@@ -108,6 +108,14 @@
     .pill-sent{background:rgba(184,151,90,.18);color:var(--burgundy);border-color:rgba(107,31,31,.18)}
     .pill-claimed{background:rgba(46,93,46,.12);color:#2E5D2E;border-color:rgba(46,93,46,.25)}
     .pill-sealed{background:var(--burgundy);color:var(--cream);border-color:var(--burgundy-deep)}
+    /* Pending (new flow) — soft gold, awaiting-action feel. Lighter
+       than sent so the eye distinguishes the 'they got the email
+       but haven't acted' state from the 'we tried but they never
+       arrived' state. */
+    .pill-pending{background:rgba(184,151,90,.08);color:var(--gold-deep);border-color:rgba(184,151,90,.35)}
+    /* Lapsed — muted grey with a trace of burgundy. Terminal state,
+       no action available, so the visual weight is low. */
+    .pill-lapsed{background:rgba(60,42,26,.06);color:var(--ink-muted);border-color:rgba(60,42,26,.15)}
 
     .empty-state{text-align:center;padding:40px 20px;font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted)}
 
@@ -224,17 +232,23 @@
   <!-- TABLE CARD ────────────────────────────────────────────────── -->
   <div class="table-card">
     <h2>Founding gifts sent</h2>
-    <p class="table-card-sub">Reverse-chronological. Each recipient's status is derived from their actions: Sent → Claimed (signed in) → Sealed (cert published).</p>
+    <p class="table-card-sub">Reverse-chronological. A gift moves from <em>Pending</em> (sent, awaiting acceptance) → <em>Claimed</em> (recipient pressed claim and signed in) → <em>Sealed</em> (certificate published). A gift not accepted within one year becomes <em>Lapsed</em>.</p>
 
-    <!-- Summary strip — counts by status -->
+    <!-- Summary strip — counts by status. Updated 2026-04-28 to
+         surface 'Pending' (recipient hasn't claimed yet) as its own
+         stat, since this is the most actionable state for Fergus to
+         see. 'Sent' is folded into the total since under the new
+         flow most rows go straight from pending → claimed without
+         passing through the legacy 'sent' (member exists, never
+         signed in) state. -->
     <div class="summary-strip" id="summaryStrip" style="display:none">
       <div class="summary-stat">
         <span class="summary-stat-num" id="statTotal">0</span>
         <span class="summary-stat-label">Total</span>
       </div>
       <div class="summary-stat">
-        <span class="summary-stat-num" id="statSent">0</span>
-        <span class="summary-stat-label">Sent</span>
+        <span class="summary-stat-num" id="statPending">0</span>
+        <span class="summary-stat-label">Pending</span>
       </div>
       <div class="summary-stat">
         <span class="summary-stat-num" id="statClaimed">0</span>
@@ -393,23 +407,37 @@
       const data = await res.json();
 
       if (res.status === 201 && data.ok) {
-        // Full success — row created AND email sent.
+        // Full success — pending row created AND email sent.
+        // Note: the response shape changed in 2026-04-28's deferred-
+        // acceptance flow — `data.member` is now `data.pending`. The
+        // wording shifts from 'has been welcomed' (which implied an
+        // active member instantly) to 'invited to claim' (accurate
+        // for the new flow where the recipient still has to press
+        // the claim button on the welcome page).
+        const tierLabel = data.pending?.tier_label || '';
         setStatus('status-success',
-          `<strong>Sent.</strong> ${escapeHtml(name)} has been welcomed by the Herald, with a founding place at ${escapeHtml(data.member.tier_label)}.`);
+          `<strong>Sent.</strong> ${escapeHtml(name)} has been invited to claim a founding place at ${escapeHtml(tierLabel)}. They will appear on the roll below as <em>Pending</em> until they accept.`);
         form.reset();
         loadGifts();  // Refresh the status table
       } else if (res.status === 207) {
-        // Member created but email failed — partial success warning.
+        // Pending row created but email failed — partial success warning.
         setStatus('status-warn',
-          `<strong>Member created — but the email did not send.</strong> ${escapeHtml(name)}'s founding place is recorded, but the welcome email failed to deliver. Check Resend logs and contact them by another means, or retry from the dashboard.`);
+          `<strong>Pending gift created — but the email did not send.</strong> ${escapeHtml(name)}'s founding place is recorded in pending state, but the welcome email failed to deliver. Check Resend logs and contact them by another means, or delete the pending row and retry.`);
         form.reset();
         loadGifts();
       } else if (res.status === 409) {
-        // Duplicate.
-        setStatus('status-error',
-          `<strong>This email is already on the clan rolls.</strong> ${escapeHtml(email)} was registered on ${formatDate(data.existing?.joined_at)}` +
-          (data.existing?.comped_by_chief ? ' as a previous founder gift.' : '.') +
-          ' If this is unexpected, write to clan@ocomain.org before retrying.');
+        // Duplicate. The error response now distinguishes between
+        // 'already a member' and 'already pending' — show the right
+        // message for each.
+        if (data.existing_pending) {
+          setStatus('status-error',
+            `<strong>A founding gift to this email is already pending.</strong> Sent on ${formatDate(data.existing_pending.created_at)}. Wait for them to accept, or contact them by another means.`);
+        } else {
+          setStatus('status-error',
+            `<strong>This email is already on the clan rolls.</strong> ${escapeHtml(email)} was registered on ${formatDate(data.existing?.joined_at)}` +
+            (data.existing?.comped_by_chief ? ' as a previous founder gift.' : '.') +
+            ' If this is unexpected, write to clan@ocomain.org before retrying.');
+        }
       } else if (res.status === 401 || res.status === 403) {
         setStatus('status-error', '<strong>Access denied.</strong> Try signing out and signing back in, or contact clan@ocomain.org.');
       } else {
@@ -464,9 +492,13 @@
       const gifts = data.gifts || [];
       const counts = data.counts_by_status || {};
 
-      // Summary strip
+      // Summary strip — counts by status from the unioned data.
+      // Pending is its own stat now (most actionable). Lapsed isn't
+      // surfaced as a stat yet (it'll be 0 for the next year anyway,
+      // until the cron starts marking expirations); it'll show up
+      // as a status pill on individual rows.
       document.getElementById('statTotal').textContent = data.count || 0;
-      document.getElementById('statSent').textContent = (counts.sent || 0) + (counts.pending || 0);
+      document.getElementById('statPending').textContent = counts.pending || 0;
       document.getElementById('statClaimed').textContent = counts.claimed || 0;
       document.getElementById('statSealed').textContent = counts.sealed || 0;
 
@@ -486,7 +518,7 @@
             <span class="gifts-email">${escapeHtml(g.email)}</span>
           </td>
           <td>${tierBadge(g.tier, g.tier_label)}</td>
-          <td><span class="gifts-date">${formatDate(g.comped_at)}</span></td>
+          <td><span class="gifts-date">${formatDate(g.sent_at)}</span></td>
           <td>${statusPill(g.status)}</td>
           <td>${g.comped_note ? `<span class="gifts-note">"${escapeHtml(g.comped_note)}"</span>` : '<span style="color:var(--ink-muted)">—</span>'}</td>
         </tr>

@@ -66,8 +66,15 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
    the ONLY action on the page. No secondary links, no nav, no
    footer link maze — just one button. */
 .welcome-cta-block{margin:42px auto 0;display:flex;flex-direction:column;align-items:center;gap:14px}
-.welcome-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:18px 40px;border-radius:1px;text-decoration:none;transition:background .2s;border:1px solid var(--burgundy-deep)}
+.welcome-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:18px 40px;border-radius:1px;text-decoration:none;transition:background .2s;border:1px solid var(--burgundy-deep);cursor:pointer;line-height:1}
 .welcome-cta:hover{background:var(--burgundy-deep)}
+.welcome-cta:disabled{opacity:.5;cursor:wait}
+/* Style reset for when .welcome-cta is applied to a <button>
+   (the new claim flow uses a button so the click can POST instead
+   of navigating). Without these resets browsers add their own
+   border/font-inherit behaviour that breaks the visual parity with
+   the <a> variant used by the Continue link. */
+button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appearance:none}
 
 .welcome-cta-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:380px;line-height:1.6;margin-top:4px}
 
@@ -117,8 +124,9 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
   <div class="welcome-eyebrow">By warrant of the Chief</div>
 
   <!-- Personalised greeting. The name span is empty by default and
-       populated from the URL ?name= param via JS below. If the param
-       is missing or invalid, we fall back to 'Welcome home' alone. -->
+       populated from either the API lookup (token flow) or the URL
+       ?name= param (legacy flow). If neither is available, we fall
+       back to 'Welcome home' alone. -->
   <h1 class="welcome-title">Welcome home<span class="welcome-name" id="welcomeName"></span></h1>
   <div class="welcome-irish">Fáilte abhaile</div>
 
@@ -128,21 +136,66 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
     <span class="welcome-rule-line"></span>
   </div>
 
-  <!-- The body — Herald-voiced, short. Two short paragraphs. The
-       recipient just read the longer email; this surface acknowledges
-       them and offers the door. Not a re-telling. -->
-  <p class="welcome-body">
-    Your founding place in Clan Ó Comáin has been set down by the Chief — a gift, freely given, awaiting only your acceptance.
-  </p>
-  <p class="welcome-body">
-    To take it up, follow the door below into the members' area. There you will confirm the spelling of your name as it shall stand upon your certificate, and attend to such other matters as you wish — at your own pace, in your own time.
-  </p>
+  <!-- DYNAMIC STATE CONTAINER ──────────────────────────────────────
+       Three mutually-exclusive states are rendered based on the
+       result of the token lookup (or the URL params for legacy):
 
-  <!-- The CTA. Single button. JS appends the email querystring so
-       the members/login.html page pre-fills it. -->
-  <div class="welcome-cta-block">
-    <a href="/members/login.html" class="welcome-cta" id="continueCta">Continue to your members area →</a>
-    <p class="welcome-cta-note">A one-time access link will be sent to your inbox.</p>
+         #stateLoading  — spinner-ish placeholder while the lookup runs
+         #stateClaimable — pending gift, show body + Claim button
+         #stateClaimed  — already claimed (or legacy-email flow)
+                          show 'Continue to your members area' button
+         #stateLapsed   — 1 year passed unclaimed
+         #stateInvalid  — token bad / not found / API errored
+
+       Default: #stateLoading visible on first paint. JS on page load
+       picks the right state and toggles. -->
+
+  <div id="stateLoading" class="welcome-state">
+    <p class="welcome-body" style="opacity:.6">Looking up your founding place…</p>
+  </div>
+
+  <div id="stateClaimable" class="welcome-state" hidden>
+    <p class="welcome-body">
+      Your founding place in Clan Ó Comáin has been set down by the Chief — a gift, freely given, awaiting only your acceptance.
+    </p>
+    <p class="welcome-body">
+      To take it up, press the seal below. Your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.
+    </p>
+    <div class="welcome-cta-block">
+      <button type="button" class="welcome-cta" id="claimBtn">Claim my place →</button>
+      <p class="welcome-cta-note">By pressing this, your founding membership is confirmed and a sign-in link will be sent to <span id="claimEmail" style="font-style:italic"></span>.</p>
+    </div>
+  </div>
+
+  <div id="stateClaimed" class="welcome-state" hidden>
+    <p class="welcome-body">
+      Your founding place is confirmed. <strong>Welcome to Clan Ó Comáin.</strong>
+    </p>
+    <p class="welcome-body">
+      To enter the members' area — where you will see your dignity, your certificate details, and the company of those who stand beside you — follow the door below. A sign-in link will be sent to your inbox.
+    </p>
+    <div class="welcome-cta-block">
+      <a href="/members/login.html" class="welcome-cta" id="continueCta">Continue to your members area →</a>
+      <p class="welcome-cta-note">A one-time access link will be sent to your inbox.</p>
+    </div>
+  </div>
+
+  <div id="stateLapsed" class="welcome-state" hidden>
+    <p class="welcome-body">
+      The window for claiming this founding place has passed.
+    </p>
+    <p class="welcome-body">
+      A founding gift is held open for one year from the day it is offered. If you would still like to be welcomed to Clan Ó Comáin, please write to the clan at <a href="mailto:clan@ocomain.org" style="color:var(--burgundy);text-decoration:underline">clan@ocomain.org</a> and we will be in touch.
+    </p>
+  </div>
+
+  <div id="stateInvalid" class="welcome-state" hidden>
+    <p class="welcome-body">
+      We could not find a founding place under this link.
+    </p>
+    <p class="welcome-body">
+      The claim link in your welcome email may have expired, or the link in your address bar may be incomplete. Please return to your email and click the original button — or write to <a href="mailto:clan@ocomain.org" style="color:var(--burgundy);text-decoration:underline">clan@ocomain.org</a> if you cannot find it.
+    </p>
   </div>
 
   <!-- Footer — motto only. No nav, no other links. The page is a
@@ -156,49 +209,193 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 
 <script>
 // ─────────────────────────────────────────────────────────────────
-// Personalisation + CTA wiring.
+// State resolution + claim wiring.
 //
-// The founder email's CTA URL passes ?email=...&name=... so we can:
-//   1. Greet the recipient by first name on this page
-//   2. Pre-fill the email field on /members/login.html when they
-//      click 'Continue'
+// The page supports two URL formats:
 //
-// Both are URL-decoded and mildly sanity-checked. If either is
-// missing or malformed, we degrade gracefully:
-//   - missing name  → just shows 'Welcome home' (no comma+name)
-//   - missing email → 'Continue' link is plain, login page has no
-//                     pre-fill (recipient types email manually)
+//   1. NEW (post-2026-04-28): /founder-welcome.html?token=<uuid>
+//      The token resolves to a pending_founder_gifts row via
+//      GET /api/lookup-pending-founder-gift. The page then shows
+//      one of the four states based on the row's status:
+//        - pending  → Claimable (button POSTs to claim endpoint)
+//        - claimed  → Already claimed (Continue button)
+//        - lapsed   → Friendly lapsed message
+//
+//   2. LEGACY (pre-2026-04-28): /founder-welcome.html?email=X&name=Y
+//      For welcome emails sent before the deferred-acceptance flow
+//      shipped — the recipient already has a member row; the page
+//      just shows the 'Continue to your members area' button with
+//      email pre-fill. This branch is preserved indefinitely so
+//      old emails in inboxes keep working.
+//
+// State transition:
+//   loading → claimable → claimed (via claim button POST)
+//   loading → claimed (legacy URL OR token lookup returns claimed)
+//   loading → lapsed
+//   loading → invalid
 // ─────────────────────────────────────────────────────────────────
 
 const params = new URLSearchParams(window.location.search);
+const token = (params.get('token') || '').trim();
 
-// Name: must be 1-40 chars, letters / spaces / common punctuation.
-// Anything weirder gets ignored — defensive against URL tampering.
+// Legacy URL params — used only if no token is present.
+const legacyEmail = (params.get('email') || '').trim();
+const legacyName  = (params.get('name')  || '').trim();
+
+// Validators (kept from previous version).
 function isValidName(s) {
   if (!s || s.length < 1 || s.length > 40) return false;
   return /^[\p{L}\p{M}\s'’\-.]+$/u.test(s);
 }
-
-// Email: same loose check used elsewhere in the codebase.
 function isEmailLike(s) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s || '');
 }
-
-// Apply name to greeting if valid.
-const rawName = (params.get('name') || '').trim();
-if (isValidName(rawName)) {
-  const escaped = rawName
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  document.getElementById('welcomeName').textContent = ', ' + rawName;
-  // Slight title tweak to make it more graceful with name appended:
-  // 'Welcome home, Antoin' instead of 'Welcome home,Antoin'.
+function isUuid(s) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s || '');
+}
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// Apply email to the Continue CTA so login.html can pre-fill.
-const rawEmail = (params.get('email') || '').trim();
-if (isEmailLike(rawEmail)) {
-  const cta = document.getElementById('continueCta');
-  cta.href = '/members/login.html?email=' + encodeURIComponent(rawEmail) + '&founder=1';
+function showState(id) {
+  document.querySelectorAll('.welcome-state').forEach(s => { s.hidden = true; });
+  const target = document.getElementById(id);
+  if (target) target.hidden = false;
+}
+
+function setGreetingName(rawName) {
+  if (!isValidName(rawName)) return;
+  document.getElementById('welcomeName').textContent = ', ' + rawName;
+}
+
+// ── ROUTE 1: token-based lookup ─────────────────────────────────────
+async function resolveByToken() {
+  try {
+    const res = await fetch('/api/lookup-pending-founder-gift?token=' + encodeURIComponent(token));
+    if (res.status === 404) {
+      showState('stateInvalid');
+      return;
+    }
+    if (!res.ok) {
+      // Any other error — treat as invalid for the user. Logged for us.
+      console.error('lookup failed:', res.status);
+      showState('stateInvalid');
+      return;
+    }
+    const data = await res.json();
+    if (!data || !data.ok) {
+      showState('stateInvalid');
+      return;
+    }
+
+    // Greet by first name regardless of state.
+    const firstName = (data.recipient_name || '').trim().split(/\s+/)[0];
+    setGreetingName(firstName);
+
+    if (data.status === 'lapsed') {
+      showState('stateLapsed');
+      return;
+    }
+    if (data.status === 'claimed') {
+      // Already claimed — show the 'continue to members area' state.
+      // Wire the Continue link with email pre-fill.
+      if (data.recipient_email) {
+        document.getElementById('continueCta').href =
+          '/members/login.html?email=' + encodeURIComponent(data.recipient_email) + '&founder=1';
+      }
+      showState('stateClaimed');
+      return;
+    }
+    if (data.status === 'pending' && data.claimable) {
+      // Show the claim button. Pre-fill the email span on the note line.
+      document.getElementById('claimEmail').textContent = data.recipient_email || '';
+      // Wire the claim button.
+      const btn = document.getElementById('claimBtn');
+      btn.addEventListener('click', () => claimGift(data.recipient_email));
+      showState('stateClaimable');
+      return;
+    }
+
+    // Unrecognised status — fall through to invalid.
+    showState('stateInvalid');
+  } catch (e) {
+    console.error('resolveByToken threw:', e);
+    showState('stateInvalid');
+  }
+}
+
+// ── CLAIM ACTION ────────────────────────────────────────────────────
+async function claimGift(email) {
+  const btn = document.getElementById('claimBtn');
+  btn.disabled = true;
+  btn.textContent = 'Claiming…';
+
+  try {
+    const res = await fetch('/api/claim-founder-gift', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.status === 410) {
+      // Lapsed during/before claim. Switch to lapsed state.
+      showState('stateLapsed');
+      return;
+    }
+    if (!res.ok) {
+      btn.disabled = false;
+      btn.textContent = 'Claim my place →';
+      // Surface a small error on the button area. Best-effort —
+      // most cases here are server bugs, not user mistakes.
+      const note = btn.parentElement.querySelector('.welcome-cta-note');
+      if (note) {
+        note.style.color = 'var(--burgundy)';
+        note.textContent = 'Could not complete the claim. Please try again, or write to clan@ocomain.org.';
+      }
+      console.error('claim failed:', res.status, data);
+      return;
+    }
+
+    // Success — flip to claimed state. Wire the Continue link with
+    // the recipient's email so the magic-link form is pre-filled.
+    if (email || (data.member && data.member.email)) {
+      const continueEmail = (data.member && data.member.email) || email;
+      document.getElementById('continueCta').href =
+        '/members/login.html?email=' + encodeURIComponent(continueEmail) + '&founder=1';
+    }
+    showState('stateClaimed');
+  } catch (e) {
+    console.error('claimGift threw:', e);
+    btn.disabled = false;
+    btn.textContent = 'Claim my place →';
+  }
+}
+
+// ── ROUTE 2: legacy email/name URL ──────────────────────────────────
+function resolveLegacy() {
+  // Pre-2026-04-28 emails — recipient already has a member row.
+  // Just show the claimed state with the Continue button.
+  if (isValidName(legacyName)) {
+    setGreetingName(legacyName);
+  }
+  if (isEmailLike(legacyEmail)) {
+    document.getElementById('continueCta').href =
+      '/members/login.html?email=' + encodeURIComponent(legacyEmail) + '&founder=1';
+  }
+  showState('stateClaimed');
+}
+
+// ── ROUTER ──────────────────────────────────────────────────────────
+if (token && isUuid(token)) {
+  resolveByToken();
+} else if (isEmailLike(legacyEmail)) {
+  // Legacy URL format. No token, but we have an email — assume the
+  // recipient is already a member from the pre-deferred flow.
+  resolveLegacy();
+} else {
+  // Neither a valid token nor a legacy email — show invalid state.
+  showState('stateInvalid');
 }
 </script>
 

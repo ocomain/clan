@@ -1,18 +1,34 @@
 // netlify/functions/list-founder-gifts.js
 //
 // Read endpoint for the founder admin tool's status table. Returns
-// every member ever created via the founder admin tool, in
-// reverse-chronological order, with their current state derived
-// from the row's other fields:
+// the union of:
 //
-//   pending  → comped_at set but cert_published_at null AND auth_user_id
-//              null (we created the row, never sent? shouldn't happen
-//              in normal flow, included for diagnostic completeness)
-//   sent     → comped_at set, but recipient hasn't signed in yet
-//              (auth_user_id null = magic-link never claimed)
-//   claimed  → recipient signed in at least once (auth_user_id set)
-//              but hasn't published their cert yet
-//   sealed   → cert_published_at set
+//   1. PENDING + LAPSED gifts from `pending_founder_gifts` (the new
+//      deferred-acceptance flow shipped 2026-04-28). These are
+//      gifts where Fergus has sent the welcome email but the
+//      recipient has not yet clicked 'Claim my place' on the
+//      welcome page (or, for lapsed, did not click within 1 year).
+//      Note: pending_founder_gifts.status='claimed' rows are NOT
+//      surfaced here — once the recipient claims, the row in
+//      `members` (created on claim) carries the live state.
+//
+//   2. SENT + CLAIMED + SEALED from `members` where comped_by_chief.
+//      These are members who either:
+//      - claimed via the new flow (auth_user_id set on creation,
+//        so they appear as 'claimed' here from the moment of claim)
+//      - or were created via the legacy direct-insert flow (pre-
+//        2026-04-28) and may be in any state from 'sent' (never
+//        signed in) through 'sealed' (cert published).
+//
+// Status taxonomy:
+//   pending  → Recipient has not pressed 'Claim my place'. New flow.
+//              Pending row exists; no member row yet.
+//   lapsed   → 1 year passed without claim. Pending row terminal;
+//              no member row.
+//   sent     → Member row created (legacy or claim) but auth_user_id
+//              missing — recipient never signed in. Mostly legacy.
+//   claimed  → Auth user exists but cert not published.
+//   sealed   → Cert published.
 //
 // AUTH: same allowlist as send-founder-gift. Bearer token + admin email.
 //
@@ -22,15 +38,18 @@
 //     gifts: [
 //       {
 //         id, email, name, tier, tier_label,
-//         comped_at, comped_note,
-//         status: 'pending' | 'sent' | 'claimed' | 'sealed',
-//         claimed_at: <ISO>|null,    // if claimed/sealed
+//         comped_at | created_at,    // moment of gift; same field name 'sent_at' for both
+//         comped_note,
+//         status: 'pending' | 'lapsed' | 'sent' | 'claimed' | 'sealed',
+//         expires_at: <ISO>|null,    // pending/lapsed only
+//         claimed_at: <ISO>|null,    // pending->claimed transition
 //         sealed_at:  <ISO>|null,    // if sealed
+//         source: 'pending' | 'member',  // which table this came from
 //       },
 //       ...
 //     ],
 //     count: <number>,
-//     counts_by_status: { pending, sent, claimed, sealed }
+//     counts_by_status: { pending, lapsed, sent, claimed, sealed }
 //   }
 
 const { supa, clanId, isFounderAdmin } = require('./lib/supabase');
@@ -80,7 +99,36 @@ exports.handler = async (event) => {
     };
   }
 
-  const { data, error } = await supa()
+  // ── Query 1: pending + lapsed from pending_founder_gifts ──────────
+  const { data: pendingRows, error: pendingErr } = await supa()
+    .from('pending_founder_gifts')
+    .select(`
+      id,
+      recipient_email,
+      recipient_name,
+      tier,
+      tier_label,
+      personal_note,
+      status,
+      created_at,
+      expires_at,
+      claimed_at,
+      member_id
+    `)
+    .eq('clan_id', cid)
+    .in('status', ['pending', 'lapsed'])
+    .order('created_at', { ascending: false });
+
+  if (pendingErr) {
+    console.error('list-founder-gifts pending query failed:', pendingErr.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Could not load pending founder gifts' }),
+    };
+  }
+
+  // ── Query 2: comped members (sent / claimed / sealed) ─────────────
+  const { data: memberRows, error: memberErr } = await supa()
     .from('members')
     .select(`
       id,
@@ -98,19 +146,41 @@ exports.handler = async (event) => {
     .eq('comped_by_chief', true)
     .order('comped_at', { ascending: false });
 
-  if (error) {
-    console.error('list-founder-gifts query failed:', error.message);
+  if (memberErr) {
+    console.error('list-founder-gifts members query failed:', memberErr.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Could not load founder gifts' }),
+      body: JSON.stringify({ error: 'Could not load comped members' }),
     };
   }
 
-  // Derive status per row from the existing fields. This avoids storing
-  // a redundant 'status' column that could go stale relative to the
-  // primary fields it's derived from.
-  const counts = { pending: 0, sent: 0, claimed: 0, sealed: 0 };
-  const gifts = (data || []).map(m => {
+  // ── Merge + status derivation ─────────────────────────────────────
+  const counts = { pending: 0, lapsed: 0, sent: 0, claimed: 0, sealed: 0 };
+
+  // Pending/lapsed rows from the new table.
+  const fromPending = (pendingRows || []).map(p => {
+    const status = p.status; // 'pending' or 'lapsed' — already canonical
+    counts[status] = (counts[status] || 0) + 1;
+    return {
+      id:           p.id,
+      email:        p.recipient_email,
+      name:         p.recipient_name,
+      tier:         p.tier,
+      tier_label:   p.tier_label,
+      sent_at:      p.created_at,
+      comped_note:  p.personal_note || null,
+      status,
+      expires_at:   p.expires_at,
+      claimed_at:   p.claimed_at,
+      sealed_at:    null,
+      source:       'pending',
+    };
+  });
+
+  // Members from the existing table — these are the rows where the
+  // gift either was claimed (new flow) or pre-dates the deferred
+  // flow entirely (legacy direct-insert).
+  const fromMembers = (memberRows || []).map(m => {
     let derivedStatus;
     if (m.cert_published_at) {
       derivedStatus = 'sealed';
@@ -119,29 +189,36 @@ exports.handler = async (event) => {
     } else if (m.comped_at) {
       derivedStatus = 'sent';
     } else {
-      derivedStatus = 'pending';
+      // Should not happen — a comped_by_chief row without comped_at
+      // would be a data integrity problem. Bucket as 'sent' for
+      // display rather than crashing the panel.
+      derivedStatus = 'sent';
     }
     counts[derivedStatus] = (counts[derivedStatus] || 0) + 1;
-
     return {
       id:           m.id,
       email:        m.email,
       name:         m.name,
       tier:         m.tier,
       tier_label:   m.tier_label,
-      comped_at:    m.comped_at,
+      sent_at:      m.comped_at,
       comped_note:  m.comped_note || null,
       status:       derivedStatus,
+      expires_at:   null,
+      claimed_at:   null,  // see comment in original — not derivable from members table
       sealed_at:    m.cert_published_at || null,
-      // claimed_at is harder to derive precisely — Supabase auth
-      // doesn't expose first-signin timestamp on the member row.
-      // For now, presence of auth_user_id signals 'claimed' but
-      // we don't have a precise date. Acceptable for v1; if Linda
-      // needs precise dates we add a member_first_signin_at column
-      // and stamp it from member-info.js on first link.
-      claimed_at:   null,
+      source:       'member',
     };
   });
+
+  // Combine and sort by sent_at desc — pending and members may
+  // interleave in time order.
+  const gifts = [...fromPending, ...fromMembers]
+    .sort((a, b) => {
+      const ta = a.sent_at ? new Date(a.sent_at).getTime() : 0;
+      const tb = b.sent_at ? new Date(b.sent_at).getTime() : 0;
+      return tb - ta;
+    });
 
   return {
     statusCode: 200,

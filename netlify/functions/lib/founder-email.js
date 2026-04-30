@@ -57,9 +57,16 @@ const SITE_URL = process.env.SITE_URL || 'https://www.ocomain.org';
  * @param {string} [opts.personalNote] - optional one-line note from Fergus,
  *                                       prepended above the Herald body in
  *                                       italic. Empty/null = no note.
+ * @param {string} opts.claimToken    - UUID claim token for the welcome-page
+ *                                       URL. Required since the deferred-
+ *                                       acceptance flow shipped (2026-04-28);
+ *                                       previously the URL carried email+name
+ *                                       directly, but now the token is the
+ *                                       handle and the welcome page does a
+ *                                       server lookup to populate name/email.
  * @returns {Promise<boolean>}
  */
-async function sendFounderWelcome({ to, recipientName, personalNote }) {
+async function sendFounderWelcome({ to, recipientName, personalNote, claimToken }) {
   // First-name extraction — same approach as publication-email.js.
   // Whitespace-split, take first token. 'Antoin Commane' → 'Antoin'.
   // Falls back to 'friend' if the name is somehow empty (shouldn't
@@ -74,18 +81,21 @@ async function sendFounderWelcome({ to, recipientName, personalNote }) {
     ? `<p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.7;margin:0 0 28px;padding:18px 20px;background:rgba(184,151,90,.08);border-left:3px solid #B8975A">${escapeHtml(personalNote.trim())}<br><span style="font-size:13px;color:#6C5A4A;margin-top:8px;display:inline-block">— Fergus</span></p>`
     : '';
 
-  // Claim button URL — points at the founder welcome landing page
-  // which orchestrates the actual sign-in. Includes:
-  //   - email: pre-fills the magic-link form on /members/login.html
-  //     after the recipient clicks 'Continue' on the landing page
-  //   - name: lets the landing page greet by first name
-  //     ('Welcome home, Antoin') without needing a backend lookup.
-  //     The name is already in the email; passing it via URL is the
-  //     simplest path to personalising the landing without auth.
-  // URL-encoded for safety.
-  const claimUrl = `${SITE_URL}/founder-welcome.html`
-    + `?email=${encodeURIComponent(to)}`
-    + `&name=${encodeURIComponent(firstName)}`;
+  // Claim URL — points at the founder welcome landing page with the
+  // claim_token. The page does a server-side lookup of the token to
+  // resolve recipient name + tier (so the URL no longer leaks the
+  // email and the name in plaintext URL params). Recipient clicks
+  // 'Claim my place' on that page → POST /api/claim-founder-gift →
+  // server creates the members row → magic-link login.
+  //
+  // Defensive guard: if no claimToken was provided (shouldn't happen
+  // in normal flow — caller is send-founder-gift.js which always
+  // passes one), fall back to the bare welcome URL. The recipient
+  // would land on a page that says 'invalid or expired claim link'
+  // and we'd see it in the logs.
+  const claimUrl = claimToken
+    ? `${SITE_URL}/founder-welcome.html?token=${encodeURIComponent(claimToken)}`
+    : `${SITE_URL}/founder-welcome.html`;
 
   // ── THE LOCKED EMAIL BODY ────────────────────────────────────────
   // This is the body verbatim from the chat lock. Every paragraph has

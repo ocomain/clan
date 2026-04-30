@@ -3,39 +3,38 @@
 // Backend endpoint for the founder admin tool. POST a recipient
 // (name, email, tier slug, optional one-line personal note from
 // Fergus); endpoint auth-gates the operator, validates the recipient
-// against the existing membership table, creates a `members` row
-// directly (no Stripe — this is a comped membership), then fires the
-// founder welcome email.
+// against the existing membership AND any open pending-gift, then
+// creates a `pending_founder_gifts` row and fires the founder
+// welcome email with a claim_token-bearing URL.
+//
+// IMPORTANT (changed 2026-04-28): this endpoint NO LONGER creates a
+// `members` row. The members row is created when the recipient
+// clicks the 'Claim my place' button on the welcome page, which
+// hits claim-founder-gift.js. The pending-gift row holds all the
+// info needed to materialise the member at claim time.
+//
+// Why: prevents the recipient from being auto-published to the
+// public Register (after the 30-day cert publication window) without
+// ever having said yes. Also keeps the founder-gift state visible
+// as 'pending' in the admin panel until the recipient acts.
 //
 // AUTH: Bearer token in Authorization header. Token is verified
 // against Supabase auth, and the resulting email is checked against
 // the founder-admin allowlist (lib/supabase.js → isFounderAdmin).
 // Currently allowlisted: clan@ocomain.org only.
 //
-// SHAPE OF THE CREATED MEMBER ROW: mirrors the gift-activation path
-// in stripe-webhook.js (see lines 210-235 there) with three small
-// differences specific to founder gifts:
+// SHAPE OF THE CREATED PENDING ROW:
+//   - status='pending', member_id=NULL
+//   - claim_token=<uuid> embedded in the welcome-email URL
+//   - expires_at=NOW()+1year (Phase 3 cron lapses unclaimed gifts)
+//   - tier/tier_label/tier_family captured at submit time, fixed
 //
-//   1. metadata.gift = true, metadata.comped_by_chief = true
-//      (so analytics distinguishes founder-gifts from paid gifts and
-//      from regular paid memberships)
-//   2. comped_by_chief, comped_at, comped_note columns set
-//      (added in migration 013, used to render the 'Founding Member
-//      by warrant of the Chief' italic line on the dashboard)
-//   3. stripe_customer_id and stripe_subscription_id stay null
-//      (no Stripe involvement — Fergus is paying out of pocket /
-//      treating these as the clan's gift)
-//
-// The expires_at is set to 1 year from now, matching the duration
-// of paid annual memberships. Renewal at year-end will need to be
-// considered separately — likely a "your founding gift expires in
-// 30 days, renew at clan tier" email, but that's a separate concern.
-//
-// IDEMPOTENCY: refuses if the email already exists as ANY member
-// (active, expired, founder-comped, or paid). Linda must explicitly
-// resolve duplicates outside this tool — by design, this endpoint
-// won't quietly upgrade an existing row to founder status. The
-// founder-admin tool is for NEW recipients only.
+// IDEMPOTENCY: refuses if the email already exists as a member OR
+// as an open pending founder-gift. Linda must explicitly resolve
+// duplicates outside this tool — by design, this endpoint won't
+// quietly re-issue a pending gift to the same recipient. Lapsed
+// pending gifts (1 year+ unclaimed) DO allow a fresh send, since
+// at that point the original is dead and a new offer is meaningful.
 
 const {
   supa,
@@ -45,10 +44,6 @@ const {
   TIER_BY_SLUG,
 } = require('./lib/supabase');
 const { sendFounderWelcome } = require('./lib/founder-email');
-
-// One year in ms — used to compute expires_at for the founder
-// membership. Mirrors annual paid memberships exactly.
-const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
 // Light validation — trim, lowercase, basic shape. Doesn't try to
 // validate deliverability (Resend will tell us if the address bounces).
@@ -201,109 +196,136 @@ exports.handler = async (event) => {
     };
   }
 
-  // ── 4. CREATE THE MEMBER ROW ──────────────────────────────────────
-  // Mirrors the gift-activation path in stripe-webhook.js. Three
-  // founder-specific differences: metadata.comped_by_chief, the
-  // comped_* columns from migration 013, and no Stripe linkage.
-  const now = new Date();
-  const expiresAt = new Date(now.getTime() + ONE_YEAR_MS);
+  // Also check for an open pending founder gift to the same address.
+  // We refuse to send a second pending gift while the first is still
+  // open — Fergus would be sending the recipient two welcome emails
+  // with two claim URLs, both of which would race when the recipient
+  // clicked. Lapsed pending gifts (>1 year unclaimed) are excluded
+  // here so a re-offer after the original lapses is allowed; that's
+  // a meaningful new act, not a duplicate.
+  const { data: existingPending, error: pendingLookupErr } = await supa()
+    .from('pending_founder_gifts')
+    .select('id, created_at, status')
+    .eq('clan_id', cid)
+    .ilike('recipient_email', recipientEmail)
+    .eq('status', 'pending')
+    .maybeSingle();
 
+  if (pendingLookupErr) {
+    console.error('founder gift pending lookup failed:', pendingLookupErr.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal: pending lookup failed' }),
+    };
+  }
+  if (existingPending) {
+    return {
+      statusCode: 409,
+      body: JSON.stringify({
+        error: 'A founder gift to this email is already pending',
+        existing_pending: {
+          created_at: existingPending.created_at,
+          status: existingPending.status,
+        },
+      }),
+    };
+  }
+
+  // ── 4. CREATE THE PENDING GIFT ROW ────────────────────────────────
+  // Replaces the previous direct-member-insert. The actual `members`
+  // row is created when the recipient clicks 'Claim my place' on
+  // the welcome page (claim-founder-gift.js). claim_token, status,
+  // and expires_at use the Postgres defaults from migration 017.
   const insertRes = await supa()
-    .from('members')
+    .from('pending_founder_gifts')
     .insert({
-      clan_id:                cid,
-      email:                  recipientEmail,
-      name:                   recipientName,
-      tier:                   tierInfo.tier,
-      tier_label:             tierInfo.label,
-      tier_family:            tierInfo.tier_family,
-      // No Stripe — this is a comped membership.
-      stripe_customer_id:     null,
-      stripe_subscription_id: null,
-      status:                 'active',
-      joined_at:              now.toISOString(),
-      renewed_at:             now.toISOString(),
-      expires_at:             expiresAt.toISOString(),
-      // Migration 013 columns. comped_by_chief is what the dashboard
-      // checks to render 'Founding Member by warrant of the Chief'.
-      comped_by_chief:        true,
-      comped_at:              now.toISOString(),
-      comped_note:            personalNote || null,
-      // Metadata mirrors gift entries for consistency in analytics.
-      metadata: {
-        gift: true,
-        comped_by_chief: true,
-        gifted_by_operator: operatorEmail,
-      },
+      clan_id:         cid,
+      recipient_email: recipientEmail,
+      recipient_name:  recipientName,
+      tier:            tierInfo.tier,
+      tier_label:      tierInfo.label,
+      tier_family:     tierInfo.tier_family,
+      personal_note:   personalNote || null,
+      // status, claim_token, created_at, expires_at all default in DB.
     })
-    .select('id, email, name, tier, tier_label, joined_at')
+    .select('id, claim_token, recipient_email, recipient_name, tier, tier_label, created_at, expires_at')
     .single();
 
   if (insertRes.error) {
-    console.error('founder gift insert failed:', insertRes.error.message);
+    console.error('founder gift pending insert failed:', insertRes.error.message);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: 'Could not create member row',
+        error: 'Could not create pending gift row',
         detail: insertRes.error.message,
       }),
     };
   }
 
-  const member = insertRes.data;
+  const pending = insertRes.data;
 
   // Log the event (best-effort — failure here doesn't fail the request).
+  // member_id is NULL on the event because no member exists yet —
+  // logEvent accepts a null member_id for events that aren't tied to
+  // a particular member (or in this case, a member-to-be).
   try {
     await logEvent({
       clan_id: cid,
-      member_id: member.id,
-      event_type: 'founder_gift_sent',
+      member_id: null,
+      event_type: 'founder_gift_pending_created',
       payload: {
-        recipient_email: recipientEmail,
-        tier: tierInfo.tier,
-        operator_email: operatorEmail,
+        pending_gift_id:  pending.id,
+        recipient_email:  recipientEmail,
+        tier:             tierInfo.tier,
+        operator_email:   operatorEmail,
         had_personal_note: !!personalNote,
       },
     });
   } catch (e) {
-    console.warn('founder_gift_sent event log failed (non-fatal):', e.message);
+    console.warn('founder_gift_pending_created event log failed (non-fatal):', e.message);
   }
 
   // ── 5. SEND THE WELCOME EMAIL ─────────────────────────────────────
-  // The email is the centrepiece of this whole tool. If sending fails,
-  // we still return success on the row creation but flag the email
-  // failure so the admin form can offer a 'Resend email' affordance.
-  // The member row is real either way — recipient is in the clan;
-  // they just may not have heard about it yet.
+  // The email is the centrepiece of this whole tool. The claim_token
+  // is passed so the email's CTA URL can carry it (recipient clicks
+  // → /founder-welcome.html?token=X → page reads token, looks it up,
+  // shows claim button). If sending fails, we still return success
+  // on the pending row but flag the failure so the admin form can
+  // offer 'Resend email' or, if the operator decides the pending is
+  // unrecoverable, they can delete the row and re-submit.
   let emailSent = false;
   try {
     emailSent = await sendFounderWelcome({
       to: recipientEmail,
       recipientName,
       personalNote,
+      claimToken: pending.claim_token,
     });
   } catch (e) {
     console.error('founder welcome email send threw:', e.message);
   }
 
   if (!emailSent) {
-    // Member row IS created, just email failed. Return 207 Multi-Status
+    // Pending row IS created, just email failed. Return 207 Multi-Status
     // (sort of — closest semantic match) with both bits of info so the
-    // admin form can show 'Member created, but email failed — retry?'
+    // admin form can show 'Pending gift created, but email failed —
+    // retry?'. Fergus can either delete the pending row and re-send,
+    // or the admin form could surface a one-shot 'resend' button.
     return {
       statusCode: 207,
       body: JSON.stringify({
         ok: true,
-        member: {
-          id: member.id,
-          email: member.email,
-          name: member.name,
-          tier: member.tier,
-          tier_label: member.tier_label,
-          joined_at: member.joined_at,
+        pending: {
+          id:               pending.id,
+          recipient_email:  pending.recipient_email,
+          recipient_name:   pending.recipient_name,
+          tier:             pending.tier,
+          tier_label:       pending.tier_label,
+          created_at:       pending.created_at,
+          expires_at:       pending.expires_at,
         },
         email_sent: false,
-        warning: 'Member created but welcome email failed to send. Check Resend logs and retry.',
+        warning: 'Pending gift created but welcome email failed to send. Check Resend logs and retry.',
       }),
     };
   }
@@ -313,13 +335,14 @@ exports.handler = async (event) => {
     statusCode: 201,
     body: JSON.stringify({
       ok: true,
-      member: {
-        id: member.id,
-        email: member.email,
-        name: member.name,
-        tier: member.tier,
-        tier_label: member.tier_label,
-        joined_at: member.joined_at,
+      pending: {
+        id:               pending.id,
+        recipient_email:  pending.recipient_email,
+        recipient_name:   pending.recipient_name,
+        tier:             pending.tier,
+        tier_label:       pending.tier_label,
+        created_at:       pending.created_at,
+        expires_at:       pending.expires_at,
       },
       email_sent: true,
     }),
