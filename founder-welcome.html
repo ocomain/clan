@@ -29,7 +29,31 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;min-height:100vh}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px}
+/* Body removed flex-center alignment 2026-04-30 — adding the brand
+   nav bar (non-link, recognition only) means the page now has
+   structure that competes with full-page vertical centring. The
+   nav sits flush at the top; the .page below it gets its own
+   horizontal centring + top padding for breathing room. */
+body{padding:0}
+
+/* Brand-only nav bar — visual recognition only, no clickable
+   targets (per request: 'no links but has the standard shield
+   logo so looks like the site'). Same ink + gold-border family
+   as /members chrome, so the welcome page reads as part of the
+   site rather than an island. Centered shield + name; no nav
+   links, no sign-in, no anything. The recipient's task is the
+   claim button below — the nav is just a frame. */
+.welcome-nav{background:var(--ink);border-bottom:2px solid var(--gold);padding:16px 0;display:flex;align-items:center;justify-content:center;gap:14px}
+.welcome-nav-shield{height:34px;width:auto;display:block}
+.welcome-nav-text{font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale,#F5ECD8);letter-spacing:.01em}
+.welcome-nav-text em{color:var(--gold-light,#D4B483);font-style:italic}
+
+/* Page wrapper — replaces what body used to be. Centers content
+   horizontally, gives top padding so the welcome-seal isn't
+   crammed against the nav, and uses flex column so children
+   (seal, title, body, CTA, footer) stack with auto-margin
+   centering. */
+.welcome-stage{display:flex;flex-direction:column;align-items:center;padding:60px 24px}
 
 .page{max-width:560px;width:100%;text-align:center}
 
@@ -79,8 +103,10 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
 .welcome-cta-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:380px;line-height:1.6;margin-top:4px}
 
 /* Footer — minimal. Just the motto, gives the page closure
-   without nav-spaghetti. */
-.welcome-foot{margin-top:80px;padding-top:36px;border-top:1px solid var(--rule);max-width:380px;width:100%;text-align:center}
+   without nav-spaghetti. margin:80px auto 0 horizontally
+   centers the footer block within the .page wrapper (without
+   the auto, max-width:380px would just sit flush left). */
+.welcome-foot{margin:80px auto 0;padding-top:36px;border-top:1px solid var(--rule);max-width:380px;width:100%;text-align:center}
 .welcome-foot-quote{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--ink);line-height:1.4;margin:0 0 6px;font-weight:500}
 .welcome-foot-trans{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--gold-deep)}
 
@@ -94,6 +120,21 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
 </head>
 <body>
 
+<!-- Brand-only nav bar — non-clickable, visual continuity with the
+     rest of the site. The recipient sees the same shield + name
+     they'd see on the homepage, so the welcome page reads as part
+     of Clan Ó Comáin rather than a standalone landing page. No nav
+     links, no sign-in CTA, no other interactive elements — the
+     single action on this page is the claim button below. The
+     <div> wrapping the brand is intentional (rather than an <a>
+     to the homepage): per the design request, the only path off
+     this page is forwards through the claim, not sideways. -->
+<div class="welcome-nav" role="banner" aria-label="Clan Ó Comáin">
+  <img src="/coat_of_arms.png" alt="" class="welcome-nav-shield" aria-hidden="true">
+  <span class="welcome-nav-text">Clan <em>Ó Comáin</em></span>
+</div>
+
+<div class="welcome-stage">
 <div class="page">
 
   <!-- Burgundy wax seal — same motif as the Register page header,
@@ -205,7 +246,8 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
     <p class="welcome-foot-trans">History must prevail.</p>
   </footer>
 
-</div>
+</div><!-- /.page -->
+</div><!-- /.welcome-stage -->
 
 <script>
 // ─────────────────────────────────────────────────────────────────
