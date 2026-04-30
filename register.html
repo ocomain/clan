@@ -233,21 +233,55 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
   </div>
 </nav>
 
-<!-- Mobile drawer — shown by toggleMenu() when the hamburger is
-     tapped at <800px viewport. Mirrors the link list from .nav-links
-     above. Lives at body level rather than inside .nav so the
-     drawer can be position:fixed and overlay full-screen. -->
-<div id="mobile-menu" class="mobile-menu">
-  <a href="/" class="mobile-link">Home</a>
-  <a href="surname-variants.html" class="mobile-link">Variants</a>
-  <a href="pedigree.html" class="mobile-link">Pedigree</a>
-  <a href="timeline.html" class="mobile-link">Timeline</a>
-  <a href="heartlands.html" class="mobile-link">Heartlands</a>
-  <a href="coat-of-arms.html" class="mobile-link">Crest</a>
-  <a href="patrons.html" class="mobile-link">Patrons</a>
-  <a href="privy-council.html" class="mobile-link">Council</a>
-  <a href="/members/" class="mobile-link">Members</a>
-  <a href="membership.html" class="mobile-link" style="color:var(--gold)">Join the clan →</a>
+<!-- GIFT STRIP — scroll-triggered. Same markup + behaviour as
+     other site pages (celtic-heritage-clan.html etc). Becomes
+     visible after the visitor scrolls past 500px, drawing
+     attention to the gift option. The Register is a particularly
+     good place for this — visitors browsing the Register may
+     be moved to gift a membership to a relative who isn't yet
+     listed. Mobile actions strip is the touch-equivalent. -->
+<style>
+#giftStrip{position:fixed;top:58px;left:0;right:0;z-index:97;background:#F8F4EC;border-bottom:2px solid #B8975A;padding:11px 0;box-shadow:0 3px 16px rgba(0,0,0,.15);transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#giftStrip.visible{transform:translateY(0);pointer-events:all}
+#giftStrip a{color:#0C1A0C!important;text-decoration:none!important;background:#B8975A}
+#mobileActions a{text-decoration:none!important}
+</style>
+<div id="giftStrip">
+  <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift.html'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+  </div>
+</div>
+
+<div id="mobileActions">
+  <div onclick="location.href='membership.html'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift.html'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+</div>
+
+<script>(function(){
+  var s=document.getElementById('giftStrip');
+  var m=document.getElementById('mobileActions');
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>500){s.classList.add('visible');m.classList.add('visible');}
+    else{s.classList.remove('visible');m.classList.remove('visible');}
+  },{passive:true});
+})();</script>
+
+<!-- Mobile drawer — uses the standard .nav-mobile-menu /
+     .nav-mobile-link / .nav-mobile-cta classes from shared.css.
+     My earlier attempt used homemade .mobile-menu classes which
+     were unstyled — this matches the rest of the site. -->
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="/" class="nav-mobile-link">Home</a>
+  <a href="surname-variants.html" class="nav-mobile-link">Variants</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="coat-of-arms.html" class="nav-mobile-link">Crest</a>
+  <a href="patrons.html" class="nav-mobile-link">Patrons</a>
+  <a href="privy-council.html" class="nav-mobile-link">Council</a>
+  <a href="/members/" class="nav-mobile-link">Members</a>
+  <a href="membership.html" class="nav-mobile-cta">Join the clan</a>
 </div>
 <script>
 function toggleMenu(){
