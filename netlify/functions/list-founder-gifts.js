@@ -100,31 +100,58 @@ exports.handler = async (event) => {
   }
 
   // ── Query 1: pending + lapsed from pending_founder_gifts ──────────
-  const { data: pendingRows, error: pendingErr } = await supa()
-    .from('pending_founder_gifts')
-    .select(`
-      id,
-      recipient_email,
-      recipient_name,
-      tier,
-      tier_label,
-      personal_note,
-      status,
-      created_at,
-      expires_at,
-      claimed_at,
-      member_id
-    `)
-    .eq('clan_id', cid)
-    .in('status', ['pending', 'lapsed'])
-    .order('created_at', { ascending: false });
+  // Wrapped in defensive try/log: if the table doesn't exist yet
+  // (migration 017 hasn't run in this environment), we log loudly
+  // and continue with just the members-side query. This keeps the
+  // admin panel functional in environments where the migration
+  // hasn't been applied yet, rather than 500-erroring the whole
+  // endpoint and making both the legacy gifts and any new send
+  // invisible. Once the migration runs, this branch picks up
+  // automatically. Any OTHER error (auth, network, real DB issue)
+  // still 500s — only the specific 'relation does not exist' code
+  // is treated as 'continue without pending data'.
+  let pendingRows = [];
+  try {
+    const pendingQ = await supa()
+      .from('pending_founder_gifts')
+      .select(`
+        id,
+        recipient_email,
+        recipient_name,
+        tier,
+        tier_label,
+        personal_note,
+        status,
+        created_at,
+        expires_at,
+        claimed_at,
+        member_id
+      `)
+      .eq('clan_id', cid)
+      .in('status', ['pending', 'lapsed'])
+      .order('created_at', { ascending: false });
 
-  if (pendingErr) {
-    console.error('list-founder-gifts pending query failed:', pendingErr.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Could not load pending founder gifts' }),
-    };
+    if (pendingQ.error) {
+      // Postgres 'relation does not exist' = 42P01. Supabase surfaces
+      // this as code '42P01' on the error object, but also via the
+      // message string. Check both for resilience.
+      const isMissingTable = pendingQ.error.code === '42P01'
+        || /relation .* does not exist/i.test(pendingQ.error.message || '');
+      if (isMissingTable) {
+        console.warn('list-founder-gifts: pending_founder_gifts table missing — continuing with members query only. Run migration 017.');
+      } else {
+        console.error('list-founder-gifts pending query failed:', pendingQ.error.message);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ error: 'Could not load pending founder gifts' }),
+        };
+      }
+    } else {
+      pendingRows = pendingQ.data || [];
+    }
+  } catch (e) {
+    console.error('list-founder-gifts pending query threw:', e.message);
+    // Same defensive posture — log and continue.
   }
 
   // ── Query 2: comped members (sent / claimed / sealed) ─────────────
