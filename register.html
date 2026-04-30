@@ -23,6 +23,18 @@
      note no 'er') so there's no actual conflict, just defensive
      ordering. -->
 <link rel="stylesheet" href="/shared.css">
+<!-- Nav background colour override — the Register page's local
+     --ink is #1A1410 (brown-black) used for body text, while the
+     canonical site nav green is #0F1F0F (dark forest). Without
+     these overrides, .nav and .nav-mobile-menu inherit the
+     wrong colour from var(--ink) on this page. We don't change
+     the local --ink variable because Register's body text uses
+     it everywhere; we just hard-code the green for nav surfaces.
+     Loaded after shared.css so these win on specificity. -->
+<style>
+  .nav{background:#0F1F0F !important}
+  .nav-mobile-menu{background:#0F1F0F !important}
+</style>
 <style>
 :root{
   --cream:#F7F4ED;
