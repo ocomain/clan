@@ -10,6 +10,23 @@
   <link rel="stylesheet" href="/shared.css">
   <link rel="icon" href="/favicon.ico">
   <style>
+    /* :root variables — added 2026-04-30. The admin page references
+       --burgundy, --burgundy-deep, --gold-faint, --rule, plus a
+       cream warmer than the shared.css default to match the rest
+       of the heritage-styled pages (register.html, honours.html).
+       These were not defined here originally — the page had been
+       silently relying on browser defaults for backgrounds (e.g.
+       the .btn-send button would fall back to the system grey
+       button fill rather than show as burgundy). On some platform
+       renderings this resulted in an effectively-invisible button
+       on a white card background, which Fergus reported on
+       2026-04-30. The value set here mirrors register.html. */
+    :root{
+      --burgundy:#6B1F1F;
+      --burgundy-deep:#4A1010;
+      --gold-faint:rgba(184,151,90,.22);
+      --rule:rgba(184,151,90,.18);
+    }
     body{background:var(--cream);min-height:100vh;margin:0}
 
     /* HEADER — same chrome as the rest of /members so the admin tool
