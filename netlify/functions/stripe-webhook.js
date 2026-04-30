@@ -821,6 +821,16 @@ exports.handler = async (event) => {
   // Stripe fires this event when a Checkout Session expires without being paid
   // (default expiry: 24 hours). This is how we catch visitors who reached the
   // payment page but abandoned before completing.
+  //
+  // DEDUPE (added 2026-04-30): the daily-abandoned-sweep cron also
+  // sends this same email if the application is still pending after
+  // 24 hours. Without a shared gate, an abandoned applicant can
+  // receive two reminders within hours of each other (one from this
+  // event, one from the next cron tick). We share the same
+  // applications.reminder_sent_at column the cron uses: check it
+  // first, only send if NULL, then stamp it. The cron's query also
+  // filters on reminder_sent_at IS NULL so it'll skip whichever
+  // path didn't fire first.
   if (stripeEvent.type === 'checkout.session.expired') {
     const session = stripeEvent.data.object;
     const customerEmail = session.customer_details?.email || session.customer_email;
@@ -839,7 +849,47 @@ exports.handler = async (event) => {
         } catch (e) { productName = 'Clan Membership'; }
       }
       const tier = matchTier(productName);
-      await sendAbandonedReminder(customerEmail, customerName, tier.name);
+
+      // Look up the application row by email. If found and a reminder
+      // has already been sent, skip — we're crossing a path with the
+      // cron that already handled it. If found and reminder is null,
+      // stamp it AFTER successful send. If no application row exists
+      // (shouldn't normally happen — applications are written before
+      // checkout — but Stripe sessions can be created via gift flow
+      // or future paths that bypass applications), still send (the
+      // dedup target doesn't exist, so no duplicate is possible).
+      let appRow = null;
+      try {
+        const cid = await clanId();
+        const appLookup = await supa()
+          .from('applications')
+          .select('id, reminder_sent_at')
+          .eq('clan_id', cid)
+          .ilike('email', customerEmail)
+          .order('submitted_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        appRow = appLookup.data;
+      } catch (e) {
+        console.warn('abandoned reminder: application lookup failed (non-fatal — sending anyway):', e.message);
+      }
+
+      if (appRow && appRow.reminder_sent_at) {
+        console.log(`[abandoned] skipping — reminder already sent at ${appRow.reminder_sent_at} for ${customerEmail}`);
+      } else {
+        try {
+          await sendAbandonedReminder(customerEmail, customerName, tier.name);
+          if (appRow) {
+            await supa()
+              .from('applications')
+              .update({ reminder_sent_at: new Date().toISOString() })
+              .eq('id', appRow.id);
+          }
+          console.log(`[abandoned] reminder sent to ${customerEmail} via stripe session.expired`);
+        } catch (e) {
+          console.error('[abandoned] reminder send failed:', e.message);
+        }
+      }
     }
   }
 
