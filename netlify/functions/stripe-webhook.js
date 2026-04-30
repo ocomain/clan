@@ -170,9 +170,37 @@ exports.handler = async (event) => {
             .eq('email', recipientEmail)
             .maybeSingle();
 
-          let member, upsertErr;
+          // Phase 2 (2026-04-30) — DEFERRED ACCEPTANCE for paid gifts.
+          // Splits the recipient handling into two paths:
+          //
+          //   A. Existing-recipient gift (tier upgrade): the recipient
+          //      is already a clan member. They've already opted in
+          //      to the clan, so no further acceptance is needed —
+          //      we update their member row immediately to reflect
+          //      the new tier. Same as the pre-Phase-2 behaviour for
+          //      this case.
+          //
+          //   B. New-recipient gift: the recipient is NOT yet a
+          //      member. Phase 2 defers member creation to the
+          //      claim-click moment. We don't INSERT a member row
+          //      here; we leave member=null. The gift row UPDATE
+          //      below will write status='paid' + member_id=null
+          //      (rather than 'claimed' + member_id=X). The
+          //      recipient must press 'Claim my place' on the
+          //      welcome page (gift-welcome.html) to materialise
+          //      the member row via /api/claim-paid-gift.
+          //
+          // Why split: gifting to an existing member is a tier
+          // change, not a clan introduction. Forcing them to
+          // re-accept would be confusing ('I'm already a member,
+          // what is this?'). Gifting to a new person IS a clan
+          // introduction; consent matters.
+          let member = null;
+          let upsertErr = null;
+
           if (existingRecipient) {
-            // Gift upgrade on an existing member — preserve original join date.
+            // PATH A: existing member → UPDATE tier in place. No
+            // acceptance needed — they're already in the clan.
             const updateRes = await supa()
               .from('members')
               .update({
@@ -208,51 +236,67 @@ exports.handler = async (event) => {
               });
             }
           } else {
-            // Brand new gift recipient — INSERT.
-            const insertRes = await supa()
-              .from('members')
-              .insert({
-                clan_id,
-                email:                  recipientEmail,
-                name:                   recipientName,
-                tier:                   tierInfo.tier,
-                tier_label:             tierInfo.label,
-                tier_family:            tierInfo.tier_family,
-                // Stripe customer/subscription belong to the BUYER, not the
-                // member — keep them null on the member row so the recipient
-                // doesn't get Stripe renewal receipts. Buyer's subscription
-                // is tracked on the gift row.
-                stripe_customer_id:     null,
-                stripe_subscription_id: null,
-                status:                 'active',
-                joined_at:              now.toISOString(),
-                renewed_at:             now.toISOString(),
-                expires_at:             expiresAt ? expiresAt.toISOString() : null,
-                metadata:               { gift: true, buyer_name: buyerName, buyer_email: buyerEmail },
-              })
-              .select('id, email, name, tier, tier_label, tier_family, joined_at')
-              .single();
-            member = insertRes.data;
-            upsertErr = insertRes.error;
+            // PATH B: brand-new recipient → DEFER. No member row yet.
+            // The gift row update below stores recipient details +
+            // claim_token; member is materialised on /api/claim-paid-gift.
+            console.log(`[gift Phase 2] deferring member creation for new recipient ${recipientEmail} until claim`);
           }
 
           if (upsertErr) {
             console.error('gift member insert/update failed:', upsertErr.message);
           } else {
-            // 2. Update/insert the gift row, linking it to the created member.
+            // 2. Update/insert the gift row.
+            //
+            // Phase 2 (2026-04-30): for NEW recipients, member.id is
+            // null (deferred). The gift row stores recipient details
+            // + status='paid' + member_id=null + a claim_token. The
+            // welcome page resolves the token and the recipient
+            // claims via /api/claim-paid-gift, which materialises
+            // the member row and links via member_id.
+            //
+            // For EXISTING recipients (tier upgrade), member.id is
+            // set immediately — we mark the gift as 'claimed' since
+            // there's no acceptance step (they're already a member).
+            //
+            // We capture the gift row's claim_token after write so
+            // we can pass it to sendGiftRecipientWelcome below.
+            const isDeferred = !member;
+            const giftRowStatus = isDeferred ? 'paid' : 'claimed';
+            const giftMemberId = member ? member.id : null;
+            const giftClaimedAt = isDeferred ? null : now.toISOString();
+            const giftExpiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000).toISOString();
+
+            let giftRow;
             if (giftId) {
-              await supa()
+              const updRes = await supa()
                 .from('gifts')
                 .update({
-                  status: 'paid',
+                  status: giftRowStatus,
                   stripe_session_id: session.id,
-                  member_id: member.id,
+                  member_id: giftMemberId,
                   sent_to_recipient_at: now.toISOString(),
+                  claimed_at: giftClaimedAt,
+                  // expires_at — only set if not already set (don't
+                  // overwrite a pre-existing value from gift insert
+                  // at checkout time).
                 })
-                .eq('id', giftId);
+                .eq('id', giftId)
+                .select('id, claim_token, expires_at')
+                .single();
+              giftRow = updRes.data;
+              // Backfill expires_at if missing (safety for legacy rows).
+              if (giftRow && !giftRow.expires_at) {
+                await supa()
+                  .from('gifts')
+                  .update({ expires_at: giftExpiresAt })
+                  .eq('id', giftId);
+                giftRow.expires_at = giftExpiresAt;
+              }
             } else {
-              // Metadata had recipient info but no gift_id — insert a fresh gift row.
-              await supa().from('gifts').insert({
+              // Metadata had recipient info but no gift_id — insert
+              // a fresh gift row. claim_token defaults to a fresh
+              // UUID; we capture it from the RETURNING data.
+              const insRes = await supa().from('gifts').insert({
                 clan_id,
                 buyer_email: buyerEmail,
                 buyer_name: buyerName,
@@ -264,29 +308,47 @@ exports.handler = async (event) => {
                 gift_mode: md.gift_mode === 'recurring' ? 'recurring' : 'onetime',
                 personal_message: personalMsg,
                 stripe_session_id: session.id,
-                member_id: member.id,
+                member_id: giftMemberId,
                 sent_to_recipient_at: now.toISOString(),
-                status: 'paid',
-              });
+                claimed_at: giftClaimedAt,
+                expires_at: giftExpiresAt,
+                status: giftRowStatus,
+                // claim_token: defaults to gen_random_uuid() in DB
+              }).select('id, claim_token, expires_at').single();
+              giftRow = insRes.data;
             }
-            await logEvent({ clan_id, member_id: member.id, event_type: 'gift_paid', payload: { tier: tierInfo.tier, amount, recipient_email: recipientEmail, buyer_email: buyerEmail } });
+            // Capture for downstream email send. Falls back to null
+            // if the row write didn't return data — sendGiftRecipientWelcome
+            // handles a missing token gracefully (renders without
+            // claim CTA).
+            const giftClaimToken = giftRow ? giftRow.claim_token : null;
+            const giftRowId = giftRow ? giftRow.id : giftId;
+
+            // Event log — uses giftRowId since member.id may be null
+            // for deferred new-recipient gifts.
+            await logEvent({
+              clan_id,
+              member_id: giftMemberId,
+              event_type: isDeferred ? 'gift_paid_pending_acceptance' : 'gift_paid',
+              payload: {
+                tier: tierInfo.tier,
+                amount,
+                recipient_email: recipientEmail,
+                buyer_email: buyerEmail,
+                gift_id: giftRowId,
+              },
+            });
 
             // ── BUYER-AS-SPONSOR TITLE AWARD ─────────────────────────
-            // The conversion is COMPLETE the moment the gift is paid:
-            // the buyer has done their part by bringing another to the
-            // clan. Their honours-ladder progress (Cara at 1, Onóir at
-            // 5, Ardchara at 15) and the title-award letter must fire
-            // here, NOT later when the recipient completes their family
-            // details. Otherwise the buyer is left in suspense (count
-            // shows on dashboard but the dignity field, Held in Honour
-            // row, register prefix, and email recognition never trigger
-            // until the recipient happens to publish — which may be
-            // days, weeks, or never).
+            // Phase 2: title award fires on PAYMENT regardless of
+            // whether the recipient ever claims the gift. The buyer
+            // has done their act of bringing-in by paying — sponsor
+            // credit attaches to that, not to the recipient's later
+            // engagement. countSponsoredBy() now counts gifts by
+            // status='paid'/'claimed', not just by member_id presence.
             //
-            // This block mirrors the post-conversion sequence in
-            // submit-family-details.js (lines ~387-428) — same evaluate,
-            // letter-send, stamp-on-success pattern. Kept inline rather
-            // than extracted to a helper because the two call sites
+            // Only runs if the buyer is themselves a clan member.
+            // Non-member gift buyers earn no title.
             // have different surrounding context (clan_id + supa
             // closure, error handling, etc.); a helper extraction is a
             // good refactor but not blocking for this fix.
@@ -321,7 +383,8 @@ exports.handler = async (event) => {
                           previous_title: previousTitleIrish,
                           count: sponsorCount,
                           source: 'gift_paid',
-                          recipient_member_id: member.id,
+                          recipient_member_id: member ? member.id : null,
+                          gift_id: giftRowId,
                         },
                       });
                       letterSent = true;
@@ -345,15 +408,23 @@ exports.handler = async (event) => {
             }
             // ─────────────────────────────────────────────────────────
 
-            // 3. Pre-create auth user for the recipient so first login is magic-link.
-            await ensureAuthUser(recipientEmail, recipientName);
+            // 3. Pre-create auth user for the recipient — only if the
+            //    member row exists (i.e., existing-recipient tier
+            //    upgrade). For Phase 2 deferred new-recipient gifts,
+            //    we create the auth user at claim time (in
+            //    claim-paid-gift.js), since we want to avoid creating
+            //    Supabase auth shells for people who may never claim.
+            if (member) {
+              await ensureAuthUser(recipientEmail, recipientName);
+            }
 
             // 4. CERT GENERATION DELIBERATELY OMITTED.
-            // Per the publication model (migration 011), the gift
-            // recipient must explicitly publish their cert via the
-            // members area. The recipient activation email routes them
-            // there. Auto-publication at day 30 catches anyone who
-            // never engages.
+            // Per the publication model, recipients must explicitly
+            // publish their cert via the members area. For Phase 2
+            // new-recipient gifts, no member exists yet — cert flow
+            // begins after they claim. For existing-recipient
+            // upgrades, the cert flow continues from their prior
+            // member state.
 
             giftContext = {
               recipientEmail, recipientName,
@@ -361,6 +432,10 @@ exports.handler = async (event) => {
               personalMsg,
               tierLabel: tierInfo.label,
               certDownloadUrl: null,  // recipient publishes themselves
+              // Phase 2 fields:
+              claimToken: giftClaimToken,        // null only if gift row write failed
+              isDeferred: !member,                // true = recipient must claim
+              expiresAt: giftRow ? giftRow.expires_at : null,
             };
           }
         }
@@ -864,7 +939,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
 // the members' area sign-in CTA (both for the recipient, not the buyer).
 // ──────────────────────────────────────────────────────────────────────────
 async function sendGiftRecipientWelcome(ctx) {
-  const { recipientEmail, recipientName, buyerName, buyerEmail, personalMsg, tierLabel, certDownloadUrl } = ctx;
+  const { recipientEmail, recipientName, buyerName, buyerEmail, personalMsg, tierLabel, certDownloadUrl, claimToken, isDeferred } = ctx;
   const tier = matchTier(tierLabel) || { name: tierLabel || 'Clan Membership', benefits: [] };
   const firstName = recipientName ? recipientName.split(' ')[0] : 'friend';
   const giverName = buyerName || buyerEmail || 'a friend';
@@ -878,11 +953,30 @@ async function sendGiftRecipientWelcome(ctx) {
     </div>
   ` : '';
 
-  // Cert claim CTA — same pattern as self-buyer email post-refactor.
-  // Direct cert download REMOVED. Recipient routes to members area
-  // login → publication flow. The activation IS the welcome — one
-  // email, one click, lands in members area, publishes cert.
-  const certBlock = `
+  // Acceptance/cert CTA — Phase 2 (2026-04-30) bifurcation:
+  //
+  //   1. If claimToken is set (new recipient via Phase 2 deferred-
+  //      acceptance flow): the recipient must press 'Claim my place'
+  //      on /gift-welcome.html?token=X to materialise their member
+  //      row. Until then no membership exists in their name, no
+  //      certificate is generated, and they don't appear on the
+  //      public Register. The CTA is the SINGLE action they need.
+  //
+  //   2. Otherwise (existing-recipient tier upgrade, or legacy
+  //      pre-Phase-2 path): they are already a member. The CTA
+  //      routes them to the cert publication flow as before, with
+  //      the 30-day auto-publication window.
+  const certBlock = claimToken
+    ? `
+    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Place in the Clan</p>
+      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your acceptance</p>
+      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">A gift, freely given. Press the seal below to take up your place — your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.</p>
+      <a href="https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px;border:1px solid #4A1010">Claim my place →</a>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A gift is held open for one year from the day it is offered. Until then, no membership exists in your name — the choice to take your place is yours.</p>
+    </div>
+  `
+    : `
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
@@ -985,9 +1079,10 @@ async function sendGiftRecipientWelcome(ctx) {
 // that the gift has been sent, and an invitation to gift another.
 // ──────────────────────────────────────────────────────────────────────────
 async function sendGiftBuyerConfirmation(ctx, productName, amount, currency) {
-  const { recipientEmail, recipientName, buyerEmail, buyerName, tierLabel } = ctx;
+  const { recipientEmail, recipientName, buyerEmail, buyerName, tierLabel, isDeferred } = ctx;
   const firstName = buyerName ? buyerName.split(' ')[0] : 'friend';
   const recipientDisplay = recipientName || recipientEmail;
+  const recipientFirst = (recipientDisplay.split(' ')[0] || 'your recipient');
   const tier = matchTier(tierLabel) || { name: tierLabel || 'Clan Membership' };
 
   const html = `<!DOCTYPE html>
@@ -1002,32 +1097,58 @@ async function sendGiftBuyerConfirmation(ctx, productName, amount, currency) {
   <div style="padding:40px">
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your gift of a <strong>${escapeHtml(tier.name)}</strong> membership of Clan Ó Comáin has been received and confirmed. A welcome email has just been sent to <strong>${escapeHtml(recipientDisplay)}</strong> at ${escapeHtml(recipientEmail)} — inviting them to confirm their certificate details and take their place in the Register.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Your gift of a <strong>${escapeHtml(tier.name)}</strong> membership of Clan Ó Comáin has been received and confirmed. ${isDeferred
+      ? `A welcome email has just been sent to <strong>${escapeHtml(recipientDisplay)}</strong> at ${escapeHtml(recipientEmail)} — inviting them to take up the place you've offered them.`
+      : `A welcome email has just been sent to <strong>${escapeHtml(recipientDisplay)}</strong> at ${escapeHtml(recipientEmail)} — inviting them to confirm their certificate details and take their place in the Register.`}</p>
 
-    <!-- "What happens next" — accurate to the publication flow.
-         Recipient receives one email, clicks once, lands in members area,
-         publishes their cert. We'll send the buyer a copy when that
-         happens (the keepsake email — see sendGiftBuyerCertKeepsake). -->
+    ${isDeferred ? `
+    <!-- "What happens next" — Phase 2 deferred-acceptance flow.
+         The recipient must press 'Claim my place' on the welcome
+         page; until then no membership exists in their name. The
+         buyer's sponsorship credit (Cara/Onóir/Ardchara) is
+         awarded immediately on payment regardless. -->
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 28px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">What happens next</p>
       <ol style="margin:0;padding-left:20px">
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email from this office, with your personal message and a single-click link to their Members' Area.</li>
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">There they confirm their certificate details — their name, an optional ancestor dedication — and publish it. The certificate is sealed, in their name, entered in the Register at Newhall House.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email with your personal message and a single button — <em>Claim my place</em>.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">When they press it, their place in the clan is confirmed. They will be invited to confirm their certificate details — their name, an optional ancestor dedication — and the certificate is sealed in their name and entered in the Register at Newhall House.</li>
         <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">We send you a copy of the published certificate as a keepsake of the gift you've given.</li>
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Kinfauns, The Commane — writes to them personally in the weeks that follow.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Commane — writes to them personally in the weeks that follow.</li>
       </ol>
     </div>
 
-    <!-- Nudge CTA — more prominent than 'we'd suggest a nudge' buried
-         in the previous list. Direct ask: tell your recipient to check
-         their inbox. The 30-day deadline gives a concrete reason. -->
-    <div style="background:rgba(12,26,12,.04);border:1px solid var(--gold-border, rgba(184,151,90,.3));border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
+    <!-- Phase 2 quiet word — sets correct expectations:
+         (1) the gift is held open for one year, not 30 days
+         (2) acceptance is the recipient's act, not auto -->
+    <div style="background:rgba(12,26,12,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 8px">A quiet word</p>
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">If you can, tell ${escapeHtml(recipientDisplay.split(' ')[0] || 'your recipient')} the email is on its way — sometimes our messages land in a quiet folder. They have <strong>30 days</strong> to publish their certificate; after that it auto-publishes in their name as it stands.</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">If you can, tell ${escapeHtml(recipientFirst)} the email is on its way — sometimes our messages land in a quiet folder. The gift is held open for <strong>one year</strong>; if it goes unanswered, your sponsorship credit stands either way, but the membership itself lapses.</p>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We'll write to you again when ${escapeHtml(recipientDisplay.split(' ')[0] || 'your recipient')} publishes their certificate, with their published copy as a keepsake.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We'll write to you again when ${escapeHtml(recipientFirst)} accepts and publishes their certificate, with their published copy as a keepsake.</p>
+    ` : `
+    <!-- Existing-recipient (tier upgrade) path — pre-Phase-2 wording.
+         The recipient is already a clan member; this gift updates
+         their tier. No 'claim my place' step. They have 30 days
+         to refine their cert if newly issued, or it's already
+         sealed if this is a tier upgrade for an existing member. -->
+    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 28px;border-radius:0 2px 2px 0">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">What happens next</p>
+      <ol style="margin:0;padding-left:20px">
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email from this office with your personal message and a single-click link to their Members' Area.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">There they confirm their certificate details — their name, an optional ancestor dedication — and publish it. The certificate is sealed, in their name, entered in the Register at Newhall House.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">We send you a copy of the published certificate as a keepsake of the gift you've given.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Commane — writes to them personally in the weeks that follow.</li>
+      </ol>
+    </div>
 
+    <div style="background:rgba(12,26,12,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 8px">A quiet word</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">If you can, tell ${escapeHtml(recipientFirst)} the email is on its way — sometimes our messages land in a quiet folder.</p>
+    </div>
+
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We'll write to you again when ${escapeHtml(recipientFirst)} publishes their certificate, with their published copy as a keepsake.</p>
+    `}
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 28px">If you have any questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and I will respond on behalf of the Chief.</p>
 
     <!-- Another gift CTA -->

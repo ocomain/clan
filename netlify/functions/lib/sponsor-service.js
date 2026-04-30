@@ -358,23 +358,44 @@ async function countSponsoredBy(memberId) {
   );
 
   // Now fetch gifts by buyer_email — we need the sponsor's email.
-  let giftMemberIds = [];
+  let giftDedupIds = [];
   if (giftQuery.data?.email) {
     const sponsorEmail = String(giftQuery.data.email).toLowerCase().trim();
+    // Phase 2 (2026-04-30) — count paid gifts toward the sponsor's
+    // tally regardless of whether the recipient has claimed yet.
+    // Previously we only counted gifts where member_id IS NOT NULL,
+    // which meant the buyer's Cara/Onóir/Ardchara dignity didn't
+    // attach until the recipient happened to claim. Phase 2 design
+    // says: 'sponsor credit on payment, regardless of acceptance.'
+    //
+    // Status filter: 'paid' covers the new flow's pending-acceptance
+    // state; 'pending_acceptance' is a synonym we may write in some
+    // paths; 'claimed' covers post-acceptance and pre-Phase-2 rows.
+    // Excludes: 'lapsed' (gift expired unclaimed) and 'paid_no_recipient'
+    // (legacy fallback row with no actual recipient).
+    //
+    // Dedup strategy: when member_id is set, we use it (to dedup
+    // against invitations to the same person). When NULL (deferred),
+    // we use 'gift:' + gift.id as a synthetic dedup key — distinct
+    // from any member UUID, so it counts as one act-of-bringing-in
+    // without false-collapsing with anything else.
     const { data: gifts, error: giftsErr } = await supa()
       .from('gifts')
-      .select('member_id')
+      .select('id, member_id, status')
       .ilike('buyer_email', sponsorEmail)
-      .not('member_id', 'is', null);
+      .in('status', ['paid', 'pending_acceptance', 'claimed']);
     if (giftsErr) {
       console.warn('countSponsoredBy: gifts lookup failed:', giftsErr.message);
     } else {
-      giftMemberIds = (gifts || []).map((r) => r.member_id).filter(Boolean);
+      giftDedupIds = (gifts || []).map((r) => r.member_id || ('gift:' + r.id));
     }
   }
 
-  // Union the two sets — distinct recipient member_ids.
-  for (const id of giftMemberIds) {
+  // Union the two sets — distinct recipient identifiers (member_id
+  // for claimed rows, synthetic 'gift:<id>' for unclaimed Phase 2
+  // gifts). The Set naturally dedupes invite+gift to the same
+  // person (both resolve to the same member_id).
+  for (const id of giftDedupIds) {
     invertedIds.add(id);
   }
 

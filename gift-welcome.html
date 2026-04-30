@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- Robots: noindex,nofollow. Anyone landing here arrived via a
+     personal email, not a public crawl. The page is shareable by URL
+     but shouldn't surface in search results. -->
+<meta name="robots" content="noindex,nofollow">
+<title>A gift awaits — Clan Ó Comáin</title>
+<meta name="description" content="A gift of clan membership awaits — claim it now at Clan Ó Comáin.">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F7F4ED;
+  --cream-warm:#F0EADC;
+  --ink:#1A1410;
+  --ink-soft:#3D2D1F;
+  --ink-muted:#5A4A3A;
+  --gold:#B8975A;
+  --gold-deep:#8B6F32;
+  --gold-faint:rgba(184,151,90,.18);
+  --burgundy:#6B1F1F;
+  --burgundy-deep:#4A1010;
+  --rule:rgba(26,20,16,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;min-height:100vh}
+/* Body removed flex-center alignment 2026-04-30 — adding the brand
+   nav bar (non-link, recognition only) means the page now has
+   structure that competes with full-page vertical centring. The
+   nav sits flush at the top; the .page below it gets its own
+   horizontal centring + top padding for breathing room. */
+body{padding:0}
+
+/* Brand-only nav bar — visual recognition only, no clickable
+   targets (per request: 'no links but has the standard shield
+   logo so looks like the site'). Same ink + gold-border family
+   as /members chrome, so the welcome page reads as part of the
+   site rather than an island. Brand sits LEFT (mirrors the rest
+   of the site's nav pattern) within a max-width inner container,
+   so on wide screens the brand aligns to the same column as the
+   page content below. */
+.welcome-nav{background:var(--ink);border-bottom:2px solid var(--gold);padding:16px 0}
+.welcome-nav-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:14px}
+.welcome-nav-shield{height:34px;width:auto;display:block}
+.welcome-nav-text{font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale,#F5ECD8);letter-spacing:.01em}
+.welcome-nav-text em{color:var(--gold-light,#D4B483);font-style:italic}
+
+/* Page wrapper — replaces what body used to be. Centers content
+   horizontally, gives top padding so the welcome-seal isn't
+   crammed against the nav, and uses flex column so children
+   (seal, title, body, CTA, footer) stack with auto-margin
+   centering. */
+.welcome-stage{display:flex;flex-direction:column;align-items:center;padding:60px 24px}
+
+.page{max-width:560px;width:100%;text-align:center}
+
+/* The seal — same burgundy wax seal motif as the Register page,
+   slightly smaller for landing-page balance. Sits at the top as
+   a visual anchor: the recipient sees it and recognises 'I am at
+   the right place'. */
+.welcome-seal{margin:0 auto 36px;display:block}
+
+.welcome-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+
+/* The headline. 'Welcome home, [Name]' is the emotional payoff of
+   the entire founder-email flow. Personalised via JS from the
+   ?name= URL param. Until JS resolves, we render 'Welcome home'
+   without the name to avoid an awkward 'Welcome home, ,' flash. */
+.welcome-title{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,6vw,64px);font-weight:500;line-height:1.05;letter-spacing:-0.02em;color:var(--ink);margin-bottom:14px}
+.welcome-title em{font-style:italic;color:var(--burgundy);font-weight:500}
+.welcome-name{display:inline-block}
+
+.welcome-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:4px}
+
+.welcome-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:32px auto;max-width:200px}
+.welcome-rule-line{flex:1;height:1px;background:var(--ink);opacity:.25}
+.welcome-rule-mark{color:var(--gold);font-family:'EB Garamond',serif;font-size:14px;font-style:italic}
+
+/* The body — Herald-voiced italic prose, same family as the email,
+   intentionally short. The recipient has just read the long email;
+   the landing page is the single-beat acknowledgement, not a
+   second telling. */
+.welcome-body{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.85;margin-bottom:14px;max-width:480px;margin-left:auto;margin-right:auto}
+.welcome-body + .welcome-body{margin-top:14px}
+
+/* The single CTA — burgundy, central, generous padding. This is
+   the ONLY action on the page. No secondary links, no nav, no
+   footer link maze — just one button. */
+.welcome-cta-block{margin:42px auto 0;display:flex;flex-direction:column;align-items:center;gap:14px}
+.welcome-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:18px 40px;border-radius:1px;text-decoration:none;transition:background .2s;border:1px solid var(--burgundy-deep);cursor:pointer;line-height:1}
+.welcome-cta:hover{background:var(--burgundy-deep)}
+.welcome-cta:disabled{opacity:.5;cursor:wait}
+/* Style reset for when .welcome-cta is applied to a <button>
+   (the new claim flow uses a button so the click can POST instead
+   of navigating). Without these resets browsers add their own
+   border/font-inherit behaviour that breaks the visual parity with
+   the <a> variant used by the Continue link. */
+button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appearance:none}
+
+.welcome-cta-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:380px;line-height:1.6;margin-top:4px}
+
+/* Footer — minimal. Just the motto, gives the page closure
+   without nav-spaghetti. margin:80px auto 0 horizontally
+   centers the footer block within the .page wrapper (without
+   the auto, max-width:380px would just sit flush left). */
+.welcome-foot{margin:80px auto 0;padding-top:36px;border-top:1px solid var(--rule);max-width:380px;width:100%;text-align:center}
+.welcome-foot-quote{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--ink);line-height:1.4;margin:0 0 6px;font-weight:500}
+.welcome-foot-trans{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--gold-deep)}
+
+/* MOBILE — title scaling already handled by clamp(); just tighten
+   page padding on narrow screens. */
+@media (max-width:480px){
+  body{padding:40px 18px}
+  .welcome-cta{padding:16px 30px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<!-- Brand-only nav bar — non-clickable, visual continuity with the
+     rest of the site. The recipient sees the same shield + name
+     they'd see on the homepage, so the welcome page reads as part
+     of Clan Ó Comáin rather than a standalone landing page. No nav
+     links, no sign-in CTA, no other interactive elements — the
+     single action on this page is the claim button below. The
+     <div> wrapping the brand is intentional (rather than an <a>
+     to the homepage): per the design request, the only path off
+     this page is forwards through the claim, not sideways. -->
+<div class="welcome-nav" role="banner" aria-label="Clan Ó Comáin">
+  <div class="welcome-nav-inner">
+    <img src="/coat_of_arms.png" alt="" class="welcome-nav-shield" aria-hidden="true">
+    <span class="welcome-nav-text">Clan <em>Ó Comáin</em></span>
+  </div>
+</div>
+
+<div class="welcome-stage">
+<div class="page">
+
+  <!-- Burgundy wax seal — same motif as the Register page header,
+       sized down for landing-page balance. Recognisable continuity
+       between the two surfaces (and the cert PDF, and the email's
+       coat of arms) — the recipient sees consistency. -->
+  <svg class="welcome-seal" viewBox="0 0 140 140" width="100" height="100" style="filter:drop-shadow(0 6px 14px rgba(20,5,5,.3)) drop-shadow(0 2px 4px rgba(40,10,10,.2))" aria-hidden="true">
+    <defs>
+      <radialGradient id="waxBody" cx="38%" cy="32%">
+        <stop offset="0%" stop-color="#8B2A28"/>
+        <stop offset="55%" stop-color="#6B1F1F"/>
+        <stop offset="100%" stop-color="#3D0E0E"/>
+      </radialGradient>
+      <filter id="waxGrain" x="-2%" y="-2%" width="104%" height="104%">
+        <feTurbulence baseFrequency="1.4" numOctaves="2" seed="3"/>
+        <feColorMatrix values="0 0 0 0 0.05  0 0 0 0 0.02  0 0 0 0 0.02  0 0 0 0.18 0"/>
+        <feComposite in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+    <ellipse cx="70" cy="70" rx="66" ry="64" fill="url(#waxBody)" stroke="#2A0808" stroke-width="0.8"/>
+    <path d="M 18 42 A 58 58 0 0 1 100 18" stroke="rgba(255,210,180,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="70" cy="70" rx="66" ry="64" fill="#3D0E0E" filter="url(#waxGrain)" opacity=".5"/>
+    <circle cx="70" cy="70" r="61" fill="none" stroke="rgba(20,5,5,.6)" stroke-width="0.8"/>
+    <text x="70" y="86" text-anchor="middle" font-family="Cormorant Garamond, EB Garamond, serif" font-size="50" font-weight="600" fill="rgba(255,220,190,.35)">Ó</text>
+    <text x="70" y="84.5" text-anchor="middle" font-family="Cormorant Garamond, EB Garamond, serif" font-size="50" font-weight="600" fill="#1A0404">Ó</text>
+  </svg>
+
+  <!-- Eyebrow personalised to giver via JS — 'A gift from
+       {giverName}'. Falls back to 'A gift in your name' if the
+       giver name is missing or token lookup fails. -->
+  <div class="welcome-eyebrow" id="giftEyebrow">A gift in your name</div>
+
+  <!-- Personalised greeting. The name span is empty by default and
+       populated from the API lookup via JS below. If the lookup
+       fails or returns no name, we fall back to 'Welcome home'
+       alone. The 'home' wording is kept because for the recipient
+       this IS the homecoming — they're being brought to the clan
+       by someone who chose them. -->
+  <h1 class="welcome-title">Welcome home<span class="welcome-name" id="welcomeName"></span></h1>
+  <div class="welcome-irish">Fáilte abhaile</div>
+
+  <div class="welcome-rule">
+    <span class="welcome-rule-line"></span>
+    <span class="welcome-rule-mark">✦</span>
+    <span class="welcome-rule-line"></span>
+  </div>
+
+  <!-- DYNAMIC STATE CONTAINER ──────────────────────────────────────
+       Three mutually-exclusive states are rendered based on the
+       result of the token lookup (or the URL params for legacy):
+
+         #stateLoading  — spinner-ish placeholder while the lookup runs
+         #stateClaimable — pending gift, show body + Claim button
+         #stateClaimed  — already claimed (or legacy-email flow)
+                          show 'Continue to your members area' button
+         #stateLapsed   — 1 year passed unclaimed
+         #stateInvalid  — token bad / not found / API errored
+
+       Default: #stateLoading visible on first paint. JS on page load
+       picks the right state and toggles. -->
+
+  <div id="stateLoading" class="welcome-state">
+    <p class="welcome-body" style="opacity:.6">Looking up your gift…</p>
+  </div>
+
+  <div id="stateClaimable" class="welcome-state" hidden>
+    <!-- Personal message from the giver, if they wrote one. Italic
+         block with gold accent — same visual treatment as the
+         personal-note block in the founder welcome email. Hidden
+         by default; JS unhides + populates if a message is present
+         in the gift row. -->
+    <div id="personalMessageBlock" hidden style="background:rgba(184,151,90,.08);border-left:3px solid var(--gold);padding:18px 22px;margin:0 auto 24px;max-width:480px;border-radius:0 2px 2px 0;text-align:left">
+      <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 10px">A personal note from <span id="personalMessageGiver"></span></p>
+      <p id="personalMessageText" style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink);line-height:1.7;margin:0;white-space:pre-wrap"></p>
+    </div>
+
+    <p class="welcome-body">
+      <span id="giverNameInBody">A friend</span> has chosen you for a place in Clan Ó Comáin. The membership for the year ahead — <span id="tierLabelInBody" style="font-style:normal;color:var(--burgundy)">Clan Membership</span> — is their gift to you, freely given, awaiting only your acceptance.
+    </p>
+    <p class="welcome-body">
+      To take it up, press the seal below. Your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.
+    </p>
+    <div class="welcome-cta-block">
+      <button type="button" class="welcome-cta" id="claimBtn">Claim my place →</button>
+      <p class="welcome-cta-note">By pressing this, your year of membership is confirmed and a sign-in link will be sent to <span id="claimEmail" style="font-style:italic"></span>.</p>
+    </div>
+  </div>
+
+  <div id="stateClaimed" class="welcome-state" hidden>
+    <p class="welcome-body">
+      Your place is confirmed. <strong>Welcome to Clan Ó Comáin.</strong>
+    </p>
+    <p class="welcome-body">
+      To enter the members' area — where you will see your certificate details, your dignity, and the company of those who stand beside you — follow the door below. A sign-in link will be sent to your inbox.
+    </p>
+    <div class="welcome-cta-block">
+      <a href="/members/login.html" class="welcome-cta" id="continueCta">Continue to your members area →</a>
+      <p class="welcome-cta-note">A one-time access link will be sent to your inbox.</p>
+    </div>
+  </div>
+
+  <div id="stateLapsed" class="welcome-state" hidden>
+    <p class="welcome-body">
+      The window for claiming this gift has passed.
+    </p>
+    <p class="welcome-body">
+      A gift is held open for one year from the day it is offered. If you would still like to be welcomed to Clan Ó Comáin, please reach out to the giver — they may wish to renew the gift — or write to <a href="mailto:clan@ocomain.org" style="color:var(--burgundy);text-decoration:underline">clan@ocomain.org</a>.
+    </p>
+  </div>
+
+  <div id="stateInvalid" class="welcome-state" hidden>
+    <p class="welcome-body">
+      We could not find a gift under this link.
+    </p>
+    <p class="welcome-body">
+      The claim link in your gift email may have expired, or the link in your address bar may be incomplete. Please return to your email and click the original button — or write to <a href="mailto:clan@ocomain.org" style="color:var(--burgundy);text-decoration:underline">clan@ocomain.org</a> if you cannot find it.
+    </p>
+  </div>
+
+  <!-- Footer — motto only. No nav, no other links. The page is a
+       single beat. -->
+  <footer class="welcome-foot">
+    <p class="welcome-foot-quote">"Caithfidh an stair a bheith i réim."</p>
+    <p class="welcome-foot-trans">History must prevail.</p>
+  </footer>
+
+</div><!-- /.page -->
+</div><!-- /.welcome-stage -->
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// State resolution + claim wiring (paid-gift flow).
+//
+// /gift-welcome.html?token=<uuid>
+//
+// The token resolves to a `gifts` row via
+// GET /api/lookup-pending-paid-gift. The page renders one of the
+// four states based on the row's state:
+//   - pending  → Claimable (button POSTs to /api/claim-paid-gift)
+//   - claimed  → Already claimed (Continue button + magic-link)
+//   - lapsed   → Friendly lapsed message + suggest contacting giver
+//   - invalid  → Token bad / not found / lookup errored
+//
+// LEGACY URL FORMAT (?email=X&name=Y): pre-Phase-2 paid gifts
+// linked recipients to /members/login.html directly, NOT to this
+// page. So the legacy branch here is mostly defensive — if anyone
+// landed on /gift-welcome.html via an unusual route with email
+// params, we degrade gracefully to the claimed state.
+//
+// State transition:
+//   loading → claimable → claimed (via claim button POST)
+//   loading → claimed (legacy URL OR token lookup returns claimed)
+//   loading → lapsed
+//   loading → invalid
+// ─────────────────────────────────────────────────────────────────
+
+const params = new URLSearchParams(window.location.search);
+const token = (params.get('token') || '').trim();
+
+// Legacy URL params — used only if no token is present.
+const legacyEmail = (params.get('email') || '').trim();
+const legacyName  = (params.get('name')  || '').trim();
+
+// Validators (kept from previous version).
+function isValidName(s) {
+  if (!s || s.length < 1 || s.length > 40) return false;
+  return /^[\p{L}\p{M}\s'’\-.]+$/u.test(s);
+}
+function isEmailLike(s) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s || '');
+}
+function isUuid(s) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s || '');
+}
+function escapeHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showState(id) {
+  document.querySelectorAll('.welcome-state').forEach(s => { s.hidden = true; });
+  const target = document.getElementById(id);
+  if (target) target.hidden = false;
+}
+
+function setGreetingName(rawName) {
+  if (!isValidName(rawName)) return;
+  document.getElementById('welcomeName').textContent = ', ' + rawName;
+}
+
+// ── ROUTE 1: token-based lookup ─────────────────────────────────────
+async function resolveByToken() {
+  try {
+    const res = await fetch('/api/lookup-pending-paid-gift?token=' + encodeURIComponent(token));
+    if (res.status === 404) {
+      showState('stateInvalid');
+      return;
+    }
+    if (!res.ok) {
+      console.error('lookup failed:', res.status);
+      showState('stateInvalid');
+      return;
+    }
+    const data = await res.json();
+    if (!data || !data.ok) {
+      showState('stateInvalid');
+      return;
+    }
+
+    // Greet recipient by first name regardless of state.
+    const firstName = (data.recipient_name || '').trim().split(/\s+/)[0];
+    setGreetingName(firstName);
+
+    // Personalise the eyebrow with the giver's name. The lookup
+    // returns buyer_name; use first name for warmth + brevity.
+    // Falls back to 'A gift in your name' if no buyer name was
+    // captured (rare — Stripe captures cardholder name reliably).
+    const giverFull = (data.buyer_name || '').trim();
+    const giverFirst = giverFull.split(/\s+/)[0];
+    if (giverFirst) {
+      document.getElementById('giftEyebrow').textContent = 'A gift from ' + giverFirst;
+    }
+
+    if (data.state === 'lapsed') {
+      showState('stateLapsed');
+      return;
+    }
+    if (data.state === 'claimed') {
+      if (data.recipient_email) {
+        document.getElementById('continueCta').href =
+          '/members/login.html?email=' + encodeURIComponent(data.recipient_email) + '&gift=1';
+      }
+      showState('stateClaimed');
+      return;
+    }
+    if (data.state === 'pending' && data.claimable) {
+      // Populate claimable-state slots: email in CTA note, giver
+      // name in body, tier label in body.
+      document.getElementById('claimEmail').textContent = data.recipient_email || '';
+      if (giverFull) {
+        document.getElementById('giverNameInBody').textContent = giverFull;
+      }
+      if (data.tier_label) {
+        document.getElementById('tierLabelInBody').textContent = data.tier_label;
+      }
+
+      // Personal message block — render only if the giver wrote one.
+      // The text is set via .textContent (no HTML interpretation) so
+      // a giver typing < or & doesn't break the page.
+      const personalMsg = (data.personal_message || '').trim();
+      if (personalMsg) {
+        document.getElementById('personalMessageText').textContent = personalMsg;
+        document.getElementById('personalMessageGiver').textContent = giverFirst || 'the giver';
+        document.getElementById('personalMessageBlock').hidden = false;
+      }
+
+      // Wire the claim button.
+      const btn = document.getElementById('claimBtn');
+      btn.addEventListener('click', () => claimGift(data.recipient_email));
+      showState('stateClaimable');
+      return;
+    }
+
+    showState('stateInvalid');
+  } catch (e) {
+    console.error('resolveByToken threw:', e);
+    showState('stateInvalid');
+  }
+}
+
+// ── CLAIM ACTION ────────────────────────────────────────────────────
+async function claimGift(email) {
+  const btn = document.getElementById('claimBtn');
+  btn.disabled = true;
+  btn.textContent = 'Claiming…';
+
+  try {
+    const res = await fetch('/api/claim-paid-gift', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.status === 410) {
+      // Lapsed during/before claim. Switch to lapsed state.
+      showState('stateLapsed');
+      return;
+    }
+    if (!res.ok) {
+      btn.disabled = false;
+      btn.textContent = 'Claim my place →';
+      // Surface a small error on the button area. Best-effort —
+      // most cases here are server bugs, not user mistakes.
+      const note = btn.parentElement.querySelector('.welcome-cta-note');
+      if (note) {
+        note.style.color = 'var(--burgundy)';
+        note.textContent = 'Could not complete the claim. Please try again, or write to clan@ocomain.org.';
+      }
+      console.error('claim failed:', res.status, data);
+      return;
+    }
+
+    // Success — flip to claimed state. Wire the Continue link with
+    // the recipient's email so the magic-link form is pre-filled.
+    if (email || (data.member && data.member.email)) {
+      const continueEmail = (data.member && data.member.email) || email;
+      document.getElementById('continueCta').href =
+        '/members/login.html?email=' + encodeURIComponent(continueEmail) + '&gift=1';
+    }
+    showState('stateClaimed');
+  } catch (e) {
+    console.error('claimGift threw:', e);
+    btn.disabled = false;
+    btn.textContent = 'Claim my place →';
+  }
+}
+
+// ── ROUTE 2: legacy email/name URL ──────────────────────────────────
+function resolveLegacy() {
+  // Pre-2026-04-28 emails — recipient already has a member row.
+  // Just show the claimed state with the Continue button.
+  if (isValidName(legacyName)) {
+    setGreetingName(legacyName);
+  }
+  if (isEmailLike(legacyEmail)) {
+    document.getElementById('continueCta').href =
+      '/members/login.html?email=' + encodeURIComponent(legacyEmail) + '&gift=1';
+  }
+  showState('stateClaimed');
+}
+
+// ── ROUTER ──────────────────────────────────────────────────────────
+if (token && isUuid(token)) {
+  resolveByToken();
+} else if (isEmailLike(legacyEmail)) {
+  // Legacy URL format. No token, but we have an email — assume the
+  // recipient is already a member from the pre-deferred flow.
+  resolveLegacy();
+} else {
+  // Neither a valid token nor a legacy email — show invalid state.
+  showState('stateInvalid');
+}
+</script>
+
+</body>
+</html>
