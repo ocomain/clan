@@ -129,16 +129,26 @@ async function sendFounderWelcome({ to, recipientName, personalNote }) {
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:17px;font-style:italic;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
-      There is but one step to claim your place. The spelling of your name on your certificate, a dedication if you wish to set one down, and your choice on the matter of the public Register — these you will attend to inside the members' area.
+      There is but one step to claim your place. The spelling of your name on your certificate, an ancestor you wish to honour, and your choice on the matter of the public Register — these you will attend to inside the members' area.
     </p>
 
     <!-- The CTA. Burgundy block with gold border, central, prominent.
          Big enough to be unmissable on mobile. Single button, no
          secondary CTAs anywhere in the email — the recipient has one
          action to take. -->
-    <div style="text-align:center;margin:8px 0 32px">
+    <div style="text-align:center;margin:8px 0 14px">
       <a href="${claimUrl}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;padding:18px 36px;border-radius:1px;border:1px solid #4A1010">Claim your founder's place →</a>
     </div>
+
+    <!-- Soft secondary link to the homepage — for the recipient who
+         wants to look at the clan before pressing the main button.
+         Small italic, beneath the CTA but well-spaced from it; reads
+         as an option rather than an alternative CTA. The 'or' framing
+         and the smaller size mean the visual hierarchy still drives
+         to the main button. -->
+    <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;text-align:center;margin:0 0 32px">
+      Or visit <a href="${SITE_URL}" style="color:#6B1F1F;text-decoration:underline">ocomain.org</a> to see the clan first.
+    </p>
 
     <!-- Closing imperative + welcome — two short sentences. The first
          commands gently ('Take up your place now'), the second
@@ -148,13 +158,22 @@ async function sendFounderWelcome({ to, recipientName, personalNote }) {
       Take up your place now. Welcome home.
     </p>
 
-    <!-- Sign-off block — single line. Just the Clan Herald. Fergus is
-         in the From-field and named in the body; the signature is
-         purely the Herald who composed the letter, in the Gaelic
-         warrant convention. -->
-    <p style="font-family:'Georgia',serif;font-size:14px;color:#6C5A4A;line-height:1.5;margin:24px 0 0;text-align:center">
-      — Clan Herald at Newhall
-    </p>
+    <!-- Sign-off block — Herald voice. Fergus is in the From-field
+         and named in the body ('I write at the wish of Fergus
+         Commane'); the signature is the Herald who composed the
+         letter, in the Gaelic warrant convention. Lifted styling
+         (larger, ornamental break above) so it reads as a proper
+         signature rather than a small footnote — but kept centered
+         and italic to remain restrained. -->
+    <div style="text-align:center;margin:32px 0 8px">
+      <div style="font-family:'Georgia',serif;color:#B8975A;font-size:18px;letter-spacing:0.6em;line-height:1;opacity:0.55;margin-bottom:18px">· · ·</div>
+      <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.5;margin:0">
+        — Clan Herald at Newhall
+      </p>
+      <p style="font-family:'Georgia',serif;font-size:13px;color:#8C7A6A;line-height:1.5;margin:6px 0 0">
+        On behalf of Fergus Commane, Chief of Ó Comáin
+      </p>
+    </div>
 
   </div>
 
