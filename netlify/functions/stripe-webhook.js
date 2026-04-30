@@ -673,15 +673,39 @@ exports.handler = async (event) => {
     }
 
     if (isGift) {
+      // Each email send is wrapped in its own try/catch so a failure
+      // in one doesn't take down the other. Previously the awaits ran
+      // sequentially without isolation — if sendGiftRecipientWelcome
+      // threw, sendGiftBuyerConfirmation never fired, and the buyer
+      // got nothing while the function appeared to "succeed" from
+      // Stripe's perspective. Logging is now explicit per-email so the
+      // Netlify function logs show clearly which sends fired and
+      // which didn't.
       if (giftContext && giftContext.recipientEmail) {
-        // Send welcome to the RECIPIENT (the actual member), with gift context
-        await sendGiftRecipientWelcome(giftContext);
-        // Send confirmation to the BUYER (the payer)
-        await sendGiftBuyerConfirmation(giftContext, productName, amount, currency);
+        try {
+          await sendGiftRecipientWelcome(giftContext);
+          console.log(`[gift] recipient welcome sent to ${giftContext.recipientEmail}`);
+        } catch (e) {
+          console.error(`[gift] recipient welcome FAILED for ${giftContext.recipientEmail}:`, e.message, e.stack);
+        }
+        try {
+          await sendGiftBuyerConfirmation(giftContext, productName, amount, currency);
+          console.log(`[gift] buyer confirmation sent to ${giftContext.buyerEmail}`);
+        } catch (e) {
+          console.error(`[gift] buyer confirmation FAILED for ${giftContext.buyerEmail}:`, e.message, e.stack);
+        }
       } else {
-        // Fallback: legacy buyer-only confirmation. preferredName has
-        // already been set to the Herald-collected buyer name.
-        await sendGiftConfirmations(session, customerEmail, preferredName, productName, amount, currency);
+        // Fallback: legacy buyer-only confirmation. This branch fires
+        // when the gift-recipient member creation failed (giftContext
+        // never got set), but the buyer still paid and deserves a
+        // confirmation. preferredName has already been set to the
+        // Herald-collected buyer name.
+        try {
+          await sendGiftConfirmations(session, customerEmail, preferredName, productName, amount, currency);
+          console.log(`[gift fallback] buyer confirmation sent to ${customerEmail}`);
+        } catch (e) {
+          console.error(`[gift fallback] buyer confirmation FAILED for ${customerEmail}:`, e.message, e.stack);
+        }
       }
     } else {
       // certDownloadUrl is now always null — email no longer uses it
