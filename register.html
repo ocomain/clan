@@ -15,6 +15,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- shared.css carries the standard site nav + footer styles
+     (.nav, .nav-brand, .nav-link, .nav-cta, .footer, .footer-grid
+     etc). Loaded BEFORE the page-local <style> below so the
+     ceremonial hero/foot styles defined locally win on
+     specificity ties — they're page-specific (.hero, .foot —
+     note no 'er') so there's no actual conflict, just defensive
+     ordering. -->
+<link rel="stylesheet" href="/shared.css">
 <style>
 :root{
   --cream:#F7F4ED;
@@ -195,6 +203,61 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 </head>
 <body>
 
+<!-- Standard site navigation — added 2026-04-30 so the Register
+     page sits inside the same chrome as the rest of the site
+     rather than feeling like an island. The nav links match the
+     pattern used on celtic-heritage-clan.html, surname-variants,
+     pedigree, etc. There is no 'Register' link in this nav (the
+     Register isn't part of the standard nav across the site —
+     it's reached from the footer's 'Add your name to the Register'
+     CTA + member-area links — but the prospect/visitor lands
+     here from various entry points and benefits from being able
+     to navigate elsewhere). -->
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="surname-variants.html" class="nav-link">Variants</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="timeline.html" class="nav-link">Timeline</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="coat-of-arms.html" class="nav-link">Crest</a>
+      <a href="patrons.html" class="nav-link">Patrons</a>
+      <a href="privy-council.html" class="nav-link">Council</a>
+      <a href="/members/" class="nav-link">Members</a>
+    </div>
+    <a href="membership.html" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile drawer — shown by toggleMenu() when the hamburger is
+     tapped at <800px viewport. Mirrors the link list from .nav-links
+     above. Lives at body level rather than inside .nav so the
+     drawer can be position:fixed and overlay full-screen. -->
+<div id="mobile-menu" class="mobile-menu">
+  <a href="/" class="mobile-link">Home</a>
+  <a href="surname-variants.html" class="mobile-link">Variants</a>
+  <a href="pedigree.html" class="mobile-link">Pedigree</a>
+  <a href="timeline.html" class="mobile-link">Timeline</a>
+  <a href="heartlands.html" class="mobile-link">Heartlands</a>
+  <a href="coat-of-arms.html" class="mobile-link">Crest</a>
+  <a href="patrons.html" class="mobile-link">Patrons</a>
+  <a href="privy-council.html" class="mobile-link">Council</a>
+  <a href="/members/" class="mobile-link">Members</a>
+  <a href="membership.html" class="mobile-link" style="color:var(--gold)">Join the clan →</a>
+</div>
+<script>
+function toggleMenu(){
+  var menu=document.getElementById("mobile-menu");
+  var btn=document.querySelector(".nav-hamburger");
+  menu.classList.toggle("open");
+  btn.classList.toggle("open");
+}
+</script>
+
 <div class="wrap">
 
 <!-- HERO -->
@@ -339,6 +402,55 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 </footer>
 
 </div>
+
+<!-- Standard site footer — added 2026-04-30. Sits below the
+     ceremonial Register footer (the .foot above) so the page
+     ends with the same chrome as every other page on the site.
+     The two footers serve different purposes: the ceremonial
+     .foot is part of the Register experience itself (motto +
+     'inscribed by warrant' + the call to add your name); the
+     .footer below is the site-wide footer with nav links,
+     contact details, copyright, etc. -->
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+        <p class="footer-motto-en">History must prevail</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="surname-variants.html">Variants</a></li>
+          <li><a href="/members/">Members' Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="membership.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="#">Newhall House, County Clare</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2025&ndash;2026 Tigh U&iacute; Chom&aacute;in &middot; House of &Oacute; Com&aacute;in &middot; All rights reserved</div>
+      <div class="footer-rec">Approved by the Chief of &Oacute; Com&aacute;in &middot; Recognised by Clans of Ireland &middot; Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
 
 <script>
 // ──────────────────────────────────────────────────────────────────

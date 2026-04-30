@@ -215,6 +215,31 @@ exports.handler = async (event) => {
       comped_by_chief:        true,
       comped_at:              now.toISOString(),
       comped_note:            pending.personal_note || null,
+      // Public Register opt-in by default (2026-04-30): when the
+      // recipient claims, they are added to the public Register
+      // automatically. The members area tickbox is pre-ticked
+      // (members/index.html line ~769) so this matches the UI: the
+      // member sees their name on the Register, and can untick at
+      // any time to opt out.
+      //
+      // Note on tier filtering: the Register page only DISPLAYS
+      // Guardian / Steward / Life tiers (REGISTER_TIERS in
+      // register.js). A Clan-tier member with public_register_visible
+      // = true is still NOT shown publicly. This is by design and
+      // unchanged. The flag here keeps the data consistent for if
+      // they upgrade tier later; their consent is already on file.
+      //
+      // Schema default for this column is also true (migration 012),
+      // but we set it explicitly here so future schema-default
+      // changes don't silently flip the behaviour.
+      public_register_visible:    true,
+      public_register_opted_in_at: now.toISOString(),
+      // Children visibility — for tier_family, default also true
+      // so the family certificate name (Antoin & Sinead) appears
+      // on the Register entry. Member can opt out children
+      // separately (the children tickbox in the members area is
+      // independent of the parent visibility).
+      children_visible_on_register: !!pending.tier_family,
       metadata: {
         gift:                 true,
         comped_by_chief:      true,

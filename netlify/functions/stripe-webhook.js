@@ -619,6 +619,15 @@ exports.handler = async (event) => {
               joined_at:              now.toISOString(),
               renewed_at:             now.toISOString(),
               expires_at:             expiresAt ? expiresAt.toISOString() : null,
+              // Public Register opt-in by default (2026-04-30): same
+              // policy applied to gift claims (claim-founder-gift +
+              // claim-paid-gift). Self-purchasing members appear on
+              // the public Register automatically; they can untick
+              // the opt-in box in the members area to opt out.
+              // Tier filter applied at /register render-time.
+              public_register_visible:    true,
+              public_register_opted_in_at: now.toISOString(),
+              children_visible_on_register: tierInfo.tier_family,
             })
             .select('id, email, name, tier, tier_label, tier_family, joined_at')
             .single();

@@ -204,6 +204,17 @@ exports.handler = async (event) => {
       joined_at:              now.toISOString(),
       renewed_at:             now.toISOString(),
       expires_at:             expiresAt.toISOString(),
+      // Public Register opt-in by default (2026-04-30): same
+      // policy as claim-founder-gift.js. Recipient appears on
+      // the public Register automatically when they claim.
+      // Members area tickbox is pre-ticked; they can untick to
+      // opt out. Tier filter (Guardian/Steward/Life only) is
+      // applied at /register render-time, not here — a Clan-
+      // tier gifted member has the consent flag on but won't
+      // be displayed unless their tier qualifies.
+      public_register_visible:    true,
+      public_register_opted_in_at: now.toISOString(),
+      children_visible_on_register: !!gift.tier_family,
       metadata: {
         gift:           true,
         buyer_name:     gift.buyer_name,
