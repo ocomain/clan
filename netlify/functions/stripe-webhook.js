@@ -1122,7 +1122,7 @@ async function sendGiftBuyerConfirmation(ctx, productName, amount, currency) {
          (2) acceptance is the recipient's act, not auto -->
     <div style="background:rgba(12,26,12,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 24px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 8px">A quiet word</p>
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">If you can, tell ${escapeHtml(recipientFirst)} the email is on its way — sometimes our messages land in a quiet folder. The gift is held open for <strong>one year</strong>; if it goes unanswered, your sponsorship credit stands either way, but the membership itself lapses.</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin:0">If you can, tell ${escapeHtml(recipientFirst)} the email is on its way — sometimes our messages land in a quiet folder. The gift is held open for <strong>one year</strong>; if it goes unanswered, your sponsorship credit stands either way, but the membership itself lapses. Once they accept, they will have <strong>30 days</strong> to refine their certificate details before it is sealed and entered in the Register in their name as it stands.</p>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We'll write to you again when ${escapeHtml(recipientFirst)} accepts and publishes their certificate, with their published copy as a keepsake.</p>
