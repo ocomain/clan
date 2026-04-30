@@ -40,10 +40,12 @@ body{padding:0}
    targets (per request: 'no links but has the standard shield
    logo so looks like the site'). Same ink + gold-border family
    as /members chrome, so the welcome page reads as part of the
-   site rather than an island. Centered shield + name; no nav
-   links, no sign-in, no anything. The recipient's task is the
-   claim button below — the nav is just a frame. */
-.welcome-nav{background:var(--ink);border-bottom:2px solid var(--gold);padding:16px 0;display:flex;align-items:center;justify-content:center;gap:14px}
+   site rather than an island. Brand sits LEFT (mirrors the rest
+   of the site's nav pattern) within a max-width inner container,
+   so on wide screens the brand aligns to the same column as the
+   page content below. */
+.welcome-nav{background:var(--ink);border-bottom:2px solid var(--gold);padding:16px 0}
+.welcome-nav-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:14px}
 .welcome-nav-shield{height:34px;width:auto;display:block}
 .welcome-nav-text{font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale,#F5ECD8);letter-spacing:.01em}
 .welcome-nav-text em{color:var(--gold-light,#D4B483);font-style:italic}
@@ -130,8 +132,10 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
      to the homepage): per the design request, the only path off
      this page is forwards through the claim, not sideways. -->
 <div class="welcome-nav" role="banner" aria-label="Clan Ó Comáin">
-  <img src="/coat_of_arms.png" alt="" class="welcome-nav-shield" aria-hidden="true">
-  <span class="welcome-nav-text">Clan <em>Ó Comáin</em></span>
+  <div class="welcome-nav-inner">
+    <img src="/coat_of_arms.png" alt="" class="welcome-nav-shield" aria-hidden="true">
+    <span class="welcome-nav-text">Clan <em>Ó Comáin</em></span>
+  </div>
 </div>
 
 <div class="welcome-stage">
