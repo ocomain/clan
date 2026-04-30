@@ -268,6 +268,7 @@ exports.handler = async (event) => {
 
             let giftRow;
             if (giftId) {
+              console.log(`[gift] UPDATE existing gift row ${giftId} → status=${giftRowStatus}, member_id=${giftMemberId || 'null (deferred)'}`);
               const updRes = await supa()
                 .from('gifts')
                 .update({
@@ -281,8 +282,13 @@ exports.handler = async (event) => {
                   // at checkout time).
                 })
                 .eq('id', giftId)
-                .select('id, claim_token, expires_at')
+                .select('id, claim_token, expires_at, buyer_email')
                 .single();
+              if (updRes.error) {
+                console.error(`[gift] UPDATE FAILED for gift ${giftId}:`, updRes.error.message, updRes.error.details);
+              } else {
+                console.log(`[gift] UPDATE OK: id=${updRes.data.id}, claim_token=${updRes.data.claim_token}, buyer_email='${updRes.data.buyer_email}'`);
+              }
               giftRow = updRes.data;
               // Backfill expires_at if missing (safety for legacy rows).
               if (giftRow && !giftRow.expires_at) {
@@ -293,9 +299,7 @@ exports.handler = async (event) => {
                 giftRow.expires_at = giftExpiresAt;
               }
             } else {
-              // Metadata had recipient info but no gift_id — insert
-              // a fresh gift row. claim_token defaults to a fresh
-              // UUID; we capture it from the RETURNING data.
+              console.log(`[gift] INSERT fresh gift row → buyer_email='${buyerEmail}', status=${giftRowStatus}, member_id=${giftMemberId || 'null (deferred)'}`);
               const insRes = await supa().from('gifts').insert({
                 clan_id,
                 buyer_email: buyerEmail,
@@ -314,7 +318,12 @@ exports.handler = async (event) => {
                 expires_at: giftExpiresAt,
                 status: giftRowStatus,
                 // claim_token: defaults to gen_random_uuid() in DB
-              }).select('id, claim_token, expires_at').single();
+              }).select('id, claim_token, expires_at, buyer_email').single();
+              if (insRes.error) {
+                console.error(`[gift] INSERT FAILED:`, insRes.error.message, insRes.error.details);
+              } else {
+                console.log(`[gift] INSERT OK: id=${insRes.data.id}, claim_token=${insRes.data.claim_token}, buyer_email='${insRes.data.buyer_email}'`);
+              }
               giftRow = insRes.data;
             }
             // Capture for downstream email send. Falls back to null
@@ -358,15 +367,23 @@ exports.handler = async (event) => {
             // clan) earn no title — they never appear in the honours
             // ladder.
             try {
-              const { data: buyer } = await supa()
+              console.log(`[gift title-award] looking up buyer member by email='${buyerEmail}'`);
+              const { data: buyer, error: buyerLookupErr } = await supa()
                 .from('members')
                 .select('id, email, name, sponsor_titles_awarded')
                 .eq('clan_id', clan_id)
                 .ilike('email', buyerEmail)
                 .maybeSingle();
-              if (buyer) {
+              if (buyerLookupErr) {
+                console.error('[gift title-award] buyer lookup ERROR:', buyerLookupErr.message);
+              }
+              if (!buyer) {
+                console.log(`[gift title-award] no member row matches buyer email '${buyerEmail}' — buyer is not yet a clan member, no dignity to confer. Skipping.`);
+              } else {
+                console.log(`[gift title-award] buyer member found: id=${buyer.id} email='${buyer.email}' existingTitles=${JSON.stringify(buyer.sponsor_titles_awarded || {})}`);
                 const { count: sponsorCount, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
                   await evaluateSponsorTitles(buyer);
+                console.log(`[gift title-award] sponsorCount=${sponsorCount}, newlyEarned=[${allNewlyEarned.map(t=>t.slug).join(',')}], highest=${highestNewlyEarned ? highestNewlyEarned.slug : 'none'}, previousTitleIrish='${previousTitleIrish}'`);
                 if (allNewlyEarned.length > 0) {
                   const stampedAwarded = { ...(buyer.sponsor_titles_awarded || {}) };
                   const nowIso = new Date().toISOString();
@@ -374,6 +391,7 @@ exports.handler = async (event) => {
                   if (highestNewlyEarned) {
                     try {
                       await sendTitleAwardLetter(buyer, highestNewlyEarned, previousTitleIrish, sponsorCount);
+                      console.log(`[gift title-award] LETTER SENT to ${buyer.email}, title=${highestNewlyEarned.slug}`);
                       await logEvent({
                         clan_id,
                         member_id: buyer.id,
@@ -389,7 +407,7 @@ exports.handler = async (event) => {
                       });
                       letterSent = true;
                     } catch (titleErr) {
-                      console.error(`gift title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
+                      console.error(`[gift title-award] letter send FAILED for '${highestNewlyEarned.slug}':`, titleErr.message, titleErr.stack);
                     }
                   }
                   if (letterSent || !highestNewlyEarned) {
@@ -399,12 +417,15 @@ exports.handler = async (event) => {
                         .from('members')
                         .update({ sponsor_titles_awarded: stampedAwarded })
                         .eq('id', buyer.id);
+                      console.log(`[gift title-award] stamped sponsor_titles_awarded with: ${JSON.stringify(stampedAwarded)}`);
                     }
                   }
+                } else {
+                  console.log(`[gift title-award] no NEW titles earned at count=${sponsorCount} (existing stamps: ${JSON.stringify(buyer.sponsor_titles_awarded || {})}). Sponsor count updates on dashboard but no letter fires.`);
                 }
               }
             } catch (giftSponsorErr) {
-              console.error('gift sponsor title-award failed (non-fatal):', giftSponsorErr.message);
+              console.error('[gift title-award] block threw:', giftSponsorErr.message, giftSponsorErr.stack);
             }
             // ─────────────────────────────────────────────────────────
 
