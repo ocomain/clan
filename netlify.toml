@@ -27,6 +27,17 @@
 [functions."daily-cert-sweep"]
   schedule = "0 15 * * *"
 
+# Gift acceptance sweep (Phase 3 — 2026-04-30) — handles two time-based
+# transitions for the deferred-acceptance gift flow:
+#   (A) day-30 reminder for unclaimed gifts (founder + paid)
+#   (B) day-365 lapse for gifts past their 1-year hold window
+# Offset 30min from the cert sweep — keeps the daily fan-out staggered
+# so no two scheduled functions compete for the same runtime slot.
+# 15:30 UTC = 16:30 IE/UK summer, 15:30 winter — mid-afternoon European
+# inbox window for the recipient nudge.
+[functions."daily-gift-acceptance-sweep"]
+  schedule = "30 15 * * *"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
