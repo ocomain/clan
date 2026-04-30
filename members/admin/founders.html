@@ -80,13 +80,30 @@
     .form-help{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);line-height:1.55;margin:6px 0 0}
 
     .form-actions{margin-top:28px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-    .btn-send{
+    /* HARDENED 2026-04-30 (second occurrence) — Fergus reported the
+       button rendering as ghost text on cream after the deferred-
+       acceptance flow shipped. The earlier fix added :root vars but
+       evidently something else in the cascade was still neutralising
+       the burgundy background. This rule now:
+         (a) raises specificity by qualifying with the button tag
+             — `button.btn-send` beats anything from /shared.css that
+             might match `.btn-send` alone or `button` alone
+         (b) hard-codes the colour values (no var() chain to break
+             on a missing definition)
+         (c) explicitly sets background-color separately from the
+             shorthand so it can't be wiped by a later `background:`
+             property cascade
+       This is belt-and-braces for a button that has been invisible
+       twice now. Reverting to var()-based styling is fine once we're
+       confident no other rule is overriding. */
+    button.btn-send{
       font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
-      color:var(--cream);background:var(--burgundy);padding:14px 30px;border:1px solid var(--burgundy-deep);
-      border-radius:1px;cursor:pointer;transition:background .15s
+      color:#F7F4ED;background-color:#6B1F1F;background-image:none;padding:14px 30px;
+      border:1px solid #4A1010;border-radius:1px;cursor:pointer;transition:background-color .15s;
+      -webkit-appearance:none;appearance:none;line-height:1
     }
-    .btn-send:hover{background:var(--burgundy-deep)}
-    .btn-send:disabled{opacity:.55;cursor:wait;background:var(--burgundy)}
+    button.btn-send:hover{background-color:#4A1010}
+    button.btn-send:disabled{opacity:.55;cursor:wait;background-color:#6B1F1F}
 
     /* INLINE STATUS — shown after a send, replaces the form briefly */
     .status-line{font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;padding:14px 18px;border-radius:1px;margin-top:18px;display:none}
@@ -121,15 +138,14 @@
     .gifts-note{font-size:13px;font-style:italic;color:var(--gold-deep);max-width:240px}
 
     .pill{display:inline-block;font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:11px;background:var(--cream);border:1px solid var(--gold-faint);color:var(--ink-muted)}
-    .pill-pending{background:rgba(184,151,90,.12);color:var(--gold-deep);border-color:var(--gold-faint)}
-    .pill-sent{background:rgba(184,151,90,.18);color:var(--burgundy);border-color:rgba(107,31,31,.18)}
-    .pill-claimed{background:rgba(46,93,46,.12);color:#2E5D2E;border-color:rgba(46,93,46,.25)}
-    .pill-sealed{background:var(--burgundy);color:var(--cream);border-color:var(--burgundy-deep)}
     /* Pending (new flow) — soft gold, awaiting-action feel. Lighter
        than sent so the eye distinguishes the 'they got the email
        but haven't acted' state from the 'we tried but they never
        arrived' state. */
     .pill-pending{background:rgba(184,151,90,.08);color:var(--gold-deep);border-color:rgba(184,151,90,.35)}
+    .pill-sent{background:rgba(184,151,90,.18);color:var(--burgundy);border-color:rgba(107,31,31,.18)}
+    .pill-claimed{background:rgba(46,93,46,.12);color:#2E5D2E;border-color:rgba(46,93,46,.25)}
+    .pill-sealed{background:var(--burgundy);color:var(--cream);border-color:var(--burgundy-deep)}
     /* Lapsed — muted grey with a trace of burgundy. Terminal state,
        no action available, so the visual weight is low. */
     .pill-lapsed{background:rgba(60,42,26,.06);color:var(--ink-muted);border-color:rgba(60,42,26,.15)}
