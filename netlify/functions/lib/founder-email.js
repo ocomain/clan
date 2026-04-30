@@ -129,7 +129,7 @@ async function sendFounderWelcome({ to, recipientName, personalNote }) {
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:17px;font-style:italic;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
-      There is but one step to claim your place. The spelling of your name on your certificate, an ancestor you wish to honour, and your choice on the matter of the public Register — these you will attend to inside the members' area.
+      There is but one step to claim your place. The spelling of your name on your certificate, an ancestor or someone special you wish to honour, and your choice on the matter of the public Register — these you will attend to inside the members' area.
     </p>
 
     <!-- The CTA. Burgundy block with gold border, central, prominent.
