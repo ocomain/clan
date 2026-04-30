@@ -245,6 +245,18 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 #giftStrip.visible{transform:translateY(0);pointer-events:all}
 #giftStrip a{color:#0C1A0C!important;text-decoration:none!important;background:#B8975A}
 #mobileActions a{text-decoration:none!important}
+/* Hide the mobile actions bar by default — it's strictly for
+   touch viewports. The standard pattern (celtic-heritage-clan,
+   pedigree, etc.) gates the desktop gift strip and mobile bar
+   in opposing @media rules. Without these rules both render
+   together on every viewport, which is what was breaking the
+   Register page nav appearance on desktop. */
+#mobileActions{display:none;position:fixed;top:58px;left:0;right:0;z-index:97;transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#mobileActions.visible{transform:translateY(0);pointer-events:all}
+@media(max-width:768px){
+  #giftStrip{display:none}
+  #mobileActions{display:block}
+}
 </style>
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
