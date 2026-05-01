@@ -40,8 +40,24 @@
 
 const { sendEmail } = require('./email');
 
-const FROM = 'Fergus Commane <clan@ocomain.org>';
-const SUBJECT = 'A founding place in Clan Ó Comáin';
+// FROM/SUBJECT — updated 2026-04-30 per user request:
+//
+//   FROM: 'Clan Ó Comáin' (was 'Fergus Commane') — the clan
+//     itself is the institutional sender. The body of the email
+//     IS Fergus's letter signed by him, but the From field
+//     reads as the institution. Same convention used elsewhere
+//     in clan correspondence (mailing-house etiquette: an
+//     institution sends, an individual signs).
+//
+//   SUBJECT: 'Important message from Fergus Commane' — the
+//     Herald's voice, framing the contents as a personal
+//     communication from the Chief that warrants the
+//     recipient's attention. Less abstract than the previous
+//     'A founding place in Clan Ó Comáin' (which read more like
+//     a tagline than a subject). The previous wording is now
+//     the body's H1 / opening line; the subject earns the open.
+const FROM = 'Clan Ó Comáin <clan@ocomain.org>';
+const SUBJECT = 'Important message from Fergus Commane';
 
 // The site URL — recipients click through to /founder-welcome.html
 // where they get a single-CTA landing page that hands them off to the
