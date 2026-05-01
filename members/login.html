@@ -194,6 +194,39 @@
     }
   }
 
+  // claimed=1 banner — shown when a recipient clicks their gift's
+  // 'Claim my place' button a second time (or when the same URL is
+  // forwarded and clicked by someone else). The first click already
+  // created the member row and signed the original recipient in;
+  // this second click can't safely auto-sign-in (could be a forward),
+  // so we ask them to request a magic link. The link is sent only
+  // to the recipient's actual inbox, so a forwarded URL holder
+  // can't get in this way — only the legitimate recipient can.
+  if (params.get('claimed') === '1') {
+    status.className = 'mlogin-status show success';
+    const displayEmail = (params.get('email') || '').trim();
+    if (displayEmail) {
+      status.innerHTML = `<strong>Your place is confirmed.</strong> To enter the members' area, request a sign-in link below — it will be sent to <em>${displayEmail}</em>.`;
+    } else {
+      status.innerHTML = `<strong>Your place is confirmed.</strong> Enter your email below to receive a sign-in link.`;
+    }
+  }
+
+  // signin=invalid banner — token didn't match any pending gift.
+  // Could be a typo, an old/revoked link, or someone fishing.
+  if (params.get('signin') === 'invalid') {
+    status.className = 'mlogin-status show error';
+    status.innerHTML = `<strong>That link isn't recognised.</strong> If you have an account already, enter your email below to sign in. Otherwise check your inbox for the original message — or write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.`;
+  }
+
+  // signin=fallback banner — something failed in the auto-sign-in
+  // flow but we don't want to show the user a stack trace. Generic
+  // "use the form below" is the kindest option.
+  if (params.get('signin') === 'fallback') {
+    status.className = 'mlogin-status show';
+    status.innerHTML = `Please enter your email below and we'll send you a sign-in link.`;
+  }
+
   form.addEventListener('submit', async () => {
     const email = emailInput.value.trim();
     if (!email) return;

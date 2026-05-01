@@ -81,20 +81,20 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
     ? `<p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.7;margin:0 0 28px;padding:18px 20px;background:rgba(184,151,90,.08);border-left:3px solid #B8975A">${escapeHtml(personalNote.trim())}<br><span style="font-size:13px;color:#6C5A4A;margin-top:8px;display:inline-block">— Fergus</span></p>`
     : '';
 
-  // Claim URL — points at the founder welcome landing page with the
-  // claim_token. The page does a server-side lookup of the token to
-  // resolve recipient name + tier (so the URL no longer leaks the
-  // email and the name in plaintext URL params). Recipient clicks
-  // 'Claim my place' on that page → POST /api/claim-founder-gift →
-  // server creates the members row → magic-link login.
+  // Claim URL — points at the one-click claim endpoint (added
+  // 2026-04-30). The endpoint creates the member row, marks the
+  // pending row as claimed, generates a magic-link via Supabase
+  // admin API, and 302-redirects the recipient's browser to the
+  // magic-link URL — which Supabase processes server-side and
+  // lands them authenticated on /members/?welcome=founder. Net
+  // result: one click in this email = signed-in members area.
+  // No intermediate welcome page, no email-entry form.
   //
-  // Defensive guard: if no claimToken was provided (shouldn't happen
-  // in normal flow — caller is send-founder-gift.js which always
-  // passes one), fall back to the bare welcome URL. The recipient
-  // would land on a page that says 'invalid or expired claim link'
-  // and we'd see it in the logs.
+  // Defensive guard: if no claimToken was provided (shouldn't
+  // happen in normal flow), fall back to the (still-deployed)
+  // welcome page which handles invalid-state gracefully.
   const claimUrl = claimToken
-    ? `${SITE_URL}/founder-welcome.html?token=${encodeURIComponent(claimToken)}`
+    ? `${SITE_URL}/api/claim-and-enter-founder?token=${encodeURIComponent(claimToken)}`
     : `${SITE_URL}/founder-welcome.html`;
 
   // ── THE LOCKED EMAIL BODY ────────────────────────────────────────
