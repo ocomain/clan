@@ -66,15 +66,17 @@ function redirectTo(url) {
 
 exports.handler = async (event) => {
   const token = (event.queryStringParameters && event.queryStringParameters.token) || '';
+  console.log(`[claim-and-enter-founder] HIT — token=${token ? token.slice(0,8)+'...'+token.slice(-4) : '(empty)'}`);
 
   if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
-    console.error('[claim-and-enter-founder] missing/invalid token');
+    console.error('[claim-and-enter-founder] PATH 1: missing/invalid token format → /members/login.html?signin=fallback');
     return redirectTo('/members/login.html?signin=fallback');
   }
 
   let cid;
   try {
     cid = await clanId();
+    console.log(`[claim-and-enter-founder] clan_id=${cid}`);
   } catch (e) {
     console.error('[claim-and-enter-founder] clanId failed:', e.message);
     return redirectTo('/members/login.html?signin=fallback');
@@ -89,31 +91,25 @@ exports.handler = async (event) => {
     .maybeSingle();
 
   if (lookupErr) {
-    console.error('[claim-and-enter-founder] lookup failed:', lookupErr.message);
+    console.error('[claim-and-enter-founder] PATH: lookup ERROR:', lookupErr.message, '→ /members/login.html?signin=fallback');
     return redirectTo('/members/login.html?signin=fallback');
   }
   if (!pending) {
-    console.warn('[claim-and-enter-founder] no pending row for token');
+    console.warn(`[claim-and-enter-founder] PATH 2: no pending row for token=${token.slice(0,8)}... → /members/login.html?signin=invalid`);
     return redirectTo('/members/login.html?signin=invalid');
   }
+  console.log(`[claim-and-enter-founder] FOUND pending: id=${pending.id} recipient=${pending.recipient_email} status=${pending.status} member_id=${pending.member_id || 'null'} expires_at=${pending.expires_at}`);
 
   // ── 2. ALREADY-CLAIMED PATH ────────────────────────────────────────
-  // Second click. Could be the original recipient refreshing, OR a
-  // forwarded email opened by someone else. We do NOT auto-sign-in
-  // here — fall back to the magic-link flow with the email pre-filled
-  // so the legitimate recipient can still get in (the magic link
-  // goes to their inbox, which only they control).
   if (pending.status === 'claimed' && pending.member_id) {
-    console.log(`[claim-and-enter-founder] pending ${pending.id} already claimed — falling back to magic-link flow`);
+    console.log(`[claim-and-enter-founder] PATH 3: pending ${pending.id} already claimed (member_id=${pending.member_id}) → /members/login.html?email=...&claimed=1`);
     return redirectTo(`/members/login.html?email=${encodeURIComponent(pending.recipient_email)}&claimed=1`);
   }
 
   // ── 3. LAPSED ──────────────────────────────────────────────────────
   if (pending.status === 'lapsed' ||
       (pending.expires_at && new Date(pending.expires_at).getTime() < Date.now())) {
-    console.log(`[claim-and-enter-founder] pending ${pending.id} lapsed — sending to welcome page for graceful UX`);
-    // The welcome page is preserved for this case — it shows a
-    // friendly "this gift has lapsed, contact the clan" message.
+    console.log(`[claim-and-enter-founder] PATH: pending ${pending.id} lapsed (status=${pending.status}, expires_at=${pending.expires_at}) → /founder-welcome.html`);
     return redirectTo(`/founder-welcome.html?token=${encodeURIComponent(token)}`);
   }
 
@@ -122,6 +118,7 @@ exports.handler = async (event) => {
   if (!TIER_BY_SLUG[pending.tier]) {
     console.error(`[claim-and-enter-founder] pending ${pending.id} unknown tier '${pending.tier}'; using clan-ind`);
   }
+  console.log(`[claim-and-enter-founder] tier resolved: ${tierInfo.tier} (${tierInfo.label})`);
 
   // ── 5. CREATE MEMBER ROW ───────────────────────────────────────────
   // Identical shape to claim-founder-gift.js — comped_by_chief,
@@ -163,13 +160,12 @@ exports.handler = async (event) => {
     .single();
 
   if (insertRes.error) {
-    console.error('[claim-and-enter-founder] member insert failed:', insertRes.error.message);
-    // Member doesn't exist — can't auto-sign-in. Fallback to
-    // login form so the recipient can at least try magic-link.
+    console.error('[claim-and-enter-founder] PATH 4: member insert FAILED:', insertRes.error.message, '→ /members/login.html?signin=fallback');
     return redirectTo(`/members/login.html?email=${encodeURIComponent(pending.recipient_email)}&signin=fallback`);
   }
 
   const member = insertRes.data;
+  console.log(`[claim-and-enter-founder] member created: id=${member.id} email=${member.email}`);
 
   // ── 6. LINK PENDING → CLAIMED ──────────────────────────────────────
   try {
@@ -181,21 +177,17 @@ exports.handler = async (event) => {
         claimed_at: now.toISOString(),
       })
       .eq('id', pending.id);
+    console.log(`[claim-and-enter-founder] pending row marked claimed`);
   } catch (e) {
     console.error(`[claim-and-enter-founder] pending ${pending.id} status update failed:`, e.message);
-    // Soft inconsistency — member exists, pending row stale. Don't
-    // block the sign-in; the dashboard works off the member row.
   }
 
   // ── 7. ENSURE AUTH USER ────────────────────────────────────────────
-  // Required for generateLink below. ensureAuthUser is idempotent.
   try {
     await ensureAuthUser(pending.recipient_email, pending.recipient_name);
+    console.log(`[claim-and-enter-founder] ensureAuthUser OK for ${pending.recipient_email}`);
   } catch (e) {
-    console.warn(`[claim-and-enter-founder] ensureAuthUser failed for ${pending.recipient_email}:`, e.message);
-    // Non-fatal — generateLink will retry creating the user via
-    // its own internal logic if needed. If it fails too, we fall
-    // back to the login form below.
+    console.warn(`[claim-and-enter-founder] ensureAuthUser FAILED for ${pending.recipient_email}:`, e.message, '— continuing, generateLink may still create the user');
   }
 
   // ── 8. EVENT LOG ───────────────────────────────────────────────────
@@ -219,6 +211,7 @@ exports.handler = async (event) => {
   // authentication. We redirect the browser there; Supabase processes
   // it server-side and lands the recipient authenticated on /members/.
   // No email is sent — generateLink returns the link directly.
+  console.log(`[claim-and-enter-founder] calling generateLink for ${pending.recipient_email}, redirectTo=${SITE_URL}/members/?welcome=founder`);
   const { data: linkData, error: linkErr } = await supa().auth.admin.generateLink({
     type: 'magiclink',
     email: pending.recipient_email,
@@ -228,12 +221,11 @@ exports.handler = async (event) => {
   });
 
   if (linkErr || !linkData?.properties?.action_link) {
-    console.error('[claim-and-enter-founder] generateLink failed:', linkErr?.message);
-    // Member is created and claimed — just couldn't auto-sign-in.
-    // Fall back to magic-link-by-email so they can recover.
+    console.error('[claim-and-enter-founder] PATH 5: generateLink FAILED:', linkErr?.message || 'no action_link in response', '→ /members/login.html?email=...&claimed=1');
+    console.error('[claim-and-enter-founder] linkErr full:', JSON.stringify(linkErr || {}));
     return redirectTo(`/members/login.html?email=${encodeURIComponent(pending.recipient_email)}&claimed=1`);
   }
 
-  console.log(`[claim-and-enter-founder] one-click success for ${pending.recipient_email}`);
+  console.log(`[claim-and-enter-founder] one-click SUCCESS for ${pending.recipient_email} — redirecting to action_link`);
   return redirectTo(linkData.properties.action_link);
 };
