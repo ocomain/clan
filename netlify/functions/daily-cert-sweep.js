@@ -27,6 +27,7 @@ const { ensureCertificate } = require('./lib/cert-service');
 const { autoFixName } = require('./lib/name-format');
 const { sendEmail } = require('./lib/email');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
+const { buildSignInUrl } = require('./lib/signin-token');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const REMINDER_DAY = 29; // send reminder when joined_at was this many days ago
@@ -199,6 +200,21 @@ async function sendDay29Reminder(member, suggestedName) {
 
   const nameWillFix = suggestedName !== member.name;
 
+  // ── ONE-CLICK SIGN-IN URL ────────────────────────────────────────
+  // Day-29 reminder is high-urgency (member has 24 hours to refine
+  // before auto-publish). One-click is essential here — making them
+  // request a magic link adds friction at the worst moment. Falls
+  // back to login.html?email if token issuance fails.
+  const signInUrl = await buildSignInUrl({
+    memberId: member.id,
+    email:    member.email,
+    purpose:  'cert_reminder',
+    // Short TTL: this email is time-sensitive (24h before auto-pub)
+    // so a 7-day window covers any realistic engagement scenario
+    // while limiting the URL's lifespan.
+    ttlDays:  7,
+  });
+
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
@@ -223,8 +239,8 @@ async function sendDay29Reminder(member, suggestedName) {
     </div>
 
     <div style="text-align:center;margin:0 0 28px">
-      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(member.email)}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Refine and publish now →</a>
-      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;margin:12px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email.</p>
+      <a href="${signInUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Refine and publish now →</a>
+      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;margin:12px 0 0;line-height:1.5">One click signs you in.</p>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.7;margin:0 0 24px">If the details above are how you'd like your certificate to read, no action is needed — it will publish automatically tomorrow.</p>

@@ -3,6 +3,7 @@
 // Sends welcome email via Resend, records member in Supabase.
 
 const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
+const { buildSignInUrl } = require('./lib/signin-token');
 const { ensureCertificate, signCertUrl, ensureAuthUser, sanitizeFilename } = require('./lib/cert-service');
 const { sendEmail } = require('./lib/email');
 const { evaluateSponsorTitles, recordConversion, highestAwardedTitle } = require('./lib/sponsor-service');
@@ -911,6 +912,41 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
 
   const benefitsList = tier.benefits.map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
 
+  // ── ONE-CLICK SIGN-IN URL ────────────────────────────────────────
+  // Look up the member row to get its id, then issue a one-click
+  // sign-in token. The returned URL goes in both CTA buttons below
+  // (cert details + Members' Area). On click, the recipient is
+  // signed in directly and lands in /members/. If anything fails
+  // (member not found, token issuance fails), buildSignInUrl
+  // falls back to the standard email-prefilled login form URL —
+  // recipients always get a working button.
+  let signInUrl;
+  try {
+    const cid = await clanId();
+    const { data: memberRow } = await supa()
+      .from('members')
+      .select('id')
+      .eq('clan_id', cid)
+      .ilike('email', email)
+      .order('joined_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (memberRow) {
+      signInUrl = await buildSignInUrl({
+        memberId: memberRow.id,
+        email,
+        purpose: 'welcome_self',
+      });
+    } else {
+      // No member row found — race condition (webhook still
+      // processing) or unusual state. Fallback URL.
+      signInUrl = `https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}`;
+    }
+  } catch (e) {
+    console.error('[sendMemberWelcome] signin URL build failed (using fallback):', e.message);
+    signInUrl = `https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}`;
+  }
+
   // Certificate block — prominent CTA if cert was successfully generated.
   // The cert block now ALWAYS appears (whether or not certDownloadUrl was
   // generated, the buyer has a member row to claim). Direct cert download
@@ -924,8 +960,8 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
-      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email. You have 30 days to refine your certificate details before it is sealed.</p>
+      <a href="${signInUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">One click signs you in. You have 30 days to refine your certificate details before it is sealed.</p>
     </div>
   `;
 
@@ -970,7 +1006,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
     <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
       <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — view details, download your certificate, and access members-only content any time.</p>
-      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+      <a href="${signInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
@@ -1024,6 +1060,41 @@ async function sendGiftRecipientWelcome(ctx) {
   const firstName = recipientName ? recipientName.split(' ')[0] : 'friend';
   const giverName = buyerName || buyerEmail || 'a friend';
 
+  // ── ONE-CLICK SIGN-IN URL (existing-recipient branch only) ──────
+  // For the !claimToken branch below (where the recipient is
+  // already a clan member and this gift is a tier upgrade), we
+  // need a sign-in URL that takes them straight into the members
+  // area. The claimToken branch uses /api/claim-and-enter-paid
+  // which already does one-click. This is for the OTHER branch.
+  // Best-effort: if member lookup or token issuance fails,
+  // buildSignInUrl returns the standard login.html?email URL.
+  let recipientSignInUrl;
+  if (!claimToken) {
+    try {
+      const cid = await clanId();
+      const { data: memberRow } = await supa()
+        .from('members')
+        .select('id')
+        .eq('clan_id', cid)
+        .ilike('email', recipientEmail)
+        .order('joined_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (memberRow) {
+        recipientSignInUrl = await buildSignInUrl({
+          memberId: memberRow.id,
+          email: recipientEmail,
+          purpose: 'welcome_gift_existing',
+        });
+      } else {
+        recipientSignInUrl = `https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}`;
+      }
+    } catch (e) {
+      console.error('[sendGiftRecipientWelcome] signin URL build failed (using fallback):', e.message);
+      recipientSignInUrl = `https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}`;
+    }
+  }
+
   // Personal message block — only shows if the giver wrote one.
   const msgBlock = personalMsg ? `
     <!-- Personal message from the giver -->
@@ -1061,8 +1132,8 @@ async function sendGiftRecipientWelcome(ctx) {
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
-      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A one-time sign-in link will be sent to this email. You have 30 days to refine your certificate details before it is sealed.</p>
+      <a href="${recipientSignInUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">One click signs you in. You have 30 days to refine your certificate details before it is sealed.</p>
     </div>
   `;
 
@@ -1112,7 +1183,7 @@ async function sendGiftRecipientWelcome(ctx) {
     <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
       <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
-      <a href="https://www.ocomain.org/members/login.html?email=${encodeURIComponent(recipientEmail)}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+      <a href="${claimToken ? `https://www.ocomain.org/api/claim-and-enter-paid?token=${encodeURIComponent(claimToken)}` : recipientSignInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>
