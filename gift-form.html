@@ -582,6 +582,61 @@ async function submitForm() {
     console.warn('Could not apply tier from URL:', e);
   }
 })();
+
+// Members-area handoff: when a logged-in member arrives here from
+// /members/ → /gift.html → here, the URL carries:
+//   ?from=members&email=<their-account-email>
+//
+// This pre-fills the giverEmail field with their account email and
+// LOCKS it as read-only. Why locked: the gifts.buyer_email column
+// stores exactly what's submitted, and countSponsoredBy ilike-matches
+// it against members.email to credit the sponsor towards Cara/Onóir/
+// Ardchara dignities. A typo or different work/personal email at
+// this stage silently breaks credit — they'd buy the gift, recipient
+// would receive it, but the giver wouldn't get sponsorship credit.
+// Locking prevents that whole class of error for the most common
+// case (member buying a gift while signed in).
+//
+// A small 'Using your member account email' note appears below the
+// field so they understand why it's locked. If they need to use a
+// different email (rare — gifting on behalf of a partner from a
+// different inbox), they can sign out and use the form as a guest.
+//
+// For visitors arriving without ?from=members (direct site
+// traffic, marketing campaigns, gift links from elsewhere), the
+// field stays empty and editable as before.
+(function applyMembersHandoff() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('from') !== 'members') return;
+    const email = (params.get('email') || '').trim();
+    if (!email) return;
+
+    const giverEmail = document.getElementById('giverEmail');
+    if (!giverEmail) return;
+
+    giverEmail.value = email;
+    giverEmail.readOnly = true;
+
+    // Visual signal that this is locked-by-design rather than
+    // a bug: muted background, slightly different cursor, and
+    // an explanatory note beneath. Inline styles keep the change
+    // self-contained — no new CSS class to manage.
+    giverEmail.style.backgroundColor = 'rgba(184,151,90,.08)';
+    giverEmail.style.cursor = 'not-allowed';
+    giverEmail.title = 'Locked to your member account email — sponsorship credit goes to this address.';
+
+    const note = document.createElement('p');
+    note.textContent = 'Using your member account email — sponsorship credit will be applied here.';
+    note.style.cssText = "font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.85);margin:6px 0 0;line-height:1.5";
+    giverEmail.insertAdjacentElement('afterend', note);
+  } catch (e) {
+    // Non-fatal — if anything fails, the form is still usable as
+    // a regular gift form. The worst case is they have to type
+    // their email, which is the pre-2026-05-01 baseline.
+    console.warn('Could not apply members handoff:', e);
+  }
+})();
 </script>
 
 </body>

@@ -436,5 +436,38 @@ function gSetMode(mode){
   }
 }
 </script>
+<!-- Members-area pass-through — when a logged-in member arrives
+     here from /members/ via the 'Gift a membership' button, the
+     URL carries ?from=members&email=<their-email>. We forward those
+     params to all the gift-form.html tier-selection links below
+     so the gift form can pre-fill (and lock) the giver email
+     field. This ensures sponsorship credit lands on the correct
+     account: the gifts.buyer_email column stores exactly what's
+     submitted on the gift form, and countSponsoredBy ilike-matches
+     against members.email — a typo or wrong domain at the form
+     stage breaks the credit chain.
+
+     For visitors who arrive without those params (i.e. directly,
+     from the marketing site, or as guests), nothing changes —
+     they fill in their email manually as before.
+
+     Defensive: only rewrites <a> elements whose href references
+     gift-form.html, so any future internal links on the page
+     don't get inadvertently mangled. -->
+<script>
+(function(){
+  var qs = new URLSearchParams(window.location.search);
+  var from = qs.get('from');
+  var email = qs.get('email');
+  if (from !== 'members' || !email) return;
+  var encEmail = encodeURIComponent(email);
+  document.querySelectorAll('a[href*="gift-form.html"]').forEach(function(a){
+    var href = a.getAttribute('href') || '';
+    var sep = href.indexOf('?') >= 0 ? '&' : '?';
+    a.setAttribute('href', href + sep + 'from=members&email=' + encEmail);
+  });
+})();
+</script>
+
 </body>
 </html>
