@@ -436,36 +436,69 @@ function gSetMode(mode){
   }
 }
 </script>
-<!-- Members-area pass-through — when a logged-in member arrives
-     here from /members/ via the 'Gift a membership' button, the
-     URL carries ?from=members&email=<their-email>. We forward those
-     params to all the gift-form.html tier-selection links below
-     so the gift form can pre-fill (and lock) the giver email
-     field. This ensures sponsorship credit lands on the correct
-     account: the gifts.buyer_email column stores exactly what's
-     submitted on the gift form, and countSponsoredBy ilike-matches
-     against members.email — a typo or wrong domain at the form
-     stage breaks the credit chain.
+<!-- Members-area handoff (2026-05-01, v2) — when a logged-in
+     member arrives at /gift.html from /members/ via the 'Gift a
+     membership' button, the URL carries:
+       ?from=members&email=<their-account-email>
 
-     For visitors who arrive without those params (i.e. directly,
-     from the marketing site, or as guests), nothing changes —
-     they fill in their email manually as before.
+     We persist this to sessionStorage immediately on arrival,
+     under key 'gift_handoff_email'. The downstream gift-form.html
+     page reads sessionStorage (not URL params) as the source of
+     truth — meaning the pre-fill survives:
+       - refresh
+       - browser back/forward
+       - opening a tier link in a new tab (Cmd-click etc)
+       - a user who lands on gift-form.html directly from a nav
+         link without going through gift.html again
 
-     Defensive: only rewrites <a> elements whose href references
-     gift-form.html, so any future internal links on the page
-     don't get inadvertently mangled. -->
+     The handoff persists for the tab session only — closing the
+     tab clears it. That's the right scope: the handoff represents
+     'this user clicked through from members area in this session',
+     not 'this user is forever a member buying for themselves'.
+
+     Cleanup on intent-to-leave-flow: if a user arrives at gift.html
+     fresh (no ?from=members AND no existing handoff in storage),
+     we clear any stale handoff. This handles the case where they
+     finished one gift, then later browsed in to buy another from
+     a non-members context (e.g. clicked a marketing link) — the
+     stale handoff should not silently apply to the new flow.
+
+     We ALSO still rewrite the tier link hrefs as a belt-and-braces
+     measure — for users with sessionStorage disabled (rare, but
+     happens with strict privacy modes), the URL-based path still
+     works. -->
 <script>
 (function(){
   var qs = new URLSearchParams(window.location.search);
   var from = qs.get('from');
-  var email = qs.get('email');
-  if (from !== 'members' || !email) return;
-  var encEmail = encodeURIComponent(email);
-  document.querySelectorAll('a[href*="gift-form.html"]').forEach(function(a){
-    var href = a.getAttribute('href') || '';
-    var sep = href.indexOf('?') >= 0 ? '&' : '?';
-    a.setAttribute('href', href + sep + 'from=members&email=' + encEmail);
-  });
+  var email = (qs.get('email') || '').trim();
+
+  // Path A: arrival WITH handoff params → persist + rewrite links
+  if (from === 'members' && email) {
+    try { sessionStorage.setItem('gift_handoff_email', email); } catch(e) {}
+    var encEmail = encodeURIComponent(email);
+    document.querySelectorAll('a[href*="gift-form.html"], a[href*="gift-form?"]').forEach(function(a){
+      var href = a.getAttribute('href') || '';
+      var sep = href.indexOf('?') >= 0 ? '&' : '?';
+      a.setAttribute('href', href + sep + 'from=members&email=' + encEmail);
+    });
+    return;
+  }
+
+  // Path B: arrival WITHOUT handoff params, but sessionStorage has
+  // one from earlier in this tab — keep it alive by re-applying to
+  // tier links. Common case: user clicked through, then refreshed
+  // gift.html or used browser back.
+  var stored;
+  try { stored = sessionStorage.getItem('gift_handoff_email'); } catch(e) { stored = null; }
+  if (stored) {
+    var encStored = encodeURIComponent(stored);
+    document.querySelectorAll('a[href*="gift-form.html"], a[href*="gift-form?"]').forEach(function(a){
+      var href = a.getAttribute('href') || '';
+      var sep = href.indexOf('?') >= 0 ? '&' : '?';
+      a.setAttribute('href', href + sep + 'from=members&email=' + encStored);
+    });
+  }
 })();
 </script>
 

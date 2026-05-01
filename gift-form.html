@@ -607,10 +607,29 @@ async function submitForm() {
 // field stays empty and editable as before.
 (function applyMembersHandoff() {
   try {
+    // Resolve the handoff email from two sources, in order of trust:
+    //   1) URL params (?from=members&email=...) — set by the immediate
+    //      previous-page link click in the canonical flow
+    //   2) sessionStorage (key 'gift_handoff_email') — set by gift.html
+    //      on arrival; survives refresh, back/forward, new-tab clicks,
+    //      and bookmarks within the tab session
+    //
+    // If either has it, persist back to sessionStorage so subsequent
+    // navigation also benefits. Refresh on this page, ctrl-click on
+    // a tier link from a different page, etc — all keep the lock.
     const params = new URLSearchParams(window.location.search);
-    if (params.get('from') !== 'members') return;
-    const email = (params.get('email') || '').trim();
+    let email = '';
+    if (params.get('from') === 'members') {
+      email = (params.get('email') || '').trim();
+    }
+    if (!email) {
+      try { email = (sessionStorage.getItem('gift_handoff_email') || '').trim(); } catch(e) { /* private mode */ }
+    }
     if (!email) return;
+
+    // Persist (idempotent — re-write of same value is harmless) so
+    // a refresh of this page while the form is open keeps the lock.
+    try { sessionStorage.setItem('gift_handoff_email', email); } catch(e) { /* ignore */ }
 
     const giverEmail = document.getElementById('giverEmail');
     if (!giverEmail) return;
@@ -626,10 +645,15 @@ async function submitForm() {
     giverEmail.style.cursor = 'not-allowed';
     giverEmail.title = 'Locked to your member account email — sponsorship credit goes to this address.';
 
-    const note = document.createElement('p');
-    note.textContent = 'Using your member account email — sponsorship credit will be applied here.';
-    note.style.cssText = "font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.85);margin:6px 0 0;line-height:1.5";
-    giverEmail.insertAdjacentElement('afterend', note);
+    // Avoid double-inserting the note if this IIFE runs more than
+    // once (defensive — shouldn't happen but cheap to guard).
+    if (!document.getElementById('giverEmailHandoffNote')) {
+      const note = document.createElement('p');
+      note.id = 'giverEmailHandoffNote';
+      note.textContent = 'Using your member account email — sponsorship credit will be applied here.';
+      note.style.cssText = "font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.85);margin:6px 0 0;line-height:1.5";
+      giverEmail.insertAdjacentElement('afterend', note);
+    }
   } catch (e) {
     // Non-fatal — if anything fails, the form is still usable as
     // a regular gift form. The worst case is they have to type
