@@ -295,7 +295,7 @@ exports.handler = async () => {
 
 async function sendFounderReminderEmail(g) {
   const firstName = (g.recipient_name || '').trim().split(/\s+/)[0] || 'friend';
-  const claimUrl = `${SITE_URL}/api/claim-and-enter-founder?token=${encodeURIComponent(g.claim_token)}`;
+  const claimUrl = `${SITE_URL}/founder-welcome.html?token=${encodeURIComponent(g.claim_token)}`;
   const tierLabel = g.tier_label || 'Founding Member';
 
   const html = `<!DOCTYPE html>
@@ -335,7 +335,7 @@ async function sendPaidReminderEmail(g) {
   const firstName = (g.recipient_name || '').trim().split(/\s+/)[0] || 'friend';
   const giverName = (g.buyer_name || '').trim() || 'a friend';
   const giverFirst = giverName.split(/\s+/)[0];
-  const claimUrl = `${SITE_URL}/api/claim-and-enter-paid?token=${encodeURIComponent(g.claim_token)}`;
+  const claimUrl = `${SITE_URL}/gift-welcome.html?token=${encodeURIComponent(g.claim_token)}`;
   const tierLabel = g.tier_label || 'Clan Membership';
 
   const html = `<!DOCTYPE html>

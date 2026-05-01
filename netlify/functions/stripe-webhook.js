@@ -1123,7 +1123,7 @@ async function sendGiftRecipientWelcome(ctx) {
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Place in the Clan</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your acceptance</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">A gift, freely given. Press the seal below to take up your place — your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.</p>
-      <a href="https://www.ocomain.org/api/claim-and-enter-paid?token=${encodeURIComponent(claimToken)}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px;border:1px solid #4A1010">Claim my place →</a>
+      <a href="https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px;border:1px solid #4A1010">Claim my place →</a>
       <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A gift is held open for one year from the day it is offered. Until then, no membership exists in your name — the choice to take your place is yours.</p>
     </div>
   `
@@ -1183,7 +1183,7 @@ async function sendGiftRecipientWelcome(ctx) {
     <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
       <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
-      <a href="${claimToken ? `https://www.ocomain.org/api/claim-and-enter-paid?token=${encodeURIComponent(claimToken)}` : recipientSignInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+      <a href="${claimToken ? `https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}` : recipientSignInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>

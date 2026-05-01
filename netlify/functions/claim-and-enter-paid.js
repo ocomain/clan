@@ -1,15 +1,15 @@
 // netlify/functions/claim-and-enter-paid.js
 //
-// GET /api/claim-and-enter-paid?token=<uuid>
+// POST /api/claim-and-enter-paid
+// Body: { token: <uuid> }
 //
-// ONE-CLICK PAID GIFT FLOW (2026-04-30):
-//
-// Phase 2 sibling of claim-and-enter-founder.js — same pattern,
-// reads the gifts table instead of pending_founder_gifts, doesn't
-// set comped_by_chief, keeps buyer info in metadata.
+// Phase 2 sibling of claim-and-enter-founder.js — same POST-only
+// pattern, reads the gifts table instead of pending_founder_gifts,
+// doesn't set comped_by_chief, keeps buyer info in metadata.
 //
 // See claim-and-enter-founder.js header comment for full
-// architectural rationale + security model.
+// architectural rationale (POST-only protects against mail-scanner
+// pre-clicks consuming the token).
 
 const { supa, clanId, logEvent, TIER_BY_SLUG } = require('./lib/supabase');
 const { ensureAuthUser } = require('./lib/cert-service');
@@ -17,20 +17,26 @@ const { ensureAuthUser } = require('./lib/cert-service');
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 const SITE_URL = process.env.SITE_URL || 'https://www.ocomain.org';
 
-function redirectTo(url) {
+function jsonResponse(statusCode, body) {
   return {
-    statusCode: 302,
-    headers: { Location: url, 'Cache-Control': 'no-store' },
-    body: '',
+    statusCode,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    body: JSON.stringify(body),
   };
 }
 
 exports.handler = async (event) => {
-  const token = (event.queryStringParameters && event.queryStringParameters.token) || '';
+  if (event.httpMethod !== 'POST') {
+    return jsonResponse(405, { ok: false, reason: 'method_not_allowed' });
+  }
+
+  let body = {};
+  try { body = JSON.parse(event.body || '{}'); } catch { /* ignore */ }
+  const token = String(body.token || '').trim();
+  console.log(`[claim-and-enter-paid] POST HIT — token=${token ? token.slice(0,8)+'...'+token.slice(-4) : '(empty)'}`);
 
   if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
-    console.error('[claim-and-enter-paid] missing/invalid token');
-    return redirectTo('/members/login.html?signin=fallback');
+    return jsonResponse(400, { ok: false, reason: 'invalid_token' });
   }
 
   let cid;
@@ -38,10 +44,9 @@ exports.handler = async (event) => {
     cid = await clanId();
   } catch (e) {
     console.error('[claim-and-enter-paid] clanId failed:', e.message);
-    return redirectTo('/members/login.html?signin=fallback');
+    return jsonResponse(500, { ok: false, reason: 'server_error' });
   }
 
-  // ── 1. LOOK UP GIFT ROW ────────────────────────────────────────────
   const { data: gift, error: lookupErr } = await supa()
     .from('gifts')
     .select('id, recipient_email, recipient_name, buyer_email, buyer_name, tier, tier_label, tier_family, personal_message, status, expires_at, member_id, created_at')
@@ -51,40 +56,27 @@ exports.handler = async (event) => {
 
   if (lookupErr) {
     console.error('[claim-and-enter-paid] lookup failed:', lookupErr.message);
-    return redirectTo('/members/login.html?signin=fallback');
+    return jsonResponse(500, { ok: false, reason: 'lookup_failed' });
   }
   if (!gift) {
-    console.warn('[claim-and-enter-paid] no gift row for token');
-    return redirectTo('/members/login.html?signin=invalid');
+    return jsonResponse(404, { ok: false, reason: 'not_found' });
   }
+  console.log(`[claim-and-enter-paid] FOUND gift: id=${gift.id} status=${gift.status} member_id=${gift.member_id || 'null'}`);
 
-  // ── 2. ALREADY-CLAIMED PATH ────────────────────────────────────────
-  // Second click — fall back to magic-link flow with email pre-fill.
-  // (Don't auto-sign-in second click; could be a forwarded email
-  // opened by someone else. Magic link goes only to recipient inbox.)
   if (gift.member_id) {
-    console.log(`[claim-and-enter-paid] gift ${gift.id} already claimed — falling back to magic-link flow`);
-    return redirectTo(`/members/login.html?email=${encodeURIComponent(gift.recipient_email)}&claimed=1`);
+    return jsonResponse(409, { ok: false, reason: 'already_claimed', recipient_email: gift.recipient_email });
   }
 
-  // ── 3. LAPSED ──────────────────────────────────────────────────────
   if (gift.status === 'lapsed' ||
       (gift.expires_at && new Date(gift.expires_at).getTime() < Date.now())) {
-    console.log(`[claim-and-enter-paid] gift ${gift.id} lapsed — sending to welcome page for graceful UX`);
-    return redirectTo(`/gift-welcome.html?token=${encodeURIComponent(token)}`);
+    return jsonResponse(410, { ok: false, reason: 'lapsed', recipient_email: gift.recipient_email });
   }
 
-  // ── 4. RESOLVE TIER ────────────────────────────────────────────────
   const tierInfo = TIER_BY_SLUG[gift.tier] || TIER_BY_SLUG['clan-ind'];
   if (!TIER_BY_SLUG[gift.tier]) {
-    console.error(`[claim-and-enter-paid] gift ${gift.id} unknown tier '${gift.tier}'; using clan-ind`);
+    console.error(`[claim-and-enter-paid] unknown tier '${gift.tier}'; using clan-ind`);
   }
 
-  // ── 5. CREATE MEMBER ROW ───────────────────────────────────────────
-  // Identical shape to claim-paid-gift.js. No comped_by_chief — paid
-  // gifts are bought, not warranted. Buyer info kept in metadata for
-  // analytics. public_register_visible defaults true (same policy as
-  // founder claim).
   const now = new Date();
   const expiresAt = new Date(now.getTime() + ONE_YEAR_MS);
 
@@ -119,33 +111,26 @@ exports.handler = async (event) => {
 
   if (insertRes.error) {
     console.error('[claim-and-enter-paid] member insert failed:', insertRes.error.message);
-    return redirectTo(`/members/login.html?email=${encodeURIComponent(gift.recipient_email)}&signin=fallback`);
+    return jsonResponse(500, { ok: false, reason: 'insert_failed', recipient_email: gift.recipient_email });
   }
 
   const member = insertRes.data;
 
-  // ── 6. LINK GIFT → CLAIMED ─────────────────────────────────────────
   try {
     await supa()
       .from('gifts')
-      .update({
-        status:     'claimed',
-        member_id:  member.id,
-        claimed_at: now.toISOString(),
-      })
+      .update({ status: 'claimed', member_id: member.id, claimed_at: now.toISOString() })
       .eq('id', gift.id);
   } catch (e) {
-    console.error(`[claim-and-enter-paid] gift ${gift.id} status update failed:`, e.message);
+    console.error(`[claim-and-enter-paid] gift status update failed:`, e.message);
   }
 
-  // ── 7. ENSURE AUTH USER ────────────────────────────────────────────
   try {
     await ensureAuthUser(gift.recipient_email, gift.recipient_name);
   } catch (e) {
-    console.warn(`[claim-and-enter-paid] ensureAuthUser failed for ${gift.recipient_email}:`, e.message);
+    console.warn(`[claim-and-enter-paid] ensureAuthUser failed:`, e.message);
   }
 
-  // ── 8. EVENT LOG ───────────────────────────────────────────────────
   try {
     await logEvent({
       clan_id:    cid,
@@ -156,25 +141,25 @@ exports.handler = async (event) => {
         recipient_email: gift.recipient_email,
         buyer_email:     gift.buyer_email,
         tier:            gift.tier,
-        days_to_claim:   Math.round((now.getTime() - new Date(gift.created_at).getTime()) / (24 * 60 * 60 * 1000)),
       },
     });
-  } catch (e) { /* event log non-fatal */ }
+  } catch (e) { /* non-fatal */ }
 
-  // ── 9. GENERATE MAGIC LINK + 302 REDIRECT ──────────────────────────
   const { data: linkData, error: linkErr } = await supa().auth.admin.generateLink({
     type: 'magiclink',
     email: gift.recipient_email,
-    options: {
-      redirectTo: `${SITE_URL}/members/?welcome=gift`,
-    },
+    options: { redirectTo: `${SITE_URL}/members/?welcome=gift` },
   });
 
   if (linkErr || !linkData?.properties?.action_link) {
     console.error('[claim-and-enter-paid] generateLink failed:', linkErr?.message);
-    return redirectTo(`/members/login.html?email=${encodeURIComponent(gift.recipient_email)}&claimed=1`);
+    return jsonResponse(500, { ok: false, reason: 'signin_failed', recipient_email: gift.recipient_email });
   }
 
-  console.log(`[claim-and-enter-paid] one-click success for ${gift.recipient_email}`);
-  return redirectTo(linkData.properties.action_link);
+  console.log(`[claim-and-enter-paid] SUCCESS for ${gift.recipient_email}`);
+  return jsonResponse(200, {
+    ok: true,
+    action_link: linkData.properties.action_link,
+    recipient_email: gift.recipient_email,
+  });
 };

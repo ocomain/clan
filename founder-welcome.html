@@ -207,7 +207,7 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
       To take it up, press the seal below. Your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.
     </p>
     <div class="welcome-cta-block">
-      <button type="button" class="welcome-cta" id="claimBtn">Claim my place →</button>
+      <button type="button" class="welcome-cta" id="claimBtn">Enter the clan →</button>
       <p class="welcome-cta-note">By pressing this, your founding membership for the year ahead is confirmed and a sign-in link will be sent to <span id="claimEmail" style="font-style:italic"></span>.</p>
     </div>
   </div>
@@ -374,47 +374,66 @@ async function resolveByToken() {
 async function claimGift(email) {
   const btn = document.getElementById('claimBtn');
   btn.disabled = true;
-  btn.textContent = 'Claiming…';
+  btn.textContent = 'Entering…';
 
   try {
-    const res = await fetch('/api/claim-founder-gift', {
+    // POST to the claim-and-enter endpoint. POST-only ensures mail
+    // scanners GETting the original URL (which lands on this page,
+    // not the API) cannot consume the token. On success, the response
+    // contains an action_link — a Supabase magic-link URL with auth
+    // tokens. window.location.href = action_link triggers a full
+    // navigation; Supabase processes it server-side and lands the
+    // recipient signed in to /members/?welcome=founder.
+    const res = await fetch('/api/claim-and-enter-founder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     });
     const data = await res.json().catch(() => ({}));
 
+    // Lapsed during/before claim — switch to lapsed state UI.
     if (res.status === 410) {
-      // Lapsed during/before claim. Switch to lapsed state.
       showState('stateLapsed');
       return;
     }
-    if (!res.ok) {
-      btn.disabled = false;
-      btn.textContent = 'Claim my place →';
-      // Surface a small error on the button area. Best-effort —
-      // most cases here are server bugs, not user mistakes.
-      const note = btn.parentElement.querySelector('.welcome-cta-note');
-      if (note) {
-        note.style.color = 'var(--burgundy)';
-        note.textContent = 'Could not complete the claim. Please try again, or write to clan@ocomain.org.';
-      }
-      console.error('claim failed:', res.status, data);
+
+    // Already-claimed (someone else clicked, or refresh of this page
+    // post-claim). Pre-fill login form and route there for a fresh
+    // magic link to the recipient's inbox.
+    if (res.status === 409 && data.recipient_email) {
+      window.location.href = '/members/login.html?email=' +
+        encodeURIComponent(data.recipient_email) + '&claimed=1';
       return;
     }
 
-    // Success — flip to claimed state. Wire the Continue link with
-    // the recipient's email so the magic-link form is pre-filled.
-    if (email || (data.member && data.member.email)) {
-      const continueEmail = (data.member && data.member.email) || email;
-      document.getElementById('continueCta').href =
-        '/members/login.html?email=' + encodeURIComponent(continueEmail) + '&founder=1';
+    // Success path — server gave us an action_link. Follow it.
+    if (res.ok && data.ok && data.action_link) {
+      window.location.href = data.action_link;
+      return;
     }
-    showState('stateClaimed');
+
+    // Sign-in step failed but the claim itself succeeded — graceful
+    // fallback to magic-link-by-email so the recipient can still get
+    // in. The 'claimed=1' banner on the login page handles this.
+    if (data.recipient_email) {
+      window.location.href = '/members/login.html?email=' +
+        encodeURIComponent(data.recipient_email) + '&claimed=1';
+      return;
+    }
+
+    // Last-ditch: surface a small inline error and re-enable button.
+    btn.disabled = false;
+    btn.textContent = 'Enter the clan →';
+    const note = btn.parentElement.querySelector('.welcome-cta-note');
+    if (note) {
+      note.style.color = 'var(--burgundy)';
+      note.textContent = 'Could not complete the claim. Please try again, or write to clan@ocomain.org.';
+    }
+    console.error('claim failed:', res.status, data);
   } catch (e) {
     console.error('claimGift threw:', e);
     btn.disabled = false;
-    btn.textContent = 'Claim my place →';
+    btn.textContent = 'Enter the clan →';
   }
 }
 

@@ -105,20 +105,24 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
     ? `<p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.7;margin:0 0 28px;padding:18px 20px;background:rgba(184,151,90,.08);border-left:3px solid #B8975A">${escapeHtml(personalNote.trim())}<br><span style="font-size:13px;color:#6C5A4A;margin-top:8px;display:inline-block">— Fergus</span></p>`
     : '';
 
-  // Claim URL — points at the one-click claim endpoint (added
-  // 2026-04-30). The endpoint creates the member row, marks the
-  // pending row as claimed, generates a magic-link via Supabase
-  // admin API, and 302-redirects the recipient's browser to the
-  // magic-link URL — which Supabase processes server-side and
-  // lands them authenticated on /members/?welcome=founder. Net
-  // result: one click in this email = signed-in members area.
-  // No intermediate welcome page, no email-entry form.
+  // Claim URL — points at the founder welcome landing page with
+  // the claim_token. This page renders pure UI on GET (no side
+  // effects), so mail scanners pre-fetching the URL cannot consume
+  // the token. The recipient sees their name + tier + the Chief's
+  // personal note, clicks 'Enter the clan →', and the page POSTs
+  // to /api/claim-and-enter-founder which performs the claim and
+  // returns a Supabase magic-link action_link. The page then
+  // window.location.href's to that action_link, landing the
+  // recipient signed in to /members/?welcome=founder.
   //
-  // Defensive guard: if no claimToken was provided (shouldn't
-  // happen in normal flow), fall back to the (still-deployed)
-  // welcome page which handles invalid-state gracefully.
+  // POST-only on the API endpoint is what protects against mail
+  // scanners (Outlook ATP, Gmail safe-link, Mimecast, Proofpoint
+  // — all GET every link in incoming email to malware-check).
+  // The intermediate page is industry-standard pattern for
+  // sensitive token-in-URL flows (GitHub, Notion, Stripe all
+  // do this).
   const claimUrl = claimToken
-    ? `${SITE_URL}/api/claim-and-enter-founder?token=${encodeURIComponent(claimToken)}`
+    ? `${SITE_URL}/founder-welcome.html?token=${encodeURIComponent(claimToken)}`
     : `${SITE_URL}/founder-welcome.html`;
 
   // ── THE LOCKED EMAIL BODY ────────────────────────────────────────
