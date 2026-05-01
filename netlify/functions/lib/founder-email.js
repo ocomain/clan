@@ -109,7 +109,7 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
   // the claim_token. This page renders pure UI on GET (no side
   // effects), so mail scanners pre-fetching the URL cannot consume
   // the token. The recipient sees their name + tier + the Chief's
-  // personal note, clicks 'Enter the clan →', and the page POSTs
+  // personal note, clicks 'Claim my place →', and the page POSTs
   // to /api/claim-and-enter-founder which performs the claim and
   // returns a Supabase magic-link action_link. The page then
   // window.location.href's to that action_link, landing the
@@ -175,7 +175,7 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
          secondary CTAs anywhere in the email — the recipient has one
          action to take. -->
     <div style="text-align:center;margin:8px 0 14px">
-      <a href="${claimUrl}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;padding:18px 36px;border-radius:1px;border:1px solid #4A1010">Claim your founder's place →</a>
+      <a href="${claimUrl}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;padding:18px 36px;border-radius:1px;border:1px solid #4A1010">View your invitation →</a>
     </div>
 
     <!-- Soft secondary link to the homepage — for the recipient who

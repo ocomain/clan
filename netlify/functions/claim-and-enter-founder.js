@@ -18,7 +18,7 @@
 // they GET /founder-welcome.html?token=X first which is a
 // pure render with no side effects. Real recipients arrive at
 // the welcome page, see their name + tier + the personal note
-// from the Chief, and click 'Enter the clan →'. That button
+// from the Chief, and click 'Claim my place →'. That button
 // click POSTs to this endpoint, which:
 //
 //   1. Looks up the pending founder gift by claim_token

@@ -207,7 +207,7 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
       To take it up, press the seal below. Your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.
     </p>
     <div class="welcome-cta-block">
-      <button type="button" class="welcome-cta" id="claimBtn">Enter the clan →</button>
+      <button type="button" class="welcome-cta" id="claimBtn">Claim my place →</button>
       <p class="welcome-cta-note">By pressing this, your founding membership for the year ahead is confirmed and a sign-in link will be sent to <span id="claimEmail" style="font-style:italic"></span>.</p>
     </div>
   </div>
@@ -423,7 +423,7 @@ async function claimGift(email) {
 
     // Last-ditch: surface a small inline error and re-enable button.
     btn.disabled = false;
-    btn.textContent = 'Enter the clan →';
+    btn.textContent = 'Claim my place →';
     const note = btn.parentElement.querySelector('.welcome-cta-note');
     if (note) {
       note.style.color = 'var(--burgundy)';
@@ -433,7 +433,7 @@ async function claimGift(email) {
   } catch (e) {
     console.error('claimGift threw:', e);
     btn.disabled = false;
-    btn.textContent = 'Enter the clan →';
+    btn.textContent = 'Claim my place →';
   }
 }
 

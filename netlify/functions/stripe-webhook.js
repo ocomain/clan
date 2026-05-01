@@ -1123,7 +1123,7 @@ async function sendGiftRecipientWelcome(ctx) {
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Place in the Clan</p>
       <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your acceptance</p>
       <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">A gift, freely given. Press the seal below to take up your place — your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.</p>
-      <a href="https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px;border:1px solid #4A1010">Claim my place →</a>
+      <a href="https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px;border:1px solid #4A1010">View your invitation →</a>
       <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A gift is held open for one year from the day it is offered. Until then, no membership exists in your name — the choice to take your place is yours.</p>
     </div>
   `
@@ -1261,8 +1261,8 @@ async function sendGiftBuyerConfirmation(ctx, productName, amount, currency) {
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 28px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">What happens next</p>
       <ol style="margin:0;padding-left:20px">
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email with your personal message and a single button — <em>Claim my place</em>.</li>
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">When they press it, their place in the clan is confirmed. They will be invited to confirm their certificate details — their name, an optional ancestor dedication — and the certificate is sealed in their name and entered in the Register at Newhall House.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email with your personal message and an invitation to view their place in the clan.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">They press <em>Claim my place</em> on the welcome page — their place in the clan is confirmed. They will be invited to confirm their certificate details — their name, an optional ancestor dedication — and the certificate is sealed in their name and entered in the Register at Newhall House.</li>
         <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">We send you a copy of the published certificate as a keepsake of the gift you've given.</li>
         <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Commane — writes to them personally in the weeks that follow.</li>
       </ol>
