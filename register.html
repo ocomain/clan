@@ -134,7 +134,12 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 /* ENTRIES */
 .entries{margin-top:8px}
 .entry{padding:32px 8px 32px;border-top:1px solid var(--rule);position:relative;transition:background .2s}
-.entry:last-child{border-bottom:1px solid var(--rule)}
+/* No border-bottom on the last entry — the herald-sign block's
+   own border-top below provides the visual closure. Earlier this
+   used border-bottom on :last-child but with one entry (or a
+   short list) the doubled lines beneath read as chrome rather
+   than rule, especially next to the section-empty + herald-sign
+   borders that follow. */
 .entry:hover{background:rgba(184,151,90,.04)}
 .entry-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:baseline}
 .entry-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--ink);line-height:1.2;letter-spacing:-0.005em}
@@ -416,7 +421,7 @@ function toggleMenu(){
        detail then follows in a different register, the way an estate
        officer's notice might sit beneath a Chief's letter on a notice
        board. Same authority, different voice. -->
-  <p class="herald-postscript">Each member chooses for themselves whether to appear here, at the moment their certificate is sealed — and may quietly change that choice at any time thereafter.</p>
+  <p class="herald-postscript">Each member chooses for themselves whether to appear here, at the moment their membership is confirmed — and may quietly change that choice at any time thereafter.</p>
 
   <div class="hero-counts">
     <div class="hero-count">

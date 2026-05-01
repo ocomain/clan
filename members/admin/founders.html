@@ -568,9 +568,12 @@
 
   function buildWaMessage(g) {
     const firstName = (g.name || '').trim().split(/\s+/)[0] || 'there';
-    // Keep the message under ~300 chars so it sends as a single
+    // Keep the message under ~400 chars so it sends as a single
     // WhatsApp message on most clients without truncation prompts.
-    return `Hey ${firstName} — just sent you a quick email from Clan Ó Comáin. We've built a new platform with your own clan certificate, a place on the public Register, and access to the Members' Area. As one of our founders, your membership is on me for the year. Just click the button in the email to claim your place — takes 10 seconds. Let me know if you have any trouble. — Fergus`;
+    // 'We just sent' (vs 'I just sent') matches the email's From
+    // field which reads 'Clan Ó Comáin' (institution sender, Fergus
+    // signs the body) — keeps voice consistent across channels.
+    return `Hey ${firstName} — we just sent you a quick email from Clan Ó Comáin. We've built a brand new platform where you'll get your own clan certificate, a place on the public Register, and access to the Members' Area. As one of our founders, your membership is on me for the year. Just click the button in the email to claim your place — takes 10 seconds. Let me know if you have any trouble. — Fergus`;
   }
 
   function renderWaCell(g) {
