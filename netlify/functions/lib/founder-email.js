@@ -49,15 +49,23 @@ const { sendEmail } = require('./email');
 //     in clan correspondence (mailing-house etiquette: an
 //     institution sends, an individual signs).
 //
-//   SUBJECT: 'Important message from Fergus Commane' — the
-//     Herald's voice, framing the contents as a personal
-//     communication from the Chief that warrants the
-//     recipient's attention. Less abstract than the previous
-//     'A founding place in Clan Ó Comáin' (which read more like
-//     a tagline than a subject). The previous wording is now
-//     the body's H1 / opening line; the subject earns the open.
+//   SUBJECT: 'Invitation on behalf of Fergus Commane' — the
+//     Herald's voice. 'Invitation' is a positive, anticipatory
+//     frame; recipients lean in to invitations rather than
+//     defending against 'Important'-prefixed obligations.
+//     'On behalf of' explains why the From field is the clan
+//     and not Fergus personally — the Herald (institution) is
+//     doing the inviting; Fergus is the principal whose name
+//     carries the weight. Iterated through:
+//       - 'A founding place in Clan Ó Comáin' (original — too
+//         abstract, reads as a tagline)
+//       - 'Important message from Fergus Commane' (rejected —
+//         'Important' triggers spam-defence instinct)
+//       - 'Invitation on behalf of Fergus Commane' (chosen —
+//         positive social frame + named principal + Herald
+//         framing in three words)
 const FROM = 'Clan Ó Comáin <clan@ocomain.org>';
-const SUBJECT = 'Important message from Fergus Commane';
+const SUBJECT = 'Invitation on behalf of Fergus Commane';
 
 // The site URL — recipients click through to /founder-welcome.html
 // where they get a single-CTA landing page that hands them off to the
