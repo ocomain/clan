@@ -11,7 +11,9 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Register of Clan Ó Comáin — Newhall House</title>
 <meta name="description" content="The Register of Clan Ó Comáin — Guardians, Stewards, and Life Members of the clan, kept by the Herald at Newhall House.">
-<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -533,32 +535,42 @@ const TIER_GROUPS = {
   guardian:{ tiers: ['guardian-ind','guardian-fam'], label: 'Guardian',   family_label: 'Guardian · Family' },
 };
 
-const SECTIONS = [
-  {
-    key: 'life',
-    eyebrow: 'The Roll of Honour',
-    eyebrow_irish: 'Rolla na hOnóra',
-    title: 'Life <em>Members</em>',
-    blurb: 'Their place in the clan is permanent. Their name is here for as long as the Register endures.',
-    empty: 'No Life Members have yet been inscribed in this place. Their names shall stand here when they come.',
-  },
-  {
-    key: 'steward',
-    eyebrow: 'The Sustainers of the Clan',
-    eyebrow_irish: 'Maoir an Chláir',
-    title: '<em>Stewards</em>',
-    blurb: 'Members whose annual commitment sustains the work of the clan, year on year.',
-    empty: 'No Stewards yet stand upon this roll. Their names shall be inscribed when they come.',
-  },
-  {
-    key: 'guardian',
-    eyebrow: 'Members of the Clan',
-    eyebrow_irish: 'Cosantóirí Chlainne Uí Chomáin',
-    title: '<em>Guardians</em>',
-    blurb: 'Members who have chosen to stand with the clan.',
-    empty: 'No Guardians yet stand upon this roll. Their names shall be inscribed when they come.',
-  },
-];
+// Tier rank — used for the unified-list sort (2026-05-01).
+// Lower number = more senior. Within each rank, members are
+// sorted alphabetically by display surname/name.
+//
+// Previously the Register grouped members into three labelled
+// sections (Life Members / Stewards / Guardians). The user
+// chose to drop the headings since each entry already shows
+// its tier label in the right meta column ('Guardian',
+// 'Steward · Family' etc) — duplicating the label as a
+// section heading was redundant. The seniority ordering is
+// preserved (Life → Steward → Guardian, founders first within
+// each rank) with alphabetical sort within rank as a
+// tiebreaker.
+const TIER_RANK = {
+  'life-ind':     1, 'life-fam':     1,
+  'steward-ind':  2, 'steward-fam':  2,
+  'guardian-ind': 3, 'guardian-fam': 3,
+};
+
+function tierRank(member) {
+  return TIER_RANK[member.tier] ?? 99;
+}
+
+// Get the surname for alphabetical sort. Falls back to the full
+// display name if the surname can't be split out (single names,
+// unusual formats). Case-insensitive comparison.
+function sortKey(member) {
+  const name = (member.name || '').trim();
+  if (!name) return 'zzzz';
+  // Split on whitespace, take the last part as surname for sort.
+  // 'Antoin Commane' → 'commane'; 'Mary O\'Donnell' → "o'donnell".
+  // 'Madonna' → 'madonna' (single name fallback).
+  const parts = name.split(/\s+/);
+  const surname = parts[parts.length - 1] || name;
+  return surname.toLowerCase();
+}
 
 // Founder gating — must match FOUNDING_YEARS in members/index.html
 // and lib/generate-cert.js. Add years here in lock-step when extending.
@@ -672,24 +684,27 @@ function renderEntry(member) {
   `;
 }
 
-function renderSection(section, members) {
-  const inThisSection = members.filter(m => 
-    TIER_GROUPS[section.key].tiers.includes(m.tier)
-  );
-  const body = inThisSection.length > 0
-    ? `<div class="entries">${inThisSection.map(renderEntry).join('')}</div>`
-    : `<div class="section-empty">${escHtml(section.empty)}</div>`;
-  return `
-    <section class="section">
-      <div class="section-head">
-        <div class="section-eyebrow">${section.eyebrow}</div>
-        <div class="section-eyebrow-irish">${section.eyebrow_irish}</div>
-        <h2 class="section-title">${section.title}</h2>
-        <p class="section-blurb">${escHtml(section.blurb)}</p>
-      </div>
-      ${body}
-    </section>
-  `;
+// Single-list render (2026-05-01) — replaces the previous
+// section-by-tier grouping. Sorts members by tier seniority
+// then by surname alphabetically. The tier label appears in
+// each entry's right meta column already, so no section
+// heading is needed.
+//
+// Founders-first within rank: a founder (joined in FOUNDING_YEARS)
+// outranks a non-founder of the same tier. The rank tuple is
+// therefore (tierRank, !isFounder, surname). For Year 1 of the
+// revival every member is a founder, so the !isFounder term has
+// no visible effect; it kicks in from Year 2 onward.
+function sortMembers(members) {
+  return members.slice().sort((a, b) => {
+    const ra = tierRank(a);
+    const rb = tierRank(b);
+    if (ra !== rb) return ra - rb;
+    const fa = FOUNDING_YEARS.has(getJoinYear(a.joined_at)) ? 0 : 1;
+    const fb = FOUNDING_YEARS.has(getJoinYear(b.joined_at)) ? 0 : 1;
+    if (fa !== fb) return fa - fb;
+    return sortKey(a).localeCompare(sortKey(b));
+  });
 }
 
 async function loadRegister() {
@@ -722,7 +737,15 @@ async function loadRegister() {
       }
     }
 
-    target.innerHTML = SECTIONS.map(s => renderSection(s, members)).join('');
+    // Render the single sorted list. Empty-state surface
+    // preserved — same friendly message as before, just no
+    // longer broken into three sections.
+    const sorted = sortMembers(members);
+    if (sorted.length > 0) {
+      target.innerHTML = `<div class="entries">${sorted.map(renderEntry).join('')}</div>`;
+    } else {
+      target.innerHTML = `<div class="section-empty">No members yet stand upon this roll. Their names shall be inscribed when they come.</div>`;
+    }
   } catch (e) {
     console.error('Register load failed:', e);
     target.innerHTML = `
