@@ -125,7 +125,8 @@ exports.handler = async (event) => {
         created_at,
         expires_at,
         claimed_at,
-        member_id
+        member_id,
+        whatsapp_sent_at
       `)
       .eq('clan_id', cid)
       .in('status', ['pending', 'lapsed'])
@@ -201,6 +202,15 @@ exports.handler = async (event) => {
       claimed_at:   p.claimed_at,
       sealed_at:    null,
       source:       'pending',
+      // WhatsApp follow-up tracking. Pending rows can be ticked
+      // (Fergus messages people he's invited). Member rows (claimed)
+      // could in principle also be ticked but the use case is
+      // chiefly the pre-claim nudge, so ticking on claimed/sealed
+      // is moot — they're already in. Frontend renders the
+      // checkbox only when whatsapp_sent_at is non-null OR status
+      // is pending.
+      pending_id:       p.id,
+      whatsapp_sent_at: p.whatsapp_sent_at || null,
     };
   });
 
@@ -235,6 +245,12 @@ exports.handler = async (event) => {
       claimed_at:   null,  // see comment in original — not derivable from members table
       sealed_at:    m.cert_published_at || null,
       source:       'member',
+      // Member rows don't carry the whatsapp tracking column. Most
+      // member rows are post-claim (already in the clan), so the
+      // 'check your email' nudge is moot. We leave both fields null
+      // so the frontend renders nothing.
+      pending_id:       null,
+      whatsapp_sent_at: null,
     };
   });
 

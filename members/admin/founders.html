@@ -137,6 +137,35 @@
     .gifts-date{font-size:13px;color:var(--ink-muted);font-style:italic}
     .gifts-note{font-size:13px;font-style:italic;color:var(--gold-deep);max-width:240px}
 
+    /* WhatsApp follow-up column. The tick + launch sit on one
+       row; tick is on the left, launch icon on the right. The
+       tick's checked state colours green to read as 'done',
+       unchecked is the cool gold-faint border. The launch is a
+       small WhatsApp-green pill — opens wa.me with the templated
+       message. Layout uses inline-flex so they stay together at
+       any column width. */
+    .wa-cell{display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap}
+    .wa-tick{
+      width:18px;height:18px;cursor:pointer;
+      accent-color:#25D366;  /* WhatsApp green for the checkmark */
+      flex-shrink:0
+    }
+    .wa-launch{
+      display:inline-flex;align-items:center;gap:5px;
+      padding:5px 10px;border-radius:14px;
+      background:#25D366;color:#fff;
+      font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+      text-decoration:none;line-height:1;
+      transition:background .15s
+    }
+    .wa-launch:hover{background:#1da851}
+    .wa-launch svg{width:11px;height:11px;display:block}
+    .wa-sent-when{
+      display:block;font-size:11px;font-style:italic;color:var(--ink-muted);margin-top:4px
+    }
+    .wa-cell.is-sent .wa-launch{background:rgba(37,211,102,.15);color:#1a7a3e}
+    .wa-cell.is-sent .wa-launch:hover{background:rgba(37,211,102,.25)}
+
     .pill{display:inline-block;font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:11px;background:var(--cream);border:1px solid var(--gold-faint);color:var(--ink-muted)}
     /* Pending (new flow) — soft gold, awaiting-action feel. Lighter
        than sent so the eye distinguishes the 'they got the email
@@ -265,7 +294,7 @@
   <!-- TABLE CARD ────────────────────────────────────────────────── -->
   <div class="table-card">
     <h2>Founding gifts sent</h2>
-    <p class="table-card-sub">Reverse-chronological. A gift moves from <em>Pending</em> (sent, awaiting acceptance) → <em>Claimed</em> (recipient pressed claim and signed in) → <em>Sealed</em> (certificate published). A gift not accepted within one year becomes <em>Lapsed</em>.</p>
+    <p class="table-card-sub">Reverse-chronological. A gift moves from <em>Pending</em> (sent, awaiting acceptance) → <em>Claimed</em> (recipient pressed claim and signed in) → <em>Sealed</em> (certificate published). A gift not accepted within one year becomes <em>Lapsed</em>. The WhatsApp column tracks personal follow-ups — tick once you've messaged the recipient.</p>
 
     <!-- Summary strip — counts by status. Updated 2026-04-28 to
          surface 'Pending' (recipient hasn't claimed yet) as its own
@@ -300,6 +329,7 @@
           <th>Tier</th>
           <th>Sent</th>
           <th>Status</th>
+          <th>WhatsApp</th>
           <th>Note</th>
         </tr>
       </thead>
@@ -509,6 +539,125 @@
     return `<span class="${klass}">${escapeHtml(label)}</span>`;
   }
 
+  // ── WhatsApp follow-up column helpers ────────────────────────────
+  // Fergus uses this to track which recipients he's personally
+  // messaged via WhatsApp asking them to check their email and
+  // click the claim button. Two pieces of UI per row:
+  //
+  //   1. Tickbox — POSTs to /api/toggle-founder-gift-whatsapp to
+  //      persist sent/unsent state. Survives reloads + operator
+  //      handoffs (Linda + Fergus both work the list).
+  //
+  //   2. Launch button — opens wa.me with the templated message
+  //      pre-filled. wa.me works without knowing the recipient's
+  //      WhatsApp number — it opens contact picker on mobile,
+  //      web on desktop. Personalised by recipient first name.
+  //
+  // The message is intentionally short — Fergus knows these
+  // people; long copy from him via WhatsApp would feel template-y
+  // and break the personal-touch intent. The brief mention of
+  // 'new platform' + 'click the button' is the practical content.
+  // The personal warmth comes from Fergus typing whatever variant
+  // he wants on top, OR from him sending it as-is to people he
+  // knows well.
+  //
+  // Only renders for rows with a pending_id (i.e. founder gifts
+  // that came through the new flow). Member rows from the legacy
+  // direct-insert flow show '—' since we have nothing to track
+  // against on the member row.
+
+  function buildWaMessage(g) {
+    const firstName = (g.name || '').trim().split(/\s+/)[0] || 'there';
+    // Keep the message under ~300 chars so it sends as a single
+    // WhatsApp message on most clients without truncation prompts.
+    return `Hey ${firstName} — just sent you a quick email from Clan Ó Comáin. We've built a new platform with your own clan certificate, a place on the public Register, and access to the Members' Area. As one of our founders, your membership is on me for the year. Just click the button in the email to claim your place — takes 10 seconds. Let me know if you have any trouble. — Fergus`;
+  }
+
+  function renderWaCell(g) {
+    // Member-source rows (claimed via legacy direct-insert) don't
+    // have a pending_id and there's nothing to tick. Render '—'.
+    if (!g.pending_id) {
+      return '<span style="color:var(--ink-muted)">—</span>';
+    }
+    const isSent = !!g.whatsapp_sent_at;
+    const sentDate = isSent ? formatDate(g.whatsapp_sent_at) : '';
+    const waUrl = 'https://wa.me/?text=' + encodeURIComponent(buildWaMessage(g));
+    // WhatsApp icon (inline SVG — single colour, scales cleanly)
+    const waIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.999-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413"/></svg>';
+    return `
+      <div class="wa-cell ${isSent ? 'is-sent' : ''}">
+        <input
+          type="checkbox"
+          class="wa-tick"
+          data-pending-id="${g.pending_id}"
+          ${isSent ? 'checked' : ''}
+          title="${isSent ? 'Sent on ' + sentDate + ' — untick to clear' : 'Tick when WhatsApp sent'}"
+        >
+        <a class="wa-launch" href="${waUrl}" target="_blank" rel="noopener" title="Open WhatsApp with templated message">
+          ${waIcon}
+          <span>${isSent ? 'Sent' : 'Send'}</span>
+        </a>
+      </div>
+      ${isSent ? `<span class="wa-sent-when">${sentDate}</span>` : ''}
+    `;
+  }
+
+  async function onToggleWhatsApp(checkbox) {
+    const id = checkbox.getAttribute('data-pending-id');
+    const sent = checkbox.checked;
+    const cell = checkbox.closest('.wa-cell');
+
+    // Optimistic UI: flip the visual state immediately. If the
+    // server rejects, we revert. This keeps the workflow snappy
+    // when Fergus is ticking 60 boxes.
+    if (cell) cell.classList.toggle('is-sent', sent);
+    const launchSpan = cell ? cell.querySelector('.wa-launch span') : null;
+    if (launchSpan) launchSpan.textContent = sent ? 'Sent' : 'Send';
+
+    try {
+      const res = await fetch('/.netlify/functions/toggle-founder-gift-whatsapp', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, sent }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        console.error('toggle-whatsapp failed:', data.error || res.status);
+        // Revert
+        checkbox.checked = !sent;
+        if (cell) cell.classList.toggle('is-sent', !sent);
+        if (launchSpan) launchSpan.textContent = !sent ? 'Sent' : 'Send';
+        // If migration not run, surface to the operator clearly.
+        if (res.status === 503) {
+          alert('WhatsApp tracking not yet enabled — admin should run migration 020 in Supabase.');
+        }
+        return;
+      }
+      // On successful save, append the date next to the row so the
+      // operator sees confirmation. Only adds if newly sent.
+      if (sent && data.whatsapp_sent_at && cell) {
+        let when = cell.parentElement.querySelector('.wa-sent-when');
+        if (!when) {
+          when = document.createElement('span');
+          when.className = 'wa-sent-when';
+          cell.insertAdjacentElement('afterend', when);
+        }
+        when.textContent = formatDate(data.whatsapp_sent_at);
+      } else if (!sent && cell) {
+        const when = cell.parentElement.querySelector('.wa-sent-when');
+        if (when) when.remove();
+      }
+    } catch (e) {
+      console.error('toggle-whatsapp threw:', e);
+      checkbox.checked = !sent;
+      if (cell) cell.classList.toggle('is-sent', !sent);
+      if (launchSpan) launchSpan.textContent = !sent ? 'Sent' : 'Send';
+    }
+  }
+
   async function loadGifts() {
     loadingState.style.display = 'block';
     giftsTable.style.display = 'none';
@@ -545,7 +694,7 @@
       summaryStrip.style.display = 'flex';
       giftsTable.style.display = 'table';
       giftsTbody.innerHTML = gifts.map(g => `
-        <tr>
+        <tr data-pending-id="${g.pending_id || ''}">
           <td>
             <span class="gifts-name">${escapeHtml(g.name)}</span>
             <span class="gifts-email">${escapeHtml(g.email)}</span>
@@ -553,9 +702,17 @@
           <td>${tierBadge(g.tier, g.tier_label)}</td>
           <td><span class="gifts-date">${formatDate(g.sent_at)}</span></td>
           <td>${statusPill(g.status)}</td>
+          <td>${renderWaCell(g)}</td>
           <td>${g.comped_note ? `<span class="gifts-note">"${escapeHtml(g.comped_note)}"</span>` : '<span style="color:var(--ink-muted)">—</span>'}</td>
         </tr>
       `).join('');
+
+      // Wire up the per-row WhatsApp tickboxes after render. Each
+      // tick fires the toggle endpoint to persist the state. The
+      // launch link is a plain anchor — no JS needed.
+      giftsTbody.querySelectorAll('input.wa-tick').forEach(cb => {
+        cb.addEventListener('change', () => onToggleWhatsApp(cb));
+      });
     } catch (err) {
       console.error('list-founder-gifts failed:', err);
       loadingState.style.display = 'none';
