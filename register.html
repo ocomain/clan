@@ -170,7 +170,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .entry-dignity-prefix:focus-visible{box-shadow:0 0 0 2px var(--gold-faint);border-radius:2px}
 .entry-dignity-prefix::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:0;background:var(--ink);color:var(--cream);padding:11px 15px 12px;font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:13.5px;line-height:1.55;white-space:pre-line;width:max-content;max-width:300px;border-radius:2px;box-shadow:0 6px 22px rgba(0,0,0,.18);letter-spacing:0;text-align:left;opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s,transform .15s,visibility 0s linear .15s;pointer-events:none;z-index:20}
 .entry-dignity-prefix::before{content:'';position:absolute;top:calc(100% + 4px);left:14px;width:0;height:0;border:6px solid transparent;border-bottom-color:var(--ink);opacity:0;visibility:hidden;transition:opacity .15s,visibility 0s linear .15s;z-index:21}
-.entry-dignity-prefix:hover::after,.entry-dignity-prefix:focus-visible::after,.entry-dignity-prefix:hover::before,.entry-dignity-prefix:focus-visible::before{opacity:1;visibility:visible;transform:translateY(0);transition:opacity .15s,transform .15s,visibility 0s}
+.entry-dignity-prefix:hover::after,.entry-dignity-prefix:focus-visible::after,.entry-dignity-prefix.is-open::after,.entry-dignity-prefix:hover::before,.entry-dignity-prefix:focus-visible::before,.entry-dignity-prefix.is-open::before{opacity:1;visibility:visible;transform:translateY(0);transition:opacity .15s,transform .15s,visibility 0s}
 /* .entry-founder lives in the right meta column, immediately under
    'Joined 2026'. Drops the redundant '· 2026' from the mark text since
    the year is right above. Burgundy + small caps + leading flourish
@@ -762,6 +762,41 @@ async function loadRegister() {
 }
 
 loadRegister();
+
+// Mobile-friendly tooltip handling for dignity prefixes.
+// Desktop continues to use :hover via CSS. On touch devices, hover
+// is sticky — without a dismissal mechanism the bubble stays
+// permanently. We add an .is-open class that JS toggles on tap,
+// CSS treats .is-open the same as :hover for visibility, and a
+// document-level touchstart listener closes any open tooltip when
+// the user taps anywhere else.
+//
+// Wired with event delegation on document so it works for entries
+// that load after this script runs (loadRegister is async).
+document.addEventListener('click', function(e) {
+  const tappedPrefix = e.target.closest('.entry-dignity-prefix');
+  // Always close any currently-open tooltip first (mutex behaviour
+  // — only one open at a time, even when tapping a different one).
+  document.querySelectorAll('.entry-dignity-prefix.is-open').forEach(function(el) {
+    if (el !== tappedPrefix) el.classList.remove('is-open');
+  });
+  // If the tap landed on a dignity prefix, toggle its open state.
+  // If it landed elsewhere, the loop above has already cleared
+  // any open tooltip — we're done.
+  if (tappedPrefix) {
+    tappedPrefix.classList.toggle('is-open');
+  }
+});
+
+// Also dismiss on Escape — keyboard accessibility + a way to close
+// without leaving the page area.
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.entry-dignity-prefix.is-open').forEach(function(el) {
+      el.classList.remove('is-open');
+    });
+  }
+});
 </script>
 
 </body>
