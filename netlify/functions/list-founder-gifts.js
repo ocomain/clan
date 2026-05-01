@@ -112,25 +112,51 @@ exports.handler = async (event) => {
   // is treated as 'continue without pending data'.
   let pendingRows = [];
   try {
-    const pendingQ = await supa()
+    // Phase 3 (2026-05-01): now also includes 'claimed' rows so the
+    // admin panel can surface the WhatsApp tickbox for ALL founder
+    // gifts, not just pre-acceptance ones. Fergus's WhatsApp follow-
+    // up is just as relevant for already-claimed recipients (he may
+    // want to message after they claim, OR he may have messaged
+    // before they claimed and wants the tick to persist after they
+    // accept). The members-table side of the union previously
+    // owned 'claimed' rows; now both sides emit them and we dedupe
+    // by pending_gift_id below.
+    let pendingSelect = `
+      id,
+      recipient_email,
+      recipient_name,
+      tier,
+      tier_label,
+      personal_note,
+      status,
+      created_at,
+      expires_at,
+      claimed_at,
+      member_id,
+      whatsapp_sent_at
+    `;
+    let pendingQ = await supa()
       .from('pending_founder_gifts')
-      .select(`
-        id,
-        recipient_email,
-        recipient_name,
-        tier,
-        tier_label,
-        personal_note,
-        status,
-        created_at,
-        expires_at,
-        claimed_at,
-        member_id,
-        whatsapp_sent_at
-      `)
+      .select(pendingSelect)
       .eq('clan_id', cid)
-      .in('status', ['pending', 'lapsed'])
+      .in('status', ['pending', 'lapsed', 'claimed'])
       .order('created_at', { ascending: false });
+
+    // Defensive: if migration 020 hasn't been applied, the
+    // whatsapp_sent_at column doesn't exist and Supabase returns
+    // an error citing the missing column. Retry without it so the
+    // panel still loads — the WhatsApp column will render as 'Send'
+    // (untoggled) until the migration applies.
+    if (pendingQ.error && /column .*whatsapp_sent_at.* does not exist/i.test(pendingQ.error.message || '')) {
+      console.warn('list-founder-gifts: whatsapp_sent_at column missing — retrying without it. Run migration 020.');
+      pendingSelect = pendingSelect.replace(/,\s*whatsapp_sent_at/, '');
+      pendingQ = await supa()
+        .from('pending_founder_gifts')
+        .select(pendingSelect)
+        .eq('clan_id', cid)
+        .in('status', ['pending', 'lapsed', 'claimed'])
+        .order('created_at', { ascending: false });
+    }
 
     if (pendingQ.error) {
       // Postgres 'relation does not exist' = 42P01. Supabase surfaces
@@ -183,12 +209,50 @@ exports.handler = async (event) => {
   }
 
   // ── Merge + status derivation ─────────────────────────────────────
+  //
+  // Phase 3 (2026-05-01): the union now includes claimed pending
+  // rows (so the WhatsApp tickbox surfaces on every founder gift,
+  // not just pre-acceptance). When a pending row is 'claimed' it
+  // also has a matching member row in the members table — both
+  // sides of the union would emit the same person twice. Dedup
+  // strategy: build a Set of pending member_ids, then skip member
+  // rows whose id is in that set. Pending side wins because it
+  // carries the WhatsApp tracking column; the member-derived
+  // status (claimed/sealed) is recomputed on the pending row by
+  // joining via member_id.
   const counts = { pending: 0, lapsed: 0, sent: 0, claimed: 0, sealed: 0 };
 
-  // Pending/lapsed rows from the new table.
+  // Pre-build a member-id → member-info map so pending claimed rows
+  // can derive their downstream status (claimed vs sealed) and
+  // pull cert_published_at + auth_user_id from the member side.
+  const membersById = new Map();
+  for (const m of (memberRows || [])) {
+    membersById.set(m.id, m);
+  }
+  // Also collect the set of member_ids that were created via the
+  // new flow (they have a matching pending row). Used below to
+  // suppress the duplicate from the member-side iteration.
+  const memberIdsFromPending = new Set();
+  for (const p of (pendingRows || [])) {
+    if (p.member_id) memberIdsFromPending.add(p.member_id);
+  }
+
+  // Pending/lapsed/claimed rows from the new table.
   const fromPending = (pendingRows || []).map(p => {
-    const status = p.status; // 'pending' or 'lapsed' — already canonical
-    counts[status] = (counts[status] || 0) + 1;
+    // Derive the displayed status. Pending and lapsed pass through;
+    // claimed needs to look at the joined member to decide claimed
+    // vs sealed (cert_published_at presence).
+    let displayStatus = p.status;
+    let sealedAt = null;
+    if (p.status === 'claimed' && p.member_id) {
+      const linkedMember = membersById.get(p.member_id);
+      if (linkedMember && linkedMember.cert_published_at) {
+        displayStatus = 'sealed';
+        sealedAt = linkedMember.cert_published_at;
+      }
+      // else stays 'claimed' — member exists, cert not yet published
+    }
+    counts[displayStatus] = (counts[displayStatus] || 0) + 1;
     return {
       id:           p.id,
       email:        p.recipient_email,
@@ -197,62 +261,63 @@ exports.handler = async (event) => {
       tier_label:   p.tier_label,
       sent_at:      p.created_at,
       comped_note:  p.personal_note || null,
-      status,
+      status:       displayStatus,
       expires_at:   p.expires_at,
       claimed_at:   p.claimed_at,
-      sealed_at:    null,
+      sealed_at:    sealedAt,
       source:       'pending',
-      // WhatsApp follow-up tracking. Pending rows can be ticked
-      // (Fergus messages people he's invited). Member rows (claimed)
-      // could in principle also be ticked but the use case is
-      // chiefly the pre-claim nudge, so ticking on claimed/sealed
-      // is moot — they're already in. Frontend renders the
-      // checkbox only when whatsapp_sent_at is non-null OR status
-      // is pending.
+      // WhatsApp follow-up tracking — surfaced on EVERY pending-
+      // sourced row regardless of status. Fergus may want to
+      // message someone after they claim too, or have already
+      // messaged before they claimed and wants the tick to persist.
       pending_id:       p.id,
       whatsapp_sent_at: p.whatsapp_sent_at || null,
     };
   });
 
-  // Members from the existing table — these are the rows where the
-  // gift either was claimed (new flow) or pre-dates the deferred
-  // flow entirely (legacy direct-insert).
-  const fromMembers = (memberRows || []).map(m => {
-    let derivedStatus;
-    if (m.cert_published_at) {
-      derivedStatus = 'sealed';
-    } else if (m.auth_user_id) {
-      derivedStatus = 'claimed';
-    } else if (m.comped_at) {
-      derivedStatus = 'sent';
-    } else {
-      // Should not happen — a comped_by_chief row without comped_at
-      // would be a data integrity problem. Bucket as 'sent' for
-      // display rather than crashing the panel.
-      derivedStatus = 'sent';
-    }
-    counts[derivedStatus] = (counts[derivedStatus] || 0) + 1;
-    return {
-      id:           m.id,
-      email:        m.email,
-      name:         m.name,
-      tier:         m.tier,
-      tier_label:   m.tier_label,
-      sent_at:      m.comped_at,
-      comped_note:  m.comped_note || null,
-      status:       derivedStatus,
-      expires_at:   null,
-      claimed_at:   null,  // see comment in original — not derivable from members table
-      sealed_at:    m.cert_published_at || null,
-      source:       'member',
-      // Member rows don't carry the whatsapp tracking column. Most
-      // member rows are post-claim (already in the clan), so the
-      // 'check your email' nudge is moot. We leave both fields null
-      // so the frontend renders nothing.
-      pending_id:       null,
-      whatsapp_sent_at: null,
-    };
-  });
+  // Members from the existing table — only those that DON'T have a
+  // matching pending row. These are legacy direct-insert founder
+  // gifts (created before the deferred-acceptance flow shipped).
+  // The new-flow members are already represented above via fromPending,
+  // and surfacing them here too would duplicate the row.
+  const fromMembers = (memberRows || [])
+    .filter(m => !memberIdsFromPending.has(m.id))
+    .map(m => {
+      let derivedStatus;
+      if (m.cert_published_at) {
+        derivedStatus = 'sealed';
+      } else if (m.auth_user_id) {
+        derivedStatus = 'claimed';
+      } else if (m.comped_at) {
+        derivedStatus = 'sent';
+      } else {
+        // Should not happen — a comped_by_chief row without comped_at
+        // would be a data integrity problem. Bucket as 'sent' for
+        // display rather than crashing the panel.
+        derivedStatus = 'sent';
+      }
+      counts[derivedStatus] = (counts[derivedStatus] || 0) + 1;
+      return {
+        id:           m.id,
+        email:        m.email,
+        name:         m.name,
+        tier:         m.tier,
+        tier_label:   m.tier_label,
+        sent_at:      m.comped_at,
+        comped_note:  m.comped_note || null,
+        status:       derivedStatus,
+        expires_at:   null,
+        claimed_at:   null,  // see comment in original — not derivable from members table
+        sealed_at:    m.cert_published_at || null,
+        source:       'member',
+        // Legacy direct-insert rows have no pending row to attach
+        // tracking to, so the WhatsApp tickbox renders as '—' for
+        // them. Acceptable — these are old test/legacy rows that
+        // pre-date the WhatsApp tracking feature anyway.
+        pending_id:       null,
+        whatsapp_sent_at: null,
+      };
+    });
 
   // Combine and sort by sent_at desc — pending and members may
   // interleave in time order.
