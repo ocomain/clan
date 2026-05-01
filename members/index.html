@@ -86,7 +86,16 @@
        dashboard. Stronger visual treatment than the family/gift cards
        because it represents a real action item with a 30-day deadline. */
     .mcert-prompt{max-width:720px;margin:0 auto 26px;background:linear-gradient(180deg,rgba(184,151,90,.12) 0%,rgba(184,151,90,.04) 100%);border:1.5px solid var(--gold);border-top:3px solid var(--gold);padding:30px 32px 28px;border-radius:2px;box-shadow:0 6px 20px rgba(184,151,90,.18);text-align:center}
-    .mcert-prompt-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-strong);margin-bottom:12px}
+    /* Eyebrow above the unpublished-cert prompt. Originally
+       gold-strong (matched site palette) but read as decoration
+       rather than urgency. Now strong burgundy red — same shade
+       as the site's error states (.minvite-status.error
+       border-left, .minvite-send-btn background) so it looks at
+       home in the design language while reading as 'pay attention'.
+       Urgent state (≤7 days) keeps the same red — the urgency
+       comes from the heading copy + the pulsing background, not
+       a colour shift in the eyebrow. */
+    .mcert-prompt-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#6B1F1F;margin-bottom:12px}
     .mcert-prompt-title{font-family:'EB Garamond',serif;font-size:26px;color:var(--ink);font-weight:400;line-height:1.25;margin-bottom:14px}
     .mcert-prompt-title em{color:var(--gold);font-style:italic}
     .mcert-prompt-body{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.7;margin:0 auto 22px;max-width:520px}
@@ -97,7 +106,7 @@
     /* Urgent (≤7 days): inverted treatment — dark ink background, gold accents.
        Same card structure, more visual weight. */
     .mcert-prompt-urgent{background:linear-gradient(180deg,var(--ink) 0%,#0a160a 100%);border-color:var(--gold);box-shadow:0 8px 28px rgba(184,151,90,.28)}
-    .mcert-prompt-urgent .mcert-prompt-eyebrow{color:var(--gold-strong)}
+    .mcert-prompt-urgent .mcert-prompt-eyebrow{color:#6B1F1F}
     .mcert-prompt-urgent .mcert-prompt-title{color:var(--cream)}
     .mcert-prompt-urgent .mcert-prompt-title em{color:var(--gold)}
     .mcert-prompt-urgent .mcert-prompt-body{color:rgba(248,244,236,.78)}
@@ -621,7 +630,7 @@
            Stronger visual treatment when ≤7 days remaining (urgent gold-on-ink).
       -->
       <section class="mcert-prompt${urgent ? ' mcert-prompt-urgent' : ''}">
-        <div class="mcert-prompt-eyebrow">${urgent ? 'Final week — publish your certificate' : 'Action required — publish your certificate'}</div>
+        <div class="mcert-prompt-eyebrow">${urgent ? 'Final week' : 'Action required'}</div>
         <div class="mcert-prompt-title">Publish your <em>certificate</em></div>
         <p class="mcert-prompt-body">Your certificate is a one-time heraldic instrument issued in your name. Confirm how your name appears, add an optional ancestor dedication${member.tier_family ? ', and your partner and children' : ''} — then publish. <strong>Once published, the certificate is sealed.</strong></p>
         <p class="mcert-prompt-deadline">${daysText} to publish · auto-publishes ${daysRemaining === 0 ? 'imminently' : `in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}`} with the name on your record</p>
