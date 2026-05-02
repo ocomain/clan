@@ -98,6 +98,92 @@
     .completion-row:last-child{margin-bottom:0}
     .completion-label{color:rgba(184,151,90,.75);width:110px;flex-shrink:0}
     .completion-value{color:rgba(215,235,215,.9)}
+    /* ── Completion-button attention animation ───────────────────────
+       The 'Complete payment' button at the end of the Herald chat is
+       the conversion-critical action. To draw the eye without
+       feeling cheap we use two overlapping effects:
+
+         1. A slow ambient halo (box-shadow expands and contracts in
+            a 3.2s sine cycle) — like a candle's halo. Subtle,
+            reads as 'this is alive', doesn't shout.
+
+         2. A periodic shimmer — a soft cream-coloured highlight
+            sweeps across the gold surface every 5s, like the sheen
+            on a polished metal object catching the light. Heraldic
+            register: gold reflects, gold breathes.
+
+       Both pause on hover so the hover state remains clean
+       (gold-pale fill, no animation distraction). The shimmer
+       uses a pseudo-element with a clipped gradient so it works
+       on any element using these classes — both .btn-gold (single-
+       tier path) and .picker-cta (no-tier path) gain the effect
+       through .pay-attention.
+
+       Performance note: animations use only opacity + transform,
+       so they run on the compositor without paint/layout work.
+       Cheap on battery, smooth on low-end devices. */
+
+    @keyframes pay-attention-halo {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(184, 151, 90, 0); }
+      50%      { box-shadow: 0 0 18px 2px rgba(184, 151, 90, 0.45); }
+    }
+
+    @keyframes pay-attention-shimmer {
+      /* The highlight sweeps from off-left to off-right, then
+         pauses (off-screen) for the rest of the cycle. The pause
+         is what makes it read as periodic 'catching the light'
+         rather than a continuous loop. */
+      0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+      8%   { opacity: 0.55; }
+      32%  { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+      100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+    }
+
+    .pay-attention {
+      position: relative;
+      overflow: hidden;
+      animation: pay-attention-halo 3.2s ease-in-out infinite;
+    }
+    .pay-attention::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 40%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(248, 244, 236, 0.0) 20%,
+        rgba(248, 244, 236, 0.65) 50%,
+        rgba(248, 244, 236, 0.0) 80%,
+        transparent 100%
+      );
+      pointer-events: none;
+      animation: pay-attention-shimmer 5s ease-out infinite;
+      animation-delay: 1.2s; /* let the page settle before first sweep */
+    }
+    .pay-attention:hover {
+      animation: none;
+      box-shadow: none;
+    }
+    .pay-attention:hover::before {
+      animation: none;
+      opacity: 0;
+    }
+
+    /* Respect prefers-reduced-motion. Users who've asked the OS to
+       minimise animation get a single static gold halo (still
+       slightly attention-grabbing, just no movement) instead of
+       the ambient pulse + shimmer. */
+    @media (prefers-reduced-motion: reduce) {
+      .pay-attention {
+        animation: none;
+        box-shadow: 0 0 12px 1px rgba(184, 151, 90, 0.30);
+      }
+      .pay-attention::before { display: none; }
+    }
+
     .completion-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     .btn-gold{background:var(--gold);color:var(--ink);border:none;padding:14px 32px;font-family:var(--font-sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;border-radius:1px;transition:background .2s}
     .btn-gold:hover{background:var(--gold-pale)}
@@ -251,7 +337,7 @@
 
     <!-- Payment CTAs: either a single pre-selected tier button, or the full tier picker -->
     <div class="completion-btns" id="completionBtns">
-      <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
+      <a id="stripePayBtn" href="#" class="btn-gold pay-attention" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
     </div>
 
     <!-- Inline tier picker — shown ONLY when user arrived without
@@ -297,7 +383,7 @@
       </div>
 
       <div class="picker-cta-wrap">
-        <a id="pickerCheckoutBtn" href="#" class="picker-cta">Complete payment — Guardian (Individual) — €150 →</a>
+        <a id="pickerCheckoutBtn" href="#" class="picker-cta pay-attention">Complete payment — Guardian (Individual) — €150 →</a>
         <p class="picker-cta-note" id="pickerCheckoutNote">Annual subscription · cancel anytime</p>
       </div>
     </div>
@@ -383,7 +469,7 @@ const STEPS = [
 ];
 
 const CLOSING_MSG = (data) =>
-  `${data.name} — your details have been received with thanks, and shall be conveyed to the Office of the Private Secretary to The Commane.\n\nOne final formality remains: the completion of your membership contribution on the next screen. Upon its receipt, it shall be the honour of Fergus Kinfauns, The Commane, Chief of Ó Comáin, to enter your name into the Register of Clan Members at Newhall House. The Office shall write to you personally in due course.`;
+  `${data.name} — your details have been received with thanks, and shall be conveyed to the Office of the Private Secretary.\n\nOne final formality remains: the completion of your membership contribution on the next screen. Upon its receipt, it shall be the honour of Fergus Kinfauns, The Commane, Chief of Ó Comáin, to enter your name into the Register of Clan Members at Newhall House. The Office shall write to you personally in due course.`;
 
 let currentStep = 0;
 const collected = {};
