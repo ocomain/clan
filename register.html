@@ -566,17 +566,62 @@ function tierRank(member) {
 // display name if the surname can't be split out (single names,
 // unusual formats). Case-insensitive comparison.
 function sortKey(member) {
-  // Public register API returns the member's name as `display_name`
-  // (the field also handles family-mode names, opt-out states, etc).
-  // Falls back to other possible fields for defensive compat with any
-  // older payload shape that might be cached during a deploy.
-  const name = (member.display_name || member.name || '').trim();
-  if (!name) return 'zzzz';
-  // Split on whitespace, take the last part as surname for sort.
-  // 'Antoin Commane' → 'commane'; 'Mary O\'Donnell' → "o'donnell".
-  // 'Madonna' → 'madonna' (single name fallback).
-  const parts = name.split(/\s+/);
-  const surname = parts[parts.length - 1] || name;
+  // Public register API returns the display name in `display_name`,
+  // which can take several forms depending on family-tier setup:
+  //   Solo:                            'Patrick Commane'
+  //   Couple, shared surname:          'Patrick & Mary Commane'
+  //   Couple, different surnames:      'Patrick Commane & Mary Smith'
+  //   Family with children:            'Patrick Commane & Family'
+  //
+  // Naive 'last whitespace token' picks up 'Family' or the partner's
+  // surname instead of the primary member's surname — both wrong for
+  // alphabetical roll order. The fix is to take the PRIMARY name only
+  // (everything before any '&', if present), then strip a trailing
+  // 'Family' if it slipped through, then take the last token of that
+  // cleaned string as the surname for sort. The '& Mary Commane' case
+  // works through the shared-surname collapse above ('Patrick & Mary
+  // Commane') because the primary-segment 'Patrick' has no surname
+  // token alone — in that case we fall back to the FULL display name
+  // and take its last token, which IS the shared surname.
+  //
+  // Defensive fallbacks: member.name (older payload shape during
+  // deploys), then 'zzzz' if name is missing entirely so members
+  // without a renderable name sort to the end rather than the top.
+  const fullName = (member.display_name || member.name || '').trim();
+  if (!fullName) return 'zzzz';
+
+  // Identify whether the format is collapsed-couple ('A & B Surname')
+  // — in which case the shared surname IS the last token of the full
+  // string — or split-form ('A Surname & B') where we want the
+  // primary's surname only.
+  const ampIdx = fullName.indexOf('&');
+  let nameForSort;
+  if (ampIdx === -1) {
+    // No '&' — solo member, plain 'First Last' or 'First Last' with
+    // a comma-suffixed dignity prefix. Use full name.
+    nameForSort = fullName;
+  } else {
+    // '&' present. Examine the PRIMARY segment (everything before '&').
+    // If it has 2+ tokens, the primary carries their own surname
+    // ('Patrick Commane & ...') — use that. If it has only 1 token
+    // ('Patrick & Mary Commane'), the surname must be the shared
+    // tail of the full string — use the full name. The 'Family' tail
+    // case is caught regardless because we strip 'Family' below.
+    const primary = fullName.slice(0, ampIdx).trim();
+    const primaryTokens = primary.split(/\s+/);
+    nameForSort = primaryTokens.length >= 2 ? primary : fullName;
+  }
+
+  // Strip a trailing literal 'Family' if present — covers the
+  // 'Patrick Commane & Family' shape where the primary segment is
+  // 'Patrick Commane' (correct) but a defensive belt-and-braces
+  // also catches any other format that ended in 'Family' for any
+  // reason. Case-insensitive match.
+  nameForSort = nameForSort.replace(/\s*&?\s*family\s*$/i, '').trim();
+  if (!nameForSort) nameForSort = fullName;
+
+  const parts = nameForSort.split(/\s+/);
+  const surname = parts[parts.length - 1] || nameForSort;
   return surname.toLowerCase();
 }
 
