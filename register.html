@@ -127,14 +127,6 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .section-head{text-align:center;margin-bottom:48px}
 .section-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
 .section-eyebrow-irish{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;font-weight:500;color:var(--gold);letter-spacing:0.04em;margin-bottom:18px}
-/* Tier sections (Life / Steward / Guardian). Each carries a
-   .section-eyebrow heading reusing the same gold-deep small-caps
-   style as the page-eyebrow above. Between sections, a wider
-   vertical gap separates them visually so the eye sees three
-   distinct rolls rather than one merged list. */
-.tier-section{margin-bottom:48px}
-.tier-section:last-child{margin-bottom:0}
-.tier-section .section-eyebrow{margin-bottom:18px}
 .section-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--ink);line-height:1.1;letter-spacing:-0.012em}
 .section-title em{font-style:italic;color:var(--burgundy);font-weight:500}
 .section-blurb{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:14px auto 0}
@@ -735,30 +727,13 @@ function sortMembers(members) {
   });
 }
 
-// Section heading labels per tier-family. Keys match TIER_GROUPS.
-const SECTION_LABELS = {
-  life:     'Life Members',
-  steward:  'Stewards',
-  guardian: 'Guardians',
-};
-
-// Group sorted members by tier-family for section rendering.
-// Returns an array of {family, members} preserving the
-// Life → Steward → Guardian order. Empty sections are dropped
-// from the output entirely (no 'No Stewards yet' empty cards
-// before the first Steward joins; same minimal-friction render
-// as before).
-function groupByTierFamily(sortedMembers) {
-  const buckets = { life: [], steward: [], guardian: [] };
-  for (const m of sortedMembers) {
-    if (TIER_GROUPS.life.tiers.includes(m.tier))         buckets.life.push(m);
-    else if (TIER_GROUPS.steward.tiers.includes(m.tier))  buckets.steward.push(m);
-    else if (TIER_GROUPS.guardian.tiers.includes(m.tier)) buckets.guardian.push(m);
-  }
-  return ['life', 'steward', 'guardian']
-    .filter(family => buckets[family].length > 0)
-    .map(family => ({ family, members: buckets[family] }));
-}
+// Note: a section-by-tier render with visible headings was tried
+// briefly (2026-05-02 morning) and reverted later the same day —
+// each entry's right meta column already labels its tier, so a
+// section heading above only duplicated the same information in
+// a heavier register. The dignity-first sort tuple above gives
+// the correct visual order within a single list without needing
+// the headings.
 
 async function loadRegister() {
   const target = document.getElementById('register-body');
@@ -790,21 +765,15 @@ async function loadRegister() {
       }
     }
 
-    // Render sorted members grouped into Life / Steward /
-    // Guardian sections (2026-05-02 — restored after a brief
-    // single-list interlude). sortMembers gives each section's
-    // members in dignity-then-surname order; groupByTierFamily
-    // splits them into sections; we render each section with a
-    // labelled heading.
+    // Render the single sorted list — Life → Steward → Guardian
+    // with dignity-holders at the top of each tier (Onóir →
+    // Ardchara → Cara), then alphabetical by surname. No section
+    // headings: each entry's right meta column already shows its
+    // tier label ('Guardian', 'Life Member · Family' etc), so
+    // headings would duplicate visual noise without adding signal.
     const sorted = sortMembers(members);
     if (sorted.length > 0) {
-      const groups = groupByTierFamily(sorted);
-      target.innerHTML = groups.map(group => `
-        <section class="tier-section">
-          <div class="section-eyebrow">${SECTION_LABELS[group.family]}</div>
-          <div class="entries">${group.members.map(renderEntry).join('')}</div>
-        </section>
-      `).join('');
+      target.innerHTML = `<div class="entries">${sorted.map(renderEntry).join('')}</div>`;
     } else {
       target.innerHTML = `<div class="section-empty">No members yet stand upon this roll. Their names shall be inscribed when they come.</div>`;
     }
