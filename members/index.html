@@ -1924,6 +1924,37 @@
         if (!proceed) return;
       }
 
+      // ── Children: full-name-not-first-name detection (pre-submit) ──
+      // The instruction in the form ('Children under 18 — first names,
+      // one per line' + the explanatory italic line) tells members to
+      // enter only the first name, but it's not enforced — and we've
+      // had at least one entry in the wild ('Brenna Máire Davis')
+      // come through as 3 tokens, ending up on both the cert AND the
+      // public Register as the child's full legal name.
+      //
+      // Detection heuristic: any child entry with 3+ whitespace tokens
+      // is suspicious. 2 tokens we accept (compound first names like
+      // 'Mary Anne' / 'Sarah Jane' are common); 3+ almost always means
+      // first + middle + surname. Soft warning — like the parent-name
+      // check above, member can override if they really mean it (e.g.
+      // a child with an unusually long compound first name like
+      // 'Mary Anne Catherine').
+      const childrenInputEl = document.getElementById('famModalChildren');
+      const childrenRaw = childrenInputEl ? childrenInputEl.value.trim() : '';
+      if (childrenRaw) {
+        const childEntries = childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+        const suspicious = childEntries.filter(c => c.split(/\s+/).length >= 3);
+        if (suspicious.length > 0) {
+          // List the offending entries so the member sees exactly
+          // what we're asking about. Pluralisation matched.
+          const list = suspicious.map(s => `"${s}"`).join(', ');
+          const proceed = confirm(
+            `The following ${suspicious.length === 1 ? 'entry looks' : 'entries look'} like ${suspicious.length === 1 ? 'a full name' : 'full names'} rather than first ${suspicious.length === 1 ? 'name' : 'names'}: ${list}.\n\nThe Register and certificate are designed to show your children's first names only — the family surname is already carried in your own entry, and full legal names are kept private.\n\nClick OK to use ${suspicious.length === 1 ? 'this entry' : 'these entries'} as written, or Cancel to go back and shorten ${suspicious.length === 1 ? 'it' : 'them'} to just the first name.`
+          );
+          if (!proceed) return;
+        }
+      }
+
       // Two-step ceremony for the FIRST publish (one-time, irreversible).
       // Subsequent saves (already-published members editing register only)
       // skip the ceremony — they go straight to save.
@@ -2310,6 +2341,22 @@
           );
           if (!proceed) return;
         }
+        // Children: full-name-not-first-name detection — see the original
+        // handler above for the full rationale and detection heuristic.
+        const childrenInputEl = document.getElementById('famModalChildren');
+        const childrenRaw = childrenInputEl ? childrenInputEl.value.trim() : '';
+        if (childrenRaw) {
+          const childEntries = childrenRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+          const suspicious = childEntries.filter(c => c.split(/\s+/).length >= 3);
+          if (suspicious.length > 0) {
+            const list = suspicious.map(s => `"${s}"`).join(', ');
+            const proceed = confirm(
+              `The following ${suspicious.length === 1 ? 'entry looks' : 'entries look'} like ${suspicious.length === 1 ? 'a full name' : 'full names'} rather than first ${suspicious.length === 1 ? 'name' : 'names'}: ${list}.\n\nThe Register and certificate are designed to show your children's first names only — the family surname is already carried in your own entry, and full legal names are kept private.\n\nClick OK to use ${suspicious.length === 1 ? 'this entry' : 'these entries'} as written, or Cancel to go back and shorten ${suspicious.length === 1 ? 'it' : 'them'} to just the first name.`
+            );
+            if (!proceed) return;
+          }
+        }
+
         if (!isPublished) {
           await runPublishCeremony();
           return;
