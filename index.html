@@ -177,10 +177,22 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .mem-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,46px);font-weight:400;color:var(--gold-pale);margin-bottom:16px;line-height:1.1}
 .mem-sub{font-size:14px;font-weight:300;color:rgba(210,235,210,.78);line-height:1.9}
 .mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:44px}
-.mem-card{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.14);padding:22px 24px;transition:border-color .2s}
-.mem-card:hover{border-color:rgba(184,151,90,.32)}
-.mem-card-title{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px}
-.mem-card-text{font-size:12.5px;font-weight:300;color:rgba(210,235,210,.68);line-height:1.7}
+.mem-card{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.14);padding:28px 24px 24px;transition:border-color .2s,background .2s,transform .2s}
+.mem-card:hover{border-color:rgba(184,151,90,.32);background:rgba(184,151,90,.09);transform:translateY(-2px)}
+/* Icon sits centred above the title, gold line-art at 36px square.
+   Drawing language is single-stroke (1.4px), no fill, rounded
+   line-caps — same visual register as small heraldic devices on
+   manuscript marginalia. Each icon is bespoke to the card's meaning
+   rather than a generic library glyph; this keeps the visual tone
+   coherent with the rest of the heraldic page (motto ribbon, wax-
+   seal motifs, etc). The opacity dip on idle (0.78) lets them
+   recede slightly so the title still reads as the primary
+   information; on hover they brighten to full opacity, paralleling
+   the card's lift. */
+.mem-card-icon{display:block;margin:0 auto 14px;width:36px;height:36px;color:var(--gold-light);opacity:.78;transition:opacity .2s}
+.mem-card:hover .mem-card-icon{opacity:1}
+.mem-card-title{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);margin-bottom:8px;text-align:center}
+.mem-card-text{font-size:12.5px;font-weight:300;color:rgba(210,235,210,.68);line-height:1.7;text-align:center}
 
 /* CREST */
 .crest-section{background:var(--cream-dark);padding:84px 0}
@@ -903,12 +915,121 @@ function closeModal2(e){
       <p class="mem-sub" style="margin-top:20px;font-style:italic;color:rgba(215,235,215,.72)">A clan is older than a club. It is kinship — bound by name, by blood, by oath, or by a deep love of Ireland — and its oldest purpose is to look after its own. When you join Ó Comáin, you step into that circle.</p>
     </div>
     <div class="mem-grid">
-      <div class="mem-card"><div class="mem-card-title">Your name on the Register</div><div class="mem-card-text">Your name formally entered in the Register of Clan Ó Comáin, kept at Newhall House and read at clan gatherings and in prayers on Saint Commán's day.</div></div>
-      <div class="mem-card"><div class="mem-card-title">The arms of an ancient house</div><div class="mem-card-text">Chief-sanctioned use of the clan's crest and coat of arms on your own things — stationery, jewellery, personal items — as kin of Ó Comáin.</div></div>
-      <div class="mem-card"><div class="mem-card-title">Your line recorded</div><div class="mem-card-text">Access to the clan pedigree, and a path for your own line — by descent, by marriage, by oath, by affinity — to be entered alongside it by the clan's genealogist.</div></div>
-      <div class="mem-card"><div class="mem-card-title">Your place at Newhall</div><div class="mem-card-text">Invitations to future gatherings at Newhall House, the ancestral heartlands of Clare, and Cahercommane in the Burren — your ancestral ground, open to you as kin.</div></div>
-      <div class="mem-card"><div class="mem-card-title">News from home</div><div class="mem-card-text">The yearly Members' Chronicle from Newhall — clan news, new research, recent findings from the pedigree, and the living story of the revival as it unfolds.</div></div>
-      <div class="mem-card"><div class="mem-card-title">A role, if you want one</div><div class="mem-card-text">Offices on the Privy Council open to members who feel the call to serve — ambassadors in the diaspora, scholars, heralds, and more. A way to belong more deeply.</div></div>
+      <!-- 1. REGISTER — open book/manuscript with two facing pages
+           and a centre-fold spine. Single horizontal lines on each
+           page suggest text without literal letterforms. -->
+      <div class="mem-card">
+        <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 9 L18 12 L32 9 L32 28 L18 31 L4 28 Z"/>
+          <path d="M18 12 L18 31"/>
+          <path d="M8 14 L14 15.4"/>
+          <path d="M8 18 L14 19.4"/>
+          <path d="M8 22 L14 23.4"/>
+          <path d="M22 15.4 L28 14"/>
+          <path d="M22 19.4 L28 18"/>
+          <path d="M22 23.4 L28 22"/>
+        </svg>
+        <div class="mem-card-title">Your name on the Register</div>
+        <div class="mem-card-text">Your name formally entered in the Register of Clan Ó Comáin, kept at Newhall House and read at clan gatherings and in prayers on Saint Commán's day.</div>
+      </div>
+
+      <!-- 2. ARMS — heraldic shield with a simple chief band across
+           the top (a real heraldic primary charge division). Three-
+           cusped lower edge is the classic 'shield of an Irish house'
+           silhouette used in clan heraldry. -->
+      <div class="mem-card">
+        <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 6 L29 6 L29 19 Q29 27 18 32 Q7 27 7 19 Z"/>
+          <path d="M7 13 L29 13"/>
+          <circle cx="13" cy="9.5" r="0.9" fill="currentColor"/>
+          <circle cx="18" cy="9.5" r="0.9" fill="currentColor"/>
+          <circle cx="23" cy="9.5" r="0.9" fill="currentColor"/>
+        </svg>
+        <div class="mem-card-title">The arms of an ancient house</div>
+        <div class="mem-card-text">Chief-sanctioned use of the clan's crest and coat of arms on your own things — stationery, jewellery, personal items — as kin of Ó Comáin.</div>
+      </div>
+
+      <!-- 3. PEDIGREE — branching genealogical tree. Single trunk
+           rising to two generations, each branching to two children.
+           The classic 'family tree' diagram in its most schematic
+           form, recognisable instantly. -->
+      <div class="mem-card">
+        <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="18" cy="6" r="2"/>
+          <path d="M18 8 L18 13"/>
+          <path d="M11 13 L25 13"/>
+          <path d="M11 13 L11 17"/>
+          <path d="M25 13 L25 17"/>
+          <circle cx="11" cy="19" r="1.6"/>
+          <circle cx="25" cy="19" r="1.6"/>
+          <path d="M7 24 L15 24"/>
+          <path d="M21 24 L29 24"/>
+          <path d="M11 20.5 L11 24"/>
+          <path d="M25 20.5 L25 24"/>
+          <path d="M7 24 L7 27"/>
+          <path d="M15 24 L15 27"/>
+          <path d="M21 24 L21 27"/>
+          <path d="M29 24 L29 27"/>
+          <circle cx="7" cy="29" r="1.4"/>
+          <circle cx="15" cy="29" r="1.4"/>
+          <circle cx="21" cy="29" r="1.4"/>
+          <circle cx="29" cy="29" r="1.4"/>
+        </svg>
+        <div class="mem-card-title">Your line recorded</div>
+        <div class="mem-card-text">Access to the clan pedigree, and a path for your own line — by descent, by marriage, by oath, by affinity — to be entered alongside it by the clan's genealogist.</div>
+      </div>
+
+      <!-- 4. NEWHALL — Georgian house silhouette: shallow-pitched
+           pediment over a five-bay frontage. The Newhall House
+           is itself an 18th-century Georgian mansion, so the icon
+           respects what it actually looks like. Door + chimney
+           give it specificity beyond a generic 'house'. -->
+      <div class="mem-card">
+        <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 18 L18 9 L31 18"/>
+          <path d="M7 17 L7 30 L29 30 L29 17"/>
+          <path d="M16 30 L16 23 L20 23 L20 30"/>
+          <rect x="10" y="20" width="3" height="3"/>
+          <rect x="23" y="20" width="3" height="3"/>
+          <path d="M24 12 L24 8 L26 8 L26 13.5"/>
+        </svg>
+        <div class="mem-card-title">Your place at Newhall</div>
+        <div class="mem-card-text">Invitations to future gatherings at Newhall House, the ancestral heartlands of Clare, and Cahercommane in the Burren — your ancestral ground, open to you as kin.</div>
+      </div>
+
+      <!-- 5. CHRONICLE — folded letter (envelope diamond shape) with
+           a small wax-seal dot in the centre. The wax seal echoes
+           the page's wider seal motifs (the foot SVG, the cert
+           visualisation) so this card visually anchors to the rest
+           of the heraldic language on the site. -->
+      <div class="mem-card">
+        <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="5" y="9" width="26" height="18" rx="0.5"/>
+          <path d="M5 9 L18 20 L31 9"/>
+          <circle cx="18" cy="22" r="3" fill="currentColor" opacity="0.85"/>
+          <path d="M16.5 21 L19.5 21" stroke="var(--ink,#0C1A0C)" stroke-width="0.8"/>
+          <path d="M16.5 23 L19.5 23" stroke="var(--ink,#0C1A0C)" stroke-width="0.8"/>
+        </svg>
+        <div class="mem-card-title">News from home</div>
+        <div class="mem-card-text">The yearly Members' Chronicle from Newhall — clan news, new research, recent findings from the pedigree, and the living story of the revival as it unfolds.</div>
+      </div>
+
+      <!-- 6. ROLE / TORC — Celtic torc (open neck-ring with two
+           terminal knobs). The torc is one of the oldest pieces of
+           Celtic regalia — worn by warriors, druids, and chieftains
+           as a mark of standing. The right metaphor for 'office /
+           role of standing within the clan'. Open at the front
+           (the way real Celtic torcs were forged) makes the
+           silhouette unmistakable. -->
+      <div class="mem-card">
+        <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 24 Q5 24 5 16 Q5 7 18 7 Q31 7 31 16 Q31 24 22 24"/>
+          <circle cx="14" cy="25" r="2.2" fill="currentColor"/>
+          <circle cx="22" cy="25" r="2.2" fill="currentColor"/>
+        </svg>
+        <div class="mem-card-title">A role, if you want one</div>
+        <div class="mem-card-text">Offices on the Privy Council open to members who feel the call to serve — ambassadors in the diaspora, scholars, heralds, and more. A way to belong more deeply.</div>
+      </div>
     </div>
     <div style="text-align:center">
       <a href="membership.html" class="btn-p">Apply for membership</a>
