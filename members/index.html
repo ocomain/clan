@@ -613,9 +613,22 @@
         // joined_at + 30 days = auto-publish moment. We compute days
         // remaining server-side via the member row's joined_at field
         // (more reliable than client clock).
+        //
+        // Math.round (NOT Math.ceil) — using ceil meant a member who
+        // signed up 20 hours ago saw '30 days remaining' (29.17 ceil'd
+        // up to 30), which feels wrong: 'I signed up yesterday, why is
+        // it not 29?' Round gives the closest-day approximation:
+        //   - 30m after sign-up: 29.98 days → rounds to 30 ('30 remaining' ✓)
+        //   - 20h after sign-up: 29.17 days → rounds to 29 ('29 remaining' ✓)
+        //   - 1d 12h after sign-up: 28.5 days → rounds to 29
+        //   - 29d 12h after sign-up: 0.5 days → rounds to 1
+        //   - 30d after sign-up: 0 days → 'today'
+        // The cron's auto-seal trigger is unchanged (millisecond
+        // precision via joined_at + 30 days). This is purely a
+        // display fix to match user mental model.
         const joinedMs = member.joined_at ? new Date(member.joined_at).getTime() : Date.now();
         const deadlineMs = joinedMs + 30 * 24 * 60 * 60 * 1000;
-        const daysRemaining = Math.max(0, Math.ceil((deadlineMs - Date.now()) / (24 * 60 * 60 * 1000)));
+        const daysRemaining = Math.max(0, Math.round((deadlineMs - Date.now()) / (24 * 60 * 60 * 1000)));
         const urgent = daysRemaining <= 7;
         const daysText = daysRemaining === 0
           ? 'today'
