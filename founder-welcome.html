@@ -73,7 +73,11 @@ body{padding:0}
    without the name to avoid an awkward 'Welcome home, ,' flash. */
 .welcome-title{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,6vw,64px);font-weight:500;line-height:1.05;letter-spacing:-0.02em;color:var(--ink);margin-bottom:14px}
 .welcome-title em{font-style:italic;color:var(--burgundy);font-weight:500}
-.welcome-name{display:inline-block}
+/* Plain inline so 'Welcome home, [Name]' wraps at the natural
+   break (space between comma and name) instead of pushing the
+   whole ', [Name]' span to the next line. See gift-welcome.html
+   for the same fix and full rationale. */
+.welcome-name{display:inline}
 
 .welcome-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:4px}
 

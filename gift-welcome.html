@@ -73,7 +73,15 @@ body{padding:0}
    without the name to avoid an awkward 'Welcome home, ,' flash. */
 .welcome-title{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,6vw,64px);font-weight:500;line-height:1.05;letter-spacing:-0.02em;color:var(--ink);margin-bottom:14px}
 .welcome-title em{font-style:italic;color:var(--burgundy);font-weight:500}
-.welcome-name{display:inline-block}
+/* The name span flows as plain inline text. Earlier this was
+   display:inline-block which made the entire span (comma, space,
+   name) behave as one unbreakable unit — so when 'Welcome home'
+   + the name didn't fit on one line, the browser wrapped the
+   whole span to a new line, leaving the comma stranded at the
+   start of line 2 ('Welcome home' / ', Risteárd'). Plain inline
+   lets the wrap happen at the natural space between comma and
+   name, giving 'Welcome home,' / 'Risteárd' instead. */
+.welcome-name{display:inline}
 
 .welcome-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:4px}
 
