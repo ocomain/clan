@@ -177,8 +177,9 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .mem-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,46px);font-weight:400;color:var(--gold-pale);margin-bottom:16px;line-height:1.1}
 .mem-sub{font-size:14px;font-weight:300;color:rgba(210,235,210,.78);line-height:1.9}
 .mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:44px}
-.mem-card{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.14);padding:28px 24px 24px;transition:border-color .2s,background .2s,transform .2s}
+.mem-card{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.14);padding:28px 24px 24px;transition:border-color .2s,background .2s,transform .2s;display:block;text-decoration:none;color:inherit;cursor:pointer}
 .mem-card:hover{border-color:rgba(184,151,90,.32);background:rgba(184,151,90,.09);transform:translateY(-2px)}
+.mem-card:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 /* Icon sits centred above the title, gold line-art at 36px square.
    Drawing language is single-stroke (1.4px), no fill, rounded
    line-caps — same visual register as small heraldic devices on
@@ -918,7 +919,7 @@ function closeModal2(e){
       <!-- 1. REGISTER — open book/manuscript with two facing pages
            and a centre-fold spine. Single horizontal lines on each
            page suggest text without literal letterforms. -->
-      <div class="mem-card">
+      <a class="mem-card" href="membership.html#tiers">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 9 L18 12 L32 9 L32 28 L18 31 L4 28 Z"/>
           <path d="M18 12 L18 31"/>
@@ -931,7 +932,7 @@ function closeModal2(e){
         </svg>
         <div class="mem-card-title">Your name on the Register</div>
         <div class="mem-card-text">Your name formally entered in the Register of Clan Ó Comáin, kept at Newhall House and read at clan gatherings and in prayers on Saint Commán's day.</div>
-      </div>
+      </a>
 
       <!-- 2. ARMS — the actual clan arms in simplified silhouette:
            shield (rounded shoulders, single-cusp pointed bottom, the
@@ -944,7 +945,7 @@ function closeModal2(e){
            of detail of the full arms, but the silhouette reads as
            'this is OUR coat of arms' rather than a generic shield —
            which was the user's specific request. -->
-      <div class="mem-card">
+      <a class="mem-card" href="membership.html#tiers">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <!-- Shield silhouette -->
           <path d="M7 6 L29 6 L29 19 Q29 27 18 32 Q7 27 7 19 Z"/>
@@ -963,13 +964,13 @@ function closeModal2(e){
         </svg>
         <div class="mem-card-title">The arms of an ancient house</div>
         <div class="mem-card-text">Chief-sanctioned use of the clan's crest and coat of arms on your own things — stationery, jewellery, personal items — as kin of Ó Comáin.</div>
-      </div>
+      </a>
 
       <!-- 3. PEDIGREE — branching genealogical tree. Single trunk
            rising to two generations, each branching to two children.
            The classic 'family tree' diagram in its most schematic
            form, recognisable instantly. -->
-      <div class="mem-card">
+      <a class="mem-card" href="membership.html#tiers">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="18" cy="6" r="2"/>
           <path d="M18 8 L18 13"/>
@@ -993,7 +994,7 @@ function closeModal2(e){
         </svg>
         <div class="mem-card-title">Your line recorded</div>
         <div class="mem-card-text">Access to the clan pedigree, and a path for your own line — by descent, by marriage, by oath, by affinity — to be entered alongside it by the clan's genealogist.</div>
-      </div>
+      </a>
 
       <!-- 4. NEWHALL — wide Georgian mansion silhouette specific to
            Newhall House: three-block frontage with a raised central
@@ -1004,7 +1005,7 @@ function closeModal2(e){
            feedback. The chimneys + raised centre give it the
            Georgian-mansion silhouette unmistakable in heraldic
            shorthand. -->
-      <div class="mem-card">
+      <a class="mem-card" href="membership.html#tiers">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <!-- Ground line -->
           <path d="M3 31 L33 31"/>
@@ -1037,14 +1038,14 @@ function closeModal2(e){
         </svg>
         <div class="mem-card-title">Your place at Newhall</div>
         <div class="mem-card-text">Invitations to future gatherings at Newhall House, the ancestral heartlands of Clare, and Cahercommane in the Burren — your ancestral ground, open to you as kin.</div>
-      </div>
+      </a>
 
       <!-- 5. CHRONICLE — folded letter (envelope diamond shape) with
            a small wax-seal dot in the centre. The wax seal echoes
            the page's wider seal motifs (the foot SVG, the cert
            visualisation) so this card visually anchors to the rest
            of the heraldic language on the site. -->
-      <div class="mem-card">
+      <a class="mem-card" href="membership.html#tiers">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <rect x="5" y="9" width="26" height="18" rx="0.5"/>
           <path d="M5 9 L18 20 L31 9"/>
@@ -1054,7 +1055,7 @@ function closeModal2(e){
         </svg>
         <div class="mem-card-title">News from home</div>
         <div class="mem-card-text">The yearly Members' Chronicle from Newhall — clan news, new research, recent findings from the pedigree, and the living story of the revival as it unfolds.</div>
-      </div>
+      </a>
 
       <!-- 6. ROLE / TORC — Celtic torc (open neck-ring with two
            terminal knobs). The torc is one of the oldest pieces of
@@ -1063,7 +1064,7 @@ function closeModal2(e){
            role of standing within the clan'. Open at the front
            (the way real Celtic torcs were forged) makes the
            silhouette unmistakable. -->
-      <div class="mem-card">
+      <a class="mem-card" href="membership.html#tiers">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M14 24 Q5 24 5 16 Q5 7 18 7 Q31 7 31 16 Q31 24 22 24"/>
           <circle cx="14" cy="25" r="2.2" fill="currentColor"/>
@@ -1071,7 +1072,7 @@ function closeModal2(e){
         </svg>
         <div class="mem-card-title">A role, if you want one</div>
         <div class="mem-card-text">Offices on the Privy Council open to members who feel the call to serve — ambassadors in the diaspora, scholars, heralds, and more. A way to belong more deeply.</div>
-      </div>
+      </a>
     </div>
     <div style="text-align:center">
       <a href="membership.html" class="btn-p">Apply for membership</a>
