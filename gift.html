@@ -32,8 +32,16 @@
     /* ── GIFT TIERS ── */
     .gift-tiers{background:var(--ink-mid);padding:80px 0}
     .gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
-    .gift-card{background:rgba(184,151,90,.05);border:1px solid rgba(184,151,90,.2);border-top:2px solid var(--gold);padding:36px;position:relative;transition:border-color .2s,transform .15s}
-    .gift-card:hover{border-color:rgba(184,151,90,.5);transform:translateY(-2px)}
+    /* Gift cards are clickable as a whole — bigger tap target on
+       mobile, matches modern pricing-page UX (Stripe, Notion etc).
+       The destination follows the global Individual/Family toggle:
+       a JS click handler reads whichever .gift-btn is currently
+       visible (computed display !== 'none') and navigates there.
+       Inner button clicks pass through normally — closest('a,button')
+       in the handler suppresses the parent fire to avoid double-nav. */
+    .gift-card{background:rgba(184,151,90,.05);border:1px solid rgba(184,151,90,.2);border-top:2px solid var(--gold);padding:36px;position:relative;cursor:pointer;transition:border-color .2s,transform .15s,background-color .2s}
+    .gift-card:hover{border-color:rgba(184,151,90,.5);transform:translateY(-2px);background-color:rgba(184,151,90,.08)}
+    .gift-card:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
     .gift-card.featured{background:rgba(184,151,90,.1);border-color:var(--gold);border-top-width:3px}
     .gift-badge{position:absolute;top:-1px;right:24px;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:4px 12px}
     .gift-tier-name{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
@@ -499,6 +507,63 @@ function gSetMode(mode){
       a.setAttribute('href', href + sep + 'from=members&email=' + encStored);
     });
   }
+})();
+</script>
+
+<!-- Gift card whole-area click handler.
+     Each .gift-card on this page is now wholly clickable. The
+     destination follows whichever Individual/Family mode is
+     currently active via the global body.fam-mode toggle —
+     .gift-btn links inside each card swap visibility through
+     .ind-only / .fam-only classes, and the handler picks the
+     visible one on every click (so it always reflects the
+     current toggle state AND any href rewriting done by the
+     invite-token script above).
+
+     Inner button clicks pass through their native handlers —
+     closest('a, button') in the listener suppresses the parent
+     card fire to avoid double-navigation.
+
+     ARIA + keyboard: cards are role=button + tabindex=0, with
+     Enter/Space activation. Inner buttons keep their own tab
+     stops so keyboard users can navigate at either granularity.
+
+     Mirrors the same pattern shipped on /membership.html so the
+     two surfaces feel consistent. -->
+<script>
+(function () {
+  function activateCard(card) {
+    var ctas = card.querySelectorAll('a.gift-btn');
+    var visibleHref = '';
+    for (var i = 0; i < ctas.length; i++) {
+      var cs = window.getComputedStyle(ctas[i]);
+      if (cs.display !== 'none' && cs.visibility !== 'hidden') {
+        visibleHref = ctas[i].getAttribute('href') || '';
+        break;
+      }
+    }
+    if (visibleHref) {
+      window.location.href = visibleHref;
+    }
+  }
+
+  document.querySelectorAll('.gift-card').forEach(function (card) {
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('a, button')) return;
+      activateCard(card);
+    });
+
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (e.target !== card) return;
+        e.preventDefault();
+        activateCard(card);
+      }
+    });
+  });
 })();
 </script>
 
