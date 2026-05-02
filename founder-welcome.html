@@ -55,7 +55,7 @@ body{padding:0}
    crammed against the nav, and uses flex column so children
    (seal, title, body, CTA, footer) stack with auto-margin
    centering. */
-.welcome-stage{display:flex;flex-direction:column;align-items:center;padding:60px 24px}
+.welcome-stage{display:flex;flex-direction:column;align-items:center;padding:40px 24px}
 
 .page{max-width:560px;width:100%;text-align:center}
 
@@ -81,7 +81,7 @@ body{padding:0}
 
 .welcome-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(17px,2.2vw,22px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:4px}
 
-.welcome-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:32px auto;max-width:200px}
+.welcome-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:24px auto;max-width:200px}
 .welcome-rule-line{flex:1;height:1px;background:var(--ink);opacity:.25}
 .welcome-rule-mark{color:var(--gold);font-family:'EB Garamond',serif;font-size:14px;font-style:italic}
 
@@ -95,7 +95,7 @@ body{padding:0}
 /* The single CTA — burgundy, central, generous padding. This is
    the ONLY action on the page. No secondary links, no nav, no
    footer link maze — just one button. */
-.welcome-cta-block{margin:42px auto 0;display:flex;flex-direction:column;align-items:center;gap:14px}
+.welcome-cta-block{margin:32px auto 0;display:flex;flex-direction:column;align-items:center;gap:14px}
 .welcome-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:18px 40px;border-radius:1px;text-decoration:none;transition:background .2s;border:1px solid var(--burgundy-deep);cursor:pointer;line-height:1}
 .welcome-cta:hover{background:var(--burgundy-deep)}
 .welcome-cta:disabled{opacity:.5;cursor:wait}
@@ -205,14 +205,11 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
 
   <div id="stateClaimable" class="welcome-state" hidden>
     <p class="welcome-body">
-      Your founding place in Clan Ó Comáin has been set down by the Chief. The membership for the year ahead is a gift to you, freely given, awaiting only your acceptance.
-    </p>
-    <p class="welcome-body">
-      To take it up, press the seal below. Your name will be entered into the clan's keeping at Newhall, and you will be taken straight into the members' area.
+      Your founding place in Clan Ó Comáin has been set down by the Chief — a gift, freely given, awaiting only your acceptance.
     </p>
     <div class="welcome-cta-block">
       <button type="button" class="welcome-cta" id="claimBtn">Claim my place →</button>
-      <p class="welcome-cta-note">By pressing this, your founding membership for the year ahead is confirmed under <span id="claimEmail" style="font-style:italic"></span> and you will be signed straight in.</p>
+      <p class="welcome-cta-note">Confirmed under <span id="claimEmail" style="font-style:italic"></span></p>
     </div>
   </div>
 
