@@ -374,9 +374,15 @@ async function resolveByToken() {
       return;
     }
     if (data.state === 'claimed') {
+      // Returning user — already claimed earlier. Skip the welcome
+      // page intermediate and go straight to login.html with email
+      // pre-filled and ?claimed=1 banner. See founder-welcome.html
+      // for the full rationale.
       if (data.recipient_email) {
-        document.getElementById('continueCta').href =
-          '/members/login.html?email=' + encodeURIComponent(data.recipient_email) + '&gift=1';
+        window.location.replace(
+          '/members/login.html?email=' + encodeURIComponent(data.recipient_email) + '&claimed=1'
+        );
+        return;
       }
       showState('stateClaimed');
       return;
@@ -475,13 +481,16 @@ async function claimGift(email) {
 // ── ROUTE 2: legacy email/name URL ──────────────────────────────────
 function resolveLegacy() {
   // Pre-2026-04-28 emails — recipient already has a member row.
-  // Just show the claimed state with the Continue button.
+  // Same shortcut as the claimed-token path: skip the welcome page
+  // intermediate and redirect straight to login with email pre-fill.
+  if (isEmailLike(legacyEmail)) {
+    window.location.replace(
+      '/members/login.html?email=' + encodeURIComponent(legacyEmail) + '&claimed=1'
+    );
+    return;
+  }
   if (isValidName(legacyName)) {
     setGreetingName(legacyName);
-  }
-  if (isEmailLike(legacyEmail)) {
-    document.getElementById('continueCta').href =
-      '/members/login.html?email=' + encodeURIComponent(legacyEmail) + '&gift=1';
   }
   showState('stateClaimed');
 }
