@@ -566,7 +566,11 @@ function tierRank(member) {
 // display name if the surname can't be split out (single names,
 // unusual formats). Case-insensitive comparison.
 function sortKey(member) {
-  const name = (member.name || '').trim();
+  // Public register API returns the member's name as `display_name`
+  // (the field also handles family-mode names, opt-out states, etc).
+  // Falls back to other possible fields for defensive compat with any
+  // older payload shape that might be cached during a deploy.
+  const name = (member.display_name || member.name || '').trim();
   if (!name) return 'zzzz';
   // Split on whitespace, take the last part as surname for sort.
   // 'Antoin Commane' → 'commane'; 'Mary O\'Donnell' → "o'donnell".
