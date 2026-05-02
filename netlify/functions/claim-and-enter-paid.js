@@ -26,6 +26,25 @@ function jsonResponse(statusCode, body) {
 }
 
 exports.handler = async (event) => {
+  // GET → redirect to gift-welcome page. See claim-and-enter-founder
+  // for the full rationale; the short version is: legacy gift emails
+  // (sent before we adopted the mail-scanner-safe two-page flow)
+  // pointed directly at this API endpoint as a GET. Without this
+  // redirect, those legacy clicks 405 and recipients see 'the button
+  // didn't respond' — which we've already had at least one gift
+  // recipient report. POST remains the only method that performs
+  // the claim; the welcome page's button POSTs back here.
+  if (event.httpMethod === 'GET') {
+    const tokenForRedirect = (event.queryStringParameters && event.queryStringParameters.token) || '';
+    const target = tokenForRedirect
+      ? `/gift-welcome.html?token=${encodeURIComponent(tokenForRedirect)}`
+      : '/gift-welcome.html';
+    return {
+      statusCode: 302,
+      headers: { Location: target, 'Cache-Control': 'no-store' },
+      body: '',
+    };
+  }
   if (event.httpMethod !== 'POST') {
     return jsonResponse(405, { ok: false, reason: 'method_not_allowed' });
   }

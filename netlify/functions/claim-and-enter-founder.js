@@ -82,6 +82,37 @@ exports.handler = async (event) => {
   // POST-only. GET requests come from mail scanners pre-fetching the
   // URL — we do NOT want to claim on those. Return 405 so scanners
   // give up and the recipient's first real click is the one that lands.
+  // GET → redirect to welcome page. Three reasons:
+  //
+  //   1. Backwards-compatibility for invitation/gift emails sent
+  //      before we adopted the mail-scanner-safe two-page flow. The
+  //      old emails' 'Claim my place' button URL pointed directly
+  //      at this API endpoint as a GET. Without this redirect, those
+  //      legacy clicks 405 (browser shows blank/JSON, recipient sees
+  //      'the button didn't respond' — exactly what one of our
+  //      gift recipients reported).
+  //
+  //   2. Belt-and-braces against mail scanners: scanners GET the
+  //      URL, get a 302, follow it to the welcome page (pure render,
+  //      no side effects), give up. Token preserved.
+  //
+  //   3. Anyone who copies the API URL into a browser instead of
+  //      clicking the email link gets sensibly routed to the human
+  //      surface, not raw JSON.
+  //
+  // POST is still the only method that performs the claim — the
+  // welcome page's button click handler POSTs back here.
+  if (event.httpMethod === 'GET') {
+    const tokenForRedirect = (event.queryStringParameters && event.queryStringParameters.token) || '';
+    const target = tokenForRedirect
+      ? `/founder-welcome.html?token=${encodeURIComponent(tokenForRedirect)}`
+      : '/founder-welcome.html';
+    return {
+      statusCode: 302,
+      headers: { Location: target, 'Cache-Control': 'no-store' },
+      body: '',
+    };
+  }
   if (event.httpMethod !== 'POST') {
     return jsonResponse(405, { ok: false, reason: 'method_not_allowed' });
   }
