@@ -336,6 +336,10 @@
      window. Used by the publish modal's name field to suggest Irish
      forms of the member's first name and (clan-adjacent) surname. -->
 <script src="./gaelic-name-converter.js"></script>
+<!-- Invite-token helper exposes window.ocomainInvite.clear() —
+     called after successful sign-in to wipe any attribution token
+     from sessionStorage + cookie. See /js/invite-token.js. -->
+<script src="/js/invite-token.js"></script>
 
 <script type="module">
   import { currentSession, getMemberProfile, signOut } from './auth.js';
@@ -2519,6 +2523,19 @@
         return;
       }
       renderDashboard(member);
+
+      // Clear any invite-attribution token now that this user is
+      // confirmed as a member. The token did its job on the way in
+      // (Stripe webhook stamped invitations.converted_member_id from
+      // session.metadata.invite_token); this is purely client-side
+      // hygiene so a later visit / fresh invitation to the same
+      // browser doesn't carry stale attribution. Idempotent — safe
+      // to call even if no token was set.
+      try {
+        if (window.ocomainInvite && typeof window.ocomainInvite.clear === 'function') {
+          window.ocomainInvite.clear();
+        }
+      } catch (e) { /* non-fatal */ }
     } catch (e) {
       console.error('dashboard error:', e);
       loading.style.display = 'none';

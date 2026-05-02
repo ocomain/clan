@@ -606,50 +606,31 @@ function setMode(mode) {
 }
 </script>
 
-<!-- Invitation attribution token (added 2026-05-01)
-     ──────────────────────────────────────────────
-     When a member invites a friend, the invitation email URL
-     carries ?invite=<uuid> so attribution can be tracked through
-     the entire signup pipeline regardless of what email the
-     invitee uses at Stripe checkout.
+<!-- Invitation attribution token (added 2026-05-01, cookie added 2026-05-02)
+     ──────────────────────────────────────────────────────────────────
+     Token resolution + persistence is now centralised in
+     /js/invite-token.js (window.ocomainInvite). It handles:
 
-     This script:
-       1. Reads the token from URL params, OR from sessionStorage
-          (if the user navigated back here from elsewhere within
-          the same tab session)
-       2. Persists to sessionStorage so it survives any nav path
-       3. Forwards the token onto every internal link to
-          join-chat.html (the next step in the signup flow), so
-          eventually the token reaches /api/create-checkout and
-          gets attached to Stripe session metadata
-       4. The Stripe webhook reads metadata.invite_token and stamps
-          invitations.converted_member_id with the new member id.
-          The inviter then gets sponsorship credit (counted toward
-          Cara/Ardchara/Onóir dignities) regardless of what email
-          the invitee paid with — which closes the silent
-          attribution-loss bug from before this fix.
+       - Reading from URL ?invite=... (most authoritative)
+       - Reading from sessionStorage (same-tab session continuity)
+       - Reading from a 30-day cookie (return-visit conversions)
+       - Validating UUID shape; rejecting garbage values
+       - Writing through to BOTH stores when a valid token is found
 
-     For visitors with no invite token (direct site traffic),
-     nothing changes — the script is a no-op. -->
+     This page's job is just to forward the token (if present) onto
+     all internal links to join-chat.html, so when the user clicks
+     a tier link the URL carries ?invite=<uuid> through to the chat.
+     The chat then carries it through to /api/create-checkout, which
+     puts it on Stripe session metadata, which the webhook reads to
+     stamp attribution.
+
+     For visitors with no invite token (direct site traffic), the
+     helper returns '' and this script is a no-op. -->
+<script src="/js/invite-token.js"></script>
 <script>
 (function () {
-  var qs = new URLSearchParams(window.location.search);
-  var tokenFromUrl = (qs.get('invite') || '').trim();
-  var token = tokenFromUrl;
-
-  if (token) {
-    try { sessionStorage.setItem('invite_token', token); } catch (e) { /* private mode */ }
-  } else {
-    try { token = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { token = ''; }
-  }
-
+  var token = window.ocomainInvite ? window.ocomainInvite.read() : '';
   if (!token) return;
-  // Sanity-validate UUID shape so a malformed param doesn't get
-  // forwarded as garbage to Stripe metadata. If invalid, clear it.
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
-    try { sessionStorage.removeItem('invite_token'); } catch (e) {}
-    return;
-  }
 
   var enc = encodeURIComponent(token);
   // Forward to all join-chat.html links. Match both forms (Netlify

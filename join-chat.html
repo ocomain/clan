@@ -314,22 +314,15 @@
 </div>
 
 <!-- Invite token forwarding for the static fallback tier picker
-     above. Mirrors the same logic used inline in the chat-flow's
-     payBtn URL builder. Runs early so static link rewrites happen
-     before any user click. -->
+     above. Uses the shared invite-token helper which reads from
+     URL → sessionStorage → cookie (in priority order). The helper
+     also writes through to both stores so a returning visitor's
+     cookie gets lifted back into sessionStorage. -->
+<script src="/js/invite-token.js"></script>
 <script>
 (function () {
-  var qs = new URLSearchParams(window.location.search);
-  var token = (qs.get('invite') || '').trim();
-  if (!token) {
-    try { token = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { token = ''; }
-  }
-  if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
-    return;
-  }
-  // Persist to sessionStorage so chat-flow URL builder picks it up.
-  try { sessionStorage.setItem('invite_token', token); } catch (e) {}
-
+  var token = window.ocomainInvite ? window.ocomainInvite.read() : '';
+  if (!token) return;
   var enc = encodeURIComponent(token);
   document.querySelectorAll('a[href*="/api/create-checkout"]').forEach(function (a) {
     var href = a.getAttribute('href') || '';
@@ -617,16 +610,11 @@ function showCompletion() {
   // for both the single-button and picker paths so attribution
   // works either way. Also persists to sessionStorage so refresh
   // keeps it.
-  var qsCheckout = new URLSearchParams(window.location.search);
-  var inviteToken = (qsCheckout.get('invite') || '').trim();
-  if (!inviteToken) {
-    try { inviteToken = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { inviteToken = ''; }
-  }
-  if (inviteToken && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inviteToken)) {
-    try { sessionStorage.setItem('invite_token', inviteToken); } catch (e) {}
-  } else {
-    inviteToken = '';
-  }
+  // Resolve invite token via the shared helper (URL → sessionStorage
+  // → cookie). The helper takes care of validation and write-through
+  // to both stores so a return-visit cookie gets lifted into
+  // sessionStorage automatically.
+  var inviteToken = (window.ocomainInvite && window.ocomainInvite.read()) || '';
 
   // Helper to assemble checkout URL with email/name/invite params.
   // Used by both code paths below.
