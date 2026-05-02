@@ -127,6 +127,14 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .section-head{text-align:center;margin-bottom:48px}
 .section-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
 .section-eyebrow-irish{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;font-weight:500;color:var(--gold);letter-spacing:0.04em;margin-bottom:18px}
+/* Tier sections (Life / Steward / Guardian). Each carries a
+   .section-eyebrow heading reusing the same gold-deep small-caps
+   style as the page-eyebrow above. Between sections, a wider
+   vertical gap separates them visually so the eye sees three
+   distinct rolls rather than one merged list. */
+.tier-section{margin-bottom:48px}
+.tier-section:last-child{margin-bottom:0}
+.tier-section .section-eyebrow{margin-bottom:18px}
 .section-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--ink);line-height:1.1;letter-spacing:-0.012em}
 .section-title em{font-style:italic;color:var(--burgundy);font-weight:500}
 .section-blurb{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:14px auto 0}
@@ -688,27 +696,68 @@ function renderEntry(member) {
   `;
 }
 
-// Single-list render (2026-05-01) — replaces the previous
-// section-by-tier grouping. Sorts members by tier seniority
-// then by surname alphabetically. The tier label appears in
-// each entry's right meta column already, so no section
-// heading is needed.
+// Dignity rank within tier — used for ordering inside each Life/
+// Steward/Guardian section. Members holding a dignity sit at the
+// top of their section, ranked Onóir (most senior) → Ardchara →
+// Cara → everyone else (no dignity).
 //
-// Founders-first within rank: a founder (joined in FOUNDING_YEARS)
-// outranks a non-founder of the same tier. The rank tuple is
-// therefore (tierRank, !isFounder, surname). For Year 1 of the
-// revival every member is a founder, so the !isFounder term has
-// no visible effect; it kicks in from Year 2 onward.
+// The slugs here match what /.netlify/functions/register returns
+// in held_dignity.slug. A member with no dignity gets rank 99 so
+// they sort below all dignity-holders within their tier.
+const DIGNITY_RANK = { onoir: 1, ardchara: 2, cara: 3 };
+function dignityRank(member) {
+  const slug = member.held_dignity && member.held_dignity.slug;
+  return DIGNITY_RANK[slug] ?? 99;
+}
+
+// Section-by-tier render (2026-05-02) — restored after a brief
+// single-list interlude. Sort sequence within each section:
+//   1) Dignity rank (Onóir → Ardchara → Cara → none)
+//   2) Founder vs non-founder (founders first; visible from
+//      Year 2 onward, no-op in Year 1)
+//   3) Surname alphabetical (case-insensitive)
+//
+// The tier-rank tier itself decides which section a member
+// appears in; sorting WITHIN a section uses the dignity →
+// founder → surname tuple.
 function sortMembers(members) {
   return members.slice().sort((a, b) => {
     const ra = tierRank(a);
     const rb = tierRank(b);
     if (ra !== rb) return ra - rb;
+    const da = dignityRank(a);
+    const db = dignityRank(b);
+    if (da !== db) return da - db;
     const fa = FOUNDING_YEARS.has(getJoinYear(a.joined_at)) ? 0 : 1;
     const fb = FOUNDING_YEARS.has(getJoinYear(b.joined_at)) ? 0 : 1;
     if (fa !== fb) return fa - fb;
     return sortKey(a).localeCompare(sortKey(b));
   });
+}
+
+// Section heading labels per tier-family. Keys match TIER_GROUPS.
+const SECTION_LABELS = {
+  life:     'Life Members',
+  steward:  'Stewards',
+  guardian: 'Guardians',
+};
+
+// Group sorted members by tier-family for section rendering.
+// Returns an array of {family, members} preserving the
+// Life → Steward → Guardian order. Empty sections are dropped
+// from the output entirely (no 'No Stewards yet' empty cards
+// before the first Steward joins; same minimal-friction render
+// as before).
+function groupByTierFamily(sortedMembers) {
+  const buckets = { life: [], steward: [], guardian: [] };
+  for (const m of sortedMembers) {
+    if (TIER_GROUPS.life.tiers.includes(m.tier))         buckets.life.push(m);
+    else if (TIER_GROUPS.steward.tiers.includes(m.tier))  buckets.steward.push(m);
+    else if (TIER_GROUPS.guardian.tiers.includes(m.tier)) buckets.guardian.push(m);
+  }
+  return ['life', 'steward', 'guardian']
+    .filter(family => buckets[family].length > 0)
+    .map(family => ({ family, members: buckets[family] }));
 }
 
 async function loadRegister() {
@@ -741,12 +790,21 @@ async function loadRegister() {
       }
     }
 
-    // Render the single sorted list. Empty-state surface
-    // preserved — same friendly message as before, just no
-    // longer broken into three sections.
+    // Render sorted members grouped into Life / Steward /
+    // Guardian sections (2026-05-02 — restored after a brief
+    // single-list interlude). sortMembers gives each section's
+    // members in dignity-then-surname order; groupByTierFamily
+    // splits them into sections; we render each section with a
+    // labelled heading.
     const sorted = sortMembers(members);
     if (sorted.length > 0) {
-      target.innerHTML = `<div class="entries">${sorted.map(renderEntry).join('')}</div>`;
+      const groups = groupByTierFamily(sorted);
+      target.innerHTML = groups.map(group => `
+        <section class="tier-section">
+          <div class="section-eyebrow">${SECTION_LABELS[group.family]}</div>
+          <div class="entries">${group.members.map(renderEntry).join('')}</div>
+        </section>
+      `).join('');
     } else {
       target.innerHTML = `<div class="section-empty">No members yet stand upon this roll. Their names shall be inscribed when they come.</div>`;
     }
