@@ -69,6 +69,23 @@ exports.handler = async (event) => {
   // billing name.
   const heraldName = (qs.name || body.name || '').trim();
 
+  // Invitation attribution token. Flowed from invitation email URL
+  // (?invite=<uuid>) → /membership.html → /join-chat.html → here.
+  // Will be attached to the Stripe session metadata (invite_token=<uuid>);
+  // the webhook reads it on checkout.session.completed and stamps
+  // invitations.converted_member_id with the new member id —
+  // bypassing email-match attribution which silently breaks when
+  // the invitee pays at Stripe with a different email than they
+  // were invited at.
+  //
+  // Validated as UUID format here so a malformed value doesn't
+  // pollute Stripe metadata. Empty string when not present.
+  let inviteToken = (qs.invite || body.invite || '').trim();
+  if (inviteToken && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inviteToken)) {
+    console.warn(`[create-checkout] invalid invite token format dropped: ${inviteToken.slice(0, 12)}...`);
+    inviteToken = '';
+  }
+
   if (!tier || !TIER_PRICES_CENTS[tier]) {
     return {
       statusCode: 400,
@@ -169,6 +186,11 @@ exports.handler = async (event) => {
         // one name but go by another — common with married couples,
         // children paying for parents' membership, etc.)
         ...(heraldName ? { herald_name: heraldName.slice(0, 100) } : {}),
+        // Invitation attribution token — when present, the webhook
+        // stamps invitations.converted_member_id by token (not by
+        // email), giving the inviter sponsorship credit regardless
+        // of which email the buyer paid with.
+        ...(inviteToken ? { invite_token: inviteToken } : {}),
       },
       // Carry metadata onto the subscription too for annual tiers, so
       // renewal invoice events have tier context.
@@ -178,6 +200,7 @@ exports.handler = async (event) => {
             tier,
             tier_family: tierFamily ? 'true' : 'false',
             tier_label: productName,
+            ...(inviteToken ? { invite_token: inviteToken } : {}),
           },
         },
       } : {}),

@@ -678,19 +678,93 @@ exports.handler = async (event) => {
           // any post-process surfaces (sponsor letter, member link)
           // are generated.
           try {
-            const memberEmailLower = String(member.email || '').toLowerCase().trim();
-            if (memberEmailLower) {
-              const { data: priorInv } = await supa()
-                .from('invitations')
-                .select('id, converted_member_id')
-                .eq('clan_id', clan_id)
-                .ilike('recipient_email', memberEmailLower)
-                .order('sent_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
+            // Resolution priority for the inviter lookup:
+            //   PATH 1 (token): Stripe metadata.invite_token, set by
+            //     create-checkout when ?invite=<uuid> flowed through
+            //     the membership/join-chat pipeline. Bulletproof —
+            //     the buyer's checkout email is irrelevant; the
+            //     invitation row is found directly by its UUID.
+            //   PATH 2 (email): legacy fallback for invitations sent
+            //     before migration 021 OR where the token was lost
+            //     somewhere in the nav chain. ilike-matches the
+            //     buyer's member.email against invitations.recipient_email.
+            //
+            // Both paths produce the same `priorInv` shape so the
+            // downstream logic (already-stamped check, recordConversion,
+            // sponsor letter, title evaluation) is unchanged. Only the
+            // resolution mechanism differs.
+            const inviteTokenFromMeta = String(session?.metadata?.invite_token || '').trim();
+            let priorInv = null;
+            let resolvedVia = null;
 
-              if (priorInv && !priorInv.converted_member_id) {
-                const inviter = await recordConversion(member, clan_id);
+            // PATH 1 — token
+            if (inviteTokenFromMeta && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inviteTokenFromMeta)) {
+              const tokenRes = await supa()
+                .from('invitations')
+                .select('id, converted_member_id, inviter_member_id, recipient_email')
+                .eq('clan_id', clan_id)
+                .eq('invite_token', inviteTokenFromMeta)
+                .maybeSingle();
+              // Defensive: silently swallow 'column does not exist' if
+              // migration 021 hasn't applied. Falls through to PATH 2.
+              if (tokenRes.error && /column .*invite_token.* does not exist/i.test(tokenRes.error.message || '')) {
+                console.warn('[webhook] invite_token column missing — falling back to email-match attribution. Run migration 021.');
+              } else if (tokenRes.data) {
+                priorInv = tokenRes.data;
+                resolvedVia = 'token';
+                console.log(`[webhook] invitation resolved via token: invitation_id=${priorInv.id} inviter_member_id=${priorInv.inviter_member_id}`);
+              }
+            }
+
+            // PATH 2 — email match (legacy / token-not-found fallback)
+            if (!priorInv) {
+              const memberEmailLower = String(member.email || '').toLowerCase().trim();
+              if (memberEmailLower) {
+                const emailRes = await supa()
+                  .from('invitations')
+                  .select('id, converted_member_id, inviter_member_id, recipient_email')
+                  .eq('clan_id', clan_id)
+                  .ilike('recipient_email', memberEmailLower)
+                  .order('sent_at', { ascending: false })
+                  .limit(1)
+                  .maybeSingle();
+                if (emailRes.data) {
+                  priorInv = emailRes.data;
+                  resolvedVia = 'email';
+                  console.log(`[webhook] invitation resolved via email match: invitation_id=${priorInv.id}`);
+                }
+              }
+            }
+
+            if (priorInv && !priorInv.converted_member_id) {
+                // Stamp the conversion. For the TOKEN path this is the
+                // ONLY place where the conversion gets stamped (since
+                // recordConversion's email lookup might miss when the
+                // buyer used a different email than the invitation).
+                // For the EMAIL path, recordConversion would also stamp
+                // it — we stamp here directly to keep the codepath
+                // uniform and avoid the second lookup.
+                try {
+                  await supa()
+                    .from('invitations')
+                    .update({
+                      converted_member_id: member.id,
+                      status: 'accepted',
+                      responded_at: new Date().toISOString(),
+                    })
+                    .eq('id', priorInv.id);
+                } catch (stampErr) {
+                  console.error(`[webhook] invitation stamp failed (${resolvedVia}):`, stampErr.message);
+                }
+
+                // Look up the inviter directly (bypass recordConversion's
+                // re-lookup which uses email and could miss when the
+                // emails don't match).
+                const { data: inviter } = await supa()
+                  .from('members')
+                  .select('id, email, name, sponsor_titles_awarded')
+                  .eq('id', priorInv.inviter_member_id)
+                  .maybeSingle();
                 if (inviter) {
                   // Sponsor letter — short Herald-voiced note to the
                   // inviter naming the new member. Title-aware
@@ -703,7 +777,7 @@ exports.handler = async (event) => {
                       clan_id,
                       member_id: inviter.id,
                       event_type: 'sponsor_letter_sent',
-                      payload: { converted_member_id: member.id, source: 'invitation_paid' },
+                      payload: { converted_member_id: member.id, source: 'invitation_paid', resolved_via: resolvedVia },
                     });
                   } catch (letterErr) {
                     console.error('invitation sponsor letter send failed (non-fatal):', letterErr.message);
@@ -757,7 +831,6 @@ exports.handler = async (event) => {
                   }
                 }
               }
-            }
           } catch (invSponsorErr) {
             console.error('invitation sponsor chain failed (non-fatal):', invSponsorErr.message);
           }

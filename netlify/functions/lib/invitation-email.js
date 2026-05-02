@@ -56,6 +56,20 @@ const SITE_URL = process.env.SITE_URL || 'https://www.ocomain.org';
  * @param {string} opts.inviterFirstName - convenience first name from inviterName
  * @param {string} [opts.personalNote]   - optional one-line note (200 char max)
  * @param {string} opts.invitationId     - uuid for unsub link tokenisation
+ * @param {string} [opts.inviteToken]    - uuid for attribution (added 2026-05-01).
+ *                                          When present, embeds in the
+ *                                          membership URL as ?invite=<uuid>;
+ *                                          /membership.html persists to
+ *                                          sessionStorage, locks the email
+ *                                          field with the invitation's
+ *                                          recipient_email, and the token
+ *                                          flows through to Stripe metadata
+ *                                          where the webhook stamps
+ *                                          invitations.converted_member_id.
+ *                                          When absent (legacy invitation
+ *                                          before migration 021), URL is
+ *                                          plain — attribution falls back
+ *                                          to recordConversion's email match.
  * @param {string} opts.unsubscribeUrl   - pre-built unsubscribe URL
  * @returns {Promise<boolean>}
  */
@@ -66,6 +80,7 @@ async function sendInvitation({
   inviterFirstName,
   personalNote,
   invitationId,
+  inviteToken,
   unsubscribeUrl,
 }) {
   const recipFirst = (recipientName || '').trim().split(/\s+/)[0] || 'friend';
@@ -142,9 +157,19 @@ async function sendInvitation({
     </p>
 
     <!-- Single CTA. Burgundy block, central, foregrounds the
-         inviter's name in the action ('beside {Inviter}'). -->
+         inviter's name in the action ('beside {Inviter}').
+
+         URL carries ?invite=<token> when migration 021 has applied
+         and the token was generated. /membership.html reads this
+         on load and persists to sessionStorage so the attribution
+         token survives the entire tier-selection → join-chat →
+         Stripe checkout pipeline. The webhook stamps
+         invitations.converted_member_id with the new member's id,
+         giving the inviter sponsorship credit regardless of what
+         email the invitee uses at Stripe checkout (closes the
+         silent attribution-loss bug from before migration 021). -->
     <div style="text-align:center;margin:6px 0 28px">
-      <a href="${SITE_URL}/membership.html" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:16px 32px;border-radius:1px;border:1px solid #4A1010">Take a place beside ${escapeHtml(inviterFirstName)} →</a>
+      <a href="${SITE_URL}/membership.html${inviteToken ? `?invite=${encodeURIComponent(inviteToken)}` : ''}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:16px 32px;border-radius:1px;border:1px solid #4A1010">Take a place beside ${escapeHtml(inviterFirstName)} →</a>
     </div>
 
     <!-- Sign-off — Herald-voiced single line. The inviter is in

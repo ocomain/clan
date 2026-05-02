@@ -217,6 +217,33 @@
   </div>
 </div>
 
+<!-- Invite token forwarding for the static fallback tier picker
+     above. Mirrors the same logic used inline in the chat-flow's
+     payBtn URL builder. Runs early so static link rewrites happen
+     before any user click. -->
+<script>
+(function () {
+  var qs = new URLSearchParams(window.location.search);
+  var token = (qs.get('invite') || '').trim();
+  if (!token) {
+    try { token = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { token = ''; }
+  }
+  if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
+    return;
+  }
+  // Persist to sessionStorage so chat-flow URL builder picks it up.
+  try { sessionStorage.setItem('invite_token', token); } catch (e) {}
+
+  var enc = encodeURIComponent(token);
+  document.querySelectorAll('a[href*="/api/create-checkout"]').forEach(function (a) {
+    var href = a.getAttribute('href') || '';
+    if (href.indexOf('invite=') >= 0) return;
+    var sep = href.indexOf('?') >= 0 ? '&' : '?';
+    a.setAttribute('href', href + sep + 'invite=' + enc);
+  });
+})();
+</script>
+
 <script>
 
 // ── Stripe links by tier ──
@@ -499,6 +526,27 @@ function showCompletion() {
     const params = [];
     if (collected.email) params.push('email=' + encodeURIComponent(collected.email));
     if (collected.name)  params.push('name='  + encodeURIComponent(collected.name));
+    // Invitation attribution token. Resolution priority: URL param
+    // first (canonical case — user just landed here from membership.html
+    // which forwarded the token), then sessionStorage (covers refresh,
+    // back/forward, new-tab opens within the same tab session). Token
+    // flows through to /api/create-checkout, which puts it on the Stripe
+    // session metadata; the webhook reads metadata.invite_token and
+    // stamps invitations.converted_member_id with the new member id.
+    // Result: the inviter gets sponsorship credit regardless of what
+    // email the invitee uses at Stripe checkout (closes the silent
+    // attribution-loss bug from before this fix shipped).
+    var qsCheckout = new URLSearchParams(window.location.search);
+    var inviteToken = (qsCheckout.get('invite') || '').trim();
+    if (!inviteToken) {
+      try { inviteToken = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { inviteToken = ''; }
+    }
+    if (inviteToken && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inviteToken)) {
+      params.push('invite=' + encodeURIComponent(inviteToken));
+      // Persist back into sessionStorage so a refresh during the
+      // chat doesn't lose attribution.
+      try { sessionStorage.setItem('invite_token', inviteToken); } catch (e) {}
+    }
     const checkoutUrl = effectiveTier.url + (params.length ? '&' + params.join('&') : '');
     payBtn.href = checkoutUrl;
     payBtn.textContent = 'Complete payment — ' + effectiveTier.label + ' →';

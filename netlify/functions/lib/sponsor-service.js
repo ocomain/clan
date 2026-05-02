@@ -261,6 +261,49 @@ async function recordConversion(member, clan_id) {
   }
 
   // ── PATH 2 — invitation recipient ──
+  //
+  // Two-step lookup (added 2026-05-01 for token-based attribution):
+  //
+  //   PATH 2a — already stamped via token: look up by
+  //             converted_member_id = member.id. This finds
+  //             invitations that were stamped by the Stripe webhook
+  //             via metadata.invite_token, EVEN when the buyer paid
+  //             with a different email than the invitation was sent
+  //             to. Without this path, the email-match in PATH 2b
+  //             would miss those invitations and the inviter would
+  //             never receive sponsorship credit at cert publish
+  //             time.
+  //
+  //   PATH 2b — email match (legacy): the original lookup, kept
+  //             for invitations that pre-date migration 021 OR
+  //             where the token was lost in transit OR where the
+  //             member email happens to match. Most recent unstamped
+  //             match wins.
+  //
+  // PATH 2a returns the inviter directly (idempotent — the
+  // invitation was already stamped by the webhook, no further
+  // stamp needed). PATH 2b stamps the invitation as part of its
+  // resolution (the original behaviour).
+  const { data: stampedInvitation, error: stampedLookupErr } = await supa()
+    .from('invitations')
+    .select('id, inviter_member_id')
+    .eq('clan_id', clan_id)
+    .eq('converted_member_id', member.id)
+    .order('responded_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!stampedLookupErr && stampedInvitation) {
+    // Token path already stamped this invitation — return the inviter.
+    const { data: inviter } = await supa()
+      .from('members')
+      .select('id, email, name, sponsor_titles_awarded')
+      .eq('id', stampedInvitation.inviter_member_id)
+      .maybeSingle();
+    if (inviter) return inviter;
+  }
+
+  // PATH 2b — email match (legacy fallback).
   // Find the most recent invitation sent to this email address that
   // hasn't yet been converted. Most recent because if multiple people
   // invited them, we credit whoever got them across the line —

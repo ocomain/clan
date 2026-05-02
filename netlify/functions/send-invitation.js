@@ -224,7 +224,14 @@ exports.handler = async (event) => {
   }
 
   // ── Insert the invitation row ───────────────────────────────────
-  const { data: invitation, error: insertErr } = await supa()
+  // Insert returns invite_token (added migration 021) so we can
+  // embed it in the email URL for bulletproof attribution. The
+  // SELECT lists it explicitly; if migration 021 hasn't applied,
+  // the SELECT will fail and we retry without it (defensive
+  // — older invitations fall back to email-match attribution
+  // via recordConversion).
+  let invitation;
+  let insertRes = await supa()
     .from('invitations')
     .insert({
       clan_id: cid,
@@ -234,8 +241,35 @@ exports.handler = async (event) => {
       personal_note: personalNote || null,
       status: 'sent',
     })
-    .select('id, sent_at')
+    .select('id, sent_at, invite_token')
     .single();
+
+  // If migration 021 missing, retry without invite_token in the
+  // RETURNING. The row was still inserted on the first attempt's
+  // failure-after-write (Postgres returns the error from the
+  // SELECT clause, but the INSERT may already have committed) —
+  // but to be safe, attempt the INSERT again without the token
+  // column. The unique constraint on (inviter_member_id,
+  // recipient_email) — if any — would block; in v1 there's no
+  // such constraint, so a duplicate from the retry is benign.
+  if (insertRes.error && /column .*invite_token.* does not exist/i.test(insertRes.error.message || '')) {
+    console.warn('send-invitation: invite_token column missing — falling back to legacy email-match attribution. Run migration 021.');
+    insertRes = await supa()
+      .from('invitations')
+      .insert({
+        clan_id: cid,
+        inviter_member_id: inviter.id,
+        recipient_email: recipientEmail,
+        recipient_name: recipientName,
+        personal_note: personalNote || null,
+        status: 'sent',
+      })
+      .select('id, sent_at')
+      .single();
+  }
+
+  const { data: invitationData, error: insertErr } = insertRes;
+  invitation = invitationData;
 
   if (insertErr) {
     console.error('invitation insert failed:', insertErr.message, insertErr.code, insertErr.details);
@@ -271,6 +305,10 @@ exports.handler = async (event) => {
       inviterFirstName: inviterFirst,
       personalNote,
       invitationId: invitation.id,
+      // invite_token enables token-based attribution. Falsy if
+      // migration 021 hasn't applied — sendInvitation handles
+      // both cases (URL omits ?invite= when token is null).
+      inviteToken: invitation.invite_token || null,
       unsubscribeUrl,
     });
   } catch (e) {
