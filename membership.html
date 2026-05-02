@@ -41,7 +41,33 @@
     /* ── TIERS ── */
     .tiers-section{background:var(--cream);padding:0 0 80px}
     .tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--border)}
-    .tier{padding:44px 36px 40px;border-right:1px solid var(--border);position:relative;transition:transform .2s}
+    /* Tier cards are clickable as a whole — bigger tap target on
+       mobile, matches the user expectation set by every modern
+       pricing page (Stripe, Notion, Apple, etc). The inner CTA
+       button stays as the explicit affordance for users who reach
+       for it specifically; clicking anywhere else on the card
+       routes to the same destination as the currently-visible
+       button. The Individual/Family global toggle (body.family-mode)
+       hides one button and shows the other; the JS click handler
+       reads which is currently visible and navigates there.
+
+       Hover lift + brighter border read as 'this whole thing is
+       interactive', without overpowering the inner CTA button —
+       the button still gets its own hover treatment which feels
+       slightly stronger when nested inside the lifted card.
+
+       Focus ring (gold outline) gives keyboard users a visible
+       target — the card has tabindex=0 + role=button. Inner CTA
+       links remain tabbable too, so keyboard navigation works
+       at both granularities. */
+    .tier{padding:44px 36px 40px;border-right:1px solid var(--border);position:relative;cursor:pointer;transition:transform .2s, border-color .2s, box-shadow .2s, background-color .2s}
+    .tier:hover{transform:translateY(-2px);background-color:rgba(184,151,90,.03)}
+    .tier:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+    /* The 'Most popular' featured card already has its own raised
+       look from the markup (.tier.featured) — keep its baseline
+       lift greater than the hover lift on neutral cards so the
+       hierarchy stays right. */
+    .tier.featured:hover{transform:translateY(-4px)}
     .tier:last-child{border-right:none}
     .tier.featured{background:var(--ink);border:2px solid var(--gold);margin:-2px;z-index:2}
     .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:14px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:5px 16px;white-space:nowrap}
@@ -653,6 +679,77 @@ function setMode(mode) {
       return quote + url + sep + 'invite=' + enc + quote;
     });
     if (newOc !== oc) el.setAttribute('onclick', newOc);
+  });
+})();
+</script>
+
+<!-- Tier card whole-area click handler.
+     Each .tier card on this page is now wholly clickable (bigger
+     tap target, matches modern pricing-page expectations). The
+     destination is dynamic: the .tier-cta links inside each card
+     swap visibility based on body.family-mode (the global toggle),
+     so 'whatever Individual/Family mode is currently active' = the
+     tier-cta whose computed display is not 'none'. We read that
+     link's href on EVERY click so the handler always reflects:
+       (a) the current toggle state
+       (b) any href rewriting done by the invite-token script
+           above (which appends &invite=<token> to all join-chat
+           links). This script runs AFTER that one, so on first
+           load the hrefs are already rewritten — but reading
+           on click is safer if anything else mutates them later.
+
+     Inner .tier-cta clicks are passed through untouched — the
+     stopPropagation on those listeners prevents the parent
+     card handler from firing twice.
+
+     Keyboard support: cards are made tabbable (tabindex=0) and
+     respond to Enter/Space. Inner buttons remain tabbable too,
+     so keyboard users can navigate granularly if they prefer. -->
+<script>
+(function () {
+  function activateTier(card) {
+    // Find the currently-visible CTA inside this card. .tier-cta
+    // links toggle visibility via body.family-mode + display:block/none
+    // on .individual-price / .family-price classes. A getComputedStyle
+    // check is more robust than guessing from class lists, since the
+    // visibility logic could evolve.
+    var ctas = card.querySelectorAll('a.tier-cta');
+    var visibleHref = '';
+    for (var i = 0; i < ctas.length; i++) {
+      var cs = window.getComputedStyle(ctas[i]);
+      if (cs.display !== 'none' && cs.visibility !== 'hidden') {
+        visibleHref = ctas[i].getAttribute('href') || '';
+        break;
+      }
+    }
+    if (visibleHref) {
+      window.location.href = visibleHref;
+    }
+  }
+
+  document.querySelectorAll('.tier').forEach(function (card) {
+    // ARIA + keyboard affordances. role=button signals to assistive
+    // tech that this whole element acts like a button. tabindex=0
+    // includes it in the tab cycle.
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+
+    card.addEventListener('click', function (e) {
+      // If the click landed on (or inside) an actual <a> or button,
+      // let the native handler do its thing — don't double-navigate.
+      if (e.target.closest('a, button')) return;
+      activateTier(card);
+    });
+
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        // Only fire if focus is on the card itself, not on a child
+        // link (which has its own Enter handler).
+        if (e.target !== card) return;
+        e.preventDefault();
+        activateTier(card);
+      }
+    });
   });
 })();
 </script>
