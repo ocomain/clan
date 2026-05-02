@@ -933,17 +933,33 @@ function closeModal2(e){
         <div class="mem-card-text">Your name formally entered in the Register of Clan Ó Comáin, kept at Newhall House and read at clan gatherings and in prayers on Saint Commán's day.</div>
       </div>
 
-      <!-- 2. ARMS — heraldic shield with a simple chief band across
-           the top (a real heraldic primary charge division). Three-
-           cusped lower edge is the classic 'shield of an Irish house'
-           silhouette used in clan heraldry. -->
+      <!-- 2. ARMS — the actual clan arms in simplified silhouette:
+           shield (rounded shoulders, single-cusp pointed bottom, the
+           classic Irish heraldic silhouette) containing the harp on
+           the left and the mermaid on the right. The harp is rendered
+           as a triangular frame with two vertical strings. The mermaid
+           is suggested by a small head-and-flowing-hair shape facing
+           the harp, with a curved body line descending to a small
+           split tail at the base. At 36px we cannot render the level
+           of detail of the full arms, but the silhouette reads as
+           'this is OUR coat of arms' rather than a generic shield —
+           which was the user's specific request. -->
       <div class="mem-card">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- Shield silhouette -->
           <path d="M7 6 L29 6 L29 19 Q29 27 18 32 Q7 27 7 19 Z"/>
-          <path d="M7 13 L29 13"/>
-          <circle cx="13" cy="9.5" r="0.9" fill="currentColor"/>
-          <circle cx="18" cy="9.5" r="0.9" fill="currentColor"/>
-          <circle cx="23" cy="9.5" r="0.9" fill="currentColor"/>
+          <!-- Harp (left): triangular frame + two vertical strings -->
+          <path d="M11 11 L11 22 L16 22 Z"/>
+          <path d="M12.5 13 L12.5 22"/>
+          <path d="M14 15 L14 22"/>
+          <!-- Mermaid head (right): small circle for head -->
+          <circle cx="22" cy="13" r="1.5" fill="currentColor"/>
+          <!-- Flowing hair flowing back from head -->
+          <path d="M23.5 12 Q26 11 26.5 14"/>
+          <!-- Body curving down and tail ending in a fluke -->
+          <path d="M22 14.5 Q21 18 22 22 Q23.5 25 21 27"/>
+          <path d="M21 27 L19 26"/>
+          <path d="M21 27 L23 26"/>
         </svg>
         <div class="mem-card-title">The arms of an ancient house</div>
         <div class="mem-card-text">Chief-sanctioned use of the clan's crest and coat of arms on your own things — stationery, jewellery, personal items — as kin of Ó Comáin.</div>
@@ -979,19 +995,45 @@ function closeModal2(e){
         <div class="mem-card-text">Access to the clan pedigree, and a path for your own line — by descent, by marriage, by oath, by affinity — to be entered alongside it by the clan's genealogist.</div>
       </div>
 
-      <!-- 4. NEWHALL — Georgian house silhouette: shallow-pitched
-           pediment over a five-bay frontage. The Newhall House
-           is itself an 18th-century Georgian mansion, so the icon
-           respects what it actually looks like. Door + chimney
-           give it specificity beyond a generic 'house'. -->
+      <!-- 4. NEWHALL — wide Georgian mansion silhouette specific to
+           Newhall House: three-block frontage with a raised central
+           pediment block, two-storey symmetric flanking blocks, and
+           four tall chimneys. Drawn deliberately wider than tall (as
+           the actual building is) to read as 'grand estate' rather
+           than 'suburban house' — which was the user's specific
+           feedback. The chimneys + raised centre give it the
+           Georgian-mansion silhouette unmistakable in heraldic
+           shorthand. -->
       <div class="mem-card">
         <svg class="mem-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M5 18 L18 9 L31 18"/>
-          <path d="M7 17 L7 30 L29 30 L29 17"/>
-          <path d="M16 30 L16 23 L20 23 L20 30"/>
-          <rect x="10" y="20" width="3" height="3"/>
-          <rect x="23" y="20" width="3" height="3"/>
-          <path d="M24 12 L24 8 L26 8 L26 13.5"/>
+          <!-- Ground line -->
+          <path d="M3 31 L33 31"/>
+          <!-- Left wing roof + body -->
+          <path d="M5 18 L5 31"/>
+          <path d="M5 18 L13 18"/>
+          <path d="M13 18 L13 31"/>
+          <!-- Central raised pediment block -->
+          <path d="M13 14 L18 11 L23 14 L23 18"/>
+          <path d="M13 14 L13 18"/>
+          <path d="M13 18 L23 18"/>
+          <!-- Right wing roof + body -->
+          <path d="M23 18 L31 18"/>
+          <path d="M31 18 L31 31"/>
+          <!-- Roof ridge connecting wings -->
+          <path d="M5 18 L13 18"/>
+          <path d="M23 18 L31 18"/>
+          <!-- Four chimneys (the distinctive Newhall feature) -->
+          <path d="M7 18 L7 14 L8.5 14 L8.5 18"/>
+          <path d="M16.5 11.5 L16.5 8 L17.8 8 L17.8 11.6"/>
+          <path d="M19.5 11.5 L19.5 8 L20.8 8 L20.8 11.6"/>
+          <path d="M27.5 18 L27.5 14 L29 14 L29 18"/>
+          <!-- Central porch / door -->
+          <path d="M16.5 31 L16.5 24 L19.5 24 L19.5 31"/>
+          <!-- Window suggestions, two on each wing (very small dashes) -->
+          <rect x="7" y="22" width="2" height="2.5"/>
+          <rect x="9.5" y="22" width="2" height="2.5"/>
+          <rect x="24.5" y="22" width="2" height="2.5"/>
+          <rect x="27" y="22" width="2" height="2.5"/>
         </svg>
         <div class="mem-card-title">Your place at Newhall</div>
         <div class="mem-card-text">Invitations to future gatherings at Newhall House, the ancestral heartlands of Clare, and Cahercommane in the Burren — your ancestral ground, open to you as kin.</div>
