@@ -101,6 +101,72 @@
     .completion-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     .btn-gold{background:var(--gold);color:var(--ink);border:none;padding:14px 32px;font-family:var(--font-sans);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;border-radius:1px;transition:background .2s}
     .btn-gold:hover{background:var(--gold-pale)}
+
+    /* ── Inline tier picker for the no-pre-selected-tier path ────────
+       Adapted from /gift-form for visual consistency, dark-themed
+       to sit on the green-dark / ink chat surface. Three cards in a
+       grid, an Individual ↔ Family slider underneath, and a single
+       dynamic 'Complete payment' button that updates as the user
+       selects. Steward is intentionally omitted — see commit message
+       for the rule-of-three rationale. */
+    .picker-eyebrow{font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 14px;text-align:left}
+    .tier-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+    .tier-opt{
+      border:1px solid rgba(184,151,90,.25);padding:22px 14px 18px;cursor:pointer;
+      text-align:center;transition:all .2s;position:relative;background:rgba(255,255,255,.02);
+      border-radius:1px
+    }
+    .tier-opt:hover{border-color:rgba(184,151,90,.55);background:rgba(184,151,90,.05)}
+    .tier-opt.selected{border-color:var(--gold);background:rgba(184,151,90,.1)}
+    .tier-opt.selected::after{
+      content:'✓';position:absolute;top:8px;right:10px;font-size:12px;color:var(--gold)
+    }
+    .tier-opt-name{
+      font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--gold);margin-bottom:8px
+    }
+    .tier-opt-price{
+      font-family:var(--font-serif);font-size:26px;color:var(--cream);line-height:1;margin-bottom:4px
+    }
+    .tier-opt-cadence{
+      font-family:var(--font-sans);font-size:10px;font-weight:300;letter-spacing:.06em;
+      color:rgba(212,184,122,.55);text-transform:lowercase
+    }
+    .tier-opt-badge{
+      position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+      background:var(--gold);color:var(--ink);font-family:var(--font-sans);font-size:8px;
+      font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px;
+      white-space:nowrap;border-radius:0
+    }
+
+    /* Individual ↔ Family toggle */
+    .family-row{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+    .family-row-label{font-family:var(--font-sans);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,184,122,.65)}
+    .family-row-label.active{color:var(--gold)}
+    .family-switch{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
+    .family-switch input{opacity:0;width:0;height:0}
+    .family-switch-slider{position:absolute;inset:0;background:rgba(184,151,90,.25);border-radius:24px;transition:.2s}
+    .family-switch-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:var(--gold);border-radius:50%;transition:.2s}
+    .family-switch input:checked + .family-switch-slider{background:rgba(184,151,90,.45)}
+    .family-switch input:checked + .family-switch-slider::before{transform:translateX(20px)}
+    .family-row-note{font-family:var(--font-serif);font-size:13px;font-style:italic;color:rgba(212,184,122,.55)}
+
+    /* Final CTA button styled like a primary action — taller, brighter,
+       full message including selected tier + price */
+    .picker-cta-wrap{text-align:center}
+    .picker-cta{
+      background:var(--gold);color:var(--ink);border:none;
+      padding:18px 40px;font-family:var(--font-sans);font-size:13px;font-weight:700;
+      letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;
+      display:inline-block;border-radius:1px;transition:background .2s
+    }
+    .picker-cta:hover{background:var(--gold-pale)}
+    .picker-cta-note{font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.7);letter-spacing:.06em;margin-top:12px}
+
+    @media(max-width:600px){
+      .tier-selector{grid-template-columns:1fr;gap:10px}
+      .tier-opt{padding:18px 14px 14px}
+    }
     .btn-outline{border:1px solid var(--gold);color:var(--gold);background:none;padding:14px 32px;font-family:var(--font-sans);font-size:11px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;border-radius:1px;transition:all .2s}
     .btn-outline:hover{background:rgba(184,151,90,.08)}
 
@@ -188,21 +254,51 @@
       <a id="stripePayBtn" href="#" class="btn-gold" style="display:none;font-size:13px;padding:18px 40px">Complete payment — secure checkout →</a>
     </div>
 
-    <!-- Inline tier picker when no tier pre-selected -->
+    <!-- Inline tier picker — shown ONLY when user arrived without
+         a ?tier= URL param (i.e. clicked 'Start application' from
+         the homepage rather than 'Join as Guardian' from membership.html).
+         Mirrors the gift-form pattern: 3 cards in a grid with a
+         family toggle underneath and a single dynamic 'Complete
+         payment' button.
+
+         Steward intentionally omitted (rule of three: 3 tiers is the
+         decision-architecture sweet spot; Steward is positioned as a
+         talk-to-the-Chief tier rather than a self-service one). Steward
+         remains accessible via direct deep-link from membership.html. -->
     <div id="tierPicker" style="display:none;text-align:left">
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <a href="/api/create-checkout?tier=clan-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center"><span>Clan Member — Individual</span><span>€49/yr</span></a>
-        <a href="/api/create-checkout?tier=clan-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Clan Member — Family</span><span>€79/yr</span></a>
-        <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">Annual subscription · cancel anytime</p>
-        <a href="/api/create-checkout?tier=guardian-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span>Guardian of the Clan — Individual</span><span>€150/yr</span></a>
-        <a href="/api/create-checkout?tier=guardian-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Guardian of the Clan — Family</span><span>€220/yr</span></a>
-        <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">Annual subscription · cancel anytime</p>
-        <a href="/api/create-checkout?tier=steward-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span>Steward of the Clan — Individual</span><span>€350/yr</span></a>
-        <a href="/api/create-checkout?tier=steward-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.85"><span>Steward of the Clan — Family</span><span>€480/yr</span></a>
-        <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">Annual subscription · cancel anytime</p>
-        <a href="/api/create-checkout?tier=life-ind" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.7);margin-top:8px"><span>Life Member — Individual</span><span>€750 once</span></a>
-        <a href="/api/create-checkout?tier=life-fam" class="btn-gold" style="font-size:12px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;background:rgba(184,151,90,.6)"><span>Life Member — Family</span><span>€1,100 once</span></a>
-        <p style="font-family:var(--font-sans);font-size:12px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.06em;text-align:center;margin:2px 0 6px">One-time payment · No renewal · For life</p>
+      <div class="picker-eyebrow">Choose a membership tier</div>
+      <div class="tier-selector">
+        <div class="tier-opt" id="tier-clan" onclick="pickerSelectTier('clan')">
+          <div class="tier-opt-name">Clan Member</div>
+          <div class="tier-opt-price" id="picker-price-clan">€49</div>
+          <div class="tier-opt-cadence" id="picker-cad-clan">annual</div>
+        </div>
+        <div class="tier-opt selected" id="tier-guardian" onclick="pickerSelectTier('guardian')">
+          <div class="tier-opt-badge">Most popular</div>
+          <div class="tier-opt-name">Guardian</div>
+          <div class="tier-opt-price" id="picker-price-guardian">€150</div>
+          <div class="tier-opt-cadence" id="picker-cad-guardian">annual · signed certificate</div>
+        </div>
+        <div class="tier-opt" id="tier-life" onclick="pickerSelectTier('life')">
+          <div class="tier-opt-name">Life Member</div>
+          <div class="tier-opt-price" id="picker-price-life">€750</div>
+          <div class="tier-opt-cadence" id="picker-cad-life">permanent · one-time</div>
+        </div>
+      </div>
+
+      <div class="family-row">
+        <span class="family-row-label active" id="indLabel">Individual</span>
+        <label class="family-switch">
+          <input type="checkbox" id="pickerFamilyToggle" onchange="pickerUpdateFamily()">
+          <span class="family-switch-slider"></span>
+        </label>
+        <span class="family-row-label" id="famLabel">Family</span>
+        <span class="family-row-note" id="pickerFamilyNote">— individual membership</span>
+      </div>
+
+      <div class="picker-cta-wrap">
+        <a id="pickerCheckoutBtn" href="#" class="picker-cta">Complete payment — Guardian (Individual) — €150 →</a>
+        <p class="picker-cta-note" id="pickerCheckoutNote">Annual subscription · cancel anytime</p>
       </div>
     </div>
 
@@ -515,60 +611,146 @@ function showCompletion() {
   // The Herald greeting itself remains tier-agnostic — only the
   // completion panel changes.
   const payBtn = document.getElementById('stripePayBtn');
-  const effectiveTier = tierInfo || STRIPE_LINKS['clan-ind'];
-  if (payBtn) {
-    // Append email AND herald-captured name to /api/create-checkout. The
-    // endpoint passes email as customer_email (pre-fills Stripe form) and
-    // sets metadata.herald_name on the session — the latter is read by
-    // stripe-webhook as the authoritative name (avoiding the previous
-    // bug where the Stripe billing name overrode the Herald name in
-    // some cases).
-    const params = [];
+  const tierPicker = document.getElementById('tierPicker');
+
+  // Resolve invite token (URL → sessionStorage). Same logic used
+  // for both the single-button and picker paths so attribution
+  // works either way. Also persists to sessionStorage so refresh
+  // keeps it.
+  var qsCheckout = new URLSearchParams(window.location.search);
+  var inviteToken = (qsCheckout.get('invite') || '').trim();
+  if (!inviteToken) {
+    try { inviteToken = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { inviteToken = ''; }
+  }
+  if (inviteToken && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inviteToken)) {
+    try { sessionStorage.setItem('invite_token', inviteToken); } catch (e) {}
+  } else {
+    inviteToken = '';
+  }
+
+  // Helper to assemble checkout URL with email/name/invite params.
+  // Used by both code paths below.
+  function buildCheckoutUrl(tierKey) {
+    const params = ['tier=' + encodeURIComponent(tierKey)];
     if (collected.email) params.push('email=' + encodeURIComponent(collected.email));
     if (collected.name)  params.push('name='  + encodeURIComponent(collected.name));
-    // Invitation attribution token. Resolution priority: URL param
-    // first (canonical case — user just landed here from membership.html
-    // which forwarded the token), then sessionStorage (covers refresh,
-    // back/forward, new-tab opens within the same tab session). Token
-    // flows through to /api/create-checkout, which puts it on the Stripe
-    // session metadata; the webhook reads metadata.invite_token and
-    // stamps invitations.converted_member_id with the new member id.
-    // Result: the inviter gets sponsorship credit regardless of what
-    // email the invitee uses at Stripe checkout (closes the silent
-    // attribution-loss bug from before this fix shipped).
-    var qsCheckout = new URLSearchParams(window.location.search);
-    var inviteToken = (qsCheckout.get('invite') || '').trim();
-    if (!inviteToken) {
-      try { inviteToken = (sessionStorage.getItem('invite_token') || '').trim(); } catch (e) { inviteToken = ''; }
+    if (inviteToken)     params.push('invite=' + encodeURIComponent(inviteToken));
+    return '/api/create-checkout?' + params.join('&');
+  }
+
+  if (tierInfo) {
+    // ── PATH A: tier was pre-selected via URL (e.g. clicked
+    //   'Join as Guardian' on /membership.html). Single-button flow.
+    if (payBtn) {
+      payBtn.href = buildCheckoutUrl(urlTier);
+      payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
+      payBtn.style.display = 'inline-block';
+      const isLifeTier = (urlTier || 'clan-ind').startsWith('life');
+      if (!isLifeTier) {
+        const cancelNote = document.createElement('p');
+        cancelNote.textContent = 'Annual subscription · cancel anytime';
+        cancelNote.style.cssText = 'font-family:var(--font-sans);font-size:14px;font-weight:400;color:rgba(184,151,90,.7);letter-spacing:.06em;text-align:center;margin-top:12px';
+        payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
+      }
     }
-    if (inviteToken && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(inviteToken)) {
-      params.push('invite=' + encodeURIComponent(inviteToken));
-      // Persist back into sessionStorage so a refresh during the
-      // chat doesn't lose attribution.
-      try { sessionStorage.setItem('invite_token', inviteToken); } catch (e) {}
-    }
-    const checkoutUrl = effectiveTier.url + (params.length ? '&' + params.join('&') : '');
-    payBtn.href = checkoutUrl;
-    payBtn.textContent = 'Complete payment — ' + effectiveTier.label + ' →';
-    payBtn.style.display = 'inline-block';
-    // Show cancel note for annual tiers only. Default-fallback is
-    // clan-ind which is annual, so 'Annual subscription · cancel
-    // anytime' shows beneath the button in that case too.
-    const isLifeTier = (urlTier || 'clan-ind') === 'life-ind' || (urlTier || 'clan-ind') === 'life-fam';
-    if (!isLifeTier) {
-      const cancelNote = document.createElement('p');
-      cancelNote.textContent = 'Annual subscription · cancel anytime';
-      cancelNote.style.cssText = 'font-family:var(--font-sans);font-size:14px;font-weight:400;color:rgba(184,151,90,.7);letter-spacing:.06em;text-align:center;margin-top:12px';
-      payBtn.parentNode.insertBefore(cancelNote, payBtn.nextSibling);
+  } else {
+    // ── PATH B: no tier pre-selected. User clicked 'Start
+    //   application' from the homepage / nav and finished the chat.
+    //   Show the gift-form-style 3-card picker (Clan / Guardian /
+    //   Life) with Individual ↔ Family toggle, plus a dynamic
+    //   'Complete payment' button. Steward intentionally omitted —
+    //   talk-to-the-Chief tier, accessible via deep link from
+    //   /membership.html.
+    //
+    //   The picker's selectTier/updateFamily functions update the
+    //   button label + href in real time so the user sees what
+    //   they're committing to before clicking. buildCheckoutUrl
+    //   above is closed over by the picker handlers below.
+    if (tierPicker) {
+      tierPicker.style.display = 'block';
+
+      // Make the URL builder available to the picker helpers below.
+      window.__joinChatBuildCheckoutUrl = buildCheckoutUrl;
+
+      // Trigger initial update so the default-selected Guardian
+      // (Individual) shows correct price + URL.
+      if (typeof pickerUpdateCheckoutBtn === 'function') {
+        pickerUpdateCheckoutBtn();
+      }
     }
   }
-  // tierPicker element is intentionally left hidden — see
-  // join-chat.full-tier-picker.html for the archived logic that
-  // populated and revealed it. Removing the markup entirely would
-  // make a future restore harder, so it stays in the DOM but
-  // permanently display:none.
 
   document.getElementById('completion').classList.add('show');
+}
+
+// ── Picker state + helpers (used only when no ?tier= preselected) ──
+//
+// Three-tier picker mirroring the gift-form pattern. Steward omitted
+// (rule of three for decision architecture; Steward stays accessible
+// via deep-link from /membership.html). State held in two module-level
+// vars; updated by selectTier/updateFamily; consumed by
+// pickerUpdateCheckoutBtn which writes the button label + href.
+
+const PICKER_PRICES = {
+  clan:     { ind: 49,  fam: 79,    label: 'Clan Member' },
+  guardian: { ind: 150, fam: 220,   label: 'Guardian'    },
+  life:     { ind: 750, fam: 1100,  label: 'Life Member' },
+};
+
+let pickerCurrentTier = 'guardian'; // matches the .selected class on initial markup
+let pickerIsFamily = false;
+
+function pickerSelectTier(tier) {
+  pickerCurrentTier = tier;
+  document.querySelectorAll('#tierPicker .tier-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('tier-' + tier).classList.add('selected');
+  pickerUpdateCheckoutBtn();
+}
+
+function pickerUpdateFamily() {
+  pickerIsFamily = document.getElementById('pickerFamilyToggle').checked;
+  document.getElementById('indLabel').classList.toggle('active', !pickerIsFamily);
+  document.getElementById('famLabel').classList.toggle('active', pickerIsFamily);
+  // Note text changes to reflect what the family option actually
+  // includes — same wording as gift-form's family-note for
+  // consistency across the platform.
+  document.getElementById('pickerFamilyNote').textContent =
+    pickerIsFamily ? '— covers 2 adults & children under 18' : '— individual membership';
+  pickerUpdateCheckoutBtn();
+}
+
+function pickerUpdateCheckoutBtn() {
+  const btn = document.getElementById('pickerCheckoutBtn');
+  const note = document.getElementById('pickerCheckoutNote');
+  if (!btn) return;
+
+  const type = pickerIsFamily ? 'fam' : 'ind';
+  const tierKey = pickerCurrentTier + '-' + type;
+  const prices = PICKER_PRICES[pickerCurrentTier];
+  const price = prices[type];
+  const typeLabel = pickerIsFamily ? 'Family' : 'Individual';
+  const cadenceSuffix = pickerCurrentTier === 'life' ? ' once' : '/yr';
+
+  btn.textContent = `Complete payment — ${prices.label} (${typeLabel}) — €${price.toLocaleString()}${cadenceSuffix} →`;
+
+  // Build the checkout URL using the closure helper installed by
+  // the completion-panel code path. If for some reason it isn't
+  // present (defensive), fall back to a bare URL — better to send
+  // the user to checkout without email pre-fill than to leave the
+  // button dead.
+  const builder = window.__joinChatBuildCheckoutUrl;
+  btn.href = typeof builder === 'function'
+    ? builder(tierKey)
+    : '/api/create-checkout?tier=' + encodeURIComponent(tierKey);
+
+  // Cadence note beneath the button — mirrors the messaging used
+  // throughout the site for life-tier (one-time, permanent) vs
+  // annual subscription tiers.
+  if (note) {
+    note.textContent = pickerCurrentTier === 'life'
+      ? 'One-time payment · No renewal · For life'
+      : 'Annual subscription · cancel anytime';
+  }
 }
 </script>
 
