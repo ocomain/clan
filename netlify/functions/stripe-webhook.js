@@ -1256,7 +1256,7 @@ async function sendGiftBuyerConfirmation(ctx, productName, amount, currency) {
     <!-- "What happens next" — Phase 2 deferred-acceptance flow.
          The recipient must press 'Claim my place' on the welcome
          page; until then no membership exists in their name. The
-         buyer's sponsorship credit (Cara/Onóir/Ardchara) is
+         buyer's sponsorship credit (Cara/Ardchara/Onóir) is
          awarded immediately on payment regardless. -->
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 28px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">What happens next</p>

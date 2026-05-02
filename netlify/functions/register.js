@@ -168,7 +168,7 @@ exports.handler = async (event) => {
       );
 
       // Held dignity — only present when the member holds a
-      // sponsorship title (Cara/Onóir/Ardchara). Architectural rule:
+      // sponsorship title (Cara/Ardchara/Onóir). Architectural rule:
       // the title attaches to the INDIVIDUAL primary grantee, NEVER
       // to the family unit. Wife/husband/children do NOT earn the
       // dignity through the family membership — though by the
@@ -177,12 +177,12 @@ exports.handler = async (event) => {
       // Returns a structured object so the front-end can render the
       // title as a prefix to the family-display name with a hover
       // tooltip carrying pronunciation, English meaning, and degree.
-      // Degree mapping mirrors the threshold ladder: cara=1st,
-      // onoir=2nd, ardchara=3rd.
+      // Degree mapping mirrors the threshold ladder (revised 2026-05-01):
+      // cara=1st (1 sponsorship), ardchara=2nd (5), onoir=3rd (15).
       const heldTitle = highestAwardedTitle(m.sponsor_titles_awarded);
       let heldDignity = null;
       if (heldTitle) {
-        const degreeMap = { cara: '1st', onoir: '2nd', ardchara: '3rd' };
+        const degreeMap = { cara: '1st', ardchara: '2nd', onoir: '3rd' };
         heldDignity = {
           slug: heldTitle.slug,
           irish: heldTitle.irish,

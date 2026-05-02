@@ -22,18 +22,49 @@
 //      Herald letter and stamping sponsor_titles_awarded — this
 //      function only computes what's owed.
 //
-// The titles, in order:
+// The titles, in order (revised 2026-05-01):
 //   { slug: 'cara',     threshold: 1,  irish: 'Cara',     english: 'Friend',
 //     pronunciation: 'KAR-uh' }
-//   { slug: 'onoir',    threshold: 5,  irish: 'Onóir',    english: 'One held in honour',
-//     pronunciation: 'UH-nor' }
-//   { slug: 'ardchara', threshold: 15, irish: 'Ardchara', english: 'Friend of high standing',
+//   { slug: 'ardchara', threshold: 5,  irish: 'Ardchara', english: 'Friend of high standing',
 //     pronunciation: 'ARD-khar-uh' }
+//   { slug: 'onoir',    threshold: 15, irish: 'Onóir',    english: 'One held in honour',
+//     pronunciation: 'UH-nor' }
 //
 // THRESHOLDS — edit here, the rest of the architecture follows.
 
 const { supa } = require('./supabase');
 
+// SPONSOR_TITLES — three-tier ladder for members who bring others
+// to the Register.
+//
+// LADDER (revised 2026-05-01):
+//   Cara     (1 sponsorship)  — Friend; first raising into honour
+//   Ardchara (5 sponsorships) — High Friend; the friendship-tier
+//                               deepening, morphologically built on
+//                               'cara' (ard- + cara = high friend)
+//   Onóir    (15 sponsorships) — Honour; the apex, qualitatively
+//                               distinct (not a deeper friendship —
+//                               a transcendence into pure dignity)
+//
+// Why this order rather than Cara → Onóir → Ardchara: the new
+// arrangement creates a coherent linguistic + conceptual ladder.
+// Cara → Ardchara is a morphological progression (the second
+// title contains the first); Ardchara → Onóir is a register
+// shift (relational warmth → ceremonial weight). Apex by
+// transcendence reads better than apex by intensification —
+// Onóir as 'the highest honour' carries more gravity than
+// Ardchara would as 'the highest friend'.
+//
+// At each raising, the prior dignity is laid by — only the
+// current dignity is held. Modelled on chivalry-order
+// conventions (KBE → CBE → MBE etc.), not on peerage where
+// titles accrete.
+//
+// The TEMPLATE FUNCTIONS take the previous-title's irish form
+// (or null for first-raising) and produce per-title copy. This
+// way the email can say 'raised from Ardchara to the dignity
+// of Onóir' or, for a first raising, 'raised to the dignity of
+// Cara' without an awkward 'from null' clause.
 const SPONSOR_TITLES = [
   {
     slug: 'cara',
@@ -41,86 +72,63 @@ const SPONSOR_TITLES = [
     irish: 'Cara',
     english: 'Friend',
     pronunciation: 'KAR-uh',
-    // ── Per-title language for the title-award letter ──
-    //
-    // EVERY title is a RAISING (Path 2 design): Cara is the first
-    // raising into honour from no-title; Onóir is a raising from
-    // Cara; Ardchara is a raising from Onóir to the highest rank.
-    // The lower title is laid by ('replaced'); only the current
-    // title is held. Modelled on chivalry-order conventions
-    // (KBE → CBE → MBE etc., where each step replaces the prior),
-    // not on peerage where titles accrete.
-    //
-    // The TEMPLATE FUNCTIONS below take the previous-title's irish
-    // form (or null for first-raising) and produce the per-title
-    // copy. This way the email can say 'raised from Onóir to the
-    // dignity of Ardchara' or, for a first raising, 'raised to the
-    // dignity of Cara' without an awkward 'from null' clause.
-    //
-    // Subject and headline parts that don't depend on prior title
-    // are constants. Body opening, bestowal intro, and an optional
-    // 'replacement' sentence are functions of priorTitleIrish.
+    // First raising — no prior dignity to mention. Constants for
+    // header pieces; functions for body copy that depends on prior
+    // (defensively handled even though Cara is always the first
+    // raising in the canonical ladder).
 
-    // Subject line — depends on prior title for raisings beyond
-    // the first. First raising (priorIrish=null): no 'from' clause.
+    // Subject line.
     subjectLine: (priorIrish) =>
       priorIrish
         ? `By the Chief\u2019s hand \u2014 raised from ${priorIrish} to Cara`
         : 'By the Chief\u2019s hand \u2014 you are raised to Cara',
 
-    // Constant header pieces.
     eyebrow: 'By the Chief\u2019s hand',
     headline: 'You are raised in the clan',
 
-    // The opening body paragraph — narrates the Chief's act, names
-    // the count, and (for non-first raisings) names the previous
-    // dignity being laid by. For Cara — the FIRST raising — there
-    // is no prior dignity; the language is simply 'raised within
-    // the clan to the first of its honours'.
     bodyOpening: (priorIrish) =>
       priorIrish
         // Defensive: in normal operation a member never reaches Cara
-        // having already held a title (Cara IS the first title). But
-        // if some future ladder revision changes that, the language
-        // handles it cleanly.
+        // having already held a title. But if some future ladder
+        // revision changes that, the language handles it cleanly.
         ? `You have lately brought another to the Register at Newhall \u2014 and on this account, the Chief has been pleased to raise you from the dignity of ${priorIrish} to that of Cara, the first of the honours conferred within Clan Ó Comáin.`
         : 'You have lately brought another to the Register at Newhall \u2014 and on this account, the Chief has been pleased to raise you within the clan to the first of its honours.',
 
-    // The small-caps line above the title in the bestowal block.
     bestowalIntro: (priorIrish) =>
       priorIrish
         ? `It pleases the Chief to raise you from ${priorIrish} to the dignity of`
         : 'It pleases the Chief to raise you to the dignity of',
 
-    // Closing narrative beat — what this dignity means.
     closingNarrative: 'To bring even one to the clan is no small thing \u2014 it is the act on which all kinship is built.',
 
-    // For Cara, no 'replacement' sentence (there's nothing to lay
-    // by). Onóir and Ardchara include one — see those entries below.
     replacementSentence: (priorIrish) => null,
   },
   {
-    slug: 'onoir',
+    slug: 'ardchara',
     threshold: 5,
-    irish: 'Onóir',
-    english: 'One held in honour',
-    pronunciation: 'UH-nor',
+    irish: 'Ardchara',
+    english: 'Friend of high standing',
+    pronunciation: 'ARD-khar-uh',
+
+    // Ardchara at the middle rank — the natural extension of Cara.
+    // Where Cara names the friend, Ardchara names the high friend.
+    // Tone: a measured raising-in-rank, warmer than Onóir at apex.
     subjectLine: (priorIrish) =>
       priorIrish
-        ? `By the Chief\u2019s hand \u2014 raised from ${priorIrish} to Onóir`
-        : 'By the Chief\u2019s hand \u2014 you are raised to Onóir',
+        ? `By the Chief\u2019s hand \u2014 raised from ${priorIrish} to Ardchara`
+        : 'By the Chief\u2019s hand \u2014 you are raised to Ardchara',
 
     eyebrow: 'By the Chief\u2019s hand \u00b7 A raising in rank',
-    headline: 'You are raised to Onóir',
+    headline: 'You are raised to Ardchara',
 
     bodyOpening: (priorIrish) =>
       priorIrish
-        ? `Five souls have come to Clan Ó Comáin through your welcome. The Chief has marked this, and has been pleased to raise you from the dignity of ${priorIrish} to that of Onóir \u2014 the second honour in the keeping of the clan.`
-        // Defensive — leapfrog from no-title direct to Onóir
+        ? `Five souls have come to Clan Ó Comáin through your welcome. The Chief has marked this, and has been pleased to raise you from the dignity of ${priorIrish} to that of Ardchara — the second honour in the keeping of the clan. Where Cara names the friend, Ardchara names the high friend — the clan\u2019s recognition that you carry the work of welcome with particular grace.`
+        // Defensive — leapfrog from no-title direct to Ardchara
         // (e.g. 5 conversions in the same publish event). The
         // Cara stamp will still be recorded in the audit trail
-        // but the email speaks only of Onóir.
-        : 'Five souls have come to Clan Ó Comáin through your welcome. The Chief has marked this, and has been pleased to raise you within the clan to the dignity of Onóir \u2014 the second honour in the keeping of the clan.',
+        // but the email speaks only of Ardchara.
+        : 'Five souls have come to Clan Ó Comáin through your welcome. The Chief has marked this, and has been pleased to raise you within the clan to the dignity of Ardchara — the second honour in the keeping of the clan. Where Cara names the friend, Ardchara names the high friend — the clan\u2019s recognition that you carry the work of welcome with particular grace.',
 
     bestowalIntro: (priorIrish) =>
       priorIrish
@@ -134,50 +142,50 @@ const SPONSOR_TITLES = [
     // is set down, the new dignity is taken up.
     replacementSentence: (priorIrish) =>
       priorIrish
-        ? `The dignity of ${priorIrish}, lately held, is laid by; the dignity of Onóir is taken up in its place.`
+        ? `The dignity of ${priorIrish}, lately held, is laid by; the dignity of Ardchara is taken up in its place.`
         : null,
   },
   {
-    slug: 'ardchara',
+    slug: 'onoir',
     threshold: 15,
-    irish: 'Ardchara',
-    english: 'Friend of high standing',
-    pronunciation: 'ARD-khar-uh',
+    irish: 'Onóir',
+    english: 'One held in honour',
+    pronunciation: 'UH-nor',
+
+    // Onóir at the apex — the highest honour. Full chivalric
+    // register: 'It hath pleased', 'henceforth bear', 'place and
+    // standing belonging to that rank'. Onóir names the dignity
+    // itself (Honour) — qualitatively distinct from the friendship-
+    // tier ladder of Cara/Ardchara, and so the apex.
     subjectLine: (priorIrish) =>
       priorIrish
-        ? `By the Chief\u2019s hand \u2014 raised from ${priorIrish} to Ardchara`
-        : 'By the Chief\u2019s hand \u2014 you are raised to Ardchara',
+        ? `By the Chief\u2019s hand \u2014 raised from ${priorIrish} to Onóir`
+        : 'By the Chief\u2019s hand \u2014 you are raised to Onóir',
 
     eyebrow: 'By the Chief\u2019s hand \u00b7 A raising to the highest rank',
-    headline: 'You are raised to Ardchara',
+    headline: 'You are raised to Onóir',
 
-    // Full chivalric register at the top tier — 'It hath pleased',
-    // 'henceforth bear', 'place and standing belonging to that rank'.
     bodyOpening: (priorIrish) =>
       priorIrish
-        ? `Fifteen souls have come to the Register at Newhall through your hand. It hath pleased the Chief to raise you from the dignity of ${priorIrish} to that of Ardchara, the highest of the honours conferred within Clan Ó Comáin. By this raising you henceforth bear the title set out below, with the place and standing belonging to that rank in the clan\u2019s keeping.`
-        : 'Fifteen souls have come to the Register at Newhall through your hand. It hath pleased the Chief to raise you within the clan to the dignity of Ardchara, the highest of the honours conferred within Clan Ó Comáin. By this raising you henceforth bear the title set out below, with the place and standing belonging to that rank in the clan\u2019s keeping.',
+        ? `Fifteen souls have come to the Register at Newhall through your hand. It hath pleased the Chief to raise you from the dignity of ${priorIrish} to that of Onóir, the highest of the honours conferred within Clan Ó Comáin. By this raising you henceforth bear the title set out below, with the place and standing belonging to that rank in the clan\u2019s keeping.`
+        : 'Fifteen souls have come to the Register at Newhall through your hand. It hath pleased the Chief to raise you within the clan to the dignity of Onóir, the highest of the honours conferred within Clan Ó Comáin. By this raising you henceforth bear the title set out below, with the place and standing belonging to that rank in the clan\u2019s keeping.',
 
     bestowalIntro: (priorIrish) =>
       priorIrish
         ? `It hath pleased the Chief to raise you from ${priorIrish} to the dignity of`
         : 'It hath pleased the Chief to raise you to the dignity of',
 
-    // The closing narrative for Ardchara extends to two sentences:
-    // first the rarity-of-rank sentence ('few in any generation'),
-    // then the role-meaning sentence ('Chief's named champion of
-    // welcome'). The second sentence names what Ardchara IS in role
-    // terms, not just as a dignity — the bearer is recognised as
-    // the specific champion of bringing-others-in (the act the
-    // title rewards), not as a generic champion of arms. 'Of
-    // welcome' is the qualifier that keeps the line honest and
-    // distinctive. Only Ardchara has this extension; Cara and
-    // Onóir close on a single sentence.
-    closingNarrative: 'There are very few in any generation who carry fifteen to the Register at Newhall. You are now among them, and the Chief takes a particular interest in such members. From this raising, you stand in the kindred\u2019s keeping as the Chief\u2019s named champion of welcome — the member through whom the clan most reaches outward.',
+    // Apex closing — preserves the rarity-of-rank language and the
+    // 'Chief takes a particular interest' line. The 'champion of
+    // welcome' framing migrates here from the old Ardchara apex
+    // because the underlying meaning ('the member through whom
+    // the clan most reaches outward') is about the apex role,
+    // not specifically tied to the ardchara word.
+    closingNarrative: 'There are very few in any generation who carry fifteen to the Register at Newhall. You are now among them, and the Chief takes a particular interest in such members. From this raising, you stand in the kindred\u2019s keeping among those most honoured by Clan Ó Comáin — the members through whom the work of welcome most prevails.',
 
     replacementSentence: (priorIrish) =>
       priorIrish
-        ? `The dignity of ${priorIrish}, lately held, is laid by; the dignity of Ardchara is taken up in its place.`
+        ? `The dignity of ${priorIrish}, lately held, is laid by; the dignity of Onóir is taken up in its place.`
         : null,
   },
 ];
@@ -364,7 +372,7 @@ async function countSponsoredBy(memberId) {
     // Phase 2 (2026-04-30) — count paid gifts toward the sponsor's
     // tally regardless of whether the recipient has claimed yet.
     // Previously we only counted gifts where member_id IS NOT NULL,
-    // which meant the buyer's Cara/Onóir/Ardchara dignity didn't
+    // which meant the buyer's Cara/Ardchara/Onóir dignity didn't
     // attach until the recipient happened to claim. Phase 2 design
     // says: 'sponsor credit on payment, regardless of acceptance.'
     //

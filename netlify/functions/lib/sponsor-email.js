@@ -82,7 +82,7 @@ function heraldSignoff() {
  * @param {object} sponsor      — { email, name, sponsorTitle? }
  * @param {object} newMember    — { name, display_name_on_register }
  * @param {object|null} sponsorTitle — title definition object
- *                                     (Cara/Onóir/Ardchara) if the
+ *                                     (Cara/Ardchara/Onóir) if the
  *                                     sponsor holds one, else null.
  *                                     Caller should pass
  *                                     highestAwardedTitle(sponsor.
@@ -156,19 +156,21 @@ async function sendSponsorLetter(sponsor, newMember, sponsorTitle) {
  *     reference the office rather than the personal name.
  *
  *   - Every title is a RAISING. Cara is the first raising into
- *     honour from no-title. Onóir is a raising from Cara.
- *     Ardchara is a raising from Onóir to the highest dignity.
+ *     honour from no-title. Ardchara is a raising from Cara
+ *     ('high friend' — morphologically extends Cara). Onóir is
+ *     a raising from Ardchara to the highest dignity (the apex
+ *     register shift: friendship-tier → ceremonial honour).
  *     The lower title is LAID BY (set down) when the higher is
  *     taken up — chivalric replacement model, not peerage
  *     accretion. KBE replaces CBE; CBE replaces MBE; MBE
  *     replaces no-title.
  *
- *   - Gravity scales with the dignity: Cara is warm, Onóir is
- *     a measured raising-in-rank, Ardchara is the formal 'It
- *     hath pleased' chivalric warrant of advancement to the
- *     highest rank, with the henceforth-clause and the
- *     'place and standing belonging to that rank' privilege-
- *     clause.
+ *   - Gravity scales with the dignity: Cara is warm, Ardchara
+ *     is a measured raising-in-rank with the friendship-tier
+ *     deepening, Onóir is the formal 'It hath pleased'
+ *     chivalric warrant of advancement to the highest rank,
+ *     with the henceforth-clause and the 'place and standing
+ *     belonging to that rank' privilege-clause.
  *
  *   - 'Title' is used throughout, NEVER 'name'. The user's name
  *     is what their parents gave them. The TITLE is what the

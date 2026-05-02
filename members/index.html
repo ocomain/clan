@@ -422,7 +422,7 @@
     `;
 
     // Title-aware welcome heading. When the member holds a
-    // sponsorship title (Cara/Onóir/Ardchara), the greeting reads
+    // sponsorship title (Cara/Ardchara/Onóir), the greeting reads
     // 'Dia dhuit, Cara Antóin' with the title styled IDENTICALLY
     // to the first name — both inside a single <em> so the burgundy
     // italic colouring applies to the whole address. Mirrors the
@@ -544,7 +544,7 @@
           //   1. Eyebrow label 'HELD IN HONOUR' (same Jost
           //      letter-spacing as the other row labels — the
           //      visual sibling of 'Name on the Register').
-          //   2. Named line 'James Cummins, Ardchara' — the honour
+          //   2. Named line 'James Cummins, Onóir' — the honour
           //      sits as a comma-suffix to the member's regular name,
           //      mirroring how postnominals work in real heraldic
           //      registers ('John Smith, KBE'). Suffix not prefix:
@@ -852,12 +852,12 @@
           ${(() => {
             const count = Number(member.sponsorCount) || 0;
             // Word-form numbers up to fifteen read more ceremonial
-            // than digits; beyond fifteen (Ardchara threshold) we
-            // fall through to digits since Ardchara has no upper
+            // than digits; beyond fifteen (Onóir threshold, the apex)
+            // we fall through to digits since Onóir has no upper
             // bound and very high counts in word-form get unwieldy.
             const wordForm = (n) => ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen'][n] || String(n);
             // Sentence-initial capitalised form for the next-rank
-            // tease ('Four more, to Onóir.').
+            // tease ('Four more, to Ardchara.').
             const wordFormCap = (n) => {
               const w = wordForm(n);
               return w.charAt(0).toUpperCase() + w.slice(1);
@@ -865,32 +865,32 @@
 
             // Status line — names the current dignity, the act
             // performed, and the next-rank tease, with each tier
-            // tagged by its position in the order so a reader who
-            // does not recognise the Irish names (Onóir, Ardchara)
-            // understands the hierarchy. Tags borrowed from the
-            // /members/honours.html canonical copy: 'the first of
-            // the honours', 'the second of the honours', 'the
-            // highest of the order'. Ardchara's tag closes with
-            // finality — no further rank to tease.
+            // tagged by its position in the order (revised 2026-05-01:
+            // Cara → Ardchara → Onóir) so a reader who does not
+            // recognise the Irish names understands the hierarchy.
+            // Tags borrowed from /members/honours.html canonical
+            // copy: 'the first of the honours', 'the second of the
+            // honours', 'the highest of the order'. Onóir's tag
+            // (apex) closes with finality — no further rank to tease.
             let statusLine;
             if (count === 0) {
               statusLine = 'One sponsorship of another raises you to the dignity of <em>Cara</em>, the first of the honours.';
             } else if (count < 5) {
-              // Cara — count between 1 and 4. Tease toward Onóir.
+              // Cara — count between 1 and 4. Tease toward Ardchara.
               // count=1 reads naturally as 'another' rather than
               // 'one other to the clan'.
               const broughtPhrase = count === 1 ? 'another' : `${wordForm(count)} others`;
               const remaining = 5 - count;
-              statusLine = `You stand in the dignity of <em>Cara</em>, having brought ${broughtPhrase} to the clan. ${wordFormCap(remaining)} more, to <em>Onóir</em>, the second of the honours.`;
+              statusLine = `You stand in the dignity of <em>Cara</em>, having brought ${broughtPhrase} to the clan. ${wordFormCap(remaining)} more, to <em>Ardchara</em>, the second of the honours.`;
             } else if (count < 15) {
-              // Onóir — count between 5 and 14. Tease toward Ardchara.
+              // Ardchara — count between 5 and 14. Tease toward Onóir.
               const remaining = 15 - count;
-              statusLine = `You stand in the dignity of <em>Onóir</em>, having brought ${wordForm(count)} others to the clan. ${wordFormCap(remaining)} more, to <em>Ardchara</em>, the highest of the order.`;
+              statusLine = `You stand in the dignity of <em>Ardchara</em>, having brought ${wordForm(count)} others to the clan. ${wordFormCap(remaining)} more, to <em>Onóir</em>, the highest of the order.`;
             } else {
-              // Ardchara — count 15+. No further rank; close with
-              // finality. Word-form for exactly 15, digits beyond.
+              // Onóir — count 15+. The apex; no further rank, close
+              // with finality. Word-form for exactly 15, digits beyond.
               const broughtCount = count > 15 ? String(count) : 'fifteen';
-              statusLine = `You stand in the dignity of <em>Ardchara</em>, the highest of the order, having brought ${broughtCount} others to the clan.`;
+              statusLine = `You stand in the dignity of <em>Onóir</em>, the highest of the order, having brought ${broughtCount} others to the clan.`;
             }
             return `
               <p style="margin:0 0 14px;text-align:center">A title of dignity conferred for bringing another into the clan — by invitation or by gift. From the moment of raising, the Chief recognises you in the dignity now held — borne before your name on the public Register, and addressed by the kindred.</p>

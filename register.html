@@ -155,7 +155,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
    emotional focus of the row. */
 .entry-credit{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
 /* Dignity prefix — sits before the headline name as a gold italic
-   honorific (Cara / Onóir / Ardchara), at the same size as the name.
+   honorific (Cara / Ardchara / Onóir), at the same size as the name.
    Hover or keyboard-focus reveals a dark-ink tooltip giving the
    pronunciation, English meaning, and degree of honour. Pure CSS:
    no JS dependency. Tabbable (tabindex on the span) so keyboard
@@ -651,7 +651,7 @@ function renderEntry(member) {
     ? `<div class="entry-credit">${escHtml(member.credit_line)}</div>`
     : '';
   // Dignity prefix — only present for members who hold a sponsorship
-  // title (Cara/Onóir/Ardchara). Sits BEFORE the display name as a
+  // title (Cara/Ardchara/Onóir). Sits BEFORE the display name as a
   // gold italic honorific. Hover/focus reveals a tooltip with
   // pronunciation, English meaning, and degree of honour. The
   // architectural rule (title attaches to the individual primary

@@ -590,8 +590,8 @@ async function submitForm() {
 // This pre-fills the giverEmail field with their account email and
 // LOCKS it as read-only. Why locked: the gifts.buyer_email column
 // stores exactly what's submitted, and countSponsoredBy ilike-matches
-// it against members.email to credit the sponsor towards Cara/Onóir/
-// Ardchara dignities. A typo or different work/personal email at
+// it against members.email to credit the sponsor towards Cara/Ardchara/
+// Onóir dignities. A typo or different work/personal email at
 // this stage silently breaks credit — they'd buy the gift, recipient
 // would receive it, but the giver wouldn't get sponsorship credit.
 // Locking prevents that whole class of error for the most common

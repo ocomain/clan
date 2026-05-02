@@ -177,7 +177,7 @@ exports.handler = async (event) => {
     //     this member. Powers the quiet 'You have stood as sponsor
     //     to N members of the clan.' line.
     //   - sponsorTitle: the highest-tier title currently held
-    //     (Cara/Onóir/Ardchara), or null if none. Powers the
+    //     (Cara/Ardchara/Onóir), or null if none. Powers the
     //     'Held in Honour' row on the dashboard.
     //
     // Both best-effort — failure here doesn't block sign-in. The
