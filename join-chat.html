@@ -716,6 +716,20 @@ function pickerUpdateFamily() {
   // consistency across the platform.
   document.getElementById('pickerFamilyNote').textContent =
     pickerIsFamily ? '— covers 2 adults & children under 18' : '— individual membership';
+
+  // Per-card price + cadence updates. Without these, only the
+  // bottom CTA button changes when the toggle flips — which makes
+  // the whole picker feel unresponsive because the eye lands on
+  // the cards first. Mirrors gift-form's updateSummary() pattern.
+  const type = pickerIsFamily ? 'fam' : 'ind';
+  document.getElementById('picker-price-clan').textContent     = '€' + PICKER_PRICES.clan[type].toLocaleString();
+  document.getElementById('picker-price-guardian').textContent = '€' + PICKER_PRICES.guardian[type].toLocaleString();
+  document.getElementById('picker-price-life').textContent     = '€' + PICKER_PRICES.life[type].toLocaleString();
+  // Cadences don't actually change with the toggle (annual stays
+  // annual, one-time stays one-time) — but we keep this loop for
+  // future-proofing in case some tier becomes family-specific.
+  // Currently the cadence text is static.
+
   pickerUpdateCheckoutBtn();
 }
 
