@@ -215,12 +215,17 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
    visual sequence above without touching the renderEntry HTML.
 */
 @media (max-width:640px){
-  /* Stats hero (preserved from earlier mobile pass) */
-  .hero-counts{flex-direction:column;gap:28px;padding:0 16px}
-  .hero-counts-sep{width:60px;height:1px;background:var(--gold-deep);opacity:.4;margin:0 auto;border-radius:0}
-  .hero-count strong{font-size:36px}
-  .hero-count-label{margin-top:10px;font-size:11px}
-  .hero-count-breakdown{font-size:14px;line-height:1.55;margin-top:10px;padding:0 8px;max-width:280px}
+  /* Hero counts on mobile: side-by-side row (matches desktop
+     orientation), with the desktop dot separator preserved.
+     Reduced font sizes + tighter spacing so the two blocks
+     fit comfortably on a single line on narrow viewports.
+     If the breakdown line wraps, the two count-blocks remain
+     aligned at their flex-start baseline. */
+  .hero-counts{flex-direction:row;align-items:flex-start;justify-content:center;gap:24px;padding:0 16px;margin-top:6px}
+  .hero-counts-sep{width:4px;height:4px;background:var(--gold-deep);border-radius:50%;opacity:.5;margin-top:11px}
+  .hero-count strong{font-size:28px}
+  .hero-count-label{margin-top:8px;font-size:10px}
+  .hero-count-breakdown{font-size:13px;line-height:1.5;margin-top:8px;padding:0;max-width:none}
 
   .herald-block{padding:0 4px}
   .herald-sign{flex-direction:row;align-items:center}
