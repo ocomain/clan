@@ -721,7 +721,7 @@
         <div class="mpostal-eyebrow">Physical Certificate Delivery</div>
         ${member.cert_posted_at ? `
           <div class="mpostal-title">Posted on <em>${fmtDate(member.cert_posted_at)}</em></div>
-          <p class="mpostal-empty" style="margin-bottom:6px">Your hand-printed certificate was posted from Newhall House on the date above.</p>
+          <p class="mpostal-empty" style="margin-bottom:6px">Your hand-printed certificate was posted on the date above.</p>
           ${member.postal_address ? `
             <div class="mpostal-address">
               ${escHtml(member.postal_address.recipient_name || '')}<br>
@@ -734,7 +734,7 @@
           <p class="mpostal-note" style="margin-top:14px">If it has not arrived after four weeks, write to <a href="mailto:clan@ocomain.org" style="color:var(--gold-strong)">clan@ocomain.org</a>.</p>
         ` : member.postal_address ? `
           <div class="mpostal-title">Address <em>received</em></div>
-          <p class="mpostal-empty">Your certificate is queued for hand-printing. It will be posted from Newhall House within ten working days.</p>
+          <p class="mpostal-empty">Hand-printed certificate posting is currently in development. We'll be in touch by email when physical postings go out.</p>
           <div class="mpostal-address">
             ${escHtml(member.postal_address.recipient_name || '')}<br>
             ${escHtml(member.postal_address.line1 || '')}<br>
@@ -745,7 +745,7 @@
           <button class="mfam-edit-btn" id="mpostalEditBtn" style="margin-top:14px">Edit address →</button>
         ` : `
           <div class="mpostal-title">Optional · Physical <em>certificate</em></div>
-          <p class="mpostal-empty">Your tier includes a hand-printed certificate posted from Newhall House. <strong style="color:var(--ink);font-style:normal">This is optional.</strong> If you don't add a postal address, your certificate remains digital only.</p>
+          <p class="mpostal-empty">Your tier includes a hand-printed certificate. <strong style="color:var(--ink);font-style:normal">This is optional.</strong> If you don't add a postal address, your certificate remains digital only.</p>
           <button class="mfam-edit-btn" id="mpostalEditBtn">Add postal address →</button>
         `}
       </section>
@@ -768,7 +768,7 @@
           <li class="mupgrade-perk">
             <span class="mupgrade-perk-mark">✦</span>
             <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted from Newhall House to your door — yours to keep or frame.
+              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted to your door — yours to keep or frame.
             </span>
           </li>
           <li class="mupgrade-perk">
