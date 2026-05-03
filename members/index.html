@@ -1598,9 +1598,22 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
              their own — the converter is purely additive. The
              popover is keyboard-dismissable (Esc) and click-outside
              dismissable. -->
+        <div style="position:relative;margin-bottom:6px">
+          <input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
+        </div>
+        <!-- Gaelic-form prompt sits as its own beat directly below the
+             input. Previous design tucked the button into the input
+             field's right edge — visible but easy to miss, and didn't
+             read as a primary offer. New design: short helper line +
+             prominent gold-fill button surface the option as a clear
+             deliberate choice without defaulting to it. -->
         <div style="position:relative;margin-bottom:18px">
-          <input type="text" id="famModalName" value="${escHtml(member.name || '')}" placeholder="Full name as it should appear on the cert" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 90px 12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none">
-          <button type="button" id="famGaelicBtn" title="Suggest the Irish form of this name" aria-label="Suggest the Irish form of this name" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);background:rgba(184,151,90,.12);border:1px solid var(--gold-border);padding:7px 10px;border-radius:1px;cursor:pointer;transition:background .15s">✦ As Gaeilge</button>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 12px;background:rgba(184,151,90,.06);border:1px solid var(--gold-border);border-radius:1px">
+            <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-soft);line-height:1.55;flex:1;min-width:200px">
+              Would you like your name to appear in Irish on your certificate? <span style="color:var(--ink-muted);font-style:normal;font-size:13px">— it's an option, not a requirement.</span>
+            </div>
+            <button type="button" id="famGaelicBtn" title="See Irish forms of this name" aria-label="See Irish forms of this name" style="font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:1px solid var(--gold);padding:10px 16px;border-radius:1px;cursor:pointer;transition:background .15s;white-space:nowrap" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'">✦ Show me As Gaeilge</button>
+          </div>
           <div id="famGaelicPopover" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:6px;background:var(--white);border:1px solid var(--gold-border);border-top:2px solid var(--gold);box-shadow:0 8px 28px rgba(12,26,12,.12);padding:14px 16px;z-index:50;border-radius:1px"></div>
         </div>
 
@@ -1693,6 +1706,39 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
       if (gaelicBtn && gaelicPopover && window.GaelicNameConverter) {
         const G = window.GaelicNameConverter;
 
+        // Track the original (pre-substitution) name so we can offer a
+        // 'Revert to English' affordance after the user accepts a Gaelic
+        // suggestion. The original is captured at FIRST substitution
+        // time, not at modal open — that way someone who's typed
+        // corrections to their captured name and THEN tries Gaelic gets
+        // those corrections preserved as their 'English' anchor, not
+        // whatever the system originally captured.
+        let originalEnglishName = null;
+
+        // Build the revert button — sits in the prompt row only when
+        // a Gaelic substitution is active. Clicking restores the
+        // captured originalEnglishName and clears the captured value
+        // (so the user can attempt another Gaelic substitution from
+        // a fresh English baseline if they want).
+        const revertBtn = document.createElement('button');
+        revertBtn.type = 'button';
+        revertBtn.id = 'famGaelicRevertBtn';
+        revertBtn.style.cssText = "display:none;font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);background:transparent;border:1px solid var(--gold-border);padding:10px 16px;border-radius:1px;cursor:pointer;transition:background .15s;white-space:nowrap;margin-left:8px";
+        revertBtn.textContent = '↺ English';
+        revertBtn.title = 'Revert to the English form of your name';
+        revertBtn.addEventListener('mouseover', () => revertBtn.style.background = 'rgba(184,151,90,.08)');
+        revertBtn.addEventListener('mouseout', () => revertBtn.style.background = 'transparent');
+        revertBtn.addEventListener('click', () => {
+          if (originalEnglishName !== null) {
+            nameEl.value = originalEnglishName;
+            nameEl.dispatchEvent(new Event('input', { bubbles: true }));
+            originalEnglishName = null;
+            revertBtn.style.display = 'none';
+          }
+        });
+        // Mount the revert button next to the show-As-Gaeilge button.
+        gaelicBtn.parentNode.insertBefore(revertBtn, gaelicBtn.nextSibling);
+
         function buildPopoverHtml() {
           const parts = G.parseName(nameEl.value);
           const firstSuggestions = G.suggestionsForFirstName(parts.firstNameRaw);
@@ -1739,6 +1785,16 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
               const newName = kind === 'first'
                 ? G.rebuildName(parts, irish, null)
                 : G.rebuildName(parts, null, irish);
+              // Capture the pre-substitution name on FIRST Gaelic
+              // substitution. Subsequent substitutions don't overwrite
+              // this — the revert button always returns to the
+              // original English baseline, even if the user picked
+              // multiple Gaelic forms in sequence (e.g. first the
+              // first-name suggestion, then the surname suggestion).
+              if (originalEnglishName === null) {
+                originalEnglishName = nameEl.value;
+                revertBtn.style.display = 'inline-block';
+              }
               nameEl.value = newName;
               // Fire input event so the live-preview wiring updates.
               nameEl.dispatchEvent(new Event('input', { bubbles: true }));
