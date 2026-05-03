@@ -606,13 +606,33 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           // 'John Smith & Family, Cara of Ó Comáin' which is wrong.)
           const baseName = (member.name || '').trim();
           if (!baseName) return '';
-          // Format: 'James Comyn, Cara of Ó Comáin' — matches the
-          // canonical format used in emails and on the honours page
-          // (see formatTitledName in lib/sponsor-service.js).
+          // Format varies by dignity type:
+          //   - Sponsor titles: 'James Comyn, Cara of Ó Comáin' —
+          //     canonical postnominal form, matches how sponsor
+          //     dignities appear in emails and the honours page.
+          //   - Taoiseach (chief): 'Fearghas Ó Comáin, The Commane'
+          //     — chiefly form. Doesn't repeat 'Ó Comáin' (the name
+          //     already contains it for Gaelic-named chiefs) and
+          //     uses 'The Commane' as the established chiefly style
+          //     of address consistent with the rest of the site.
+          //   - Italic explainer also varies: sponsor titles say
+          //     'Recognised by the Chief in the dignity of X' (which
+          //     is true for those bestowed by him); chief instead
+          //     says 'Chief of Clan Ó Comáin and Fount of Honour
+          //     from which all dignities of the clan flow.' (since
+          //     the chief doesn't bestow the chiefly dignity on
+          //     himself).
+          const isChiefDignity = t.slug === 'taoiseach';
+          const titledLine = isChiefDignity
+            ? `${escHtml(baseName)}, The Commane`
+            : `${escHtml(baseName)}, ${escHtml(t.irish)} of Ó Comáin`;
+          const explainerLine = isChiefDignity
+            ? 'Chief of Clan Ó Comáin and Fount of Honour from which all dignities of the clan flow.'
+            : `Recognised by the Chief in the dignity of ${escHtml(t.irish)} — ${escHtml(t.english)}.`;
           return `<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gold-border)">
           <div class="mstatus-row-label">Held in Honour</div>
-          <div class="mstatus-row-value" style="margin-bottom:6px">${escHtml(baseName)}, ${escHtml(t.irish)} of Ó Comáin</div>
-          <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6">Recognised by the Chief in the dignity of ${escHtml(t.irish)} — ${escHtml(t.english)}.</div>
+          <div class="mstatus-row-value" style="margin-bottom:6px">${titledLine}</div>
+          <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6">${explainerLine}</div>
         </div>`;
         })()}
       </section>

@@ -741,8 +741,20 @@ function renderEntry(member) {
   const dignity = member.held_dignity;
   const dignityPrefix = dignity
     ? (() => {
-        const tipPlain = `${dignity.pronunciation} · '${dignity.english}'. ${dignity.degree} degree of honour conferred by the Chief.`;
-        const tipMulti = `${dignity.pronunciation} · '${dignity.english}'\n${dignity.degree} degree of honour conferred by the Chief.`;
+        // Tooltip text varies by dignity type:
+        //   - Sponsor titles (Cara/Ardchara/Onóir): the second
+        //     sentence cites the degree of honour conferred BY the
+        //     Chief — accurate for titles the Chief confers.
+        //   - Taoiseach (chief): the second sentence frames the
+        //     chiefly role itself (Fount of Honour from which all
+        //     other dignities flow), since the chief doesn't
+        //     confer his own chiefly dignity on himself.
+        const isChiefDignity = dignity.slug === 'taoiseach';
+        const secondSentence = isChiefDignity
+          ? 'Chief of Clan Ó Comáin and Fount of Honour from which all dignities of the clan flow.'
+          : `${dignity.degree} degree of honour conferred by the Chief.`;
+        const tipPlain = `${dignity.pronunciation} · '${dignity.english}'. ${secondSentence}`;
+        const tipMulti = `${dignity.pronunciation} · '${dignity.english}'\n${secondSentence}`;
         return `<span class="entry-dignity-prefix" tabindex="0" title="${escHtml(tipPlain)}" data-tip="${escHtml(tipMulti)}">${escHtml(dignity.irish)}</span> `;
       })()
     : '';
@@ -772,24 +784,47 @@ function renderEntry(member) {
 // The slugs here match what /.netlify/functions/register returns
 // in held_dignity.slug. A member with no dignity gets rank 99 so
 // they sort below all dignity-holders within their tier.
-const DIGNITY_RANK = { onoir: 1, ardchara: 2, cara: 3 };
+// Dignity rank within tier — used for ordering inside each Life/
+// Steward/Guardian section. Members holding a dignity sit at the
+// top of their section, ranked Taoiseach (chief, Fount of Honour) →
+// Onóir → Ardchara → Cara → everyone else (no dignity).
+//
+// Taoiseach is the chiefly role and outranks all sponsor titles;
+// the chief is the Fount of Honour from which the other dignities
+// flow, so it is correct that he sits above them in display.
+//
+// The slugs here match what /.netlify/functions/register returns
+// in held_dignity.slug. A member with no dignity gets rank 99 so
+// they sort below all dignity-holders within their tier.
+const DIGNITY_RANK = { taoiseach: 0, onoir: 1, ardchara: 2, cara: 3 };
 function dignityRank(member) {
   const slug = member.held_dignity && member.held_dignity.slug;
   return DIGNITY_RANK[slug] ?? 99;
 }
 
 // Section-by-tier render (2026-05-02) — restored after a brief
-// single-list interlude. Sort sequence within each section:
-//   1) Dignity rank (Onóir → Ardchara → Cara → none)
-//   2) Founder vs non-founder (founders first; visible from
+// single-list interlude. Sort sequence:
+//   0) Chief (Taoiseach) at the absolute top, regardless of tier.
+//      The Chief is the Fount of Honour from which all other
+//      dignities flow, and ceremonially outranks every member
+//      regardless of which tier-section they sit in. A chief
+//      holding a Guardian-tier membership still sits ABOVE Life
+//      Members. He is the source of the precedence, not subject
+//      to it.
+//   1) Tier rank (Life → Steward → Guardian)
+//   2) Dignity rank within tier (Onóir → Ardchara → Cara → none)
+//   3) Founder vs non-founder (founders first; visible from
 //      Year 2 onward, no-op in Year 1)
-//   3) Surname alphabetical (case-insensitive)
-//
-// The tier-rank tier itself decides which section a member
-// appears in; sorting WITHIN a section uses the dignity →
-// founder → surname tuple.
+//   4) Surname alphabetical (case-insensitive)
+function isChief(member) {
+  return !!(member.held_dignity && member.held_dignity.slug === 'taoiseach');
+}
 function sortMembers(members) {
   return members.slice().sort((a, b) => {
+    // Chief absolutely first — outranks tier itself.
+    const ca = isChief(a) ? 0 : 1;
+    const cb = isChief(b) ? 0 : 1;
+    if (ca !== cb) return ca - cb;
     const ra = tierRank(a);
     const rb = tierRank(b);
     if (ra !== rb) return ra - rb;

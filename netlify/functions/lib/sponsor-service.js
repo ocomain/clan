@@ -191,6 +191,42 @@ const SPONSOR_TITLES = [
 ];
 
 /**
+ * Taoiseach — the chief title.
+ *
+ * Sits ABOVE the SPONSOR_TITLES ladder (Cara → Ardchara → Onóir).
+ * Unlike sponsor titles, Taoiseach is not earned by sponsoring members
+ * — it is the chiefly role itself. The Chief is the Fount of Honour
+ * from which all other dignities flow, so it is correct that he
+ * outranks all of them in display and sort order.
+ *
+ * Stored as a flag in member.sponsor_titles_awarded.taoiseach.
+ * Storing it alongside the awarded sponsor titles means:
+ *   - Existing 'Held in Honour' UI surfaces it without new fields
+ *   - highestAwardedTitle() can return it from the same lookup path
+ *   - No database migration required (sponsor_titles_awarded is
+ *     already a JSONB column with no schema constraint on keys)
+ *
+ * NOT in SPONSOR_TITLES because the rank carries no threshold, no
+ * earn-letter, no replacement-sentence semantics. It's a different
+ * KIND of honour — one ROLE rather than a tier of recognition.
+ *
+ * To grant: SQL UPDATE sponsor_titles_awarded with timestamp:
+ *   UPDATE members
+ *      SET sponsor_titles_awarded =
+ *          COALESCE(sponsor_titles_awarded, '{}'::jsonb) ||
+ *          jsonb_build_object('taoiseach', now()::text)
+ *    WHERE id = '<chief member id>';
+ */
+const TAOISEACH_TITLE = {
+  slug: 'taoiseach',
+  irish: 'Taoiseach',
+  english: 'Chief of Ó Comáin',
+  pronunciation: 'TEE-shuhk',
+  // No threshold, no bestowal letter, no replacement-sentence —
+  // these only apply to sponsor titles. Held by the chief alone.
+};
+
+/**
  * Find the sponsor for a freshly-published member, if any.
  *
  * Two paths: a gift, or an invitation. Gift takes precedence because
@@ -532,6 +568,10 @@ async function evaluateSponsorTitles(member) {
  */
 function highestAwardedTitle(awardedJson) {
   const awarded = awardedJson || {};
+  // Taoiseach is the chiefly role and outranks all sponsor titles.
+  // Checked first so that even a chief who has also earned Onóir
+  // through sponsorship is addressed by their Taoiseach rank.
+  if (awarded.taoiseach) return TAOISEACH_TITLE;
   // Iterate from highest threshold down so the first match wins.
   for (let i = SPONSOR_TITLES.length - 1; i >= 0; i--) {
     const t = SPONSOR_TITLES[i];
@@ -575,6 +615,7 @@ function formatTitledName(member, titleIrish) {
 
 module.exports = {
   SPONSOR_TITLES,
+  TAOISEACH_TITLE,
   recordConversion,
   countSponsoredBy,
   evaluateSponsorTitles,

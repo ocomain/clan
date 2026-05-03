@@ -179,19 +179,25 @@ exports.handler = async (event) => {
       // tooltip carrying pronunciation, English meaning, and degree.
       // Degree mapping mirrors the threshold ladder (revised 2026-05-01):
       // cara=1st (1 sponsorship), ardchara=2nd (5), onoir=3rd (15).
+      // Taoiseach is the chiefly role and has no degree (chief is chief);
+      // its English form is a proper title 'Chief of Ó Comáin' rather
+      // than the lowercase gloss applied to sponsor titles ('friend',
+      // 'one held in honour'). Special-cased below.
       const heldTitle = highestAwardedTitle(m.sponsor_titles_awarded);
       let heldDignity = null;
       if (heldTitle) {
         const degreeMap = { cara: '1st', ardchara: '2nd', onoir: '3rd' };
+        const isTaoiseach = heldTitle.slug === 'taoiseach';
         heldDignity = {
           slug: heldTitle.slug,
           irish: heldTitle.irish,
           pronunciation: heldTitle.pronunciation,
-          // English meaning lowercased so it reads as a definition
-          // gloss inside single quotes ('friend', 'one held in
-          // honour', 'friend of high standing') rather than as a
-          // proper noun.
-          english: (heldTitle.english || '').toLowerCase(),
+          // English: lowercased gloss for sponsor titles (reads as
+          // a definition inside the tooltip, e.g. 'friend'); proper-
+          // case title for Taoiseach (e.g. 'Chief of Ó Comáin').
+          english: isTaoiseach ? heldTitle.english : (heldTitle.english || '').toLowerCase(),
+          // Degree: empty for Taoiseach (chief has no degree); the
+          // numbered ladder applies only to sponsor honours.
           degree: degreeMap[heldTitle.slug] || '',
         };
       }
