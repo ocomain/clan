@@ -742,20 +742,26 @@ function renderEntry(member) {
   const dignityPrefix = dignity
     ? (() => {
         // Tooltip text varies by dignity type:
-        //   - Sponsor titles (Cara/Ardchara/Onóir): the second
-        //     sentence cites the degree of honour conferred BY the
-        //     Chief — accurate for titles the Chief confers.
-        //   - Taoiseach (chief): the second sentence frames the
-        //     chiefly role itself (Fount of Honour from which all
-        //     other dignities flow), since the chief doesn't
-        //     confer his own chiefly dignity on himself.
+        //   - Sponsor titles (Cara/Ardchara/Onóir): pronunciation
+        //     + quoted English gloss + degree-of-honour sentence.
+        //     The quoted gloss is meaningful here ('friend', 'one
+        //     held in honour') because it's a definition, not a
+        //     repetition of what's said elsewhere.
+        //   - Taoiseach (chief): drops the quoted English gloss
+        //     because it would just be 'Chief of Ó Comáin', which
+        //     the second sentence already says ('Chief of Clan
+        //     Ó Comáin and Fount of Honour...'). Pronunciation +
+        //     direct explainer is cleaner.
         const isChiefDignity = dignity.slug === 'taoiseach';
-        const secondSentence = isChiefDignity
-          ? 'Chief of Clan Ó Comáin and Fount of Honour from which all dignities of the clan flow.'
-          : `${dignity.degree} degree of honour conferred by the Chief.`;
-        const tipPlain = `${dignity.pronunciation} · '${dignity.english}'. ${secondSentence}`;
-        const tipMulti = `${dignity.pronunciation} · '${dignity.english}'\n${secondSentence}`;
-        return `<span class="entry-dignity-prefix" tabindex="0" title="${escHtml(tipPlain)}" data-tip="${escHtml(tipMulti)}">${escHtml(dignity.irish)}</span> `;
+        const tipMulti = isChiefDignity
+          ? `${dignity.pronunciation}\nChief of Clan Ó Comáin and Fount of Honour from which all dignities of the clan flow.`
+          : `${dignity.pronunciation} · '${dignity.english}'\n${dignity.degree} degree of honour conferred by the Chief.`;
+        // Single-line variant for the aria-label (screen readers
+        // get one continuous string, not multi-line). No native
+        // 'title' attribute — that produced a second tooltip on
+        // hover (browser-native overlay on top of our custom one).
+        const ariaLabel = tipMulti.replace(/\n/g, ' ');
+        return `<span class="entry-dignity-prefix" tabindex="0" aria-label="${escHtml(ariaLabel)}" data-tip="${escHtml(tipMulti)}">${escHtml(dignity.irish)}</span> `;
       })()
     : '';
   return `
