@@ -12,13 +12,29 @@
   <style>
 
     /* ── HERO ── */
-    .gift-hero{position:relative;min-height:72vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold)}
+    .gift-hero{position:relative;min-height:72vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:60px 0}
     .gift-hero-bg{position:absolute;inset:0;background:url('killone_abbey_lake.png') center/cover no-repeat;opacity:.15;filter:saturate(.6)}
-    .gift-hero-content{position:relative;z-index:2;max-width:780px}
+    .gift-hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center;position:relative;z-index:2}
+    .gift-hero-content{max-width:780px}
     .gift-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
-    .gift-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,6vw,74px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
+    .gift-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,5.4vw,68px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
     .gift-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:620px;margin-bottom:28px}
-    .gift-hero-note{display:inline-flex;align-items:center;gap:10px;background:rgba(184,151,90,.08);border:1px solid rgba(184,151,90,.25);padding:14px 22px;font-family:'Jost',sans-serif;font-size:14px;font-weight:300;letter-spacing:.08em;color:rgba(184,151,90,.7)}
+    .gift-hero-cta-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:28px}
+    .gift-hero-cta{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .22s;box-shadow:0 1px 0 rgba(0,0,0,.35),0 6px 24px rgba(184,151,90,.18)}
+    .gift-hero-cta:hover{background:var(--gold-pale);transform:translateY(-1px);box-shadow:0 1px 0 rgba(0,0,0,.35),0 10px 32px rgba(184,151,90,.28)}
+    .gift-hero-note{display:inline-flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-size:11px;font-weight:300;letter-spacing:.1em;color:rgba(184,151,90,.62)}
+    /* mini cert visual in hero */
+    .hero-cert-wrap{position:relative}
+    .hero-cert-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:32px 28px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);transform:rotate(-1.2deg);max-width:340px;margin-left:auto}
+    .hero-cert-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(184,151,90,.32);pointer-events:none}
+    .hero-cert-crest{display:block;width:42px;height:42px;margin:0 auto 10px;opacity:.85}
+    .hero-cert-eyebrow{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--gold-strong);text-align:center;margin-bottom:4px}
+    .hero-cert-title{font-family:'EB Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);text-align:center;letter-spacing:.04em;margin-bottom:14px}
+    .hero-cert-rule{width:32px;height:1px;background:var(--gold);margin:0 auto 14px;opacity:.55}
+    .hero-cert-body{font-family:'EB Garamond',serif;font-size:11.5px;color:var(--ink-soft);text-align:center;line-height:1.55;margin-bottom:8px;font-style:italic}
+    .hero-cert-name{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);text-align:center;letter-spacing:.04em;margin:6px 0 8px;font-style:italic}
+    .hero-cert-sig{font-family:'EB Garamond',serif;font-size:10.5px;color:var(--ink-muted);text-align:center;font-style:italic;margin-top:14px;padding-top:12px;border-top:1px solid rgba(184,151,90,.2)}
+    .hero-cert-stamp{position:absolute;top:-10px;right:-10px;background:var(--ink);color:var(--gold);font-family:'Jost',sans-serif;font-size:8px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:8px 12px;border:1px solid var(--gold);transform:rotate(8deg);box-shadow:0 4px 12px rgba(0,0,0,.2)}
 
     /* ── HOW IT WORKS ── */
     .how-section{background:var(--cream);padding:80px 0;border-bottom:1px solid var(--border)}
@@ -94,6 +110,9 @@
       .step{border-right:none;border-bottom:1px solid var(--border)}
       .step:last-child{border-bottom:none}
       .gift-card.featured{transform:none}
+      .gift-hero-grid{grid-template-columns:1fr;gap:36px}
+      .hero-cert-card{margin:0 auto;transform:rotate(-0.8deg)}
+      .gift-hero{padding:48px 0;min-height:auto}
     }
     @media(max-width:600px){.occasions{flex-direction:column}.occasion{border-right:none;border-bottom:1px solid rgba(184,151,90,.15)}}
   
@@ -149,13 +168,31 @@
 <section class="gift-hero">
   <div class="gift-hero-bg"></div>
   <div class="si">
-    <div class="gift-hero-content">
-      <div class="gift-eyebrow">A gift unlike any other</div>
-      <h1 class="gift-hero-title">Give someone their Irish heritage.</h1>
-      <p class="gift-hero-sub">A membership of Clan Ó Comáin — signed by the Chief of one of Ireland's oldest Gaelic lineages. The most meaningful Irish gift you can give.</p>
-      <div class="gold-rule"></div>
-      <p style="font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.7);line-height:1.75;max-width:560px;margin-bottom:28px">If Ireland speaks to them — by name, or by love — this gift says: <em>you belong to something ancient and real.</em></p>
-      <div class="gift-hero-note">📜 &nbsp;Guardian and Life Member — physical certificate signed by the Chief, posted worldwide</div>
+    <div class="gift-hero-grid">
+      <div class="gift-hero-content">
+        <div class="gift-eyebrow">A gift unlike any other</div>
+        <h1 class="gift-hero-title">Give someone their Irish heritage.</h1>
+        <p class="gift-hero-sub">A membership of Clan Ó Comáin — signed by the Chief of one of Ireland's oldest Gaelic lineages. The most meaningful Irish gift you can give.</p>
+        <div class="gold-rule"></div>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.7);line-height:1.75;max-width:560px;margin-bottom:8px">If Ireland speaks to them — by name, or by love — this gift says: <em>you belong to something ancient and real.</em></p>
+        <div class="gift-hero-cta-row">
+          <a href="#tiers" class="gift-hero-cta">See gift options ↓</a>
+          <span class="gift-hero-note">📜 Posted worldwide · Signed by the Chief</span>
+        </div>
+      </div>
+      <div class="hero-cert-wrap">
+        <div class="hero-cert-card">
+          <span class="hero-cert-stamp">Sample</span>
+          <img src="coat_of_arms.png" alt="Ó Comáin" class="hero-cert-crest" loading="lazy">
+          <div class="hero-cert-eyebrow">Clan Ó Comáin</div>
+          <div class="hero-cert-title">CERTIFICATE OF MEMBERSHIP</div>
+          <div class="hero-cert-rule"></div>
+          <div class="hero-cert-body">This is to certify that</div>
+          <div class="hero-cert-name">[ Recipient's name ]</div>
+          <div class="hero-cert-body">is hereby entered as a Member of Clan Ó Comáin in the Register of the clan, held at Newhall House, County Clare.</div>
+          <div class="hero-cert-sig">— Signed by the Chief of Ó Comáin —</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -186,7 +223,7 @@
 </section>
 
 <!-- GIFT TIERS -->
-<section class="gift-tiers">
+<section class="gift-tiers" id="tiers">
   <div class="si">
     <div class="eyebrow" style="color:var(--gold)">Choose a gift tier</div>
     <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:14px">Three ways to give the gift of belonging</h2>
@@ -253,12 +290,12 @@
         <a href="gift-form.html?tier=life-ind" class="gift-btn ind-only" style="margin-top:18px">Gift Life Member — €750</a>
         <a href="gift-form.html?tier=life-fam" class="gift-btn fam-only" style="margin-top:18px">Gift Family Life Member — €1,100</a>
         <div class="gift-div" style="margin-top:24px"></div>
-        <div class="gift-desc">The ultimate gift — a permanent place in Clan Ó Comáin for life. Their name engraved on the Roll of Honour at Newhall House. A legacy that outlasts both of you.</div>
+        <div class="gift-desc">The ultimate gift — a permanent place in Clan Ó Comáin not just for a year, but forever. A single investment that outlasts you both — carrying their name into the clan's history. Their name engraved on the Roll of Honour at Newhall House.</div>
         <ul class="gift-perks">
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Guardian benefits — for life, no renewal</span></li>
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span><strong style="color:var(--gold-pale)">Name engraved on the Clan Roll of Honour at Newhall House</strong></span></li>
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Clan heirloom keepsake pack — certificate, crest print, Chief's letter</span></li>
-          <li class="gift-perk"><span class="gift-perk-check">✦</span><span>A name in the Register of Clan Ó Comáin forever</span></li>
+          <li class="gift-perk"><span class="gift-perk-check">✦</span><span>Their name in the Register of Clan Ó Comáin long after them — a gift to their children and grandchildren</span></li>
           <li class="gift-perk"><span class="gift-perk-check">✦</span><span><strong style="color:var(--gold-pale)">Their line of descent permanently lodged in the clan archive at Newhall</strong> — their family tree published on the Register and preserved as part of the clan's documentary record, in perpetuity. <em style="color:var(--gold);font-size:0.9em">(Launching 2026)</em></span></li>
         </ul>
       </div>
