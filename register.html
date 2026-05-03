@@ -60,7 +60,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
 .hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
 .hero-seal{margin:0 auto 38px;display:block}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,7vw,76px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5.5vw,64px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
   /* Allow the hero title to escape the .wrap (740px) container width
      so 'Register of Clan Ó Comáin' fits on a single line at full size
      on desktop. The hero is centered text, so widening just this one
@@ -68,10 +68,16 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
      Counter the parent's 28px padding too, to genuinely use the
      viewport edge-to-edge minus a small breathing margin.
 
-     min: 38px so it actually fits on the smallest mobile viewports
-     when the wrap is enabled below.
-     mid: 7vw so it scales smoothly with viewport.
-     max: 76px so it doesn't get absurd on huge desktops. */
+     Font-size formula tuned so the unwrapped title (~12.7× font-em
+     for 'Register of Clan Ó Comáin' in Cormorant Garamond) sits
+     within the viewport on all desktop widths above 640px:
+       min: 38px — fits the smallest mobile viewports when the
+                   wrap-via-<br> below is enabled.
+       mid: 5.5vw — at 1024px viewport ≈ 56px (~720px wide title);
+                   at 1440px ≈ 79px capped to 64px max.
+       max: 64px — keeps title proportional to surrounding type
+                   on huge desktops and doesn't push the whole
+                   hero block out of balance. */
   width:max-content;
   max-width:calc(100vw - 32px);
   margin-left:auto;margin-right:auto;
