@@ -877,7 +877,10 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <label class="mpriv-row" id="prvDedicationWrap" style="margin-left:28px;${parentChecked ? '' : 'opacity:.5;pointer-events:none'}">
           <input type="checkbox" id="prvDedication" ${dedicationChecked ? 'checked' : ''} ${parentChecked ? '' : 'disabled'}>
           <span>Yes — show my dedication alongside my entry: <em style="color:var(--gold-deep)">"${escHtml(member.ancestor_dedication)}"</em></span>
-        </label>`;
+        </label>
+        <div id="prvDedicationHelp" style="margin-left:48px;font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);line-height:1.5;margin-top:-4px;margin-bottom:4px;${parentChecked ? 'display:none' : ''}">
+          Requires showing on the public Register above.
+        </div>`;
         })() : ''}
         <p class="mpriv-note">Your name appears on the public Register while your membership is in current standing. Untick at any time to remove yourself; changes take effect within five minutes.</p>
         <div class="mpriv-status" id="prvStatus"></div>
