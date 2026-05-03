@@ -195,30 +195,110 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .foot-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:14px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
 .foot-cta:hover{background:var(--burgundy-deep)}
 
-/* MOBILE */
+/* MOBILE — REGISTER ENTRY REDESIGN
+   ─────────────────────────────────
+   Mobile reading mode is different from desktop scanning mode.
+   Desktop has a 2-column grid (name on left, metadata on right);
+   on mobile we lose that and need a deliberate vertical hierarchy
+   with each piece of an entry feeling like its own beat:
+
+     1. NAME             — large headline (32px)
+     2. TIER LABEL       — small gold caps under the name (sub-headline)
+     3. CREDIT LINE      — italic muted ('with Mary, and the children')
+     4. DEDICATION       — burgundy italic, set apart with a left
+                           gold rule so it reads as a quote/dedication
+                           rather than continuation of entry text
+     5. YEAR + FOUNDER   — smallest text, bottom row, quietest
+
+   The CSS uses flexbox order properties to reorder DOM-source-order
+   ('name, credit, dedication, [tier, year, founder]') into the
+   visual sequence above without touching the renderEntry HTML.
+*/
 @media (max-width:640px){
-  .entry-row{grid-template-columns:1fr;gap:6px}
-  .entry-meta{text-align:left}
-  /* Stats hero: vertical stack with clear visual separation between
-     the 'Members + breakdown' block and the 'Year of Revival' block.
-     Previously these felt run-together because the gap was small
-     and the dot-separator was nearly invisible at width:32px h:1px.
-     Bigger gap + a clear gold-bordered horizontal rule between
-     blocks makes each beat read distinctly on narrow screens. */
+  /* Stats hero (preserved from earlier mobile pass) */
   .hero-counts{flex-direction:column;gap:28px;padding:0 16px}
   .hero-counts-sep{width:60px;height:1px;background:var(--gold-deep);opacity:.4;margin:0 auto;border-radius:0}
-  /* Headline count: bigger so it dominates over the label and
-     breakdown stacked below, and the eye understands '16' as
-     belonging to 'Members'. */
   .hero-count strong{font-size:36px}
   .hero-count-label{margin-top:10px;font-size:11px}
-  /* Breakdown: allow line wrap, tighten letterspacing so the
-     three parts don't overflow narrow viewports. The parts are
-     still separated by ' · ' text so wrapping happens at a
-     natural break point. */
   .hero-count-breakdown{font-size:14px;line-height:1.55;margin-top:10px;padding:0 8px;max-width:280px}
+
   .herald-block{padding:0 4px}
   .herald-sign{flex-direction:row;align-items:center}
+
+  /* Entry: turn the row into a vertical flex stack so we can
+     reorder name/credit/dedication and meta-block freely.
+     display:contents on both inner wrapper divs lets their
+     children participate directly in the parent flex container,
+     so we can use `order:` to interleave name/tier/credit/
+     dedication/year/founder regardless of source order. */
+  .entry{padding:36px 16px 36px}
+  .entry-row{display:flex;flex-direction:column;gap:0;align-items:stretch}
+  .entry-row > div{display:contents}
+
+  /* Visual order: name (1) → tier (2) → credit (3) → dedication (4)
+     → year (5) → founder (6). Wider order numbers leave headroom
+     for future sub-elements without renumbering. */
+  .entry-name      {order:1}
+  .entry-tier      {order:2}
+  .entry-credit    {order:3}
+  .entry-dedication{order:4}
+  .entry-year      {order:5}
+  .entry-founder   {order:6}
+
+  /* Name: big, breathing — the headline of the entry. Mobile
+     bumps from 30px to 32px (felt small relative to spacing). */
+  .entry-name{font-size:32px;line-height:1.15;letter-spacing:-0.01em}
+
+  /* Tier label as a sub-headline immediately under the name —
+     reads as 'this person's standing' rather than filing
+     reference. */
+  .entry-tier{
+    font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--gold-deep);margin-top:8px;
+    display:block;
+  }
+
+  /* Credit line: italic muted, comfortable spacing under tier. */
+  .entry-credit{font-size:16px;margin-top:14px;line-height:1.65}
+
+  /* Dedication: the visual showpiece. Burgundy italic with a
+     LEFT GOLD RULE so it reads unambiguously as a quote/dedication
+     rather than more entry copy. Indented slightly so the rule has
+     room to breathe. */
+  .entry-dedication{
+    font-size:16.5px;line-height:1.7;margin-top:18px;
+    padding:4px 0 4px 16px;
+    border-left:2px solid var(--gold);
+  }
+
+  /* Year: bottom row, quietest. Small uppercase muted. */
+  .entry-year{
+    display:block;
+    font-family:'Jost',sans-serif;
+    font-size:10.5px;font-weight:400;letter-spacing:0.14em;
+    color:var(--ink-muted);margin-top:24px;
+    text-transform:uppercase;
+  }
+
+  /* Founder badge: sits below year, same eyebrow weight as desktop. */
+  .entry-founder{
+    display:block;
+    margin-top:8px;
+    font-size:9.5px;letter-spacing:0.22em;
+  }
+  .entry-founder::before{margin-right:5px}
+
+  /* Dignity prefix: the gold-italic 'Taoiseach' / 'Cara' tooltip
+     trigger needs slight tweaks on mobile so the tooltip doesn't
+     shoot off the edge of the viewport. Constrain width and
+     reduce padding for narrow screens. */
+  .entry-dignity-prefix::after{
+    max-width:calc(100vw - 48px);
+    font-size:13px;
+    padding:10px 14px 11px;
+  }
+}
   /* Reveal the desktop-hidden break so 'Register of' and 'Clan Ó Comáin'
      stack on narrow screens. .title-line nowrap continues to keep each
      half together (avoids the awkward 'Comáin' on its own line). */
