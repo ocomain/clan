@@ -186,7 +186,26 @@ exports.handler = async (event) => {
     // tick the dedication box without having a dedication set; the
     // flag will simply have no rendered effect. Cleaner to always
     // store what the member asked for than to silently override.
-    const wantsDedicationPublic = !!dedicationVisibleOnRegister && wantsPublic;
+    // Dedication-on-register: pre-ticked by default, opt-out model
+    // (revised 2026-05-03 per chief direction). The earlier opt-in
+    // model meant members who sealed with a dedication had to
+    // actively visit the privacy panel and tick the checkbox to
+    // get the dedication onto the public register — but the natural
+    // mental model is the inverse ('I put my dedication on my cert,
+    // therefore I want it visible'). Fix: when the client doesn't
+    // explicitly send dedicationVisibleOnRegister at all (which the
+    // seal modal never does, since it has no dedication checkbox),
+    // default to TRUE if the member has a dedication AND is on the
+    // public register. Members who explicitly want privacy can
+    // untick on the dashboard's privacy panel — that path always
+    // sends the field explicitly and is honoured as-is.
+    const dedicationProvided = dedicationVisibleOnRegister !== undefined;
+    const dedicationDefaulted = !dedicationProvided
+      && !!ancestorDedication
+      && wantsPublic;
+    const wantsDedicationPublic = (dedicationProvided
+      ? !!dedicationVisibleOnRegister
+      : dedicationDefaulted) && wantsPublic;
     // Stamp opted_in_at the FIRST TIME public visibility is set true
     const optedInAt = wantsPublic && !member.public_register_opted_in_at
       ? now.toISOString()
