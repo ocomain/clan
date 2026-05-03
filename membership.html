@@ -24,6 +24,8 @@
     .hero-cert-wrap{position:relative}
     .hero-cert-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:32px 28px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);transform:rotate(-1.2deg);max-width:340px;margin-left:auto}
     .hero-cert-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(184,151,90,.32);pointer-events:none}
+    .hero-cert-card::after{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-22deg);font-family:'EB Garamond',serif;font-weight:400;font-size:clamp(38px,5vw,56px);letter-spacing:.14em;color:rgba(184,151,90,.18);pointer-events:none;white-space:nowrap;user-select:none;z-index:1}
+    .hero-cert-card > *{position:relative;z-index:2}
     .hero-cert-crest{display:block;width:42px;height:42px;margin:0 auto 10px;opacity:.85}
     .hero-cert-eyebrow{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--gold-strong);text-align:center;margin-bottom:4px}
     .hero-cert-title{font-family:'EB Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);text-align:center;letter-spacing:.04em;margin-bottom:14px}
