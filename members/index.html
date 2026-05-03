@@ -1617,7 +1617,8 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
              dedication if neither 'In memory of' / 'In honour of' / 'For' fits. -->
         <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">An ancestor you wish to honour <span style="color:var(--ink-muted);font-weight:400;letter-spacing:.06em;text-transform:none">— optional</span></label>
         <div id="famAncestorChips" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px"></div>
-        <input type="text" id="famModalAncestorDetail" value="" placeholder="my grandfather, Patrick Cummins of Ennistymon, 1908&ndash;1984" maxlength="140" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:6px">
+        <input type="text" id="famModalAncestorDetail" value="" placeholder="my grandfather, Patrick Cummins of Ennistymon, 1908&ndash;1984" maxlength="100" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;margin-bottom:4px">
+        <div id="famModalAncestorCounter" style="font-family:'Jost',sans-serif;font-size:11px;color:var(--ink-muted);text-align:right;margin-bottom:6px;letter-spacing:.04em">0 / 100</div>
         <!-- Hidden input keeps the legacy single-string interface for save-handler compatibility -->
         <input type="hidden" id="famModalAncestor" value="${escHtml(member.ancestor_dedication || '')}">
         <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);margin:6px 0 18px;line-height:1.6">
@@ -1823,6 +1824,10 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
             activePrefix = btn.getAttribute('data-prefix');
             renderChips();
             recomputeAncestor();
+            // Re-evaluate the duplicate-prefix detector since the
+            // active chip may now match (or no longer match) a
+            // prefix the user typed into the detail field.
+            if (typeof updateAncestorMeta === 'function') updateAncestorMeta();
             // For 'Custom…', refocus the detail field so the user
             // immediately writes the full line. Adjust placeholder for
             // clarity.
@@ -1894,6 +1899,54 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 
       nameEl?.addEventListener('input', updatePreview);
       ancestorDetailEl?.addEventListener('input', recomputeAncestor);
+
+      // Live character counter + duplicate-prefix detector. Counter
+      // updates on every keystroke. The counter goes amber-then-red
+      // as the user approaches the limit, giving them visual warning
+      // before the hard cap hits.
+      //
+      // Duplicate-prefix detection: when a chip is active (e.g.
+      // 'In memory of') AND the user has typed text starting with the
+      // same phrase ('In memory of my father…'), flag it so the
+      // user can fix it before sealing. Was a real bug in the wild —
+      // a member produced a cert printed with 'In memory of In
+      // memory of my father …' because they typed the prefix
+      // themselves not realising the chip would prepend it.
+      const ancestorCounterEl = document.getElementById('famModalAncestorCounter');
+      const updateAncestorMeta = () => {
+        const detail = (ancestorDetailEl?.value || '');
+        const len = detail.length;
+        const max = 100;
+        if (ancestorCounterEl) {
+          ancestorCounterEl.textContent = `${len} / ${max}`;
+          // Colour transitions: muted < 70%, amber 70-90%, red 90-100%
+          const ratio = len / max;
+          ancestorCounterEl.style.color = ratio < 0.7
+            ? 'var(--ink-muted)'
+            : ratio < 0.9 ? 'var(--gold-deep)' : '#922c1f';
+        }
+        // Duplicate prefix detection (only meaningful for non-Custom)
+        const knownPrefixes = ['In memory of', 'In honour of', 'For'];
+        const startsWithChipText = activePrefix !== 'Custom…'
+          && detail.trim().toLowerCase().startsWith(activePrefix.toLowerCase() + ' ');
+        // Also catch the case where they typed a DIFFERENT prefix
+        // than the chip (e.g. chip 'In memory of' + typed 'In honour of …')
+        const startsWithAnyPrefix = activePrefix !== 'Custom…'
+          && knownPrefixes.some(p => detail.trim().toLowerCase().startsWith(p.toLowerCase() + ' '));
+        if (startsWithChipText || startsWithAnyPrefix) {
+          ancestorDetailEl.style.borderColor = '#922c1f';
+          if (ancestorCounterEl) {
+            ancestorCounterEl.textContent = `Don't repeat the prefix — the chip above already adds it (${len} / ${max})`;
+            ancestorCounterEl.style.color = '#922c1f';
+          }
+        } else {
+          ancestorDetailEl.style.borderColor = 'var(--gold-border)';
+        }
+      };
+      ancestorDetailEl?.addEventListener('input', updateAncestorMeta);
+      // Initial render — covers the re-edit case where a saved value
+      // is parsed back into the field.
+      updateAncestorMeta();
       partnerEl?.addEventListener('input', updatePreview);
       childrenEl?.addEventListener('input', updatePreview);
       updatePreview(); // initial render
@@ -2006,6 +2059,40 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
             `The following ${suspicious.length === 1 ? 'entry looks' : 'entries look'} like ${suspicious.length === 1 ? 'a full name' : 'full names'} rather than first ${suspicious.length === 1 ? 'name' : 'names'}: ${list}.\n\nThe Register and certificate are designed to show your children's first names only — the family surname is already carried in your own entry, and full legal names are kept private.\n\nClick OK to use ${suspicious.length === 1 ? 'this entry' : 'these entries'} as written, or Cancel to go back and shorten ${suspicious.length === 1 ? 'it' : 'them'} to just the first name.`
           );
           if (!proceed) return;
+        }
+      }
+
+      // ── Ancestor dedication: hard validation at submit ──
+      // Same lesson as children-as-first-names — surface a real
+      // problem rather than letting it slip through. Two checks:
+      //   1) Length cap mirrors the field's maxlength (100). Defends
+      //      against any path that might bypass the input constraint
+      //      (paste-with-extension, browser quirks, older saved
+      //      values from before the cap).
+      //   2) Duplicate prefix — when a chip is selected AND the
+      //      detail starts with that same prefix or a different
+      //      known prefix, the cert prints the prefix twice. This
+      //      was the Mindy Crowley bug that prompted these checks.
+      const ancestorInputEl = document.getElementById('famModalAncestor');
+      const ancestorRaw = ancestorInputEl ? ancestorInputEl.value.trim() : '';
+      if (ancestorRaw) {
+        if (ancestorRaw.length > 100) {
+          alert(`Your dedication is ${ancestorRaw.length} characters. Please shorten it to 100 characters or fewer — the certificate prints the dedication on a single italic line, and longer text will not fit.\n\nYour current text:\n"${ancestorRaw}"`);
+          return;
+        }
+        // Duplicate-prefix check on the COMBINED value. Looks for
+        // 'In memory of In memory of …' / 'In honour of For …' etc.
+        const knownPrefixes = ['In memory of', 'In honour of', 'For'];
+        for (const p of knownPrefixes) {
+          const lcd = ancestorRaw.toLowerCase();
+          // 'In memory of in memory of …' or any other prefix
+          // immediately following the chip prefix.
+          for (const q of knownPrefixes) {
+            if (lcd.startsWith((p + ' ' + q + ' ').toLowerCase())) {
+              alert(`Your dedication starts with "${p} ${q}" — the prefix is duplicated. Please remove the second one before sealing so the certificate reads as you want it.\n\nYour current text:\n"${ancestorRaw}"`);
+              return;
+            }
+          }
         }
       }
 
@@ -2408,6 +2495,28 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
               `The following ${suspicious.length === 1 ? 'entry looks' : 'entries look'} like ${suspicious.length === 1 ? 'a full name' : 'full names'} rather than first ${suspicious.length === 1 ? 'name' : 'names'}: ${list}.\n\nThe Register and certificate are designed to show your children's first names only — the family surname is already carried in your own entry, and full legal names are kept private.\n\nClick OK to use ${suspicious.length === 1 ? 'this entry' : 'these entries'} as written, or Cancel to go back and shorten ${suspicious.length === 1 ? 'it' : 'them'} to just the first name.`
             );
             if (!proceed) return;
+          }
+        }
+
+        // Ancestor dedication validation — see original handler
+        // above for full rationale (length cap + duplicate-prefix
+        // detection).
+        const ancestorInputEl = document.getElementById('famModalAncestor');
+        const ancestorRaw = ancestorInputEl ? ancestorInputEl.value.trim() : '';
+        if (ancestorRaw) {
+          if (ancestorRaw.length > 100) {
+            alert(`Your dedication is ${ancestorRaw.length} characters. Please shorten it to 100 characters or fewer — the certificate prints the dedication on a single italic line, and longer text will not fit.\n\nYour current text:\n"${ancestorRaw}"`);
+            return;
+          }
+          const knownPrefixes = ['In memory of', 'In honour of', 'For'];
+          for (const p of knownPrefixes) {
+            const lcd = ancestorRaw.toLowerCase();
+            for (const q of knownPrefixes) {
+              if (lcd.startsWith((p + ' ' + q + ' ').toLowerCase())) {
+                alert(`Your dedication starts with "${p} ${q}" — the prefix is duplicated. Please remove the second one before sealing so the certificate reads as you want it.\n\nYour current text:\n"${ancestorRaw}"`);
+                return;
+              }
+            }
           }
         }
 

@@ -105,9 +105,17 @@ exports.handler = async (event) => {
         ? childrenFirstNames.map(s => (s || '').trim()).filter(Boolean)
         : [];
       const cleanName = (nameOnCert || '').trim();
-      const cleanAncestor = ancestorDedication !== undefined
+      let cleanAncestor = ancestorDedication !== undefined
         ? ((ancestorDedication || '').trim() || null)
         : member.ancestor_dedication;  // undefined means "don't change"
+
+      // Hard cap on dedication length — see submit-family-details.js
+      // for full rationale. Truncates rather than rejects so the
+      // member can still save.
+      const ANCESTOR_MAX = 100;
+      if (cleanAncestor && cleanAncestor.length > ANCESTOR_MAX) {
+        cleanAncestor = cleanAncestor.slice(0, ANCESTOR_MAX).trim();
+      }
 
       // Server-side multi-name detection backstop. Client warns +
       // requires confirmation before reaching this endpoint; this

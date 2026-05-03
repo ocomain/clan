@@ -141,7 +141,19 @@ exports.handler = async (event) => {
       ? childrenFirstNames.map(s => (s || '').trim()).filter(Boolean)
       : [];
     const cleanName = (nameOnCert || '').trim();
-    const cleanAncestor = (ancestorDedication || '').trim() || null;
+    let cleanAncestor = (ancestorDedication || '').trim() || null;
+
+    // Hard cap on dedication length — defence in depth against any
+    // path that bypasses the client maxlength=100. The cert layout
+    // prints the dedication on a single italic line; longer text
+    // overruns the cert frame visually (was the Mindy Crowley bug
+    // that prompted this guard). Truncate rather than reject so the
+    // member can still seal — the truncated form is the truthful
+    // record of what they typed and what fits.
+    const ANCESTOR_MAX = 100;
+    if (cleanAncestor && cleanAncestor.length > ANCESTOR_MAX) {
+      cleanAncestor = cleanAncestor.slice(0, ANCESTOR_MAX).trim();
+    }
 
     // Server-side multi-name detection backstop.
     // Client-side validation in the publish modal warns the user and
