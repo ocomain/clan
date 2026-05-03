@@ -111,6 +111,8 @@
   <meta name="twitter:title" content="Gift a Clan Membership — Clan Ó Comáin">
   <meta name="twitter:description" content="Give the gift of belonging to an ancient Irish clan. A membership certificate signed by the Chief — posted to their door.">
   <meta name="twitter:image" content="https://www.ocomain.org/coat_of_arms.png">
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 </head>
 <body>
 
@@ -495,6 +497,20 @@ async function submitForm() {
   btn.style.opacity = '0.7';
   btn.textContent = 'Opening secure payment…';
 
+  // Analytics: gift_completed click. Fired before the API roundtrip
+  // so even a server-side stumble doesn't lose the funnel signal.
+  // Tier dimension reads from the same key used for Stripe price
+  // lookup ('clan-fam', 'guardian-ind' etc).
+  try {
+    if (typeof umami !== 'undefined' && umami.track) {
+      umami.track('gift_completed', {
+        tier: tierKey,
+        family: tierKey.endsWith('-fam'),
+        recurring: modeForLookup === 'recurring',
+      });
+    }
+  } catch (e) { /* never break the gift submit */ }
+
   // Step 1: Write the gift row + notify clan inbox; capture gift ID for metadata linking.
   let giftId = null;
   try {
@@ -661,6 +677,24 @@ async function submitForm() {
     console.warn('Could not apply members handoff:', e);
   }
 })();
+</script>
+
+<!-- Analytics: gift_started fires once per page load. Pre-selected
+     tier (when arriving from /gift via 'Gift Guardian' etc) is
+     surfaced as a dimension so we can see which tier intent users
+     enter the form with. -->
+<script>
+window.addEventListener('load', function () {
+  try {
+    if (typeof umami !== 'undefined' && umami.track) {
+      var t = (new URLSearchParams(window.location.search).get('tier') || '').trim();
+      umami.track('gift_started', {
+        tier: t || 'no_tier_preselected',
+        family: t.endsWith('-fam'),
+      });
+    }
+  } catch (e) { /* analytics never breaks the form */ }
+});
 </script>
 
 </body>

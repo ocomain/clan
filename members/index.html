@@ -307,6 +307,8 @@
       .mstatus{padding:26px 22px;margin-left:12px;margin-right:12px}
     }
   </style>
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 </head>
 <body>
 
@@ -2570,6 +2572,25 @@
         return;
       }
       renderDashboard(member);
+
+      // Analytics: member_signed_in. Fires only AFTER the dashboard
+      // renders successfully — i.e. the auth + member-info round-trip
+      // succeeded and we have a real member record. The 'welcome'
+      // dimension flags first-time post-signup arrivals (?welcome=member,
+      // ?welcome=gift, ?welcome=founder) vs returning visits, so the
+      // funnel can isolate genuine first-paid-conversion sessions from
+      // routine member sign-ins. Tier dimension lets us see which
+      // tiers retain best.
+      try {
+        if (typeof umami !== 'undefined' && umami.track) {
+          var welcome = (new URLSearchParams(window.location.search).get('welcome') || '').trim();
+          umami.track('member_signed_in', {
+            tier: member.tier || 'unknown',
+            family: !!member.tier_family,
+            welcome_kind: welcome || 'returning',
+          });
+        }
+      } catch (e) { /* never break the dashboard */ }
 
       // Clear any invite-attribution token now that this user is
       // confirmed as a member. The token did its job on the way in

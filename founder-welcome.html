@@ -123,6 +123,8 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
   .welcome-cta{padding:16px 30px;font-size:11px}
 }
 </style>
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 </head>
 <body>
 
@@ -384,6 +386,16 @@ async function resolveByToken() {
 
 // ── CLAIM ACTION ────────────────────────────────────────────────────
 async function claimGift(email) {
+  // Analytics: claim_button_pressed. The most important conversion
+  // moment in the founder-gift flow — recipient has decided to take
+  // up the gift. Fired BEFORE the API call so we capture the intent
+  // even if the API stumbles.
+  try {
+    if (typeof umami !== 'undefined' && umami.track) {
+      umami.track('claim_button_pressed', { source: 'founder' });
+    }
+  } catch (e) { /* never break claim */ }
+
   const btn = document.getElementById('claimBtn');
   btn.disabled = true;
   btn.textContent = 'Entering…';

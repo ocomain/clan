@@ -284,6 +284,8 @@
   <meta name="twitter:title" content="Apply for Membership — Clan Ó Comáin">
   <meta name="twitter:description" content="Begin your membership application for Clan Ó Comáin — speak with the Clan Herald and join one of Ireland's most ancient Gaelic lineages.">
   <meta name="twitter:image" content="https://www.ocomain.org/coat_of_arms.png">
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 </head>
 <body>
 
@@ -475,6 +477,23 @@ let currentStep = 0;
 const collected = {};
 
 window.addEventListener('load', () => {
+  // Analytics: chat page entered. Fires once per page load. Tier
+  // dimension comes from the URL (?tier=guardian-ind etc) — empty
+  // string when the user arrived via 'Start application' with no
+  // pre-selected tier (the picker path). Family flag derives from
+  // the tier slug. Source dimension records traffic origin.
+  try {
+    if (typeof umami !== 'undefined' && umami.track) {
+      const usp = new URLSearchParams(window.location.search);
+      const t = (usp.get('tier') || '').trim();
+      umami.track('signup_started', {
+        tier: t || 'no_tier_preselected',
+        family: t.endsWith('-fam'),
+        has_invite: !!usp.get('invite'),
+      });
+    }
+  } catch (e) { /* analytics failure must not break signup flow */ }
+
   document.getElementById('userInput').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
@@ -712,6 +731,31 @@ function showCompletion() {
     return '/api/create-checkout?' + params.join('&');
   }
 
+  // Analytics: fire signup_completed when the user actually clicks
+  // the Stripe button. We don't wait for Stripe-side success because
+  // post-redirect success-page tracking is unreliable (Stripe can
+  // fire double-redirects + the user might close the tab on the
+  // Stripe page itself). 'Click of pay button' is the cleanest
+  // measurable conversion-intent signal we control. The match-rate
+  // to actual paid signups is high because abandoning at the Stripe
+  // page itself is rare (the user has just typed in a form and is
+  // on the final step).
+  function attachAnalyticsToPayButton(btn, getTierKey) {
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      try {
+        if (typeof umami !== 'undefined' && umami.track) {
+          const tk = getTierKey() || '';
+          umami.track('signup_completed', {
+            tier: tk,
+            family: tk.endsWith('-fam'),
+            has_invite: !!inviteToken,
+          });
+        }
+      } catch (e) { /* never break the click */ }
+    });
+  }
+
   if (tierInfo) {
     // ── PATH A: tier was pre-selected via URL (e.g. clicked
     //   'Join as Guardian' on /membership.html). Single-button flow.
@@ -719,6 +763,7 @@ function showCompletion() {
       payBtn.href = buildCheckoutUrl(urlTier);
       payBtn.textContent = 'Complete payment — ' + tierInfo.label + ' →';
       payBtn.style.display = 'inline-block';
+      attachAnalyticsToPayButton(payBtn, () => urlTier);
       const isLifeTier = (urlTier || 'clan-ind').startsWith('life');
       if (!isLifeTier) {
         const cancelNote = document.createElement('p');
@@ -745,6 +790,16 @@ function showCompletion() {
 
       // Make the URL builder available to the picker helpers below.
       window.__joinChatBuildCheckoutUrl = buildCheckoutUrl;
+
+      // Analytics: hook the picker button. Tier is read live at
+      // click time from the picker state (the user might have
+      // changed selection between page load and click).
+      const pickerBtn = document.getElementById('pickerCheckoutBtn');
+      attachAnalyticsToPayButton(pickerBtn, () => {
+        const type = (typeof pickerIsFamily !== 'undefined' && pickerIsFamily) ? 'fam' : 'ind';
+        const tier = (typeof pickerCurrentTier !== 'undefined') ? pickerCurrentTier : 'guardian';
+        return tier + '-' + type;
+      });
 
       // Trigger initial update so the default-selected Guardian
       // (Individual) shows correct price + URL.
