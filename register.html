@@ -60,27 +60,31 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
 .hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
 .hero-seal{margin:0 auto 38px;display:block}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5.5vw,64px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,58px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
   /* Allow the hero title to escape the .wrap (740px) container width
      so 'Register of Clan Ó Comáin' fits on a single line at full size
      on desktop. The hero is centered text, so widening just this one
      element doesn't disturb the rest of the column-bound page.
-     Counter the parent's 28px padding too, to genuinely use the
-     viewport edge-to-edge minus a small breathing margin.
 
-     Font-size formula tuned so the unwrapped title (~12.7× font-em
-     for 'Register of Clan Ó Comáin' in Cormorant Garamond) sits
-     within the viewport on all desktop widths above 640px:
-       min: 38px — fits the smallest mobile viewports when the
-                   wrap-via-<br> below is enabled.
-       mid: 5.5vw — at 1024px viewport ≈ 56px (~720px wide title);
-                   at 1440px ≈ 79px capped to 64px max.
-       max: 64px — keeps title proportional to surrounding type
-                   on huge desktops and doesn't push the whole
-                   hero block out of balance. */
+     Architecture:
+       - white-space:nowrap on the h1 forces single-line on desktop
+       - font-size clamp scales down with viewport width to keep
+         the title within 100vw - 32px at all desktop sizes
+       - max-width caps width so we never overflow horizontally
+       - the @media (max-width:640px) block below RE-ENABLES wrap
+         by setting white-space:normal + revealing the <br> for
+         mobile two-line stack
+
+     Font math: 'Register of Clan Ó Comáin' in Cormorant Garamond
+     has unwrapped natural width ≈ 11em. At max font 58px that's
+     ≈ 638px wide — fits within the smallest desktop viewport
+     (640px breakpoint). On 1440px+ viewports, font caps at 58px
+     so title sits at 638px — comfortable poise without dominating
+     the hero block. */
   width:max-content;
   max-width:calc(100vw - 32px);
   margin-left:auto;margin-right:auto;
+  white-space:nowrap;
 }
 .hero-title em{font-style:italic;color:var(--burgundy);font-weight:500}
 /* Desktop: the title is one line, sized to its content. .title-line
@@ -328,17 +332,20 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
     font-size:13px;
     padding:10px 14px 11px;
   }
-}
+
   /* Reveal the desktop-hidden break so 'Register of' and 'Clan Ó Comáin'
      stack on narrow screens. .title-line nowrap continues to keep each
      half together (avoids the awkward 'Comáin' on its own line). */
   .hero-title .desktop-only-br{display:inline}
   /* Mobile: revert from width:max-content (which would let the title
      overflow the viewport) back to natural width so the inserted <br>
-     can do its work and the title respects screen width. */
+     can do its work and the title respects screen width. Also re-enable
+     normal whitespace wrapping (overrides the desktop white-space:nowrap)
+     so the inserted <br> can actually produce the line break. */
   .hero-title{
     width:auto;
     max-width:100%;
+    white-space:normal;
     /* Slightly tighten line-height on the wrapped title so the two
        lines look like one stanza, not two paragraphs. */
     line-height:1.05;
