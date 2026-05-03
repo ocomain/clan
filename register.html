@@ -60,27 +60,29 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
 .hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
 .hero-seal{margin:0 auto 38px;display:block}
-.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,5vw,58px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,7vw,58px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
   /* Allow the hero title to escape the .wrap (740px) container width
      so 'Register of Clan Ó Comáin' fits on a single line at full size
-     on desktop. The hero is centered text, so widening just this one
-     element doesn't disturb the rest of the column-bound page.
+     on desktop AND on standard/wide iPhones (per user feedback —
+     wide iPhones should fit on one line, not wrap to two).
 
      Architecture:
-       - white-space:nowrap on the h1 forces single-line on desktop
-       - font-size clamp scales down with viewport width to keep
-         the title within 100vw - 32px at all desktop sizes
-       - max-width caps width so we never overflow horizontally
-       - the @media (max-width:640px) block below RE-ENABLES wrap
-         by setting white-space:normal + revealing the <br> for
-         mobile two-line stack
+       - white-space:nowrap on the h1 forces single-line on all
+         viewports above the narrow-phone breakpoint
+       - font-size clamp scales down on narrow viewports so the
+         title genuinely fits within the viewport at every size
+       - the @media (max-width:389px) block below is the only
+         narrow-viewport escape hatch — restores wrap via <br>
+         when the viewport is too cramped even for clamp's min
 
      Font math: 'Register of Clan Ó Comáin' in Cormorant Garamond
-     has unwrapped natural width ≈ 11em. At max font 58px that's
-     ≈ 638px wide — fits within the smallest desktop viewport
-     (640px breakpoint). On 1440px+ viewports, font caps at 58px
-     so title sits at 638px — comfortable poise without dominating
-     the hero block. */
+     has unwrapped natural width ≈ 11em.
+       Min 28px → 308px wide. Fits 358px usable on iPhone 390px ✓
+       At 7vw on 390px iPhone = 27.3px → clamps to min 28px → 308px wide ✓
+       At 7vw on 430px Pro Max = 30.1px → 331px wide, fits 398px usable ✓
+       At 7vw on 1024px desktop = 71.7px → caps at 58px max → 638px wide
+       At 1440px desktop: caps at 58px → poised, doesn't dominate
+  */
   width:max-content;
   max-width:calc(100vw - 32px);
   margin-left:auto;margin-right:auto;
@@ -332,22 +334,26 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
     font-size:13px;
     padding:10px 14px 11px;
   }
+}
 
-  /* Reveal the desktop-hidden break so 'Register of' and 'Clan Ó Comáin'
-     stack on narrow screens. .title-line nowrap continues to keep each
-     half together (avoids the awkward 'Comáin' on its own line). */
+/* HERO TITLE WRAP — narrow-phone-only rule
+   ─────────────────────────────────────────
+   The desktop .hero-title rule uses white-space:nowrap +
+   width:max-content so the title is genuinely one line on every
+   viewport above ~340px. The font-size clamp scales down to
+   28px min so even iPhone-standard viewports (390px) fit
+   comfortably without overflow.
+
+   Below 340px (iPhone SE 1st gen at 320px, foldable phones in
+   folded mode, ancient devices) the title can no longer fit
+   one line even at min font, so we restore the explicit
+   two-line wrap via the <br>. */
+@media (max-width:340px){
   .hero-title .desktop-only-br{display:inline}
-  /* Mobile: revert from width:max-content (which would let the title
-     overflow the viewport) back to natural width so the inserted <br>
-     can do its work and the title respects screen width. Also re-enable
-     normal whitespace wrapping (overrides the desktop white-space:nowrap)
-     so the inserted <br> can actually produce the line break. */
   .hero-title{
     width:auto;
     max-width:100%;
     white-space:normal;
-    /* Slightly tighten line-height on the wrapped title so the two
-       lines look like one stanza, not two paragraphs. */
     line-height:1.05;
   }
 }
