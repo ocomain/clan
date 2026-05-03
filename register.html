@@ -744,17 +744,14 @@ function renderEntry(member) {
         // Tooltip text varies by dignity type:
         //   - Sponsor titles (Cara/Ardchara/Onóir): pronunciation
         //     + quoted English gloss + degree-of-honour sentence.
-        //     The quoted gloss is meaningful here ('friend', 'one
-        //     held in honour') because it's a definition, not a
-        //     repetition of what's said elsewhere.
-        //   - Taoiseach (chief): drops the quoted English gloss
-        //     because it would just be 'Chief of Ó Comáin', which
-        //     the second sentence already says ('Chief of Clan
-        //     Ó Comáin and Fount of Honour...'). Pronunciation +
-        //     direct explainer is cleaner.
+        //   - Taoiseach (chief): same shape — pronunciation +
+        //     quoted gloss 'Chief of Ó Comáin' + a Fount-of-Honour
+        //     explanatory sentence (the explanatory sentence no
+        //     longer leads with 'Chief of Clan Ó Comáin' since
+        //     that would just repeat the gloss).
         const isChiefDignity = dignity.slug === 'taoiseach';
         const tipMulti = isChiefDignity
-          ? `${dignity.pronunciation}\nChief of Clan Ó Comáin and Fount of Honour from which all dignities of the clan flow.`
+          ? `${dignity.pronunciation} · '${dignity.english}'\nFount of Honour from which all dignities of the clan flow.`
           : `${dignity.pronunciation} · '${dignity.english}'\n${dignity.degree} degree of honour conferred by the Chief.`;
         // Single-line variant for the aria-label (screen readers
         // get one continuous string, not multi-line). No native
