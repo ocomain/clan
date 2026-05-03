@@ -38,6 +38,15 @@
 [functions."daily-gift-acceptance-sweep"]
   schedule = "30 15 * * *"
 
+# Post-signup email lifecycle sweep — dispatches the +3/+9/+18/+28/+60/+90 day
+# sequence (Herald → Fergus → Linda Office × 3 → Paddy Seanchaí). Runs once per
+# day, age-bucketed (each member becomes eligible for exactly one bucket on
+# exactly one day). 16:00 UTC = 17:00 IE/UK summer, 16:00 winter — mid-afternoon
+# European inbox window. Offset another 30min from the gift-acceptance sweep so
+# the daily fan-out remains staggered.
+[functions."daily-post-signup-sweep"]
+  schedule = "0 16 * * *"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
