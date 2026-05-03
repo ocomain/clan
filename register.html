@@ -232,39 +232,30 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 
   /* Entry: turn the row into a vertical flex stack so we can
      reorder name/credit/dedication and meta-block freely.
-     display:contents on both inner wrapper divs lets their
-     children participate directly in the parent flex container,
-     so we can use `order:` to interleave name/tier/credit/
-     dedication/year/founder regardless of source order. */
+     display:contents on the FIRST wrapper div (the name-block,
+     containing name/credit/dedication) lets its children become
+     direct flex children of .entry-row. The .entry-meta div is
+     left intact as a real block — it sits as a single flex item
+     at the bottom containing tier+year+founder with its own
+     internal inline layout (no flex inside, so tier and year sit
+     on one line as inline elements). */
   .entry{padding:36px 16px 36px}
   .entry-row{display:flex;flex-direction:column;gap:0;align-items:stretch}
-  .entry-row > div{display:contents}
+  .entry-row > div:first-child{display:contents}
 
-  /* Visual order: name (1) → tier (2) → credit (3) → dedication (4)
-     → year (5) → founder (6). Wider order numbers leave headroom
-     for future sub-elements without renumbering. */
+  /* Visual order: name (1) → credit (2) → dedication (3) →
+     meta block at the bottom (5). The meta block carries tier,
+     year, and founder together as a single coherent classification
+     beat for the entry. */
   .entry-name      {order:1}
-  .entry-tier      {order:2}
-  .entry-credit    {order:3}
-  .entry-dedication{order:4}
-  .entry-year      {order:5}
-  .entry-founder   {order:6}
+  .entry-credit    {order:2}
+  .entry-dedication{order:3}
+  .entry-meta      {order:5}
 
-  /* Name: big, breathing — the headline of the entry. Mobile
-     bumps from 30px to 32px (felt small relative to spacing). */
+  /* Name: big, breathing — the headline of the entry. */
   .entry-name{font-size:24px;line-height:1.2;letter-spacing:-0.005em}
 
-  /* Tier label as a sub-headline immediately under the name —
-     reads as 'this person's standing' rather than filing
-     reference. */
-  .entry-tier{
-    font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;
-    letter-spacing:0.18em;text-transform:uppercase;
-    color:var(--gold-deep);margin-top:8px;
-    display:block;
-  }
-
-  /* Credit line: italic muted, comfortable spacing under tier. */
+  /* Credit line: italic muted, comfortable spacing under name. */
   .entry-credit{font-size:16px;margin-top:14px;line-height:1.65}
 
   /* Dedication: the visual showpiece. Burgundy italic with a
@@ -277,19 +268,47 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
     border-left:2px solid var(--gold);
   }
 
-  /* Year: bottom row, quietest. Small uppercase muted. */
+  /* META BLOCK — bottom-of-entry classification strip.
+     Override the desktop's text-align:right + nowrap. The meta
+     block holds tier, year, and (when present) founder. Tier
+     and year sit inline on the same line ('GUARDIAN · JOINED
+     2026'); founder gets its own line below.
+     Because .entry-meta is NOT a flex container itself, its
+     inline children flow as proper inline elements — display:inline
+     here actually works (unlike when they were direct flex
+     children of .entry-row). */
+  .entry-meta{
+    text-align:left;
+    white-space:normal;
+    margin-top:24px;
+  }
+  .entry-tier{
+    display:inline;
+    font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--gold-deep);
+    margin-top:0;
+  }
   .entry-year{
-    display:block;
+    display:inline;
     font-family:'Jost',sans-serif;
     font-size:10.5px;font-weight:400;letter-spacing:0.14em;
-    color:var(--ink-muted);margin-top:24px;
+    color:var(--ink-muted);
+    margin-top:0;
     text-transform:uppercase;
   }
+  /* Gold dot separator between tier and year: ' · '. */
+  .entry-year::before{
+    content:'·';
+    color:var(--gold-deep);
+    margin:0 8px;
+    opacity:.6;
+  }
 
-  /* Founder badge: sits below year, same eyebrow weight as desktop. */
+  /* Founder badge: its own line below tier·year. */
   .entry-founder{
     display:block;
-    margin-top:8px;
+    margin-top:10px;
     font-size:9.5px;letter-spacing:0.22em;
   }
   .entry-founder::before{margin-right:5px}
