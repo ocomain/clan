@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="robots" content="noindex,nofollow"><title>Post-signup email previews — Clan Ó Comáin</title>
+<style>
+  body { font-family: 'Georgia', serif; background: #F8F4EC; color: #1A1A1A; margin: 0; padding: 40px; max-width: 720px; margin: 0 auto; }
+  h1 { color: #0C1A0C; font-size: 28px; font-weight: 400; border-bottom: 2px solid #B8975A; padding-bottom: 12px; }
+  .lede { color: #555; font-style: italic; margin-bottom: 32px; }
+  ol { padding-left: 0; list-style: none; }
+  li { background: white; border: 1px solid #E0DACA; border-left: 3px solid #B8975A; padding: 18px 22px; margin-bottom: 12px; border-radius: 1px; }
+  li a { color: #0C1A0C; text-decoration: none; font-weight: 600; font-size: 17px; }
+  li a:hover { color: #B8975A; }
+  .day { display: inline-block; background: #B8975A; color: #0C1A0C; font-family: sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 1px; margin-right: 12px; vertical-align: middle; }
+  .meta { color: #6C5A4A; font-size: 13px; margin-top: 6px; font-style: italic; }
+  footer { margin-top: 40px; color: #6C5A4A; font-size: 12px; font-style: italic; text-align: center; }
+</style></head>
+<body>
+  <h1>Post-signup email previews</h1>
+  <p class="lede">Eight variants across six time buckets. Click any title to open the rendered email exactly as it would arrive in an inbox. Photo bubbles, coat of arms, and CTA links all resolve against <code>https://www.ocomain.org</code>.</p>
+  <ol>
+    <li><span class="day">+3</span><a href="01a-clan-tier-upsell.html">Email 1A — Herald — Clan tier (upsell to Guardian+)</a><div class="meta">Sent when tier starts with <code>clan-</code></div></li>
+    <li><span class="day">+3</span><a href="01b-guardian-default.html">Email 1B — Herald — Guardian+ default (name on public Register)</a><div class="meta">Sent when tier ≥ Guardian AND <code>public_register_visible = true</code></div></li>
+    <li><span class="day">+3</span><a href="01c-guardian-opted-out.html">Email 1C — Herald — Guardian+ opted out</a><div class="meta">Sent when tier ≥ Guardian AND <code>public_register_visible = false</code></div></li>
+    <li><span class="day">+9</span><a href="02-fergus-personal-letter.html">Email 2 — Fergus — A word from Newhall</a><div class="meta">Universal — chief@ocomain.org</div></li>
+    <li><span class="day">+18</span><a href="03-linda-kindred-ask.html">Email 3 — Linda — Bringing the kindred (Office)</a><div class="meta">Universal — linda@ocomain.org · primary referral ask</div></li>
+    <li><span class="day">+28</span><a href="04-linda-gift-nudge.html">Email 4 — Linda — Gift-angle nudge (Office)</a><div class="meta">Conditional — only if <code>countSponsoredBy(member) === 0</code></div></li>
+    <li><span class="day">+60</span><a href="05-linda-honours-explainer.html">Email 5 — Linda — Honours explainer (Office)</a><div class="meta">Universal — explains Cara / Ardchara / Onóir in plain language</div></li>
+    <li><span class="day">+90</span><a href="06-paddy-seanchai-pedigree.html">Email 6 — Paddy (Seanchaí) — The royal house you have joined</a><div class="meta">Universal — clan@ocomain.org · pedigree as story</div></li>
+  </ol>
+  <footer>Mock recipient: Aoife Commane &lt;aoife.example@ocomain.org&gt;</footer>
+</body></html>
