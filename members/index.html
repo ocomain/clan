@@ -1300,6 +1300,10 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           prvDedicationWrap.style.opacity = enabled ? '1' : '.5';
           prvDedicationWrap.style.pointerEvents = enabled ? 'auto' : 'none';
           if (!enabled) prvDedication.checked = false;
+          // Toggle the explanatory helper line — visible only when
+          // the dedication checkbox is disabled (parent unticked).
+          const help = document.getElementById('prvDedicationHelp');
+          if (help) help.style.display = enabled ? 'none' : '';
         }
         savePrivacy();
       });
