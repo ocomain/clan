@@ -12,13 +12,26 @@
   <style>
 
     /* ── HERO ── */
-    .mem-hero{position:relative;min-height:72vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold)}
+    .mem-hero{position:relative;min-height:72vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:60px 0}
     .mem-hero-bg{position:absolute;inset:0;background:url('killone_abbey_lake.png') center/cover no-repeat;opacity:.15;filter:saturate(.6)}
-    .mem-hero-content{position:relative;z-index:2;max-width:780px}
+    .mem-hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center;position:relative;z-index:2}
+    .mem-hero-content{max-width:780px}
     .mem-eyebrow{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
-    .mem-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,6vw,74px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
+    .mem-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,5.4vw,68px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
     .mem-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:620px;margin-bottom:10px}
     .mem-hero-note{font-family:'Jost',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-top:28px}
+    /* mini cert visual in hero — mirrors gift.html */
+    .hero-cert-wrap{position:relative}
+    .hero-cert-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:32px 28px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);transform:rotate(-1.2deg);max-width:340px;margin-left:auto}
+    .hero-cert-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(184,151,90,.32);pointer-events:none}
+    .hero-cert-crest{display:block;width:42px;height:42px;margin:0 auto 10px;opacity:.85}
+    .hero-cert-eyebrow{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--gold-strong);text-align:center;margin-bottom:4px}
+    .hero-cert-title{font-family:'EB Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);text-align:center;letter-spacing:.04em;margin-bottom:14px}
+    .hero-cert-rule{width:32px;height:1px;background:var(--gold);margin:0 auto 14px;opacity:.55}
+    .hero-cert-body{font-family:'EB Garamond',serif;font-size:11.5px;color:var(--ink-soft);text-align:center;line-height:1.55;margin-bottom:8px;font-style:italic}
+    .hero-cert-name{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);text-align:center;letter-spacing:.04em;margin:6px 0 8px;font-style:italic}
+    .hero-cert-sig{font-family:'EB Garamond',serif;font-size:10.5px;color:var(--ink-muted);text-align:center;font-style:italic;margin-top:14px;padding-top:12px;border-top:1px solid rgba(184,151,90,.2)}
+    .hero-cert-stamp{position:absolute;top:-10px;right:-10px;background:var(--ink);color:var(--gold);font-family:'Jost',sans-serif;font-size:8px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:8px 12px;border:1px solid var(--gold);transform:rotate(8deg);box-shadow:0 4px 12px rgba(0,0,0,.2)}
 
     /* ── WHAT THIS FUNDS ── */
     .funds-section{background:var(--ink-mid);padding:64px 0;border-bottom:1px solid var(--border)}
@@ -133,6 +146,9 @@
       .tier{border-right:none;border-bottom:1px solid var(--border)}
       .tier.featured{margin:0;border-width:2px 0}
       .life-inner,.chief-grid,.faq-grid{grid-template-columns:1fr}
+      .mem-hero-grid{grid-template-columns:1fr;gap:36px}
+      .hero-cert-card{margin:0 auto;transform:rotate(-0.8deg)}
+      .mem-hero{padding:48px 0;min-height:auto}
     }
 
     /* ── FOUNDER CALLOUT grid — responsive ── */
@@ -234,13 +250,28 @@
 <section class="mem-hero">
   <div class="mem-hero-bg"></div>
   <div class="si">
-    <div class="mem-hero-content">
-      <div class="mem-eyebrow">Killone Abbey, Newhall Estate · County Clare, Ireland</div>
-      <h1 class="mem-hero-title">Join the revival of an ancient Gaelic clan.</h1>
-      <p class="mem-hero-sub">Your membership directly funds the clan's revival — the summer festivals at Newhall, the preservation of one of Ireland's oldest Gaelic lineages, academic and heritage research, and the books and publications that will bring the ancient Irish Gaelic story to new generations.</p>
-      <div class="gold-rule"></div>
-      <p style="font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.75);line-height:1.75;max-width:600px">This is not a subscription. It is an act of cultural stewardship — a commitment to keep alive something ancient and irreplaceable that was almost lost to history.</p>
-      <div class="mem-hero-note">Recognised by Clans of Ireland · Under the patronage of the President of Ireland</div>
+    <div class="mem-hero-grid">
+      <div class="mem-hero-content">
+        <div class="mem-eyebrow">Killone Abbey, Newhall Estate · County Clare, Ireland</div>
+        <h1 class="mem-hero-title">Join the revival of an ancient Gaelic clan.</h1>
+        <p class="mem-hero-sub">Your membership directly funds the clan's revival — the summer festivals at Newhall, the preservation of one of Ireland's oldest Gaelic lineages, academic and heritage research, and the books and publications that will bring the ancient Irish Gaelic story to new generations.</p>
+        <div class="gold-rule"></div>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.75);line-height:1.75;max-width:600px">This is not a subscription. It is an act of cultural stewardship — a commitment to keep alive something ancient and irreplaceable that was almost lost to history.</p>
+        <div class="mem-hero-note">Recognised by Clans of Ireland · Under the patronage of the President of Ireland</div>
+      </div>
+      <div class="hero-cert-wrap">
+        <div class="hero-cert-card">
+          <span class="hero-cert-stamp">Sample</span>
+          <img src="coat_of_arms.png" alt="Ó Comáin" class="hero-cert-crest" loading="lazy">
+          <div class="hero-cert-eyebrow">Clan Ó Comáin</div>
+          <div class="hero-cert-title">CERTIFICATE OF MEMBERSHIP</div>
+          <div class="hero-cert-rule"></div>
+          <div class="hero-cert-body">This is to certify that</div>
+          <div class="hero-cert-name">[ Your name ]</div>
+          <div class="hero-cert-body">is hereby entered as a Member of Clan Ó Comáin in the Register of the clan, held at Newhall House, County Clare.</div>
+          <div class="hero-cert-sig">— Signed by the Chief of Ó Comáin —</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -409,7 +440,7 @@
         <ul class="tier-perks">
           <li class="tier-perk family-price"><span class="perk-check" style="color:var(--gold)">✦</span><span><strong>A membership for your family — inherited by your children in time</strong></span></li>
           <li class="tier-perk"><span class="perk-check">✦</span><span>Everything in Guardian of the Clan</span></li>
-          <li class="tier-perk"><span class="perk-check">✦</span><span><strong style="color:var(--ink)">Your family tree published as part of the official clan record</strong> — your line of descent rendered in the clan's hand, bearing your name on the Register at Newhall, preserved alongside the lines of every member of the clan. <em style="color:var(--gold);font-size:0.9em">(Launching 2026)</em></span></li>
+          <li class="tier-perk"><span class="perk-check">✦</span><span><strong style="color:var(--ink)">Your line of descent lodged in the clan archive at Newhall</strong> — your family tree preserved as part of the clan's documentary record. <em style="color:var(--gold);font-size:0.9em">(Launching 2026)</em></span></li>
           <li class="tier-perk"><span class="perk-check">✦</span><span><strong>Name inscribed on the Clan Roll of Honour</strong> — displayed permanently at Newhall House</span></li>
           <li class="tier-perk"><span class="perk-check">✦</span><span>Dedicated acknowledgement on the clan website with your story, connection and location</span></li>
           <li class="tier-perk"><span class="perk-check">✦</span><span>Private call with the Chief — your heritage, your connection, your questions answered personally</span></li>
@@ -443,7 +474,7 @@
           <div class="life-perk"><div class="life-perk-num">III</div><div class="life-perk-text">Clan heirloom pack — physical certificate, clan crest print, and personal welcome letter from the Chief, presented as a keepsake set</div></div>
           <div class="life-perk"><div class="life-perk-num">IV</div><div class="life-perk-text">The knowledge that your name will remain in the Register of Clan Ó Comáin long after you — a gift to your children and grandchildren</div></div>
           <div class="life-perk family-price"><div class="life-perk-num">V</div><div class="life-perk-text"><strong style="color:var(--gold-pale)">A membership for your family — inherited by your children in time.</strong> The children named on your cert carry their place in the clan with you, and inherit this membership in their own right in the fullness of time.</div></div>
-          <div class="life-perk"><div class="life-perk-num">VI</div><div class="life-perk-text"><strong style="color:var(--gold-pale)">Your line of descent permanently lodged in the clan archive at Newhall</strong> — your tree published on the Register and preserved as part of the clan's documentary record, in perpetuity. <em style="color:var(--gold-pale);opacity:.7;font-size:0.9em">(Launching 2026)</em></div></div>
+          <div class="life-perk"><div class="life-perk-num">VI</div><div class="life-perk-text"><strong style="color:var(--gold-pale)">Your line of descent <em>permanently</em> lodged in the clan archive at Newhall</strong> — your family tree preserved as part of the clan's documentary record, in perpetuity. <em style="color:var(--gold-pale);opacity:.7;font-size:0.9em">(Launching 2026)</em></div></div>
         </div>
       </div>
       <div>
