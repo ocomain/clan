@@ -721,7 +721,7 @@
         <div class="mpostal-eyebrow">Physical Certificate Delivery</div>
         ${member.cert_posted_at ? `
           <div class="mpostal-title">Posted on <em>${fmtDate(member.cert_posted_at)}</em></div>
-          <p class="mpostal-empty" style="margin-bottom:6px">Your hand-printed certificate was posted on the date above.</p>
+          <p class="mpostal-empty" style="margin-bottom:6px">Your hand-printed certificate was posted from Newhall House on the date above.</p>
           ${member.postal_address ? `
             <div class="mpostal-address">
               ${escHtml(member.postal_address.recipient_name || '')}<br>
@@ -745,7 +745,7 @@
           <button class="mfam-edit-btn" id="mpostalEditBtn" style="margin-top:14px">Edit address →</button>
         ` : `
           <div class="mpostal-title">Optional · Physical <em>certificate</em></div>
-          <p class="mpostal-empty">Your tier includes a hand-printed certificate. <strong style="color:var(--ink);font-style:normal">This is optional.</strong> If you don't add a postal address, your certificate remains digital only.</p>
+          <p class="mpostal-empty">Your tier includes a hand-printed certificate posted from Newhall House. <strong style="color:var(--ink);font-style:normal">This is optional.</strong> If you don't add a postal address, your certificate remains digital only.</p>
           <button class="mfam-edit-btn" id="mpostalEditBtn">Add postal address →</button>
         `}
       </section>
@@ -768,7 +768,7 @@
           <li class="mupgrade-perk">
             <span class="mupgrade-perk-mark">✦</span>
             <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted to your door — yours to keep or frame.
+              <strong style="color:var(--ink);font-weight:500">A hand-printed certificate</strong>, signed by the Chief, posted from Newhall House to your door — yours to keep or frame.
             </span>
           </li>
           <li class="mupgrade-perk">
