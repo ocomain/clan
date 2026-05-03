@@ -199,8 +199,24 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 @media (max-width:640px){
   .entry-row{grid-template-columns:1fr;gap:6px}
   .entry-meta{text-align:left}
-  .hero-counts{flex-direction:column;gap:14px}
-  .hero-counts-sep{width:32px;height:1px}
+  /* Stats hero: vertical stack with clear visual separation between
+     the 'Members + breakdown' block and the 'Year of Revival' block.
+     Previously these felt run-together because the gap was small
+     and the dot-separator was nearly invisible at width:32px h:1px.
+     Bigger gap + a clear gold-bordered horizontal rule between
+     blocks makes each beat read distinctly on narrow screens. */
+  .hero-counts{flex-direction:column;gap:28px;padding:0 16px}
+  .hero-counts-sep{width:60px;height:1px;background:var(--gold-deep);opacity:.4;margin:0 auto;border-radius:0}
+  /* Headline count: bigger so it dominates over the label and
+     breakdown stacked below, and the eye understands '16' as
+     belonging to 'Members'. */
+  .hero-count strong{font-size:36px}
+  .hero-count-label{margin-top:10px;font-size:11px}
+  /* Breakdown: allow line wrap, tighten letterspacing so the
+     three parts don't overflow narrow viewports. The parts are
+     still separated by ' · ' text so wrapping happens at a
+     natural break point. */
+  .hero-count-breakdown{font-size:14px;line-height:1.55;margin-top:10px;padding:0 8px;max-width:280px}
   .herald-block{padding:0 4px}
   .herald-sign{flex-direction:row;align-items:center}
   /* Reveal the desktop-hidden break so 'Register of' and 'Clan Ó Comáin'
