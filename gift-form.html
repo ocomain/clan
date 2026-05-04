@@ -336,6 +336,16 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
     <div class="payment-details" id="paymentDetails"></div>
     <a href="#" class="payment-btn" id="stripeBtn">Complete payment →</a>
     <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:16px">Your recipient will be welcomed by name by the Chief of Ó Comáin</p>
+    <!-- Seller disclosure — appears beneath the pay button so the contracting party
+         is identifiable at the point of payment. Discreet small print, distinct
+         from the Stripe trust block which speaks to payment processing. -->
+    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.04em;line-height:1.6;margin:10px auto 0;max-width:480px">
+      Sold by Moohane LLC, operator of the Clan Ó Comáin membership platform.
+      By proceeding you agree to the
+      <a href="/terms.html" style="color:rgba(184,151,90,.6);text-decoration:underline">Terms of Service</a>
+      and
+      <a href="/privacy.html" style="color:rgba(184,151,90,.6);text-decoration:underline">Privacy Policy</a>.
+    </p>
     <!-- TRUST BLOCK -->
     <div class="trust-block on-dark">
       <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" aria-hidden="true" style="flex-shrink:0;margin-top:3px;color:var(--gold)"><path d="M8 1a3 3 0 0 0-3 3v3H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1V4a3 3 0 0 0-3-3zm2 6H6V4a2 2 0 0 1 4 0v3z"/></svg>
@@ -366,16 +376,6 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
     </div>
     <div class="footer-bottom">
       <div class="footer-copy">© 2025–2026 Tigh Uí Chomáin · House of Ó Comáin · All rights reserved</div>
-      <!-- Seller disclosure — moved out of the payment-confirm card and
-           into the footer where regulatory boilerplate conventionally
-           lives. Same wording, same Terms/Privacy links. -->
-      <div class="footer-copy" style="margin-top:8px;font-size:11px;opacity:.7">
-        Sold by Moohane LLC, operator of the Clan Ó Comáin membership platform.
-        By proceeding you agree to the
-        <a href="/terms.html" style="color:inherit;text-decoration:underline">Terms of Service</a>
-        and
-        <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy Policy</a>.
-      </div>
     </div>
   </div>
 </footer>
