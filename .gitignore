@@ -5,3 +5,4 @@ package-lock.json
 .netlify/
 .DS_Store
 email-previews/
+email-previews-pdf-lead/

@@ -1,0 +1,82 @@
+#!/usr/bin/env node
+// scripts/preview-pdf-lead-emails.mjs
+//
+// Renders every lead-magnet email (confirmation + 5 lifecycle) to a
+// static HTML file in ./email-previews-pdf-lead/, so they can be
+// reviewed visually in a browser without sending real mail.
+//
+// USAGE:
+//   node scripts/preview-pdf-lead-emails.mjs
+//   open email-previews-pdf-lead/index.html
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+
+const { getPreviewHtml } = require('../netlify/functions/lib/pdf-lead-email');
+
+const MOCK_SUBSCRIBER = {
+  id: 'preview-subscriber-uuid-0001',
+  email: 'aoife.example@ocomain.org',
+  first_name: 'Aoife',
+  confirm_token: 'PREVIEW_CONFIRM_TOKEN',
+  unsubscribe_token: 'PREVIEW_UNSUBSCRIBE_TOKEN',
+  confirmed_at: new Date().toISOString(),
+};
+
+const VARIANTS = [
+  { key: 'CONF', file: '00-confirmation.html',           title: 'Confirmation — Please confirm your email' },
+  { key: 'E1',   file: '01-starter-guide-delivery.html', title: 'Email 1 (+0) — Your starter guide, with the Chief\u2019s compliments' },
+  { key: 'E2',   file: '02-standing.html',               title: 'Email 2 (+3) — A note on the standing of Clan Ó Comáin' },
+  { key: 'E3',   file: '03-certificate.html',            title: 'Email 3 (+10) — On the certificate, and what membership carries' },
+  { key: 'E4',   file: '04-direct-invitation.html',      title: 'Email 4 (+21) — A place for you in the Register at Newhall' },
+  { key: 'E5',   file: '05-final-invitation.html',       title: 'Email 5 (+35) — The Chief has asked me to write once more' },
+];
+
+const OUT_DIR = path.resolve(__dirname, '..', 'email-previews-pdf-lead');
+fs.mkdirSync(OUT_DIR, { recursive: true });
+
+console.log('Rendering lead-magnet email previews to', OUT_DIR);
+
+for (const v of VARIANTS) {
+  const html = getPreviewHtml(v.key, MOCK_SUBSCRIBER);
+  const outPath = path.join(OUT_DIR, v.file);
+  fs.writeFileSync(outPath, html, 'utf8');
+  console.log('  ✔', v.file);
+}
+
+const indexHtml = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="robots" content="noindex,nofollow"><title>Lead-magnet email previews — Clan Ó Comáin</title>
+<style>
+  body { font-family: 'Georgia', serif; background: #F8F4EC; color: #1A1A1A; margin: 0; padding: 40px; max-width: 720px; margin: 0 auto; }
+  h1 { color: #0C1A0C; font-size: 28px; font-weight: 400; border-bottom: 2px solid #B8975A; padding-bottom: 12px; }
+  .lede { color: #555; font-style: italic; margin-bottom: 32px; }
+  ol { padding-left: 0; list-style: none; }
+  li { background: white; border: 1px solid #E0DACA; border-left: 3px solid #B8975A; padding: 18px 22px; margin-bottom: 12px; border-radius: 1px; }
+  li a { color: #0C1A0C; text-decoration: none; font-weight: 600; font-size: 17px; }
+  li a:hover { color: #B8975A; }
+  .day { display: inline-block; background: #B8975A; color: #0C1A0C; font-family: sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; padding: 4px 10px; border-radius: 1px; margin-right: 12px; vertical-align: middle; }
+  .meta { color: #6C5A4A; font-size: 13px; margin-top: 6px; font-style: italic; }
+  footer { margin-top: 40px; color: #6C5A4A; font-size: 12px; font-style: italic; text-align: center; }
+</style></head>
+<body>
+  <h1>Lead-magnet email previews</h1>
+  <p class="lede">Six emails — one confirmation, then five lifecycle. All from Linda Commane Cryan, Private Secretary to the Chief, in the authentic voice of a noble-house secretary writing on behalf of the principal.</p>
+  <ol>
+    <li><span class="day">CONF</span><a href="00-confirmation.html">Confirmation — Please confirm your email</a><div class="meta">Sent on form submit. Double opt-in.</div></li>
+    <li><span class="day">+0</span><a href="01-starter-guide-delivery.html">Email 1 — Your starter guide, with the Chief\u2019s compliments</a><div class="meta">Fired synchronously on confirmation click.</div></li>
+    <li><span class="day">+3</span><a href="02-standing.html">Email 2 — A note on the standing of Clan Ó Comáin</a><div class="meta">Legitimacy & proof — Clans of Ireland, the pedigree, the Chief.</div></li>
+    <li><span class="day">+10</span><a href="03-certificate.html">Email 3 — On the certificate, and what membership carries</a><div class="meta">The artefact + four tiers + three-generations inheritance.</div></li>
+    <li><span class="day">+21</span><a href="04-direct-invitation.html">Email 4 — A place for you in the Register at Newhall</a><div class="meta">The direct invitation + Founders of the Revival 2026 scarcity.</div></li>
+    <li><span class="day">+35</span><a href="05-final-invitation.html">Email 5 — The Chief has asked me to write once more</a><div class="meta">Final considered invitation. Then the sequence ends cleanly.</div></li>
+  </ol>
+  <footer>Mock recipient: ${MOCK_SUBSCRIBER.first_name} &lt;${MOCK_SUBSCRIBER.email}&gt;</footer>
+</body></html>`;
+
+fs.writeFileSync(path.join(OUT_DIR, 'index.html'), indexHtml, 'utf8');
+console.log('  ✔ index.html');
+console.log('\nDone.');
