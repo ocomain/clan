@@ -1207,8 +1207,15 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
              scaffolds what the Chief will need from the member (name,
              dates, relationship, ~80-120 words, photo). Future Stage 2
              (when volume justifies) would replace this with a proper
-             submission form + moderation queue. -->
-        ${(member.tier && /^(steward|life)-/.test(member.tier)) ? `
+             submission form + moderation queue.
+
+             Tier gating (revised): Guardian and above. The obituary
+             feature is fundamentally automatable — submit form,
+             chief reviews, page generates. Lower-tier exclusivity
+             matches the perk's automatable nature; perks that
+             require sustained human attention (annual dinner, story
+             interviews) belong at Steward+. -->
+        ${(member.tier && /^(guardian|steward|life)-/.test(member.tier)) ? `
         <a class="maction live" style="text-decoration:none;color:inherit" href="mailto:clan@ocomain.org?subject=Obituary%20submission%20%E2%80%94%20%5Bname%20of%20loved%20one%5D&amp;body=Dia%20dhuit%2C%0A%0AI%27d%20like%20to%20submit%20a%20short%20memorial%20entry%20for%20inclusion%20on%20the%20clan%27s%20memorial%20roll%20at%20ocomain.org%2Fpatrons.%0A%0AName%3A%20%5Btheir%20full%20name%5D%0ARelationship%3A%20%5Bmother%2C%20father%2C%20uncle%20etc%5D%0ABorn%3A%20%5Bplace%20and%20date%5D%0ADied%3A%20%5Bplace%20and%20date%5D%0A%0AA%20few%20lines%20about%20them%20%2880-120%20words%29%3A%0A%5BWhat%20they%20loved%2C%20what%20they%20gave%2C%20how%20they%27ll%20be%20remembered.%5D%0A%0AI%27ll%20attach%20a%20portrait%20photograph%20to%20this%20email.%0A%0AGo%20raibh%20maith%20agat%2C%0A">
           <span class="maction-icon">
             <!-- Memorial / remembrance — open book with a small flame
@@ -1230,17 +1237,18 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
               <path d="M24 11 C 22 9 22 7 24 5 C 26 7 26 9 24 11 Z" fill="var(--gold-deep)" stroke="none"/>
             </svg>
           </span>
-          <div class="maction-eyebrow">Steward perk · forever</div>
+          <div class="maction-eyebrow">Guardian perk · forever</div>
           <div class="maction-title">Submit an Obituary</div>
           <div class="maction-desc">A loved one remembered forever in the clan's online memorial roll at <em>ocomain.org/patrons</em>. A portrait and a few short lines, kept always.</div>
           <span class="maction-btn">Write to the Chief →</span>
         </a>
-        <!-- Share your story — Stage 1 manual flow, parallel to the
-             obituary card. Steward+ tier members get a dedicated
-             acknowledgement on /clan-stories. The mailto: scaffolds
-             a structured submission email so members aren't writing
-             from scratch. Stage 2 (when volume justifies) replaces
-             this with a self-serve form. -->
+        ` : ''}
+        <!-- Share your story — Steward+ only. This perk doesn't scale
+             via automation — each story needs editorial work (curation,
+             quality check, sometimes interview). Held at Steward to
+             match the perks that genuinely require human attention
+             (annual dinner, Privy Council first refusal, etc). -->
+        ${(member.tier && /^(steward|life)-/.test(member.tier)) ? `
         <a class="maction live" style="text-decoration:none;color:inherit" href="mailto:clan@ocomain.org?subject=Clan%20Stories%20%E2%80%94%20My%20story&amp;body=Dia%20dhuit%2C%0A%0AI%27d%20like%20to%20submit%20a%20short%20story%20for%20the%20clan%27s%20Stories%20page%20at%20ocomain.org%2Fclan-stories.%0A%0AName%3A%20%5Byour%20full%20name%5D%0ALocation%3A%20%5Bcity%2C%20country%5D%0ALineage%3A%20%5Be.g.%20%27Cummins%20line%2C%20traces%20to%20Ennistymon%201840s%27%5D%0A%0AA%20few%20lines%20about%20you%20and%20the%20clan%20%2880-120%20words%29%3A%0A%5BWhy%20you%20joined%2C%20what%20the%20clan%20means%20to%20your%20family%2C%20how%20you%20found%20your%20way%20home.%5D%0A%0AI%27ll%20attach%20a%20portrait%20photograph%20to%20this%20email.%0A%0AGo%20raibh%20maith%20agat%2C%0A">
           <span class="maction-icon">
             <!-- Voice / story — open scroll with quill above it.
