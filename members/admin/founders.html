@@ -578,12 +578,20 @@
     // is opt-out, addressing the implicit privacy question some
     // founders may have before they click claim.
     //
+    // 2026-05: Removed the 'public Register (optional)' phrase
+    // since it doesn't apply to Clan-tier founder gifts (Clan tier
+    // is excluded from /register by REGISTER_TIERS in the API,
+    // and the form-help above the tier selector already states
+    // 'Clan-tier founders never appear on the public Register, by
+    // policy'). Universal benefits only — clan certificate +
+    // Members' Area access — both of which apply to every tier.
+    //
     // The p.s. drops the pedigree URL with a soft, humble
     // invitation — 'would love your eyes on it' instead of
     // 'I think you'll be impressed'. Founders who become
     // advocates need to know the pedigree page exists; this
     // primes them.
-    return `Hey ${firstName} — we just sent you a quick email from Clan Ó Comáin. We've built a brand new platform where you'll get your own clan certificate, a place on the public Register (optional), and access to the Members' Area. As one of our founders, your membership is on me for the year. Just click the button in the email to claim your place — takes 10 seconds. Let me know if you have any trouble. — Fergus
+    return `Hey ${firstName} — we just sent you a quick email from Clan Ó Comáin. We've built a brand new platform where you'll get your own clan certificate and access to the Members' Area. As one of our founders, your membership is on me for the year. Just click the button in the email to claim your place — takes 10 seconds. Let me know if you have any trouble. — Fergus
 
 p.s. take a look at the new website and pedigree www.ocomain.org/pedigree — fully sourced with academic footnotes and professionally endorsed — would love your eyes on it.`;
   }
