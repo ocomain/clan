@@ -118,9 +118,18 @@ function wrapInChrome({ eyebrow, heading, bodyHtml, subscriber }) {
 }
 
 function ctaButtonHtml(label, url) {
+  // Bulletproof email button — survives iOS Mail / Gmail / Outlook
+  // overrides that strip inline anchor styles. Two defenses:
+  //  (1) !important on text-decoration and color, so even clients
+  //      that re-apply user-agent link styles cannot underline or
+  //      recolor our text.
+  //  (2) Inner <span> carrying its own copy of the critical text
+  //      styles, so clients that style anchor *descendants*
+  //      differently (looking at you, Apple Mail) still render
+  //      our text correctly.
   return `
 <div style="text-align:center;margin:24px 0 28px">
-  <a href="${url}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">${escapeHtml(label)} →</a>
+  <a href="${url}" style="display:inline-block;background:#B8975A;color:#0C1A0C !important;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none !important;padding:15px 32px;border-radius:1px;mso-padding-alt:0;mso-text-raise:0"><span style="color:#0C1A0C;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none">${escapeHtml(label)} &rarr;</span></a>
 </div>`;
 }
 
