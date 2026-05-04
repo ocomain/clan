@@ -33,6 +33,12 @@
 --   When a subscriber DOES become a member, we don't migrate the
 --   row — we simply leave it as a historical opt-in record.
 
+-- Prerequisite: citext extension for case-insensitive email matching.
+-- This is a standard PostgreSQL extension shipped with Supabase but
+-- not enabled by default in fresh projects. Idempotent — safe to
+-- re-run.
+create extension if not exists citext;
+
 create table if not exists public.pdf_subscribers (
   id              uuid primary key default gen_random_uuid(),
   clan_id         uuid not null references public.clans(id) on delete cascade,
