@@ -20,6 +20,14 @@
     .mem-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,5.4vw,68px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
     .mem-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:620px;margin-bottom:10px}
     .mem-hero-note{font-family:'Jost',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-top:28px}
+    /* Hero CTA: anchor link down to the tiers grid. Mirrors the
+       gift-hero-cta pattern on /gift.html so the two hero
+       experiences feel consistent. Gold-fill button for primary
+       action, with a quiet right-aligned note pairing it. */
+    .mem-hero-cta-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:28px;margin-bottom:8px}
+    .mem-hero-cta{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .22s;box-shadow:0 1px 0 rgba(0,0,0,.35),0 6px 24px rgba(184,151,90,.18)}
+    .mem-hero-cta:hover{background:var(--gold-pale);transform:translateY(-1px);box-shadow:0 1px 0 rgba(0,0,0,.35),0 10px 32px rgba(184,151,90,.28)}
+    .mem-hero-cta-tag{display:inline-flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-size:11px;font-weight:300;letter-spacing:.1em;color:rgba(184,151,90,.62)}
     /* mini cert visual in hero — mirrors gift.html */
     .hero-cert-wrap{position:relative}
     .hero-cert-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:32px 28px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);transform:rotate(-1.2deg);max-width:340px;margin-left:auto}
@@ -284,6 +292,10 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <p class="mem-hero-sub">Your membership directly funds the clan's revival — the summer festivals at Newhall, the preservation of one of Ireland's oldest Gaelic lineages, academic and heritage research, and the books and publications that will bring the ancient Irish Gaelic story to new generations.</p>
         <div class="gold-rule"></div>
         <p style="font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.75);line-height:1.75;max-width:600px">This is not a subscription. It is an act of cultural stewardship — a commitment to keep alive something ancient and irreplaceable that was almost lost to history.</p>
+        <div class="mem-hero-cta-row">
+          <a href="#tiers" class="mem-hero-cta">See tiers ↓</a>
+          <span class="mem-hero-cta-tag">📜 From €49 · Annual or Life</span>
+        </div>
         <div class="mem-hero-note">Recognised by Clans of Ireland · Under the patronage of the President of Ireland</div>
       </div>
       <div class="hero-cert-wrap">
