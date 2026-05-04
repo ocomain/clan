@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Clan Ó Comáin — Email correspondence review (Council & Chief)</title>
+  <style>
+    :root{
+      --ink:#0C1A0C; --ink-soft:#2E4A2E; --ink-muted:#5A6B5A;
+      --gold:#B8975A; --gold-deep:#8B6F32; --gold-light:#D4B87A;
+      --cream:#F8F4EC; --cream-mid:#F1EBDB; --cream-dark:#E8DFC8;
+      --white:#FFFFFF; --border:rgba(184,151,90,.25); --border-strong:rgba(184,151,90,.5);
+      --link:#1F4E79;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--cream);color:var(--ink);font-family:'EB Garamond','Georgia',serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+    /* Header band */
+    header{background:var(--ink);padding:48px 32px 36px;text-align:center;border-bottom:2px solid var(--gold)}
+    header img{display:block;width:88px;height:auto;margin:0 auto 14px}
+    header .clan{font-family:'Helvetica Neue','Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.28em;color:var(--gold);margin:0 0 18px}
+    header h1{font-family:'EB Garamond','Georgia',serif;font-size:clamp(28px,4vw,40px);font-weight:400;color:var(--gold-light);margin:0 0 14px;line-height:1.2}
+    header p.subtitle{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(245,236,216,.78);max-width:640px;margin:0 auto;line-height:1.6}
+
+    /* Main content */
+    main{max-width:760px;margin:0 auto;padding:48px 24px 40px}
+
+    .intro{background:var(--white);border:1px solid var(--border);border-left:3px solid var(--gold);padding:28px 32px;margin:0 0 40px;border-radius:2px}
+    .intro p{font-size:17px;line-height:1.75;color:var(--ink-soft);margin:0 0 14px}
+    .intro p:last-child{margin-bottom:0}
+    .intro p strong{color:var(--ink);font-weight:500}
+
+    /* Sequence section */
+    .sequence{margin:0 0 48px;background:var(--white);border:1px solid var(--border);border-radius:2px;overflow:hidden}
+    .seq-head{background:var(--ink);padding:24px 32px;border-bottom:2px solid var(--gold)}
+    .seq-eyebrow{font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+    .seq-head h2{font-family:'EB Garamond',serif;font-size:24px;font-weight:400;color:var(--gold-light);margin:0 0 6px;line-height:1.25}
+    .seq-head p.lede{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:rgba(245,236,216,.7);margin:0;line-height:1.5}
+
+    .seq-meta{background:var(--cream-mid);padding:16px 32px;border-bottom:1px solid var(--border);font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-soft);line-height:1.6}
+    .seq-meta strong{color:var(--ink)}
+
+    .seq-emails{padding:8px 0}
+    .email-item{display:block;padding:18px 32px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--ink);transition:background .12s}
+    .email-item:last-child{border-bottom:none}
+    .email-item:hover{background:var(--cream-mid)}
+    .email-row{display:flex;align-items:flex-start;gap:14px}
+    .day-pill{display:inline-block;flex-shrink:0;background:var(--gold);color:var(--ink);font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;padding:5px 11px;border-radius:1px;margin-top:2px;min-width:48px;text-align:center}
+    .email-detail{flex:1;min-width:0}
+    .email-title{font-family:'EB Garamond',serif;font-size:17px;font-weight:500;color:var(--ink);line-height:1.4;margin:0 0 4px}
+    .email-meta{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);line-height:1.5;margin:0}
+
+    /* Footer */
+    footer{background:var(--ink);padding:32px 24px;text-align:center;margin-top:24px}
+    footer p{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--gold-light);margin:0 0 6px}
+    footer p.small{font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-style:normal;letter-spacing:.1em;color:rgba(184,151,90,.7);margin-top:8px}
+
+    @media(max-width:600px){
+      header{padding:36px 20px 28px}
+      main{padding:32px 16px 24px}
+      .intro{padding:22px 22px}
+      .seq-head{padding:20px 22px}
+      .seq-meta{padding:14px 22px}
+      .email-item{padding:16px 22px}
+      .day-pill{min-width:42px;font-size:9px}
+      .email-title{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+    <p class="clan">CLAN Ó COMÁIN</p>
+    <h1>Email correspondence — for review</h1>
+    <p class="subtitle">A complete catalogue of the household's automated email sequences, prepared for the Council and the Chief.</p>
+  </header>
+
+  <main>
+
+    <div class="intro">
+      <p><strong>What this is.</strong> Three email sequences are now in place across the clan's communications infrastructure, totalling eighteen distinct emails. Each is voiced by a specific member of the household — Linda, the Chief, the Herald, Paddy as Seanchaí, Antoin as Tánaiste — and triggered by a particular moment in a member's or prospect's relationship with the clan.</p>
+      <p><strong>What we ask.</strong> Read the emails as the recipient would receive them. Click any title below to view the rendered email exactly as it would land in an inbox. Edits, refinements, and reworkings are welcomed — every email here can be adjusted before any further volume goes out.</p>
+      <p><strong>One note on the cart re-engagement sequence.</strong> Of the three, that sequence is the most recent and has had the least review. The Council's eye on Antoin's voice and Paddy's "is the clan real" framing in particular would be valuable.</p>
+    </div>
+
+    <!-- ─────────── 1. POST-SIGNUP LIFECYCLE ─────────── -->
+    <section class="sequence">
+      <div class="seq-head">
+        <p class="seq-eyebrow">Sequence one</p>
+        <h2>Post-signup lifecycle</h2>
+        <p class="lede">For new members in the days and weeks after they have entered the Register.</p>
+      </div>
+      <div class="seq-meta">
+        <strong>8 emails over 90 days.</strong> Voices: <strong>The Herald</strong> (3 variants by tier), <strong>Fergus</strong> (Chief, personal), <strong>Linda</strong> (Office, ×3), <strong>Paddy</strong> (Seanchaí). Trigger: members.created_at.
+      </div>
+      <div class="seq-emails">
+        <a class="email-item" href="/email-previews/01a-clan-tier-upsell.html">
+          <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
+            <p class="email-title">The Herald — Your name in the Register (Clan tier)</p>
+            <p class="email-meta">Variant 1A: register acknowledgment for Clan-tier members, with quiet upsell to Guardian.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/01b-guardian-default.html">
+          <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
+            <p class="email-title">The Herald — Your name in the public Register (Guardian+ default)</p>
+            <p class="email-meta">Variant 1B: for Guardian / Steward / Life members appearing on the public Register.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/01c-guardian-opted-out.html">
+          <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
+            <p class="email-title">The Herald — Your name in the Register (Guardian+ opted out)</p>
+            <p class="email-meta">Variant 1C: for higher-tier members who chose privacy on the public Register.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/02-fergus-personal-letter.html">
+          <div class="email-row"><span class="day-pill">+9 d</span><div class="email-detail">
+            <p class="email-title">Fergus — A word from Newhall</p>
+            <p class="email-meta">The Chief's personal letter. Warm, grounded, no CTA. Universal — every member receives it.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/03-linda-kindred-ask.html">
+          <div class="email-row"><span class="day-pill">+18 d</span><div class="email-detail">
+            <p class="email-title">Linda — A simple way to grow the clan</p>
+            <p class="email-meta">The first kindred-ask. The Office, by the Chief's wish. Invitation + gift paths.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/04-linda-gift-nudge.html">
+          <div class="email-row"><span class="day-pill">+28 d</span><div class="email-detail">
+            <p class="email-title">Linda — If sending an invitation feels like a lot…</p>
+            <p class="email-meta">Conditional nudge — sent only if the member has not yet brought one of the kindred in.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/05-linda-honours-explainer.html">
+          <div class="email-row"><span class="day-pill">+60 d</span><div class="email-detail">
+            <p class="email-title">Linda — How the clan's honours work</p>
+            <p class="email-meta">Plain-voice explainer of Cara, Ardchara, Onóir — the three dignities.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews/06-paddy-seanchai-pedigree.html">
+          <div class="email-row"><span class="day-pill">+90 d</span><div class="email-detail">
+            <p class="email-title">Paddy (Seanchaí) — The royal house you have joined</p>
+            <p class="email-meta">Storyteller voice. The pedigree as story, with the names-are-rivers Irish saying.</p>
+          </div></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ─────────── 2. PDF LEAD MAGNET ─────────── -->
+    <section class="sequence">
+      <div class="seq-head">
+        <p class="seq-eyebrow">Sequence two</p>
+        <h2>Starter-guide lead magnet</h2>
+        <p class="lede">For visitors who request the free starter guide on tracing their Irish line — many of whom will not be members yet.</p>
+      </div>
+      <div class="seq-meta">
+        <strong>6 emails over 35 days.</strong> Voice: <strong>Linda</strong> (Office) throughout — the Chief is reserved for members. Trigger: pdf_subscribers.confirmed_at (post double-opt-in).
+      </div>
+      <div class="seq-emails">
+        <a class="email-item" href="/email-previews-pdf-lead/00-confirmation.html">
+          <div class="email-row"><span class="day-pill">CONF</span><div class="email-detail">
+            <p class="email-title">Confirmation — Please confirm your email</p>
+            <p class="email-meta">Sent on form submit; double opt-in for ePrivacy / GDPR compliance.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-pdf-lead/01-starter-guide-delivery.html">
+          <div class="email-row"><span class="day-pill">+0 d</span><div class="email-detail">
+            <p class="email-title">Linda — Your starter guide, with the Chief's compliments</p>
+            <p class="email-meta">Fired immediately on confirmation click. Delivers the PDF + plants the seed.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-pdf-lead/02-standing.html">
+          <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
+            <p class="email-title">Linda — A note on the standing of Clan Ó Comáin</p>
+            <p class="email-meta">Legitimacy &amp; proof. Clans of Ireland recognition, the pedigree, the Chief.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-pdf-lead/03-certificate.html">
+          <div class="email-row"><span class="day-pill">+10 d</span><div class="email-detail">
+            <p class="email-title">Linda — On the certificate, and what membership carries</p>
+            <p class="email-meta">The artefact + four-tier ladder + three-generations inheritance frame.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-pdf-lead/04-direct-invitation.html">
+          <div class="email-row"><span class="day-pill">+21 d</span><div class="email-detail">
+            <p class="email-title">Linda — A place for you in the Register at Newhall</p>
+            <p class="email-meta">The direct invitation + Founders of the Revival 2026 distinction.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-pdf-lead/05-final-invitation.html">
+          <div class="email-row"><span class="day-pill">+35 d</span><div class="email-detail">
+            <p class="email-title">Linda — The Chief has asked me to write once more</p>
+            <p class="email-meta">Final considered invitation. Then exits cleanly into the standing Chronicle list.</p>
+          </div></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ─────────── 3. CART RE-ENGAGEMENT ─────────── -->
+    <section class="sequence">
+      <div class="seq-head">
+        <p class="seq-eyebrow">Sequence three</p>
+        <h2>Cart re-engagement</h2>
+        <p class="lede">For applicants who began the herald-form join chat but did not complete payment — beyond the existing 24-hour reminder.</p>
+      </div>
+      <div class="seq-meta">
+        <strong>4 emails over 90 days.</strong> Voices: <strong>Linda</strong> (Office, ×2), <strong>Paddy</strong> (Seanchaí), <strong>Antoin</strong> (Tánaiste). Trigger: applications.reminder_sent_at — only while status remains 'pending'.
+      </div>
+      <div class="seq-emails">
+        <a class="email-item" href="/email-previews-cart-reengage/01-practical-reextension.html">
+          <div class="email-row"><span class="day-pill">+10 d</span><div class="email-detail">
+            <p class="email-title">Linda — Your application sits unfinished, a practical word</p>
+            <p class="email-meta">Practical re-extension. One-click resume CTA. Addresses friction / payment hiccup.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-cart-reengage/02-legitimacy-paddy.html">
+          <div class="email-row"><span class="day-pill">+25 d</span><div class="email-detail">
+            <p class="email-title">Paddy (Seanchaí) — In case the question was whether the clan is real</p>
+            <p class="email-meta">Addresses 'is this real?' through plain testimony. Direct, possibly more direct than expected.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-cart-reengage/03-civic-value-antoin.html">
+          <div class="email-row"><span class="day-pill">+50 d</span><div class="email-detail">
+            <p class="email-title">Antoin (Tánaiste) — What your hand on this work would mean</p>
+            <p class="email-meta">Reframes membership as cultural stewardship — what €49 funds, not what it buys.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-cart-reengage/04-graceful-close.html">
+          <div class="email-row"><span class="day-pill">+90 d</span><div class="email-detail">
+            <p class="email-title">Linda — A final word, with the Chief's thanks</p>
+            <p class="email-meta">Graceful close. The Office shall not write again on this matter. Door remains open.</p>
+          </div></div>
+        </a>
+      </div>
+    </section>
+
+    <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin:32px 0 0;line-height:1.65;padding:0 12px">
+      Eighteen emails across three sequences. Edits and refinements at any stage are welcomed — please reply to <a href="mailto:ddw@ocomain.org" style="color:var(--gold-deep)">ddw@ocomain.org</a> with notes, line edits, or wholesale changes to any voice or email.
+    </p>
+
+  </main>
+
+  <footer>
+    <p>Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p class="small">CLAN Ó COMÁIN · NEWHALL HOUSE · COUNTY CLARE · IRELAND</p>
+  </footer>
+
+</body>
+</html>
