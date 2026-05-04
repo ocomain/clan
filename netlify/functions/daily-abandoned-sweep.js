@@ -7,7 +7,7 @@
 // the herald form but never completed Stripe (the Stripe session.expired event
 // only fires if they actually got to the Stripe page).
 
-const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
+const { supa, clanId, normaliseTier, logEvent, filterEmailsAlreadyMembers } = require('./lib/supabase');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -36,10 +36,39 @@ exports.handler = async () => {
       return { statusCode: 200, body: JSON.stringify({ processed: 0 }) };
     }
 
+    // ── Defensive filter: drop any application whose email has since
+    //     become a confirmed member. The stripe-webhook does try to
+    //     flip applications.status to 'paid' on payment, but that's a
+    //     best-effort exact-email match — a member who reached us via
+    //     a different flow (gift redemption, fresh herald form with
+    //     casing/whitespace difference) may leave a stale pending row.
+    //     We do NOT want to email a confirmed Life member telling them
+    //     their place is 'still open'.
+    //     For each match: skip the send, mark the application
+    //     'superseded' so it won't be re-evaluated next run, and log
+    //     the supersede event for visibility.
+    const memberEmails = await filterEmailsAlreadyMembers(clan_id, apps.map(a => a.email));
+
     let processed = 0;
     let failed = 0;
+    let superseded = 0;
     for (const app of apps) {
       try {
+        const emailKey = (app.email || '').toLowerCase().trim();
+        if (memberEmails.has(emailKey)) {
+          await supa()
+            .from('applications')
+            .update({ status: 'superseded', reminder_sent_at: new Date().toISOString() })
+            .eq('id', app.id);
+          await logEvent({
+            clan_id,
+            event_type: 'abandoned_reminder_skipped_existing_member',
+            payload: { application_id: app.id, email: app.email },
+          });
+          superseded++;
+          continue;
+        }
+
         const tierInfo = normaliseTier(app.tier);
         await sendReminder(app.email, app.name, tierInfo.label);
         // Mark as sent. Status stays 'pending' so if they still complete,
@@ -57,8 +86,8 @@ exports.handler = async () => {
       }
     }
 
-    console.log(`sweep: processed=${processed} failed=${failed}`);
-    return { statusCode: 200, body: JSON.stringify({ processed, failed }) };
+    console.log(`sweep: processed=${processed} superseded=${superseded} failed=${failed}`);
+    return { statusCode: 200, body: JSON.stringify({ processed, superseded, failed }) };
   } catch (e) {
     console.error('sweep fatal:', e.message);
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };

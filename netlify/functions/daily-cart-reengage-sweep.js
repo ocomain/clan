@@ -21,7 +21,7 @@
 //
 // PER-BUCKET LIMIT 50.
 
-const { supa, clanId, logEvent } = require('./lib/supabase');
+const { supa, clanId, logEvent, filterEmailsAlreadyMembers } = require('./lib/supabase');
 const {
   sendReengage1_Practical,
   sendReengage2_Legitimacy,
@@ -55,13 +55,40 @@ async function processBucket({ clan_id, now, ageDays, trackingColumn, sendFn, bu
 
   if (error) {
     console.error(`reengage-sweep: ${bucketLabel} query failed:`, error.message);
-    return { sent: 0, failed: 0 };
+    return { sent: 0, failed: 0, superseded: 0 };
   }
 
-  let sent = 0, failed = 0;
+  // ── Defensive filter: drop any application whose email has since
+  //     become a confirmed member. The stripe-webhook does try to
+  //     flip applications.status to 'paid' on payment, but that's a
+  //     best-effort exact-email match — a member who reached us via
+  //     a different flow may leave a stale pending row that the
+  //     bucketing query will still pick up. Belt-and-braces here so
+  //     we never email a confirmed member a re-engagement nudge.
+  const memberEmails = await filterEmailsAlreadyMembers(clan_id, (targets || []).map(t => t.email));
+
+  let sent = 0, failed = 0, superseded = 0;
 
   for (const app of targets || []) {
     try {
+      const emailKey = (app.email || '').toLowerCase().trim();
+      if (memberEmails.has(emailKey)) {
+        // Mark superseded + complete so this row is never picked up
+        // again by any bucket. Don't stamp the trackingColumn — that
+        // would imply we sent the email, which we did not.
+        await supa()
+          .from('applications')
+          .update({ status: 'superseded', reengage_complete_at: new Date().toISOString() })
+          .eq('id', app.id);
+        await logEvent({
+          clan_id,
+          event_type: 'cart_reengage_skipped_existing_member',
+          payload: { application_id: app.id, email: app.email, bucket: bucketLabel },
+        });
+        superseded += 1;
+        continue;
+      }
+
       const ok = await sendFn(app);
       if (ok) {
         const update = { [trackingColumn]: new Date().toISOString() };
@@ -84,7 +111,7 @@ async function processBucket({ clan_id, now, ageDays, trackingColumn, sendFn, bu
     }
   }
 
-  return { sent, failed };
+  return { sent, failed, superseded };
 }
 
 exports.handler = async () => {

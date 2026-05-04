@@ -170,4 +170,47 @@ function isFounderAdmin(email) {
   return FOUNDER_ADMIN_ALLOWLIST.has(email.toLowerCase().trim());
 }
 
-module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister, isFounderAdmin, TIER_BY_SLUG };
+// ─── filterEmailsAlreadyMembers ──────────────────────────────────────────
+// Given a list of email strings, returns the subset that already exist as
+// rows in public.members for the given clan. Comparison is case-
+// insensitive — both sides are lowercased + trimmed before checking
+// against the unique index members(clan_id, lower(email)).
+//
+// Used by the abandoned-cart and cart-reengage sweeps as a defensive
+// filter: a member who reaches us through one path (gift redemption,
+// re-submitted herald form, etc.) may leave a pending application row
+// behind that the stripe-webhook didn't successfully flip — and we do
+// not want to email a confirmed member telling them their place is
+// 'still open'. This helper lets the sweeps drop any application
+// whose email has since become a member.
+//
+// We don't filter on members.status — even cancelled / lapsed members
+// shouldn't receive the abandoned-cart sequence on stale application
+// rows, since the message ('your place is still open') would read
+// confusingly. Renewal nudges are a separate flow.
+//
+// @param {string} clan_id
+// @param {string[]} emails
+// @returns {Promise<Set<string>>} lowercase emails that match an existing member
+async function filterEmailsAlreadyMembers(clan_id, emails) {
+  const cleaned = (emails || [])
+    .filter(e => typeof e === 'string' && e.length > 0)
+    .map(e => e.toLowerCase().trim());
+  if (cleaned.length === 0) return new Set();
+  const { data, error } = await supa()
+    .from('members')
+    .select('email')
+    .eq('clan_id', clan_id)
+    .in('email', cleaned);
+  if (error) {
+    // Best-effort: if the lookup fails, return empty so the caller
+    // proceeds as before (no false-negatives blocking a real reminder).
+    // The tradeoff is that a Supabase outage could let one false-
+    // positive abandoned email through, which is acceptable.
+    console.warn('filterEmailsAlreadyMembers failed (returning empty):', error.message);
+    return new Set();
+  }
+  return new Set((data || []).map(r => (r.email || '').toLowerCase().trim()));
+}
+
+module.exports = { supa, clanId, normaliseTier, logEvent, canAppearOnPublicRegister, isFounderAdmin, filterEmailsAlreadyMembers, TIER_BY_SLUG };
