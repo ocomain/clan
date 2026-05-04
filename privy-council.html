@@ -458,7 +458,7 @@ function toggleMenu(){
       <h3 style="font-family:'EB Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:12px">Interested in serving Clan Ó Comáin?</h3>
       <p class="body-text" style="margin-bottom:20px;max-width:640px">The Privy Council of Clan Ó Comáin is being constituted. All council positions are honorary clan offices, held in service to the clan rather than as employment. If you are a clan member — or wish to become one — and feel you have the skills, commitment and passion to serve in one of the open positions, please write to the Office of the Private Secretary, who receives correspondence on the Chief's behalf, with a brief account of your interest and background.</p>
       <div style="display:flex;gap:14px;flex-wrap:wrap">
-        <a href="mailto:clan@ocomain.org?subject=Privy Council application" class="btn-p">Write to the chief</a>
+        <button type="button" class="btn-p" id="councilApplyBtn" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer">Apply to serve</button>
         <a href="membership.html" class="btn-g">Join the clan first</a>
       </div>
     </div>
@@ -512,5 +512,151 @@ function toggleMenu(){
     </div>
   </div>
 </footer>
+<!-- ── Council application modal ──────────────────────────────────────
+     Public-facing form replacing the previous mailto: button. Posts
+     to /api/submit-council-application, which emails the applicant's
+     account to clan@ocomain.org for triage by the Office of the
+     Private Secretary. Honeypot 'website' field defends against bots
+     in addition to the server-side checks. Visual idiom matches the
+     dashboard's obituary/story modals.
+
+     The form is dropped inline rather than as a separate page so a
+     reader who's already engaged with the council page (scrolled to
+     the apply section, read the role list) doesn't lose context. -->
+<div id="councilModal" style="display:none;position:fixed;inset:0;background:rgba(12,26,12,.82);align-items:center;justify-content:center;padding:20px;z-index:1000;overflow-y:auto">
+  <div style="max-width:560px;width:100%;background:var(--cream);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-top:3px solid var(--gold);padding:36px 36px 32px;border-radius:2px;max-height:90vh;overflow-y:auto">
+    <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Apply to serve</div>
+    <h3 style="font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 10px">Council application</h3>
+    <p style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">Your account is received by the Office of the Private Secretary, who handles correspondence on the Chief's behalf. The Office will reply by email within a few days.</p>
+
+    <!-- Honeypot — hidden from real users via inline display:none.
+         Bots filling every visible field will set this; the server
+         silently drops those submissions. -->
+    <div aria-hidden="true" style="display:none">
+      <label>If you are human, leave this field blank.
+        <input type="text" id="caHoney" name="website" autocomplete="off" tabindex="-1">
+      </label>
+    </div>
+
+    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name</label>
+    <input type="text" id="caName" maxlength="160" placeholder="Your full name" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
+
+    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your email</label>
+    <input type="email" id="caEmail" maxlength="320" placeholder="name@example.com" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
+
+    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Office of interest</label>
+    <select id="caOffice" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
+      <option value="unsure">Not sure — open to a conversation</option>
+      <option value="viceroy">Viceroy</option>
+      <option value="anam-cara">Anam Cara · Counsellor</option>
+      <option value="ollamh-leighis">Ollamh Leighis · Health Advisor</option>
+      <option value="craoibhscriobhai">Craoibhscríobhaí · Genealogist</option>
+      <option value="chaplain">Clan Chaplain</option>
+      <option value="herald">Clan Herald</option>
+      <option value="gaelic-officer">Gaelic Officer</option>
+      <option value="ambassador">Clan Ambassador (diaspora)</option>
+      <option value="chronicler">Chronicler of Legends</option>
+      <option value="archivist">Heritage Archivist</option>
+      <option value="diaspora-liaison">Diaspora Liaison</option>
+      <option value="pr-officer">PR Officer</option>
+      <option value="membership-officer">Membership Officer</option>
+    </select>
+
+    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">A brief account of your interest and background</label>
+    <textarea id="caMessage" rows="6" maxlength="4000" placeholder="A few short paragraphs — what draws you to this office, what you bring, anything else the Office should know." style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;resize:vertical;line-height:1.6;margin-bottom:18px"></textarea>
+
+    <div id="caStatus" style="display:none;padding:12px 14px;margin-bottom:16px;border-radius:1px;font-family:'EB Garamond',serif;font-size:14px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button type="button" id="caCancel" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:1px solid var(--border);padding:11px 22px;border-radius:1px;cursor:pointer">Cancel</button>
+      <button type="button" id="caSend" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:12px 26px;border-radius:1px;cursor:pointer">Send to the Office</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var modal = document.getElementById('councilModal');
+  var openBtn = document.getElementById('councilApplyBtn');
+  var cancelBtn = document.getElementById('caCancel');
+  var sendBtn = document.getElementById('caSend');
+  if (!modal || !openBtn) return;
+
+  function openModal() {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() {
+      var n = document.getElementById('caName');
+      if (n) n.focus();
+    }, 50);
+  }
+  function closeModal() {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  openBtn.addEventListener('click', openModal);
+  cancelBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.style.display !== 'none') closeModal();
+  });
+
+  sendBtn.addEventListener('click', async function() {
+    var statusEl = document.getElementById('caStatus');
+    var fields = {
+      website: document.getElementById('caHoney').value, // honeypot
+      name:    document.getElementById('caName').value.trim(),
+      email:   document.getElementById('caEmail').value.trim(),
+      office:  document.getElementById('caOffice').value,
+      message: document.getElementById('caMessage').value.trim(),
+    };
+    var missing = [];
+    if (!fields.name)    missing.push('your name');
+    if (!fields.email)   missing.push('your email');
+    if (!fields.message) missing.push('a brief account');
+    if (missing.length) {
+      statusEl.style.display = 'block';
+      statusEl.style.background = 'rgba(192,57,43,.08)';
+      statusEl.style.color = '#922c1f';
+      statusEl.textContent = 'Please fill in: ' + missing.join(', ') + '.';
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+    statusEl.style.display = 'none';
+
+    try {
+      var r = await fetch('/api/submit-council-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields),
+      });
+      if (!r.ok) {
+        var j = await r.json().catch(function() { return {}; });
+        throw new Error(j.error || 'Request failed');
+      }
+      statusEl.style.display = 'block';
+      statusEl.style.background = 'rgba(184,151,90,.15)';
+      statusEl.style.color = 'var(--ink)';
+      statusEl.innerHTML = 'Sent ✓ The Office of the Private Secretary will reply by email within a few days.';
+      ['caName','caEmail','caOffice','caMessage'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.disabled = true;
+      });
+      sendBtn.style.display = 'none';
+      cancelBtn.textContent = 'Close';
+    } catch (e) {
+      console.error('council application failed:', e);
+      statusEl.style.display = 'block';
+      statusEl.style.background = 'rgba(192,57,43,.08)';
+      statusEl.style.color = '#922c1f';
+      statusEl.textContent = 'Could not send — ' + (e.message || 'please try again, or write to clan@ocomain.org');
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send to the Office';
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
