@@ -325,6 +325,16 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 
     <button class="submit-btn" id="submitBtn" onclick="submitForm()">Continue to secure payment →</button>
     <p class="submit-note">Your gift details are sent to the clan before payment. The Chief will write personally to your recipient once payment is confirmed.</p>
+    <!-- Seller disclosure — gift form skips the Step 2 confirmation in normal flow,
+         going directly to Stripe after submitForm(). Disclosure must therefore
+         sit on Step 1, beneath the actual button users click. -->
+    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.04em;line-height:1.6;margin:14px auto 0;max-width:520px;text-align:center">
+      Sold by Moohane LLC, operator of the Clan Ó Comáin membership platform.
+      By proceeding you agree to the
+      <a href="/terms.html" style="color:rgba(184,151,90,.6);text-decoration:underline">Terms of Service</a>
+      and
+      <a href="/privacy.html" style="color:rgba(184,151,90,.6);text-decoration:underline">Privacy Policy</a>.
+    </p>
 
   </div>
 
