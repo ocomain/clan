@@ -45,7 +45,8 @@ exports.handler = async (event) => {
 
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
     <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim</p>
-    <p style="font-family:sans-serif;font-size:10px;color:#A88B57;margin:0;letter-spacing:0.06em">Moohane LLC · 30 N Gould St Ste 36809, Sheridan, WY 82801, USA · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+    <p style="font-family:'Georgia',serif;font-size:11px;color:#A88B57;margin:0;letter-spacing:0.06em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+    <p style="font-family:sans-serif;font-size:9px;color:#5A4A2C;margin:8px 0 0;letter-spacing:0.04em">Moohane LLC · 30 N Gould St Ste 36809, Sheridan, WY 82801, USA</p>
     <p style="font-family:sans-serif;font-size:10px;color:#8A7245;margin:8px 0 0"><a href="https://www.ocomain.org/unsubscribe?email=${encodeURIComponent(email)}" style="color:#A88B57">Unsubscribe</a></p>
   </div>
 </div>

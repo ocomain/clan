@@ -229,7 +229,8 @@ async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipien
   </div>
 
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center">
-    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Moohane LLC · 30 N Gould St Ste 36809, Sheridan, WY 82801, USA · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+    <p style="font-family:sans-serif;font-size:9px;color:#5A4A2C;margin:8px 0 0;letter-spacing:0.04em">Moohane LLC · 30 N Gould St Ste 36809, Sheridan, WY 82801, USA</p>
   </div>
 </div>
 </body>
