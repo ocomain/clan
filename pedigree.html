@@ -854,36 +854,86 @@ function toggleMenu(){
 </footer>
 
 <script>
-/* Anchor link re-scroll after lazy images settle.
+/* Anchor link re-scroll after layout stabilises.
    ─────────────────────────────────────────────────
-   The pedigree page uses loading="lazy" on most of its images
+   The pedigree page uses loading='lazy' on most of its images
    (≈40+ images, several hundred KB each). When a visitor lands
    on /pedigree#conclusion (or any other in-page anchor),
    browsers compute the scroll position BEFORE lazy images below
    the fold are loaded. Once those images do load, they push
    content down, and the anchor target ends up below where the
-   browser scrolled. The user sees the wrong section and has to
-   click the link a second time to re-anchor.
+   browser scrolled.
 
-   Fix: after window.load (all images loaded), re-scroll to the
-   hash target if there is one. Uses smooth scroll for visual
-   continuity. Fires once; doesn't interfere with subsequent
-   in-page anchor clicks (those work normally because images
-   are already loaded by then). */
+   Why a simple post-window.load re-scroll is not enough:
+   loading='lazy' images don't load when window.load fires —
+   that's their entire purpose. They load when they enter the
+   viewport. So as the user starts scrolling toward the anchor,
+   more images load in, more layout shifts happen, and the
+   anchor moves further down again.
+
+   The fix: keep re-scrolling until the document height stops
+   changing for a settling period. Effectively this means:
+     1. On every layout shift (image loaded, font swapped, etc),
+        re-scroll to the hash target.
+     2. Stop re-scrolling once a) the user has manually scrolled,
+        or b) layout has been stable for 800ms.
+
+   This keeps the user pinned to their requested anchor as the
+   page settles, then steps out of the way the moment they
+   take control. */
 (function(){
   if (!window.location.hash) return;
-  function rescroll() {
-    try {
-      var el = document.querySelector(window.location.hash);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } catch (e) { /* invalid selector — ignore */ }
+  var target;
+  try {
+    target = document.querySelector(window.location.hash);
+  } catch (e) { return; /* invalid selector — bail */ }
+  if (!target) return;
+
+  var userScrolled = false;
+  var lastHeight = -1;
+  var stableTicks = 0;
+  var maxIterations = 80;  // ≈ 8 seconds at 100ms/tick — safety cap
+  var iteration = 0;
+
+  // Track manual user scroll so we don't yank the page back
+  // once they've taken control. Wheel/touch/key are intent;
+  // programmatic scroll events from our own scrollIntoView don't
+  // count, so we use input events not 'scroll'.
+  function userIntent(){ userScrolled = true; }
+  window.addEventListener('wheel',     userIntent, { passive: true, once: true });
+  window.addEventListener('touchstart',userIntent, { passive: true, once: true });
+  window.addEventListener('keydown',   userIntent, { passive: true, once: true });
+
+  function tick() {
+    if (userScrolled) return;
+    if (iteration++ > maxIterations) return;
+    var h = document.documentElement.scrollHeight;
+    if (h === lastHeight) {
+      stableTicks++;
+      // 8 ticks × 100ms = 800ms of layout stability before we
+      // declare the page 'settled' and stop re-anchoring.
+      if (stableTicks >= 8) return;
+    } else {
+      stableTicks = 0;
+      lastHeight = h;
+      // Layout shifted — re-scroll to keep the anchor in view.
+      try { target.scrollIntoView({ behavior: 'auto', block: 'start' }); } catch (e) {}
+    }
+    setTimeout(tick, 100);
   }
-  // Wait for all images + resources to load, then a final tick
-  // so the browser has settled layout, then re-scroll.
-  if (document.readyState === 'complete') {
-    setTimeout(rescroll, 50);
+
+  // First scroll: 'auto' (instant) so the page lands at the
+  // anchor immediately on first paint, before lazy images
+  // start coming in.
+  function startReanchor() {
+    try { target.scrollIntoView({ behavior: 'auto', block: 'start' }); } catch (e) {}
+    setTimeout(tick, 100);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startReanchor);
   } else {
-    window.addEventListener('load', function(){ setTimeout(rescroll, 50); });
+    startReanchor();
   }
 })();
 </script>
