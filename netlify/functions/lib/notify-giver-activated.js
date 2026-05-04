@@ -79,7 +79,7 @@ async function notifyGiverOfActivation({
     </table>
   </div>
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center">
-    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Clan Ó Comáin · Newhall House, County Clare, Ireland</p>
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Moohane LLC · 30 N Gould St Ste 36809, Sheridan, WY 82801, USA · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
   </div>
 </div>
 </body>
