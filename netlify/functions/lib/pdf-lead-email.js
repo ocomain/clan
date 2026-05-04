@@ -171,7 +171,8 @@ ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Thank you for asking us for the starter guide — <em>First Steps in Tracing Your Irish Line</em>. To complete your request, please confirm your email address by clicking the button below.`)}
 ${ctaButtonHtml('Confirm and send me the guide', confirmUrl)}
 ${p(`Once confirmed, the guide will arrive in your inbox within a moment or two. If you did not request this, you may safely ignore this message — no further emails will be sent.`)}
-${p(`<em>With kind regards,<br>The Office of the Private Secretary to the Chief of Ó Comáin</em>`)}
+${p(`With kind regards,`)}
+${lindaSignatureHtml()}
 `;
   return wrapInChrome({
     eyebrow: 'A note from the Office',
