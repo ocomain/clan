@@ -1191,15 +1191,25 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           <div class="maction-desc">The Chief's council — and the open positions available to members.</div>
           <span class="maction-btn">View council →</span>
         </a>
-        <!-- Obituary submission — Stage 1 manual flow. Submission is via
+        <!-- Obituary submission — Stage 1 manual flow, Steward+ only.
+             Per chief direction: gated to Steward and Life tier members
+             (who automatically inherit Steward perks). Submission is via
              email to clan@ocomain.org rather than a self-serve form, so
              the Chief and clan staff can curate inclusion against the
-             quality bar already set by the Ronan Commane obituary on the
-             /patrons page. The mailto: includes a subject prefix and a
-             template body so members aren't starting from a blank email.
-             Future Stage 2 (when volume justifies) would replace this
-             card with a proper submission form + moderation queue. -->
-        <a class="maction live" style="text-decoration:none;color:inherit" href="mailto:clan@ocomain.org?subject=Obituary%20submission%20%E2%80%94%20%5Bname%20of%20loved%20one%5D&amp;body=Dia%20dhuit%2C%0A%0AI%27d%20like%20to%20submit%20an%20obituary%20for%20inclusion%20on%20the%20clan%27s%20memorial%20roll%20at%20ocomain.org%2Fpatrons.%0A%0AName%3A%20%5Btheir%20full%20name%5D%0ABorn%3A%20%5Bplace%20and%20date%5D%0ADied%3A%20%5Bplace%20and%20date%5D%0A%0AObituary%20text%3A%0A%5BPlease%20write%20a%20few%20paragraphs%20telling%20the%20story%20of%20their%20life%20%E2%80%94%20what%20they%20loved%2C%20what%20they%20gave%2C%20how%20they%20will%20be%20remembered.%5D%0A%0AI%27ll%20also%20attach%20a%20photo%20to%20this%20email%20%28a%20portrait%20works%20best%29.%0A%0AGo%20raibh%20maith%20agat%2C%0A">
+             editorial bar.
+
+             Format expectations: a portrait + a few short lines (the
+             clan's memorial entries are deliberately compact — Ronan
+             Commane's longer treatment on /patrons is the singular case
+             of the chief's son, not the template for everyone else).
+
+             The mailto: subject prefix + structured template body
+             scaffolds what the Chief will need from the member (name,
+             dates, relationship, ~80-120 words, photo). Future Stage 2
+             (when volume justifies) would replace this with a proper
+             submission form + moderation queue. -->
+        ${(member.tier && /^(steward|life)-/.test(member.tier)) ? `
+        <a class="maction live" style="text-decoration:none;color:inherit" href="mailto:clan@ocomain.org?subject=Obituary%20submission%20%E2%80%94%20%5Bname%20of%20loved%20one%5D&amp;body=Dia%20dhuit%2C%0A%0AI%27d%20like%20to%20submit%20a%20short%20memorial%20entry%20for%20inclusion%20on%20the%20clan%27s%20memorial%20roll%20at%20ocomain.org%2Fpatrons.%0A%0AName%3A%20%5Btheir%20full%20name%5D%0ARelationship%3A%20%5Bmother%2C%20father%2C%20uncle%20etc%5D%0ABorn%3A%20%5Bplace%20and%20date%5D%0ADied%3A%20%5Bplace%20and%20date%5D%0A%0AA%20few%20lines%20about%20them%20%2880-120%20words%29%3A%0A%5BWhat%20they%20loved%2C%20what%20they%20gave%2C%20how%20they%27ll%20be%20remembered.%5D%0A%0AI%27ll%20attach%20a%20portrait%20photograph%20to%20this%20email.%0A%0AGo%20raibh%20maith%20agat%2C%0A">
           <span class="maction-icon">
             <!-- Memorial / remembrance — open book with a small flame
                  above. Open book signifies the lasting record; flame
@@ -1220,11 +1230,12 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
               <path d="M24 11 C 22 9 22 7 24 5 C 26 7 26 9 24 11 Z" fill="var(--gold-deep)" stroke="none"/>
             </svg>
           </span>
-          <div class="maction-eyebrow">Members only · forever</div>
+          <div class="maction-eyebrow">Steward perk · forever</div>
           <div class="maction-title">Submit an Obituary</div>
-          <div class="maction-desc">A loved one remembered forever in the clan's online memorial roll at <em>ocomain.org/patrons</em>. Email the Chief with the obituary text and a portrait — published with care, kept always.</div>
+          <div class="maction-desc">A loved one remembered forever in the clan's online memorial roll at <em>ocomain.org/patrons</em>. A portrait and a few short lines, kept always.</div>
           <span class="maction-btn">Write to the Chief →</span>
         </a>
+        ` : ''}
       </section>
     `;
     loading.style.display = 'none';
