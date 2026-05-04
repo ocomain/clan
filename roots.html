@@ -37,10 +37,10 @@
     .roots-form button{width:100%;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:15px 20px;border:none;border-radius:1px;cursor:pointer;transition:background .15s;margin-top:6px}
     .roots-form button:hover{background:var(--gold-light)}
     .roots-form button:disabled{opacity:.6;cursor:not-allowed}
-    .roots-form .trust-line{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:18px;line-height:1.5}
-    .roots-form .err{color:#9a3a3a;font-size:13px;margin-top:12px;text-align:center;font-family:'EB Garamond',serif}
-    .roots-form .ok{color:var(--ink-soft);font-size:15px;margin-top:12px;text-align:center;font-family:'EB Garamond',serif;line-height:1.55}
-    .roots-form .ok strong{display:block;margin-bottom:8px;font-size:18px;color:var(--ink);font-weight:400}
+    .roots-form .trust-line{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);text-align:center;margin-top:18px;line-height:1.6}
+    .roots-form .ok{color:var(--ink-soft);font-size:17px;margin-top:12px;text-align:center;font-family:'EB Garamond',serif;line-height:1.65}
+    .roots-form .ok strong{display:block;margin-bottom:10px;font-size:20px;color:var(--ink);font-weight:400}
+    .roots-form .err{color:#9a3a3a;font-size:15px;margin-top:12px;text-align:center;font-family:'EB Garamond',serif}
 
     /* Legitimacy block */
     .roots-legit{background:var(--cream-mid);padding:48px 0;border-top:1px solid var(--border)}
@@ -49,10 +49,11 @@
     .roots-legit p strong{color:var(--ink);font-weight:500}
     .roots-legit-rule{width:48px;height:1px;background:var(--gold);margin:0 auto 22px}
 
-    /* Quiet escape */
-    .roots-escape{padding:36px 0 56px;text-align:center;background:var(--cream)}
-    .roots-escape p{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:520px;margin:0 auto;line-height:1.6}
-    .roots-escape a{color:var(--gold-deep);text-decoration:underline}
+    /* Quiet escape — sized for older eyes (50–70+ demographic) */
+    .roots-escape{padding:42px 0 60px;text-align:center;background:var(--cream)}
+    .roots-escape p{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink-soft);max-width:600px;margin:0 auto;line-height:1.65;padding:0 24px}
+    .roots-escape a{color:var(--gold-deep);text-decoration:underline;font-weight:500}
+    @media(max-width:600px){.roots-escape p{font-size:17px}}
 
     /* Footer */
     footer.roots-foot{background:var(--ink);padding:28px 32px;text-align:center}
@@ -66,6 +67,12 @@
   </style>
 </head>
 <body>
+
+  <!-- Back link — supports the "stay browsing the site after" use case;
+       sized for legibility on older displays. -->
+  <div style="background:var(--ink);padding:14px 24px;text-align:center;border-bottom:1px solid rgba(184,151,90,.18)">
+    <a href="/" style="font-family:'EB Garamond',serif;font-size:15px;color:var(--gold-light);text-decoration:none;letter-spacing:.02em">&larr; Back to Clan Ó Comáin</a>
+  </div>
 
   <section class="roots-hero">
     <img class="coa" src="/coat_of_arms.png" alt="Clan Ó Comáin">
@@ -152,7 +159,7 @@
 
           if (res.ok && data.ok) {
             // Replace the form contents with a friendly confirmation message.
-            form.innerHTML = '<div class="ok"><strong>Please check your inbox.</strong>We have sent a confirmation email to <em>' + email.replace(/[<>&"]/g, '') + '</em>. Click the link in that email and the starter guide will arrive moments later. <br><br>If you do not see it, please check your spam folder.</div>';
+            form.innerHTML = '<div class="ok"><strong>Please check your inbox.</strong>We have sent a confirmation email to <em>' + email.replace(/[<>&"]/g, '') + '</em>. Click the link in that email and the starter guide will arrive moments later.<br><br>If you do not see it, please check your spam folder.<br><br><a href="/" style="display:inline-block;margin-top:14px;font-family:\'EB Garamond\',serif;font-size:17px;color:var(--gold-deep);text-decoration:underline;font-weight:500">&larr; Continue exploring the clan</a></div>';
 
             // Fire Meta Pixel Lead event for ad attribution.
             if (window.fbq) { try { window.fbq('track', 'Lead'); } catch(e){} }
