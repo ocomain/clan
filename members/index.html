@@ -1038,79 +1038,6 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         </div>
       </section>
 
-      ${(member.tier && /^guardian-/.test(member.tier)) ? `
-      <!-- Guardian-tier upgrade prompt. Sits directly under the
-           'By private welcome' invite/gift section because the two
-           reads are adjacent: invite — bring others in; upgrade —
-           deepen your own commitment. The placement was moved here
-           from above the Order of Honours on user feedback. Same
-           visual idiom as the Clan→Guardian card higher up — two-
-           perk frame lifting the strongest Steward-distinct
-           benefits: priority of notice (Stewards' Privilege, the
-           most concrete and recurring of the Steward perks) and
-           the Roll of Honour engraving (the most tangibly
-           permanent). The remaining Steward perks — private call
-           with the Chief, advisory seat, first refusal on Privy
-           Council — are deliberately held back so the card doesn't
-           read like a wall; they're the surprise on the membership
-           page. -->
-      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
-        <div class="mpriv-eyebrow">Two further marks of standing await as a Steward</div>
-        <div class="mpriv-title">Take your place among the Stewards</div>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Guardian of the Clan</strong>, you have your seat at the Chief's Gala, your hand-printed certificate, and your place on the <a href="https://www.ocomain.org/register" target="_blank" rel="noopener" style="color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px">Founding Members Register <span aria-hidden="true" style="font-size:.85em">↗</span></a>. The Stewards form a smaller inner circle — those who carry the clan with deeper investment.</p>
-        <ul class="mupgrade-perks">
-          <li class="mupgrade-perk">
-            <span class="mupgrade-perk-mark">✦</span>
-            <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">Stewards' Privilege</strong> — clan events and announcements reach Stewards first, before any other members.
-            </span>
-          </li>
-          <li class="mupgrade-perk">
-            <span class="mupgrade-perk-mark">✦</span>
-            <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">Your name engraved on the Roll of Honour at Newhall</strong> — displayed permanently in the clan seat.
-            </span>
-          </li>
-        </ul>
-        <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="steward" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request to become a Steward →</button></p>
-      </section>
-      ` : ''}
-
-      ${(member.tier && /^steward-/.test(member.tier)) ? `
-      <!-- Steward-tier upgrade prompt. Sits in the same slot as the
-           Guardian→Steward card above (under 'By private welcome'),
-           gated to a different tier — so a Steward sees their
-           upgrade card in the same dashboard position a Guardian
-           sees theirs. The Life-distinct selling points are: no
-           annual renewal (the most concrete — the recurring charge
-           a Steward feels each year vanishes), and the engraved-
-           not-just-inscribed Roll of Honour (the visible, physical
-           step up). The inheritance frame ('inherited by your
-           children in time') is woven into the body paragraph
-           rather than a third bullet, because it's a quality of
-           the whole act rather than a specific perk. -->
-      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
-        <div class="mpriv-eyebrow">A permanent commitment awaits</div>
-        <div class="mpriv-title">For life — no annual renewal, ever</div>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Steward of the Clan</strong>, you carry the priority and standing of the inner circle. Life Membership lifts the annual rhythm and turns it into a single act — your place in the clan secured for as long as you live, and inherited by your children in time.</p>
-        <ul class="mupgrade-perks">
-          <li class="mupgrade-perk">
-            <span class="mupgrade-perk-mark">✦</span>
-            <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">Everything in Steward — for life, with no annual renewal</strong>. A single act, never another invoice.
-            </span>
-          </li>
-          <li class="mupgrade-perk">
-            <span class="mupgrade-perk-mark">✦</span>
-            <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">Your name engraved on the Roll of Honour at Newhall</strong> — a permanent physical record in the clan seat.
-            </span>
-          </li>
-        </ul>
-        <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="life" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request Life membership →</button></p>
-      </section>
-      ` : ''}
-
       <!-- GIFT-A-MEMBERSHIP standalone CTA was removed 2026-04-28 —
            its content now lives in the gift panel of the unified
            action card above. The previous markup (a clickable
@@ -1350,6 +1277,81 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         </a>
         ` : ''}
       </section>
+
+      ${(member.tier && /^guardian-/.test(member.tier)) ? `
+      <!-- Guardian-tier upgrade prompt. Sits at the bottom of the
+           dashboard, after the action-card grid, so a Guardian first
+           sees what their tier already provides — library, year-one
+           review, council page, obituary perk — and the upgrade
+           prompt arrives as a 'consider deepening' closer rather
+           than a mid-page interrupt. Aligns with the chosen
+           acquisition-over-upsell focus: present but not urgent.
+           Same visual idiom as the Clan→Guardian card higher up —
+           two-perk frame lifting the strongest Steward-distinct
+           benefits: priority of notice (Stewards' Privilege, the
+           most concrete and recurring of the Steward perks) and
+           the Roll of Honour engraving (the most tangibly
+           permanent). The remaining Steward perks — private call
+           with the Chief, advisory seat, first refusal on Privy
+           Council — are deliberately held back so the card doesn't
+           read like a wall; they're the surprise on the membership
+           page. -->
+      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
+        <div class="mpriv-eyebrow">Two further marks of standing await as a Steward</div>
+        <div class="mpriv-title">Take your place among the Stewards</div>
+        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Guardian of the Clan</strong>, you have your seat at the Chief's Gala, your hand-printed certificate, and your place on the <a href="https://www.ocomain.org/register" target="_blank" rel="noopener" style="color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px">Founding Members Register <span aria-hidden="true" style="font-size:.85em">↗</span></a>. The Stewards form a smaller inner circle — those who carry the clan with deeper investment.</p>
+        <ul class="mupgrade-perks">
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">Stewards' Privilege</strong> — clan events and announcements reach Stewards first, before any other members.
+            </span>
+          </li>
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">Your name engraved on the Roll of Honour at Newhall</strong> — displayed permanently in the clan seat.
+            </span>
+          </li>
+        </ul>
+        <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="steward" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request to become a Steward →</button></p>
+      </section>
+      ` : ''}
+
+      ${(member.tier && /^steward-/.test(member.tier)) ? `
+      <!-- Steward-tier upgrade prompt. Sits in the same bottom-of-
+           dashboard slot as the Guardian→Steward card above, gated
+           to a different tier — so a Steward sees their upgrade
+           card in the same position a Guardian sees theirs. The
+           Life-distinct selling points are: no annual renewal (the
+           most concrete — the recurring charge a Steward feels each
+           year vanishes), and the engraved-not-just-inscribed Roll
+           of Honour (the visible, physical step up). The
+           inheritance frame ('inherited by your children in time')
+           is woven into the body paragraph rather than a third
+           bullet, because it's a quality of the whole act rather
+           than a specific perk. -->
+      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
+        <div class="mpriv-eyebrow">A permanent commitment awaits</div>
+        <div class="mpriv-title">For life — no annual renewal, ever</div>
+        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Steward of the Clan</strong>, you carry the priority and standing of the inner circle. Life Membership lifts the annual rhythm and turns it into a single act — your place in the clan secured for as long as you live, and inherited by your children in time.</p>
+        <ul class="mupgrade-perks">
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">Everything in Steward — for life, with no annual renewal</strong>. A single act, never another invoice.
+            </span>
+          </li>
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">Your name engraved on the Roll of Honour at Newhall</strong> — a permanent physical record in the clan seat.
+            </span>
+          </li>
+        </ul>
+        <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="life" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request Life membership →</button></p>
+      </section>
+      ` : ''}
     `;
     loading.style.display = 'none';
     dashboard.style.display = 'block';
