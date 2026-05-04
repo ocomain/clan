@@ -55,6 +55,18 @@
 [functions."daily-pdf-lead-sweep"]
   schedule = "30 16 * * *"
 
+# Cart re-engagement sweep — dispatches the +10/+25/+50/+90 day follow-up
+# emails for applications that have status='pending' beyond the 24h reminder.
+# 15:30 UTC offsets it 90min after daily-abandoned-sweep (14:00) and 60min
+# before daily-pdf-lead-sweep (16:30), keeping daily fan-out staggered.
+[functions."daily-cart-reengage-sweep"]
+  schedule = "30 15 * * *"
+
+[[redirects]]
+  from = "/resume"
+  to = "/.netlify/functions/resume"
+  status = 200
+
 [[redirects]]
   from = "/roots"
   to = "/roots.html"
