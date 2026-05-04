@@ -19,7 +19,7 @@ const OFFICE_LABELS = {
   '': 'Office of the Private Secretary (for triage)',
   'chief': 'The Chief — Fergus Kinfauns',
   'tanaiste': 'The Tánaiste — Antoin Commane',
-  'chancellor': 'Chancellor & Treasurer — Maria Kinfauns',
+  'chancellor': 'Chancellor — Maria Kinfauns',
   'secretary': 'Private Secretary — Linda Cryan',
   'keeper': 'Keeper of the Seat — Jessica-Lily Commane',
   'marshall': 'Marshall & Standard Bearer — Michael Commane',
