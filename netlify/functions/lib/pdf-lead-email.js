@@ -204,9 +204,11 @@ function buildEmail1Html(subscriber) {
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`The Chief has asked me to write and thank you for requesting the starter guide. It is attached to this message, and a download link is below in case the attachment does not come through cleanly.`)}
 ${ctaButtonHtml('Download First Steps in Tracing Your Irish Line (PDF)', URLS.pdf)}
-${p(`A word about the house from which it comes. <strong>Clan Ó Comáin is an ancient Gaelic royal house and a recognised Irish clan</strong> — authenticated by <strong>Clans of Ireland</strong> under the patronage of the President of Ireland — seated at Newhall House in County Clare. The Chief, <strong>Fergus Commane Kinfauns</strong>, was consecrated under Brehon law by the derbhfine of the kindred.`)}
-${p(`And a word about who is welcome. <strong>Clan Ó Comáin is open to all who love Ireland and its ancient Gaelic culture — whatever surname you carry, and whether or not your line runs into ours.</strong> That is not a modern softening of an ancient idea — it is a return to one. The Gaelic clan was never purely a matter of blood; chosen allegiance has always been recognised as a way of belonging.`)}
-${p(`If, having read the guide, you would like to take a place in the Register at Newhall, the Chief will sign and seal your certificate by his own hand. Membership opens at <strong>€49 the year (€79 family)</strong>. I shall write to you again over the coming weeks with a little more about what membership means.`)}
+${p(`A word about the house from which it comes. Clan Ó Comáin is an ancient Gaelic royal house and a recognised Irish clan — authenticated by Clans of Ireland under the patronage of the President of Ireland — seated at Newhall House in County Clare. The Chief, Fergus Commane Kinfauns, was consecrated under Brehon law by the derbhfine of the kindred.`)}
+${p(`And a word about who is welcome. Clan Ó Comáin is open to all who love Ireland and its ancient Gaelic culture — whatever surname you carry, and whether or not your line runs into ours. That is not a modern softening of an ancient idea — it is a return to one. The Gaelic clan was never purely a matter of blood; chosen allegiance has always been recognised as a way of belonging.`)}
+${p(`If, having read the guide, you would like to take a place in the Register at Newhall, the Chief will sign and seal your certificate by his own hand. Membership opens at €49 the year (€79 family).`)}
+${ctaButtonHtml('See the membership tiers in full', URLS.membership)}
+${p(`I shall write to you again over the coming weeks with a little more about what membership means.`)}
 ${p(`If a question arises in the meantime, please do write back.`)}
 ${p(`With kind regards,`)}
 ${lindaSignatureHtml()}
