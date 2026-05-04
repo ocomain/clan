@@ -47,6 +47,19 @@
 [functions."daily-post-signup-sweep"]
   schedule = "0 16 * * *"
 
+# PDF lead-magnet lifecycle sweep — dispatches the +3/+10/+21/+35 day
+# follow-up emails (Email 1 fires synchronously on confirmation, not
+# from this cron). 16:30 UTC = 17:30 IE/UK summer, 16:30 winter — same
+# late-afternoon European inbox window as the post-signup sweep,
+# offset 30min so the daily fan-out remains staggered.
+[functions."daily-pdf-lead-sweep"]
+  schedule = "30 16 * * *"
+
+[[redirects]]
+  from = "/roots"
+  to = "/roots.html"
+  status = 200
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
