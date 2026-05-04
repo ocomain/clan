@@ -887,39 +887,6 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
       </section>
       `}
 
-      ${(member.tier && /^guardian-/.test(member.tier)) ? `
-      <!-- Guardian-tier upgrade prompt. Mirrors the Clan→Guardian card
-           higher up — same visual idiom, two-perk frame — but lifts
-           the two strongest Steward-distinct benefits: priority of
-           notice (the Stewards' Privilege, the most concrete and
-           recurring of the Steward perks) and the Roll of Honour
-           inscription (the most tangibly permanent). The remaining
-           Steward perks — private call with the Chief, advisory
-           seat, first refusal on Privy Council — are deliberately
-           held back from the card so it doesn't read like a wall;
-           they're the surprise on the membership page. -->
-      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
-        <div class="mpriv-eyebrow">Two further marks of standing await as a Steward</div>
-        <div class="mpriv-title">Take your place among the Stewards</div>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Guardian of the Clan</strong>, you have your seat at the Chief's Gala, your hand-printed certificate, and your place on the Founding Members Register. The Stewards form a smaller inner circle — those who carry the clan with deeper investment.</p>
-        <ul class="mupgrade-perks">
-          <li class="mupgrade-perk">
-            <span class="mupgrade-perk-mark">✦</span>
-            <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">Stewards' Privilege</strong> — clan events and announcements reach Stewards first, before any other members.
-            </span>
-          </li>
-          <li class="mupgrade-perk">
-            <span class="mupgrade-perk-mark">✦</span>
-            <span class="mupgrade-perk-body">
-              <strong style="color:var(--ink);font-weight:500">Your name inscribed on the Roll of Honour at Newhall</strong> — displayed permanently in the clan seat.
-            </span>
-          </li>
-        </ul>
-        <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="steward" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request to become a Steward →</button></p>
-      </section>
-      ` : ''}
-
       ${(member.tier && /^steward-/.test(member.tier)) ? `
       <!-- Steward-tier upgrade prompt. The Life-distinct selling
            points are: no annual renewal (the most concrete — the
@@ -1101,6 +1068,44 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           </div>
         </div>
       </section>
+
+      ${(member.tier && /^guardian-/.test(member.tier)) ? `
+      <!-- Guardian-tier upgrade prompt. Sits directly under the
+           'By private welcome' invite/gift section because the two
+           reads are adjacent: invite — bring others in; upgrade —
+           deepen your own commitment. The placement was moved here
+           from above the Order of Honours on user feedback. Same
+           visual idiom as the Clan→Guardian card higher up — two-
+           perk frame lifting the strongest Steward-distinct
+           benefits: priority of notice (Stewards' Privilege, the
+           most concrete and recurring of the Steward perks) and
+           the Roll of Honour engraving (the most tangibly
+           permanent). The remaining Steward perks — private call
+           with the Chief, advisory seat, first refusal on Privy
+           Council — are deliberately held back so the card doesn't
+           read like a wall; they're the surprise on the membership
+           page. -->
+      <section class="mpriv mupgrade" style="border-left:3px solid var(--gold)">
+        <div class="mpriv-eyebrow">Two further marks of standing await as a Steward</div>
+        <div class="mpriv-title">Take your place among the Stewards</div>
+        <p style="font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0 0 14px">As a <strong style="color:var(--ink);font-weight:500">Guardian of the Clan</strong>, you have your seat at the Chief's Gala, your hand-printed certificate, and your place on the Founding Members Register. The Stewards form a smaller inner circle — those who carry the clan with deeper investment.</p>
+        <ul class="mupgrade-perks">
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">Stewards' Privilege</strong> — clan events and announcements reach Stewards first, before any other members.
+            </span>
+          </li>
+          <li class="mupgrade-perk">
+            <span class="mupgrade-perk-mark">✦</span>
+            <span class="mupgrade-perk-body">
+              <strong style="color:var(--ink);font-weight:500">Your name engraved on the Roll of Honour at Newhall</strong> — displayed permanently in the clan seat.
+            </span>
+          </li>
+        </ul>
+        <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="steward" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request to become a Steward →</button></p>
+      </section>
+      ` : ''}
 
       <!-- GIFT-A-MEMBERSHIP standalone CTA was removed 2026-04-28 —
            its content now lives in the gift panel of the unified
