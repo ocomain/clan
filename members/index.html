@@ -1235,6 +1235,38 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           <div class="maction-desc">A loved one remembered forever in the clan's online memorial roll at <em>ocomain.org/patrons</em>. A portrait and a few short lines, kept always.</div>
           <span class="maction-btn">Write to the Chief →</span>
         </a>
+        <!-- Share your story — Stage 1 manual flow, parallel to the
+             obituary card. Steward+ tier members get a dedicated
+             acknowledgement on /clan-stories. The mailto: scaffolds
+             a structured submission email so members aren't writing
+             from scratch. Stage 2 (when volume justifies) replaces
+             this with a self-serve form. -->
+        <a class="maction live" style="text-decoration:none;color:inherit" href="mailto:clan@ocomain.org?subject=Clan%20Stories%20%E2%80%94%20My%20story&amp;body=Dia%20dhuit%2C%0A%0AI%27d%20like%20to%20submit%20a%20short%20story%20for%20the%20clan%27s%20Stories%20page%20at%20ocomain.org%2Fclan-stories.%0A%0AName%3A%20%5Byour%20full%20name%5D%0ALocation%3A%20%5Bcity%2C%20country%5D%0ALineage%3A%20%5Be.g.%20%27Cummins%20line%2C%20traces%20to%20Ennistymon%201840s%27%5D%0A%0AA%20few%20lines%20about%20you%20and%20the%20clan%20%2880-120%20words%29%3A%0A%5BWhy%20you%20joined%2C%20what%20the%20clan%20means%20to%20your%20family%2C%20how%20you%20found%20your%20way%20home.%5D%0A%0AI%27ll%20attach%20a%20portrait%20photograph%20to%20this%20email.%0A%0AGo%20raibh%20maith%20agat%2C%0A">
+          <span class="maction-icon">
+            <!-- Voice / story — open scroll with quill above it.
+                 Open scroll signifies a story being told, the
+                 quill is the act of telling. Quieter than the
+                 memorial book+candle of the obituary card. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Scroll body -->
+              <rect x="10" y="14" width="28" height="22" rx="1"/>
+              <!-- Curl on left edge -->
+              <path d="M10 14 C 6 14 6 36 10 36"/>
+              <!-- Curl on right edge -->
+              <path d="M38 14 C 42 14 42 36 38 36"/>
+              <!-- Lines of text on the scroll -->
+              <line x1="14" y1="20" x2="34" y2="20"/>
+              <line x1="14" y1="25" x2="34" y2="25"/>
+              <line x1="14" y1="30" x2="28" y2="30"/>
+              <!-- Quill diagonal above scroll -->
+              <path d="M30 6 L 42 2 L 38 12 Z" fill="var(--gold-deep)" stroke="none"/>
+            </svg>
+          </span>
+          <div class="maction-eyebrow">Steward perk · forever</div>
+          <div class="maction-title">Share Your Story</div>
+          <div class="maction-desc">Your dedicated acknowledgement on the clan's public Stories page at <em>ocomain.org/clan-stories</em>. A portrait, your lineage and a few lines on what brought you home.</div>
+          <span class="maction-btn">Write to the Chief →</span>
+        </a>
         ` : ''}
       </section>
     `;
