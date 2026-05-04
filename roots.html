@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracing Your Irish Line — A free starter guide from Newhall · Clan Ó Comáin</title>
+  <meta name="description" content="A free four-page guide on the records that matter for tracing an Irish ancestor — civil registration, the censuses, Griffith's Valuation, parish registers. From Clan Ó Comáin, the recognised Irish Gaelic clan and ancient royal house seated at Newhall House, County Clare.">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    .roots-hero{background:var(--ink);min-height:auto;padding:64px 0 48px;text-align:center;border-bottom:2px solid var(--gold)}
+    .roots-hero img.coa{display:block;margin:0 auto 16px;width:88px;height:auto;opacity:.95}
+    .roots-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .roots-hero h1{font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,56px);font-weight:400;color:var(--gold-pale);line-height:1.08;max-width:680px;margin:0 auto 16px}
+    .roots-hero h1 em{font-style:italic;color:var(--gold-light)}
+    .roots-sub{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(245,236,216,.78);max-width:560px;margin:0 auto;line-height:1.55}
+
+    /* PDF preview thumbnail */
+    .pdf-thumb-wrap{padding:48px 0 24px;text-align:center;background:var(--cream)}
+    .pdf-thumb{display:inline-block;width:200px;aspect-ratio:1/1.32;background:var(--white);border:1px solid var(--border);box-shadow:0 12px 36px rgba(15,31,15,.12), 0 2px 8px rgba(15,31,15,.08);padding:28px 22px;text-align:center}
+    .pdf-thumb .pdf-coa{width:38px;margin:0 auto 8px;display:block;opacity:.9}
+    .pdf-thumb .pdf-tag{font-family:'Jost',sans-serif;font-size:8px;font-weight:600;letter-spacing:.22em;color:var(--gold);margin-bottom:18px}
+    .pdf-thumb .pdf-title{font-family:'EB Garamond',serif;font-size:22px;line-height:1.1;color:var(--ink);margin-bottom:6px}
+    .pdf-thumb .pdf-title em{font-style:italic;color:var(--gold-deep);font-size:18px;display:block;margin-top:4px}
+    .pdf-thumb .pdf-foot{font-family:'EB Garamond',serif;font-size:11px;font-style:italic;color:var(--ink-muted);margin-top:32px}
+
+    /* The form */
+    .roots-form-wrap{padding:24px 0 64px;background:var(--cream)}
+    .roots-form{max-width:480px;margin:0 auto;padding:36px 32px;background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:2px}
+    .roots-form h2{font-family:'EB Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:6px;text-align:center}
+    .roots-form p.sub{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin-bottom:24px}
+    .roots-form label{display:block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-mid);margin:0 0 6px 2px}
+    .roots-form input[type="text"], .roots-form input[type="email"]{width:100%;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;border:1px solid var(--border-strong);border-radius:2px;margin-bottom:18px;color:var(--ink);background:var(--white)}
+    .roots-form input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,151,90,.18)}
+    .roots-form button{width:100%;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:15px 20px;border:none;border-radius:1px;cursor:pointer;transition:background .15s;margin-top:6px}
+    .roots-form button:hover{background:var(--gold-light)}
+    .roots-form button:disabled{opacity:.6;cursor:not-allowed}
+    .roots-form .trust-line{font-family:'EB Garamond',serif;font-size:12px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:18px;line-height:1.5}
+    .roots-form .err{color:#9a3a3a;font-size:13px;margin-top:12px;text-align:center;font-family:'EB Garamond',serif}
+    .roots-form .ok{color:var(--ink-soft);font-size:15px;margin-top:12px;text-align:center;font-family:'EB Garamond',serif;line-height:1.55}
+    .roots-form .ok strong{display:block;margin-bottom:8px;font-size:18px;color:var(--ink);font-weight:400}
+
+    /* Legitimacy block */
+    .roots-legit{background:var(--cream-mid);padding:48px 0;border-top:1px solid var(--border)}
+    .roots-legit-inner{max-width:680px;margin:0 auto;padding:0 32px;text-align:center}
+    .roots-legit p{font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink-soft);margin-bottom:14px}
+    .roots-legit p strong{color:var(--ink);font-weight:500}
+    .roots-legit-rule{width:48px;height:1px;background:var(--gold);margin:0 auto 22px}
+
+    /* Quiet escape */
+    .roots-escape{padding:36px 0 56px;text-align:center;background:var(--cream)}
+    .roots-escape p{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:520px;margin:0 auto;line-height:1.6}
+    .roots-escape a{color:var(--gold-deep);text-decoration:underline}
+
+    /* Footer */
+    footer.roots-foot{background:var(--ink);padding:28px 32px;text-align:center}
+    footer.roots-foot p{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--gold-light);margin:0 0 6px}
+    footer.roots-foot p.small{font-family:'Jost',sans-serif;font-size:10px;font-style:normal;letter-spacing:.08em;color:rgba(184,151,90,.7)}
+
+    @media (max-width:600px){
+      .roots-form{padding:28px 22px;margin:0 16px}
+      .pdf-thumb{width:160px}
+    }
+  </style>
+</head>
+<body>
+
+  <section class="roots-hero">
+    <img class="coa" src="/coat_of_arms.png" alt="Clan Ó Comáin">
+    <p class="roots-eyebrow">A free starter guide from Newhall</p>
+    <h1>Tracing your <em>Irish line</em></h1>
+    <p class="roots-sub">Four pages on the records that matter — civil registration, the 1901 and 1911 censuses, Griffith's Valuation, the parish registers. Free. No account required.</p>
+  </section>
+
+  <section class="pdf-thumb-wrap">
+    <div class="pdf-thumb" aria-hidden="true">
+      <img class="pdf-coa" src="/coat_of_arms.png" alt="">
+      <p class="pdf-tag">CLAN Ó COMÁIN</p>
+      <p class="pdf-title">First Steps<em>in Tracing Your Irish Line</em></p>
+      <p class="pdf-foot">A starter guide from Newhall</p>
+    </div>
+  </section>
+
+  <section class="roots-form-wrap">
+    <form class="roots-form" id="roots-form" novalidate>
+      <h2>Send me the guide</h2>
+      <p class="sub">It will arrive in your inbox the moment you confirm.</p>
+
+      <label for="first_name">First name <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-muted);font-style:italic">(optional)</span></label>
+      <input type="text" id="first_name" name="first_name" autocomplete="given-name" maxlength="80">
+
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" required autocomplete="email" maxlength="254">
+
+      <button type="submit" id="roots-submit">Send me the guide</button>
+
+      <p class="trust-line">One email, sent the moment you confirm.<br>No spam. Unsubscribe anytime.</p>
+
+      <div id="roots-msg"></div>
+    </form>
+  </section>
+
+  <section class="roots-legit">
+    <div class="roots-legit-inner">
+      <div class="roots-legit-rule"></div>
+      <p>Clan Ó Comáin is an <strong>ancient Gaelic royal house</strong> and a recognised <strong>Irish Gaelic clan</strong>, authenticated by Clans of Ireland under the patronage of the President of Ireland.</p>
+      <p>Seated at <strong>Newhall House</strong> in County Clare. The Chief is <strong>Fergus Commane Kinfauns</strong>.</p>
+      <p>The bond is what matters, not the bloodline. <strong>All who love Ireland are welcome.</strong></p>
+    </div>
+  </section>
+
+  <section class="roots-escape">
+    <p>If you would rather skip the guide and look at membership directly, you can <a href="/membership">read about Clan Ó Comáin membership here</a>.</p>
+  </section>
+
+  <footer class="roots-foot">
+    <p>Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p class="small">CLAN Ó COMÁIN · NEWHALL HOUSE · COUNTY CLARE · IRELAND</p>
+  </footer>
+
+  <script>
+    (function() {
+      const form = document.getElementById('roots-form');
+      const submit = document.getElementById('roots-submit');
+      const msg = document.getElementById('roots-msg');
+      const emailField = document.getElementById('email');
+      const nameField = document.getElementById('first_name');
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        msg.innerHTML = '';
+        const email = (emailField.value || '').trim();
+        const first_name = (nameField.value || '').trim();
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          msg.innerHTML = '<p class="err">Please enter a valid email address.</p>';
+          return;
+        }
+
+        submit.disabled = true;
+        submit.textContent = 'Sending…';
+
+        try {
+          const res = await fetch('/.netlify/functions/subscribe-roots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, first_name }),
+          });
+          const data = await res.json();
+
+          if (res.ok && data.ok) {
+            // Replace the form contents with a friendly confirmation message.
+            form.innerHTML = '<div class="ok"><strong>Please check your inbox.</strong>We have sent a confirmation email to <em>' + email.replace(/[<>&"]/g, '') + '</em>. Click the link in that email and the starter guide will arrive moments later. <br><br>If you do not see it, please check your spam folder.</div>';
+
+            // Fire Meta Pixel Lead event for ad attribution.
+            if (window.fbq) { try { window.fbq('track', 'Lead'); } catch(e){} }
+          } else {
+            msg.innerHTML = '<p class="err">Something went wrong on our end. Please try again, or write to clan@ocomain.org.</p>';
+            submit.disabled = false;
+            submit.textContent = 'Send me the guide';
+          }
+        } catch (err) {
+          msg.innerHTML = '<p class="err">Could not reach the server. Please try again in a moment.</p>';
+          submit.disabled = false;
+          submit.textContent = 'Send me the guide';
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
