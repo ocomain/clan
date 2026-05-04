@@ -214,7 +214,7 @@ function heraldSignatureHtml() {
 // Used in 1A, 1B, 1C. The order-of-dignities etiquette block.
 function heraldEtiquetteHtml() {
   return p(`At the head of the Register stand those whom the Chief has raised to the three dignities of the clan — borne aloud at the gatherings, walking ceremonially beside the Chief and the Privy Council. <strong>Cara of Ó Comáin</strong> is conferred at one bringing-in; <strong>Ardchara</strong> at five; and <strong>Onóir</strong> at fifteen, most senior of the three. The bearer is named <em><strong>Cara John</strong></em> in speech and on the Register; <em><strong>John Cummins, Cara of Ó Comáin</strong></em> in formal correspondence.`)
-       + p(`Each dignity opens with a single act — bringing another of your kindred to the clan, by invitation or by gift, both done from your <a href="${URLS.membersArea}" style="color:#B8975A;text-decoration:underline">members' area</a>.`);
+       + p(`Each dignity opens with a single act — bringing another of your kindred to the clan, by invitation or by gift, both done from your <a href="${URLS.membersArea}" style="color:#8B6F32;text-decoration:underline">members' area</a>.`);
 }
 
 // Used in 1A, 1C. Sealing reminder.
@@ -232,7 +232,7 @@ function buildEmail1A_html(member) {
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${pItalic(`Dia dhuit — God be with you.`)}
 ${p(`I am the Clan Herald of Ó Comáin, keeper of the clan's register at Newhall. Your name is inscribed among those who have answered the call after eight long centuries of silence — kindred newly returned to one ancient hearth.`)}
-${p(`Your name is kept upon my private roll at Newhall, no less honoured for being unseen there. The <a href="${URLS.publicRegister}" style="color:#B8975A;text-decoration:underline">public online Register</a>, reserved to the Guardian, Steward and Life tiers, sits open to you whenever you choose to take a place upon it — a short word to clan@ocomain.org, and the upgrade is done.`)}
+${p(`Your name is kept upon my private roll at Newhall, no less honoured for being unseen there. The <a href="${URLS.publicRegister}" style="color:#8B6F32;text-decoration:underline">public online Register</a>, reserved to the Guardian, Steward and Life tiers, sits open to you whenever you choose to take a place upon it — a short word to clan@ocomain.org, and the upgrade is done.`)}
 ${ctaButtonHtml('Write to the Office to upgrade', URLS.upgrade)}
 ${heraldEtiquetteHtml()}
 ${sealReminderHtml()}
@@ -251,10 +251,10 @@ function buildEmail1B_html(member) {
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${pItalic(`Dia dhuit — God be with you.`)}
 ${p(`I am the Clan Herald of Ó Comáin, keeper of the clan's register at Newhall. Your name is inscribed among those who have answered the call after eight long centuries of silence — kindred newly returned to one ancient hearth.`)}
-${p(`Your name is now openly kept among the Guardians, Stewards and Life Members of Ó Comáin in the <a href="${URLS.publicRegister}" style="color:#B8975A;text-decoration:underline">public online Register</a> — alongside those of the kindred drawn back from across the wide world.`)}
+${p(`Your name is now openly kept among the Guardians, Stewards and Life Members of Ó Comáin in the <a href="${URLS.publicRegister}" style="color:#8B6F32;text-decoration:underline">public online Register</a> — alongside those of the kindred drawn back from across the wide world.`)}
 ${ctaButtonHtml('See your name in the public Register', URLS.publicRegister)}
 ${heraldEtiquetteHtml()}
-${p(`If your certificate is not yet sealed, do so within the thirty-day window — that fixes the spelling, the Gaelic form should you prefer it, and the name by which the kindred shall hereafter know you. Your appearance on the public Register may be quietly changed at any time in your <a href="${URLS.membersArea}" style="color:#B8975A;text-decoration:underline">members' area</a>.`)}
+${p(`If your certificate is not yet sealed, do so within the thirty-day window — that fixes the spelling, the Gaelic form should you prefer it, and the name by which the kindred shall hereafter know you. Your appearance on the public Register may be quietly changed at any time in your <a href="${URLS.membersArea}" style="color:#8B6F32;text-decoration:underline">members' area</a>.`)}
 ${heraldSignatureHtml()}
 `;
   return wrapInChrome({
@@ -368,8 +368,8 @@ ${p(`<strong>Ardchara</strong> — for those who bring five.`)}
 ${p(`<strong>Onóir</strong> — the apex, for those who bring fifteen. Very rare. The Onóir bearer is the Chief's named champion of welcome, walking ceremonially beside the Chief and the Privy Council.`)}
 ${p(`A few practical points:`)}
 ${p(`— The dignities are gender-neutral, borne the same by women and men<br>— Spouses are addressed alongside the bearer by courtesy of the kindred<br>— Both invitations AND gifts count toward the threshold`)}
-${p(`If you would like the full ceremonial detail (warrant language, address-formula, etymology), it is all on the <a href="${URLS.honoursPage}" style="color:#B8975A;text-decoration:underline">honours page</a> in the members' area.`)}
-${p(`Otherwise: each dignity opens with a single bringing-in, and your <a href="${URLS.membersArea}" style="color:#B8975A;text-decoration:underline">members' area</a> is where it is done.`)}
+${p(`If you would like the full ceremonial detail (warrant language, address-formula, etymology), it is all on the <a href="${URLS.honoursPage}" style="color:#8B6F32;text-decoration:underline">honours page</a> in the members' area.`)}
+${p(`Otherwise: each dignity opens with a single bringing-in, and your <a href="${URLS.membersArea}" style="color:#8B6F32;text-decoration:underline">members' area</a> is where it is done.`)}
 ${ctaButtonHtml('Read the order of honours', URLS.honoursPage)}
 ${pItalic(`Go raibh míle maith agat,`)}
 ${lindaSignatureHtml()}
