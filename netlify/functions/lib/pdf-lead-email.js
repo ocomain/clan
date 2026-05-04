@@ -168,9 +168,9 @@ function buildConfirmationHtml(subscriber, confirmUrl) {
   const firstName = firstNameOf(subscriber);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`Thank you for asking us for the starter guide — <em>First Steps in Tracing Your Irish Line</em>. To complete your request, please confirm your email address by clicking the button below.`)}
+${p(`Thank you for asking for the starter guide — <em>First Steps in Tracing Your Irish Line</em>. Before I send it across, I just need to make sure I have a working email address for you. A click on the button below will confirm it, and the guide will follow within a moment or two.`)}
 ${ctaButtonHtml('Confirm and send me the guide', confirmUrl)}
-${p(`Once confirmed, the guide will arrive in your inbox within a moment or two. If you did not request this, you may safely ignore this message — no further emails will be sent.`)}
+${p(`If you did not request this, please disregard — no further emails will follow.`)}
 ${p(`With kind regards,`)}
 ${lindaSignatureHtml()}
 `;
