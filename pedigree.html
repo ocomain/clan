@@ -853,5 +853,40 @@ function toggleMenu(){
   </div>
 </footer>
 
+<script>
+/* Anchor link re-scroll after lazy images settle.
+   ─────────────────────────────────────────────────
+   The pedigree page uses loading="lazy" on most of its images
+   (≈40+ images, several hundred KB each). When a visitor lands
+   on /pedigree#conclusion (or any other in-page anchor),
+   browsers compute the scroll position BEFORE lazy images below
+   the fold are loaded. Once those images do load, they push
+   content down, and the anchor target ends up below where the
+   browser scrolled. The user sees the wrong section and has to
+   click the link a second time to re-anchor.
+
+   Fix: after window.load (all images loaded), re-scroll to the
+   hash target if there is one. Uses smooth scroll for visual
+   continuity. Fires once; doesn't interfere with subsequent
+   in-page anchor clicks (those work normally because images
+   are already loaded by then). */
+(function(){
+  if (!window.location.hash) return;
+  function rescroll() {
+    try {
+      var el = document.querySelector(window.location.hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) { /* invalid selector — ignore */ }
+  }
+  // Wait for all images + resources to load, then a final tick
+  // so the browser has settled layout, then re-scroll.
+  if (document.readyState === 'complete') {
+    setTimeout(rescroll, 50);
+  } else {
+    window.addEventListener('load', function(){ setTimeout(rescroll, 50); });
+  }
+})();
+</script>
+
 </body>
 </html>
