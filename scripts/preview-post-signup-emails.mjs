@@ -1,37 +1,33 @@
 #!/usr/bin/env node
 // scripts/preview-post-signup-emails.mjs
 //
-// Renders every variant of the post-signup email lifecycle to a
-// static HTML file in ./email-previews/, so you can open them in a
-// browser and visually review the rendering — the chrome, the
-// signature blocks, the CTA buttons, the photo bubbles for Linda /
-// Paddy / Fergus — without sending real mail.
+// Renders every variant of the post-signup email lifecycle (rev 2,
+// May 2026) to a static HTML file in ./email-previews/, so they can
+// be opened in a browser and visually reviewed without sending real
+// mail.
 //
 // USAGE:
 //   node scripts/preview-post-signup-emails.mjs
 //   open email-previews/index.html
 //
-// The script writes one HTML file per email variant plus an
-// index.html with thumbnails-ish links. All eight variants:
+// Twelve files written (one per email variant + index):
 //
-//   01a-clan-tier-upsell.html              Email 1A — Herald
-//   01b-guardian-default.html              Email 1B — Herald
-//   01c-guardian-opted-out.html            Email 1C — Herald
-//   02-fergus-personal-letter.html         Email 2  — Fergus
-//   03-linda-kindred-ask.html              Email 3  — Linda / Office
-//   04-linda-gift-nudge.html               Email 4  — Linda / Office
-//   05-linda-honours-explainer.html        Email 5  — Linda / Office
-//   06-paddy-seanchai-pedigree.html        Email 6  — Paddy / Seanchaí
+//   01a-herald-clan-tier.html              Email 1A — Herald, Clan tier
+//   01b-herald-guardian-default.html       Email 1B — Herald, Guardian+ default
+//   01c-herald-guardian-private.html       Email 1C — Herald, Guardian+ opted out
+//   02-fergus-chiefs-letter.html           Email 2  — Fergus, Chief's letter (image-only)
+//   03-antoin-how-i-became-cara.html       Email 3  — Antoin, how I became Cara
+//   04-linda-bringing-kindred.html         Email 4  — Linda, bringing the kindred
+//   05-herald-three-dignities.html         Email 5  — Herald, three titles of dignity
+//   06-michael-clan-crest.html             Email 6  — Michael, clan crest in your home
+//   07-paddy-standing-of-line.html         Email 7  — Paddy lite, standing of the line
+//   08-jessica-gathering.html              Email 8  — Jessica, gathering at Newhall
+//   09-paddy-royal-house-and-saint.html    Email 9  — Paddy full, royal house and saint
+//   10-linda-renewal.html                  Email 10 — Linda, renewal mechanics
 //
-// IMAGE PATHS — the rendered emails reference images via SITE_URL,
-// which defaults to https://www.ocomain.org. Photos in signature
-// blocks (linda_cryan_bubble.png, paddy_commane_ballymacooda.png,
-// fergus_at_killone.png) and the coat of arms in the header will
-// load from the live site, NOT from the local repo. This is the same
-// way they will load when the email arrives in a real inbox, so the
-// preview is faithful. If you want to preview against a local SITE,
-// set SITE_URL=http://localhost:8888 before running this script and
-// the same path scheme will resolve against your dev server.
+// IMAGE PATHS resolve against SITE_URL (default https://www.ocomain.org).
+// Photo bubbles, coat of arms, etc. all load from the live site, not
+// from the local repo.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -40,16 +36,9 @@ import { createRequire } from 'node:module';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
-
-// The lib is CommonJS (matches the rest of netlify/functions/lib/),
-// so we use createRequire to load it from this ESM script.
 const { getPreviewHtml } = require('../netlify/functions/lib/post-signup-email');
 
 // Mock member used for {{firstName}} substitution in the preview.
-// Aoife is a common Irish name and reads naturally in every email's
-// salutation. Tier and register flag don't affect the preview output
-// for any single email — they are used by the cron sweep to BRANCH
-// to the correct 1A/B/C; here we render all three regardless.
 const MOCK_MEMBER = {
   id: 'preview-member-uuid-0001',
   email: 'aoife.example@ocomain.org',
@@ -60,14 +49,18 @@ const MOCK_MEMBER = {
 };
 
 const VARIANTS = [
-  { key: '1A', file: '01a-clan-tier-upsell.html',          title: 'Email 1A — Herald — Clan tier (upsell)' },
-  { key: '1B', file: '01b-guardian-default.html',          title: 'Email 1B — Herald — Guardian+ default'   },
-  { key: '1C', file: '01c-guardian-opted-out.html',        title: 'Email 1C — Herald — Guardian+ opted-out' },
-  { key: '2',  file: '02-fergus-personal-letter.html',     title: 'Email 2 — Fergus — A word from Newhall'  },
-  { key: '3',  file: '03-linda-kindred-ask.html',          title: 'Email 3 — Linda — Bringing the kindred (Office)' },
-  { key: '4',  file: '04-linda-gift-nudge.html',           title: 'Email 4 — Linda — Gift-angle nudge (Office)' },
-  { key: '5',  file: '05-linda-honours-explainer.html',    title: 'Email 5 — Linda — Honours explainer (Office)' },
-  { key: '6',  file: '06-paddy-seanchai-pedigree.html',    title: 'Email 6 — Paddy (Seanchaí) — Pedigree'   },
+  { key: '1A', file: '01a-herald-clan-tier.html',           day: '+3',   title: 'Email 1A — Herald — Your name in the Register (Clan tier)',                                  meta: 'Sent when tier starts with <code>clan-</code>' },
+  { key: '1B', file: '01b-herald-guardian-default.html',    day: '+3',   title: 'Email 1B — Herald — Your name in the public Register (Guardian+ default)',                  meta: 'Sent when tier ≥ Guardian AND <code>public_register_visible = true</code>' },
+  { key: '1C', file: '01c-herald-guardian-private.html',    day: '+3',   title: 'Email 1C — Herald — Your name in the Register (Guardian+ opted out)',                       meta: 'Sent when tier ≥ Guardian AND <code>public_register_visible = false</code>' },
+  { key: '2',  file: '02-fergus-chiefs-letter.html',        day: '+9',   title: 'Email 2 — Fergus — From the desk of the Chief',                                              meta: 'Universal — chief@ocomain.org · image-only Kensington-letterhead PNG' },
+  { key: '3',  file: '03-antoin-how-i-became-cara.html',    day: '+21',  title: 'Email 3 — Antoin (Cara) — How I became Cara',                                                meta: 'Universal — antoin@ocomain.org · first-person social proof' },
+  { key: '4',  file: '04-linda-bringing-kindred.html',      day: '+35',  title: 'Email 4 — Linda — Bringing the kindred, in practice',                                        meta: 'Conditional — only if <code>countSponsoredBy(member) === 0</code>' },
+  { key: '5',  file: '05-herald-three-dignities.html',      day: '+60',  title: 'Email 5 — Herald — The three titles of dignity',                                             meta: 'Universal — herald@ocomain.org · Cara / Ardchara / Onóir' },
+  { key: '6',  file: '06-michael-clan-crest.html',          day: '+90',  title: 'Email 6 — Michael — The clan crest in your home',                                            meta: 'Universal — michael@ocomain.org · regalia, our tartan, signet rings, headstones' },
+  { key: '7',  file: '07-paddy-standing-of-line.html',      day: '+180', title: 'Email 7 — Paddy (Seanchaí lite) — The standing of the line',                                 meta: 'Universal — paddy@ocomain.org · early pedigree as story' },
+  { key: '8',  file: '08-jessica-gathering.html',           day: '+240', title: 'Email 8 — Jessica-Lily — Plans for the gathering at Newhall',                                meta: 'Universal — jessica@ocomain.org · bubbly anticipation builder' },
+  { key: '9',  file: '09-paddy-royal-house-and-saint.html', day: '+300', title: 'Email 9 — Paddy (Seanchaí full) — The royal house and the saint',                            meta: 'Universal — paddy@ocomain.org · year-end pedigree as story' },
+  { key: '10', file: '10-linda-renewal.html',               day: '+330', title: 'Email 10 — Linda — Your year of standing renews',                                            meta: 'Conditional — sent for non-Life tiers only' },
 ];
 
 const OUT_DIR = path.resolve(__dirname, '..', 'email-previews');
@@ -77,14 +70,10 @@ console.log('Rendering email previews to', OUT_DIR);
 
 for (const v of VARIANTS) {
   const html = getPreviewHtml(v.key, MOCK_MEMBER);
-  const outPath = path.join(OUT_DIR, v.file);
-  fs.writeFileSync(outPath, html, 'utf8');
+  fs.writeFileSync(path.join(OUT_DIR, v.file), html, 'utf8');
   console.log('  ✔', v.file);
 }
 
-// Index page with links to each — also a good visual list for
-// reviewing the full lifecycle in one place. Styled to match the
-// clan visual identity loosely so the index itself feels in-house.
 const indexHtml = `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>Post-signup email previews — Clan Ó Comáin</title>
 <style>
@@ -101,16 +90,9 @@ const indexHtml = `<!DOCTYPE html>
 </style></head>
 <body>
   <h1>Post-signup email previews</h1>
-  <p class="lede">Eight variants across six time buckets. Click any title to open the rendered email exactly as it would arrive in an inbox. Photo bubbles, coat of arms, and CTA links all resolve against <code>${process.env.SITE_URL || 'https://www.ocomain.org'}</code>.</p>
+  <p class="lede">Twelve files across ten emails (1A/B/C are tier-branched variants of the +3 send). Click any title to open the rendered email exactly as it would arrive in an inbox. Photo bubbles, coat of arms, and CTA links resolve against <code>${process.env.SITE_URL || 'https://www.ocomain.org'}</code>.</p>
   <ol>
-    <li><span class="day">+3</span><a href="01a-clan-tier-upsell.html">Email 1A — Herald — Clan tier (upsell to Guardian+)</a><div class="meta">Sent when tier starts with <code>clan-</code></div></li>
-    <li><span class="day">+3</span><a href="01b-guardian-default.html">Email 1B — Herald — Guardian+ default (name on public Register)</a><div class="meta">Sent when tier ≥ Guardian AND <code>public_register_visible = true</code></div></li>
-    <li><span class="day">+3</span><a href="01c-guardian-opted-out.html">Email 1C — Herald — Guardian+ opted out</a><div class="meta">Sent when tier ≥ Guardian AND <code>public_register_visible = false</code></div></li>
-    <li><span class="day">+9</span><a href="02-fergus-personal-letter.html">Email 2 — Fergus — A word from Newhall</a><div class="meta">Universal — chief@ocomain.org</div></li>
-    <li><span class="day">+18</span><a href="03-linda-kindred-ask.html">Email 3 — Linda — Bringing the kindred (Office)</a><div class="meta">Universal — linda@ocomain.org · primary referral ask</div></li>
-    <li><span class="day">+28</span><a href="04-linda-gift-nudge.html">Email 4 — Linda — Gift-angle nudge (Office)</a><div class="meta">Conditional — only if <code>countSponsoredBy(member) === 0</code></div></li>
-    <li><span class="day">+60</span><a href="05-linda-honours-explainer.html">Email 5 — Linda — Honours explainer (Office)</a><div class="meta">Universal — explains Cara / Ardchara / Onóir in plain language</div></li>
-    <li><span class="day">+90</span><a href="06-paddy-seanchai-pedigree.html">Email 6 — Paddy (Seanchaí) — The royal house you have joined</a><div class="meta">Universal — clan@ocomain.org · pedigree as story</div></li>
+    ${VARIANTS.map(v => `<li><span class="day">${v.day}</span><a href="${v.file}">${v.title}</a><div class="meta">${v.meta}</div></li>`).join('\n    ')}
   </ol>
   <footer>Mock recipient: ${MOCK_MEMBER.name} &lt;${MOCK_MEMBER.email}&gt;</footer>
 </body></html>`;

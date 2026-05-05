@@ -1,65 +1,89 @@
 // netlify/functions/lib/post-signup-email.js
 //
-// The post-signup email lifecycle. Eight emails across six time
-// buckets (members.created_at + 3 / 9 / 18 / 28 / 60 / 90 days),
-// dispatched by daily-post-signup-sweep.js.
+// The post-signup email lifecycle, FULL REBUILD (rev 2 — May 2026).
 //
-// VOICE CAST — locked across many drafting iterations. Each email
-// has a specific author and a specific job; the voices are
-// distinct on purpose so the sequence reads as correspondence
-// from a real household, not a marketing template.
+// Ten emails over the first year of membership, dispatched by
+// daily-post-signup-sweep.js. Each carries a specific voice and a
+// specific job; the sequence reads as correspondence from a real
+// household, not a marketing template.
 //
-//   1A/B/C  THE HERALD          (clan@) — formal, archaic, register
-//                                voice. Three variants for tier +
-//                                public_register_visible permutations.
-//   2       FERGUS              (chief@) — warm, personal letter.
-//                                The Chief writes by his own hand;
-//                                no CTA, pure warmth.
-//   3       LINDA / OFFICE      (linda@) — institutional voice. "A
-//                                note from the Office, by the Chief's
-//                                wish, on a matter the clan's revival
-//                                depends on…" Carries the primary
-//                                referral ask.
-//   4       LINDA / OFFICE      (linda@) — institutional follow-up.
-//                                Conditional — fires only when the
-//                                member has zero conversions yet.
-//                                "A second note from the Office. If
-//                                the invitation path feels like a
-//                                lot, the gift path is simpler…"
-//   5       LINDA / OFFICE      (linda@) — institutional service note.
-//                                Honours protocol explained plainly,
-//                                with the warrant-language detail
-//                                deferred to the honours page link.
-//   6       PADDY (Seanchaí)    (clan@ — institutional From, Paddy
-//                                in body) — storyteller voice. The
-//                                pedigree as story, with the
-//                                names-are-rivers Irish saying that
-//                                gives the diaspora reader a way to
-//                                hold their variant surname (Cummins,
-//                                Commons, Hurley, Comyn) inside the
-//                                clan.
+// CADENCE — anchored on members.created_at:
+//
+//   +3    Email 1A/B/C  THE HERALD       herald@   register acknowledgment
+//                       — three variants by tier and public-register flag
+//   +9    Email 2       FERGUS           chief@    Chief's letter
+//                       — image-only Kensington-letterhead PNG, no chrome
+//   +21   Email 3       ANTOIN (CARA)    antoin@   how I became Cara
+//   +35   Email 4       LINDA / OFFICE   linda@    bringing the kindred
+//                       — CONDITIONAL: skipped if member has any
+//                       successful sponsorship (_35_skipped flag stamped)
+//   +60   Email 5       THE HERALD       herald@   three titles of dignity
+//   +90   Email 6       MICHAEL          michael@  clan crest in your home
+//   +180  Email 7       PADDY (lite)     paddy@    standing of the line
+//   +240  Email 8       JESSICA          jessica@  gathering at Newhall
+//   +300  Email 9       PADDY (full)     paddy@    royal house and saint
+//   +330  Email 10      LINDA / OFFICE   linda@    renewal mechanics
+//                       — CONDITIONAL: skipped for Life-tier members
+//                       (_330_skipped flag stamped)
 //
 // REGISTER PROTOCOL — locked:
-//   - Linda never refers to Fergus by first name. Always "the
-//     Chief" or "the Chief's wish". Same convention for The Herald
-//     and Paddy. Only Fergus speaks of himself in first person, in
-//     his own letter (Email 2).
-//   - Linda never introduces herself by name in the body. The
-//     Office speaks; her face and name appear only in the photo
-//     signature block.
+//   - Linda never refers to Fergus by first name. Always "the Chief".
+//     Same convention for the Herald, Paddy, Michael, Jessica.
+//   - Antoin in Email 3 explicitly disclaims the Tánaiste role in the
+//     second sentence and writes first-person as the first member ever
+//     raised to Cara. This is the ONE moment the role-frame is set
+//     aside for personal testimony.
+//   - Only Fergus speaks first-person in his own letter (Email 2).
+//   - Emails 1A/B/C all mention that titles of dignity are addressed
+//     by the kindred (not just by the Chief). Critical for the
+//     social-proof story Email 3 tells.
+//
+// SENDER GATING — some senders are not yet wired. The cron in
+// daily-post-signup-sweep.js applies runtime gating; this lib emits
+// the email regardless. See SENDER_READY map in the cron.
+//
+// VISUAL CHROME:
+//   - Emails 1, 3, 4, 5, 6, 7, 8, 9, 10 use wrapInChrome() with the
+//     dark-green-and-gold header, cream body, dark footer, motto.
+//   - Email 2 (Fergus) is markedly different — header chrome stripped,
+//     body is JUST the Kensington-letterhead PNG. The letterhead
+//     carries its own header band so adding the standard chrome
+//     above would double-band the page.
+//
+// HISTORY:
+//   - rev 1 (Apr 2026): 8 emails, Linda-heavy, Herald three variants
+//   - rev 2 (May 2026): 10 emails, six voices, pedigree split
+//     early/late, renewal-anchored back half, Antoin first-person
+//     for Cara
 
 const { sendEmail } = require('./email');
 
 const SITE = process.env.SITE_URL || 'https://www.ocomain.org';
 
+// ── Sender display addresses ────────────────────────────────────────
+//
+// All within the verified ocomain.org domain so Resend doesn't need
+// per-address re-verification — the domain key signs them all.
+
+const FROM_HERALD  = 'The Herald of Ó Comáin <herald@ocomain.org>';
+const FROM_FERGUS  = 'Fergus Commane <chief@ocomain.org>';
+const FROM_ANTOIN  = 'Antoin Commane <antoin@ocomain.org>';
+const FROM_LINDA   = 'Linda Commane Cryan <linda@ocomain.org>';
+const FROM_PADDY   = 'Paddy Commane <paddy@ocomain.org>';
+const FROM_MICHAEL = 'Michael Commane <michael@ocomain.org>';
+const FROM_JESSICA = 'Jessica-Lily Commane <jessica@ocomain.org>';
+
 // ── URLs ────────────────────────────────────────────────────────────
 const URLS = {
-  upgrade:        'mailto:clan@ocomain.org?subject=Upgrade%20to%20Guardian',
-  publicRegister: `${SITE}/register`,
-  membersArea:    `${SITE}/members/`,
-  honoursPage:    `${SITE}/members/honours.html`,
-  pedigreePage:   `${SITE}/pedigree`,
-  giftPage:       `${SITE}/gift`,
+  members:        `${SITE}/members`,
+  publicRegister: `${SITE}/members/register`,
+  honours:        `${SITE}/members/honours`,
+  pedigree:       `${SITE}/pedigree`,
+  gathering:      `${SITE}/members/gathering`,
+  renewal:        `${SITE}/members/renewal`,
+  invite:         `${SITE}/members/invite`,
+  gift:           `${SITE}/gift`,
+  regalia:        `${SITE}/members/regalia`,
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -72,16 +96,7 @@ function firstNameOf(member) {
   return (member.name || '').trim().split(/\s+/)[0] || 'friend';
 }
 
-// ── Shared chrome ───────────────────────────────────────────────────
-//
-// All eight emails sit inside the same shell as publication-email.js
-// and notify-giver-activated.js — dark green header (#0C1A0C) with
-// coat of arms + eyebrow + heading, cream body (#F8F4EC) with Georgia
-// serif at 17px, dark footer with "History must prevail" motto and
-// the Newhall address.
-//
-// `bodyHtml` is the inner copy and signature block, already escaped.
-
+// ── Shared chrome (used by all emails except #2) ────────────────────
 function wrapInChrome({ eyebrow, heading, bodyHtml }) {
   return `<!DOCTYPE html>
 <html>
@@ -112,21 +127,8 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
 </html>`;
 }
 
-// ── CTA button ──────────────────────────────────────────────────────
-//
-// Centred, gold-on-dark, single-line. Style matches the "Download
-// PDF" button in publication-email.js.
-
+// ── CTA button — bulletproof against iOS Mail / Outlook overrides ──
 function ctaButtonHtml(label, url) {
-  // Bulletproof email button — survives iOS Mail / Gmail / Outlook
-  // overrides that strip inline anchor styles. Two defenses:
-  //  (1) !important on text-decoration and color, so even clients
-  //      that re-apply user-agent link styles cannot underline or
-  //      recolor our text.
-  //  (2) Inner <span> carrying its own copy of the critical text
-  //      styles, so clients that style anchor *descendants*
-  //      differently (looking at you, Apple Mail) still render
-  //      our text correctly.
   return `
 <div style="text-align:center;margin:24px 0 28px">
   <a href="${url}" style="display:inline-block;background:#B8975A;color:#0C1A0C !important;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none !important;padding:15px 32px;border-radius:1px;mso-padding-alt:0;mso-text-raise:0"><span style="display:inline-block;color:#0C1A0C !important;font-family:&apos;Helvetica Neue&apos;,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none !important">${escapeHtml(label)} &rarr;</span></a>
@@ -137,14 +139,8 @@ function ctaButtonHtml(label, url) {
 function p(text) {
   return `<p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">${text}</p>`;
 }
-function pItalic(text) {
-  return `<p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 20px">${text}</p>`;
-}
 
 // ── Signature blocks ────────────────────────────────────────────────
-
-// Linda — reused verbatim from publication-email.js + notify-giver-
-// activated.js so visual identity stays consistent across the lifecycle.
 function lindaSignatureHtml() {
   return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
@@ -166,9 +162,6 @@ function lindaSignatureHtml() {
 </table>`;
 }
 
-// Paddy — same structure, paddy_commane_ballymacooda.png cropped
-// circular via CSS. Pronunciation gloss (SHAN-a-kee) renders inline
-// for clients that respect inline italic; falls back gracefully.
 function paddySignatureHtml() {
   return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
@@ -182,252 +175,427 @@ function paddySignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Historian &amp; Storyteller</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:paddy@ocomain.org" style="color:#B8975A;text-decoration:none">paddy@ocomain.org</a>
-        <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span>
-        <a href="${SITE}" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
 </table>`;
 }
 
-// Fergus — fergus_at_killone.png cropped circular. No email line —
-// the From-field already says chief@ocomain.org and his existing
-// homepage letter signature is a name + role + seat block, no email.
-function fergusSignatureHtml() {
+// Antoin sign-off — single font, single style, no italic gold treatment.
+//   Line 1 (bold):   Antoin Commane, Cara of Ó Comáin
+//   Line 2 (plain):  Tánaiste
+function antoinSignatureHtml() {
   return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/fergus_at_killone.png" width="68" height="68" alt="Fergus Commane Kinfauns" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+      <img src="${SITE}/antoin_tanist.png" width="68" height="68" alt="Antoin Commane, Tánaiste" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Fergus Commane Kinfauns</strong></p>
-      <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Chief of Ó Comáin</p>
-      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Newhall House, County Clare</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Antoin Commane, Cara of Ó Comáin</strong></p>
+      <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0">Tánaiste</p>
+      <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
+        <a href="mailto:antoin@ocomain.org" style="color:#B8975A;text-decoration:none">antoin@ocomain.org</a>
+      </p>
     </td>
   </tr>
 </table>`;
 }
 
-// Herald — text-only. Single italic line as in founder-email.js.
+function michaelSignatureHtml() {
+  return `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
+  <tr>
+    <td style="vertical-align:middle;padding-right:18px;width:84px">
+      <img src="${SITE}/michael_commane_capecod.png" width="68" height="68" alt="Michael Commane, Marshall" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+    </td>
+    <td style="vertical-align:middle">
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Michael Commane</strong></p>
+      <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Marshall &amp; Standard Bearer of Clan Ó Comáin</p>
+      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Maraschall &amp; Iompróir Meirgí</p>
+      <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
+        <a href="mailto:michael@ocomain.org" style="color:#B8975A;text-decoration:none">michael@ocomain.org</a>
+      </p>
+    </td>
+  </tr>
+</table>`;
+}
+
+function jessicaSignatureHtml() {
+  return `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
+  <tr>
+    <td style="vertical-align:middle;padding-right:18px;width:84px">
+      <img src="${SITE}/jessica_lily_commane.png" width="68" height="68" alt="Jessica-Lily Commane" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+    </td>
+    <td style="vertical-align:middle">
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Jessica-Lily Commane</strong></p>
+      <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Keeper of the Seat of Clan Ó Comáin</p>
+      <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Coimeádaí na Suíochán</p>
+      <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
+        <a href="mailto:jessica@ocomain.org" style="color:#B8975A;text-decoration:none">jessica@ocomain.org</a>
+      </p>
+    </td>
+  </tr>
+</table>`;
+}
+
+// Herald — text-monogram (Herald is more office than person).
 function heraldSignatureHtml() {
   return `
-<div style="text-align:left;margin:32px 0 8px">
-  <div style="font-family:'Georgia',serif;color:#B8975A;font-size:18px;letter-spacing:0.6em;line-height:1;opacity:0.55;margin-bottom:18px">· · ·</div>
-  <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.5;margin:0">— An tAralt, Clan Herald at Newhall</p>
-</div>`;
-}
-
-// ── Shared body fragments ──────────────────────────────────────────
-
-// Used in 1A, 1B, 1C. The order-of-dignities etiquette block.
-function heraldEtiquetteHtml() {
-  return p(`At the head of the Register stand those whom the Chief has raised to the three dignities of the clan — borne aloud at the gatherings, walking ceremonially beside the Chief and the Privy Council. <strong>Cara of Ó Comáin</strong> is conferred at one bringing-in; <strong>Ardchara</strong> at five; and <strong>Onóir</strong> at fifteen, most senior of the three. The bearer is named <em><strong>Cara John</strong></em> in speech and on the Register; <em><strong>John Cummins, Cara of Ó Comáin</strong></em> in formal correspondence.`)
-       + p(`Each dignity opens with a single act — bringing another of your kindred to the clan, by invitation or by gift, both done from your <a href="${URLS.membersArea}" style="color:#8B6F32;text-decoration:underline">members' area</a>.`);
-}
-
-// Used in 1A, 1C. Sealing reminder.
-function sealReminderHtml() {
-  return p(`If your certificate is not yet sealed, do so within the thirty-day window — that fixes the spelling, the Gaelic form should you prefer it, and the name by which the kindred shall hereafter know you.`);
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
+  <tr>
+    <td style="vertical-align:middle;padding-right:18px;width:84px">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="68" height="68" style="border:2px solid #B8975A;border-radius:50%;background:#0C1A0C">
+        <tr><td align="center" valign="middle" style="height:64px;width:64px">
+          <span style="font-family:'Georgia',serif;font-size:11px;font-weight:600;letter-spacing:0.18em;color:#B8975A;text-transform:uppercase;line-height:1.2">An<br>tAralt</span>
+        </td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>The Herald of Clan Ó Comáin</strong></p>
+      <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">An tAralt</p>
+      <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
+        <a href="mailto:herald@ocomain.org" style="color:#B8975A;text-decoration:none">herald@ocomain.org</a>
+      </p>
+    </td>
+  </tr>
+</table>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// EMAIL 1 — Three variants (Herald)
+// EMAIL 1A — Herald, Clan tier (+3)
 // ─────────────────────────────────────────────────────────────────────
-
 function buildEmail1A_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${pItalic(`Dia dhuit — God be with you.`)}
-${p(`I am the Clan Herald of Ó Comáin, keeper of the clan's register at Newhall. Your name is inscribed among those who have answered the call after eight long centuries of silence — kindred newly returned to one ancient hearth.`)}
-${p(`Your name is kept upon my private roll at Newhall, no less honoured for being unseen there. The <a href="${URLS.publicRegister}" style="color:#8B6F32;text-decoration:underline">public online Register</a>, reserved to the Guardian, Steward and Life tiers, sits open to you whenever you choose to take a place upon it — a short word to clan@ocomain.org, and the upgrade is done.`)}
-${ctaButtonHtml('Write to the Office to upgrade', URLS.upgrade)}
-${heraldEtiquetteHtml()}
-${sealReminderHtml()}
+${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
+${p(`Your name has been entered into the Register, in the form you chose, and the Chief has signed and sealed your certificate. <strong>Your place is now formally recorded in the household of Ó Comáin</strong>, and you stand among the kindred of the present revival.`)}
+${p(`There is a quiet matter I should also draw to your attention. The Chief raises members of the clan, by his own hand, to one of <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to the first of them, Cara, opens with a single bringing-in. It is a real honour, and one many members find moving when their name is read out at the gatherings.`)}
+${p(`From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a> you may invite or gift others into the Register at any time — both count toward Cara.`)}
+${ctaButtonHtml("Visit your members' area", URLS.members)}
+${p('With the compliments of the Office, and a welcome from the household of Ó Comáin.')}
 ${heraldSignatureHtml()}
 `;
   return wrapInChrome({
-    eyebrow: 'A note from the Herald',
-    heading: 'Your name in the Register of Clan Ó Comáin',
+    eyebrow: 'A note from the Office of the Herald',
+    heading: 'Your name in the Register',
     bodyHtml: body,
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// EMAIL 1B — Herald, Guardian+ default public (+3)
+// Per Council edit (May 2026): "delete 'Guardian, Steward, or Life Member'"
+// from the standing-paragraph. The recipient already knows their tier;
+// the public-Register framing carries the importance.
+// ─────────────────────────────────────────────────────────────────────
 function buildEmail1B_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${pItalic(`Dia dhuit — God be with you.`)}
-${p(`I am the Clan Herald of Ó Comáin, keeper of the clan's register at Newhall. Your name is inscribed among those who have answered the call after eight long centuries of silence — kindred newly returned to one ancient hearth.`)}
-${p(`Your name is now openly kept among the Guardians, Stewards and Life Members of Ó Comáin in the <a href="${URLS.publicRegister}" style="color:#8B6F32;text-decoration:underline">public online Register</a> — alongside those of the kindred drawn back from across the wide world.`)}
-${ctaButtonHtml('See your name in the public Register', URLS.publicRegister)}
-${heraldEtiquetteHtml()}
-${p(`If your certificate is not yet sealed, do so within the thirty-day window — that fixes the spelling, the Gaelic form should you prefer it, and the name by which the kindred shall hereafter know you. Your appearance on the public Register may be quietly changed at any time in your <a href="${URLS.membersArea}" style="color:#8B6F32;text-decoration:underline">members' area</a>.`)}
+${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
+${p(`Your name has been entered into the Register and inscribed onto the <strong>public Founding Members Register at Newhall</strong>, in the form you chose. The Chief has signed and sealed your certificate, and a copy of your entry stands among the founders of the present revival, visible to anyone who comes to the household.`)}
+${p('Your standing carries with it the right to certain courtesies of the household, which Linda will detail in correspondence to come. From me, the formal note: your place is now recorded, and your name stands publicly as a founder.')}
+${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to Cara opens with a single bringing-in. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward it.`)}
+${ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)}
+${p('With the compliments of the Office, and a welcome from the household of Ó Comáin.')}
 ${heraldSignatureHtml()}
 `;
   return wrapInChrome({
-    eyebrow: 'A note from the Herald',
-    heading: 'Your name in the public online Register',
+    eyebrow: 'A note from the Office of the Herald',
+    heading: 'Your name in the public Register',
     bodyHtml: body,
   });
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// EMAIL 1C — Herald, Guardian+ opted-out of public (+3)
+// Per Council edit (May 2026): retain "as Guardian, Steward, or Life
+// Member" — this email speaks to the member's tier specifically because
+// they've made an active privacy choice; 1B's recipient is in the
+// default state and doesn't need the tier callout.
+// ─────────────────────────────────────────────────────────────────────
 function buildEmail1C_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${pItalic(`Dia dhuit — God be with you.`)}
-${p(`I am the Clan Herald of Ó Comáin, keeper of the clan's register at Newhall. Your name is inscribed among those who have answered the call after eight long centuries of silence — kindred newly returned to one ancient hearth.`)}
-${p(`Your name is kept upon my private roll at Newhall by your own preference, no less honoured for being unseen there. The choice is freely yours, and may be quietly changed at any time should you wish your name to appear among the Guardians, Stewards and Life Members on the public Register.`)}
-${ctaButtonHtml('Open my members\u2019 area', URLS.membersArea)}
-${heraldEtiquetteHtml()}
-${sealReminderHtml()}
+${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
+${p('Your name has been entered into the Register, in the form you chose. The Chief has signed and sealed your certificate, and your place is formally recorded in the household of Ó Comáin.')}
+${p(`I have noted that you have chosen <strong>not to appear on the public Register</strong>. That is entirely your right, and it is observed. Your standing as Guardian, Steward, or Life Member is the same — only the public visibility differs, and your courtesies of the household carry as fully as for any other member at your tier.`)}
+${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward Cara — though your name need not appear publicly should you prefer it remained in the private Register.`)}
+${ctaButtonHtml("Visit your members' area", URLS.members)}
+${p('With the compliments of the Office.')}
 ${heraldSignatureHtml()}
 `;
   return wrapInChrome({
-    eyebrow: 'A note from the Herald',
-    heading: 'Your name in the Register of Clan Ó Comáin',
+    eyebrow: 'A note from the Office of the Herald',
+    heading: 'Your name in the Register',
     bodyHtml: body,
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// EMAIL 2 — Fergus's personal letter
+// EMAIL 2 — Fergus, Chief's letter (+9)
+//
+// Per Council direction (May 2026): "Fergus email strips the normal
+// header and has his letter only which has a header on the headed
+// paper". The body IS the Kensington-letterhead PNG. The wrapper holds
+// only the image and a quiet footer outside the letterhead.
+//
+// ASSET: the_chiefs_letter_email.png — produced by the calligrapher
+// (a few days out per the Chief). The cron's gating layer defers
+// dispatch until the asset is in place. See SENDER_READY map in
+// daily-post-signup-sweep.js.
 // ─────────────────────────────────────────────────────────────────────
-
 function buildEmail2_html(member) {
-  const firstName = firstNameOf(member);
-  const body = `
-${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`A short word from Newhall, written by my own hand.`)}
-${p(`The clan came very nearly to nothing. Between the Penal years, the Famine, and the long emigrations that followed, what you and I now share came close to vanishing from the record altogether. That your name is in the Register today is itself a small act of repair, and not a small one to me.`)}
-${p(`I sit here looking out over the lawn at Killone — the abbey in its slow ruin and yet still standing, the rooks above it as they have been for centuries. The post arrives steadily now: envelopes from Boston, from Chicago, from the cities of Britain and beyond. Each one a name finding its way home. Yours is among them.`)}
-${p(`I hope, in time, you will come to a gathering at Newhall and we will embrace. There is a good deal to say that does not fit on a page. Until then, your place is kept.`)}
-${pItalic(`Yours, in clan and kindred,`)}
-${fergusSignatureHtml()}
-`;
-  return wrapInChrome({
-    eyebrow: 'From the desk of the Chief',
-    heading: 'A word from Newhall',
-    bodyHtml: body,
-  });
+  const letterImageUrl = `${SITE}/the_chiefs_letter_email.png`;
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f3eee2;font-family:'Georgia',serif">
+<div style="max-width:660px;margin:0 auto;background:#f3eee2;padding:24px 12px">
+
+  <!-- The letter as a single image. Image carries its own header
+       (engraved arms, "Ó Comáin", subline, address line), body
+       (calligrapher's hand), signature, chancery stamp, and footer
+       motto. Adding standard chrome above would double-band the page. -->
+  <img src="${letterImageUrl}"
+       alt="A letter from Fergus Commane, Chief of Clan Ó Comáin, sent from Newhall"
+       style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08)">
+
+  <!-- Email-client footer outside the letter. Quiet, minimal,
+       deliberately separate from the letterhead so the letter reads
+       as a self-contained piece of correspondence. -->
+  <div style="max-width:580px;margin:24px auto 0;padding:0 16px;text-align:center;font-family:'Georgia',serif;font-size:11px;color:#8a8576;line-height:1.6">
+    <p style="margin:0 0 6px">This message is from the Chief of Clan Ó Comáin, sent to members of the kindred.</p>
+    <p style="margin:0">Clan Ó Comáin &middot; Newhall House, County Clare, Ireland &middot; <a href="https://www.ocomain.org" style="color:#8B6F32">www.ocomain.org</a></p>
+  </div>
+
+</div>
+</body>
+</html>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// EMAIL 3 — Linda / Office: bring the kindred home
+// EMAIL 3 — Antoin (Cara), how I became Cara (+21)
+// All May 2026 Council edits applied.
 // ─────────────────────────────────────────────────────────────────────
-
 function buildEmail3_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`A note from the Office, by the Chief's wish, on a matter the clan's revival depends on: <strong>bringing more of the kindred home</strong>.`)}
-${p(`There are two simple paths from your members' area:`)}
-${p(`<strong>Invitation</strong> — send a short note in your own name. It carries the Chief's letter to your friend or family member. They sign up, and you are recorded as the one who brought them.`)}
-${p(`<strong>Gift</strong> — €49 buys someone a Clan Member tier. They receive a signed certificate from the Chief, which can be cherished for years.`)}
-${p(`Both count toward the clan's honours — <strong>Cara</strong> at one bringing, <strong>Ardchara</strong> at five, <strong>Onóir</strong> at fifteen.`)}
-${p(`If there is one in your circle who would feel the same call — a parent, a cousin, a friend with Irish roots — five minutes on the dashboard is all it takes.`)}
-${ctaButtonHtml('Go to my dashboard to invite or gift', URLS.membersArea)}
-${pItalic(`Go raibh míle maith agat,`)}
-${lindaSignatureHtml()}
+${p(`Antoin Commane writing. The Chief has asked me to write to you on a particular matter, but not in my Tánaiste capacity. I write today as the first member ever raised to <strong>Cara</strong> in the present revival, and I want to tell you how that came about.`)}
+${p(`When the clan reopened in 2026 I was a member like anyone else. The first title of dignity, Cara, opens with a single act: <strong>you recommend one other person who loves Ireland for membership, and they accept</strong>. That is the whole of it. I recommended a friend I'd known since school — he had Cork people on his mother's side and had always been quietly proud of it. He joined. The Chief raised me to the honour Cara at the next gathering, by his own hand.`)}
+${p('Two things stay with me from that moment.')}
+${p(`<strong>The first: the Chief reads your name and title out</strong> — your full name and title, before the assembled kindred — when he raises you. It is a real ceremony, in a real house, in front of real people. The Chief's hand is on your shoulder. He says the words and commands the Herald to let it be known among the kindred that I am to be addressed as <em>Cara Antoin</em>, with the place and standing belonging to that rank. There is a small applause and you sit back down and supper goes on. But the moment stays.`)}
+${p(`<strong>The second: how easy it is</strong>. I had thought "recommending a friend for membership" would feel like asking someone to sign up to a service. It did not. It was telling someone I liked about something I cared about — the same thing the rest of the kindred were doing in their own ways, in cities and towns I'd never been to. Many of them tell me afterwards that they wish they'd done it sooner.`)}
+${p(`If there is someone in your life — a sibling, a cousin, a friend, anyone with a love of Ireland — who you think might want a place in the Register, <strong>the path is in your members' area</strong>. You can either send them an invitation to join themselves, or gift them membership directly. Both count toward Cara.`)}
+${ctaButtonHtml('Send an invitation, or gift membership', URLS.invite)}
+${p('All my very best, in clan and kindred,')}
+${antoinSignatureHtml()}
 `;
   return wrapInChrome({
-    eyebrow: 'A note from the Office',
-    heading: 'A simple way to grow the clan',
+    eyebrow: 'A note from the Tánaiste',
+    heading: 'How I became Cara',
     bodyHtml: body,
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// EMAIL 4 — Linda / Office: gift-angle nudge (conditional)
+// EMAIL 4 — Linda, bringing the kindred (+35) — CONDITIONAL
+// Sent only if the member has zero successful sponsorships. The cron
+// checks countSponsoredBy(member.id) before dispatching.
 // ─────────────────────────────────────────────────────────────────────
-
 function buildEmail4_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`A second note from the Office. If the invitation path feels like a lot, the <strong>gift path is simpler — and probably more rewarding</strong>. €49 buys someone you love a year of membership. They receive a certificate signed by the Chief, which can be cherished for years.`)}
-${p(`A few people who would be delighted to receive this gift:`)}
-${p(`— An Irish-American parent in Boston, Chicago, or anywhere they have roots<br>— A cousin in Clare, Limerick, Galway who would appreciate the connection<br>— A daughter or son just beginning to explore their Irish side`)}
-${p(`Five minutes, €49, a moment they will remember. The act of giving raises you in the clan's honours in turn — that is how it works.`)}
-${ctaButtonHtml('Send a gift now', URLS.giftPage)}
-${pItalic(`Go raibh míle maith agat,`)}
-${lindaSignatureHtml()}
-`;
-  return wrapInChrome({
-    eyebrow: 'A second note from the Office',
-    heading: 'If sending an invitation feels like a lot…',
-    bodyHtml: body,
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────
-// EMAIL 5 — Linda / Office: how the honours work
-// ─────────────────────────────────────────────────────────────────────
-
-function buildEmail5_html(member) {
-  const firstName = firstNameOf(member);
-  const body = `
-${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`A note from the Office on how the clan's honours work — several members have asked.`)}
-${p(`The three dignities are simple:`)}
-${p(`<strong>Cara of Ó Comáin</strong> — for any member who brings one more into the clan. The vast majority of those raised hold this title.`)}
-${p(`<strong>Ardchara</strong> — for those who bring five.`)}
-${p(`<strong>Onóir</strong> — the apex, for those who bring fifteen. Very rare. The Onóir bearer is the Chief's named champion of welcome, walking ceremonially beside the Chief and the Privy Council.`)}
-${p(`A few practical points:`)}
-${p(`— The dignities are gender-neutral, borne the same by women and men<br>— Spouses are addressed alongside the bearer by courtesy of the kindred<br>— Both invitations AND gifts count toward the threshold`)}
-${p(`If you would like the full ceremonial detail (warrant language, address-formula, etymology), it is all on the <a href="${URLS.honoursPage}" style="color:#8B6F32;text-decoration:underline">honours page</a> in the members' area.`)}
-${p(`Otherwise: each dignity opens with a single bringing-in, and your <a href="${URLS.membersArea}" style="color:#8B6F32;text-decoration:underline">members' area</a> is where it is done.`)}
-${ctaButtonHtml('Read the order of honours', URLS.honoursPage)}
-${pItalic(`Go raibh míle maith agat,`)}
+${p(`The Chief has asked me to write with a practical note on bringing kindred into the Register, since Antoin's letter on becoming <em>Cara</em> sometimes raises a small follow-up question: <strong>how, exactly, does one do it.</strong>`)}
+${p('There are two ways, and you may choose whichever feels more natural to you for any given person.')}
+${p(`<strong>First, an invitation to join.</strong> From your members' area, you generate a personal invitation link addressed from you. The recipient receives a short, dignified email — written by us, but signed in your name — telling them you have invited them to take a place in the Register. They click through, see what membership is, and choose for themselves whether to join. They pay their own membership fee, and your Cara dignity is conferred on the Chief's next raising.`)}
+${p(`<strong>Second, gift membership.</strong> From the gift page on the website you may purchase a year of membership at any tier on someone else's behalf. They receive their certificate signed by the Chief, and a personal letter from him on Newhall headed paper. This is the path many take for parents, godchildren, and members of the kindred for whom asking them to pay would feel awkward.`)}
+${p(`Both count equally toward <em>Cara</em>. The Chief considers either act — a person you invited, or a person you gifted into the Register — as the same: a member of the kindred brought home through your hand.`)}
+${ctaButtonHtml("Send an invitation from your members' area", URLS.invite)}
+${ctaButtonHtml('Gift membership at any tier', URLS.gift)}
+${p('If you would prefer to talk it through first — particularly the awkwardness around asking, which everyone feels — please write back. I am happy to help you find the words.')}
+${p('With kind regards,')}
 ${lindaSignatureHtml()}
 `;
   return wrapInChrome({
     eyebrow: 'A note from the Office',
-    heading: 'How the clan\u2019s honours work',
+    heading: 'Bringing the kindred, in practice',
     bodyHtml: body,
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// EMAIL 6 — Paddy (Seanchaí): the royal house pedigree as story
+// EMAIL 5 — Herald, three titles of dignity (+60)
+// All May 2026 Council edits applied.
 // ─────────────────────────────────────────────────────────────────────
+function buildEmail5_html(member) {
+  const firstName = firstNameOf(member);
+  const body = `
+${p(`Dear ${escapeHtml(firstName)},`)}
+${p(`I write again from the Office of the Herald — this time on the matter of the <strong>three titles of dignity of the clan</strong>, which the Chief raises members to by his own hand. <strong>These are titles of dignity and rank.</strong> They are honours of the household.`)}
+${p(`<strong><em>Cara —</em></strong> in Irish, "friend". Conferred upon a member who has brought one other person of the kindred into the Register, by invitation or by gift. This is the most-conferred dignity, and it is the one many members take quiet pride in. Cara is the first acknowledgement that you have not only joined the clan but extended it.`)}
+${p(`<strong><em>Ardchara —</em></strong> "high friend". Conferred upon a member who has brought five into the Register. The Chief regards Ardchara as the working honour — the dignity of the kindred who carry the household into the world more than once or twice. At the gatherings, those raised to Ardchara dine at a table near the Chief's own.`)}
+${p(`<strong><em>Onóir —</em></strong> "honour". Conferred upon a member who has brought fifteen or more. Onóir is the senior dignity of the clan and is rarely conferred. Those raised to it sit on the Chief's right hand at the gatherings and are recorded as such in the Roll of the kindred. They speak in council when the Chief invites it. The dignity stays with the holder for life.`)}
+${p(`All three are bestowed in person at the gatherings, where the Chief reads each name aloud and lays his hand on the shoulder of the member raised. The Herald is then commanded to make the title known among the kindred, and the holder is addressed by it thereafter — as <em>Cara [Firstname]</em>, <em>Ardchara [Firstname]</em>, or <em>Onóir [Firstname]</em>.`)}
+${p(`I write because the path begins with a single act: <strong>one bringing-in</strong>, and Cara is conferred.`)}
+${ctaButtonHtml('Read the order of honours', URLS.honours)}
+${p('With the compliments of the Office.')}
+${heraldSignatureHtml()}
+`;
+  return wrapInChrome({
+    eyebrow: 'A note from the Office of the Herald',
+    heading: 'The three titles of dignity',
+    bodyHtml: body,
+  });
+}
 
+// ─────────────────────────────────────────────────────────────────────
+// EMAIL 6 — Michael (Marshall), clan crest in your home (+90)
+// All May 2026 Council edits applied.
+// ─────────────────────────────────────────────────────────────────────
 function buildEmail6_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`Paddy here — Paddy Commane of Ballymacooda. I serve the clan as <strong><em>Seanchaí (SHAN-a-kee)</em></strong>, the keeper of the stories.`)}
-${p(`A few months in now, and I wanted to put down clearly a thing that ought to be said: <strong>the line you've joined is a royal one, and an old one</strong>.`)}
-${p(`The line runs from the Bronze Age — four thousand years and more — through the kings of Déisi Muman in the south of Ireland, up into the Burren of County Clare where our ancestors built Cahercommane. The fort still stands, ringed in stone walls you can walk today.`)}
-${p(`From there, through the long medieval centuries, the name shifted under outside pressure — Ó Comáin became Comyn, and Comyn became Cummins, Commons, Hurley, and the rest. But the line did not break.`)}
-${p(`There's a saying among us <em>Seanchaithe</em> — names are like rivers. They run through different country and pick up new colours, but it's the same water all the way down. The river of Ó Comáin runs through your name too, whatever shape it takes today.`)}
-${p(`The full account is on our pedigree page — forty-five footnotes, drawn from the Annals, the Brehon Genealogies, the archaeology at Cahercommane, and Y-DNA analysis.`)}
-${p(`If you only read one thing about the clan, read this. It will change what you think about your name.`)}
-${ctaButtonHtml('Read the pedigree', URLS.pedigreePage)}
-${pItalic(`Yours,`)}
-${paddySignatureHtml()}
+${p(`Michael Commane writing — <em>Marshall and Standard Bearer</em> of Clan Ó Comáin. My office is the keeping of the clan's standards, the regalia, and the heraldic privileges of the kindred. I write today on a question that often comes up among members in the months after joining: <strong>what may I display, wear, or carry, that marks me as of the household?</strong>`)}
+${p('The honest answer is: more than most realise. Membership in Ó Comáin carries the Chief\'s approval for the use of the clan crest and <strong>our tartan</strong> on <strong>personal items and stationery</strong>. This includes, but is not limited to:')}
+${p(`<strong>The crest on signet rings, bookplates, embroidered linens, blazer pockets, engraved silverware, and family stationery.</strong> These are the traditional uses, and the ones members most often commission. The crest is the mermaid of Newhall Lake playing the harp — the same figure on the Chief's stamp.`)}
+${p(`<strong>Our tartan worn at family events, and at the Chief's black-tie dinner during the gathering.</strong> Members wear our tartan trousers (or skirt) at the formal evening at Newhall — the dress code for the Chief's black-tie dinner is white tie or black tie with our tartan as the trouser. Members wear our tartan also at weddings, christenings, funerals, and the gatherings. It is for the kindred, not for sale to the public.`)}
+${p(`<strong>The crest at significant family ceremonies.</strong> Many members request a small embossed crest seal for the order-of-service at family weddings or christenings — a practical and quiet way to mark a moment as connected to the wider household. The Chancellor's office can supply the digital arms file on request.`)}
+${p(`<strong>The crest on the headstone or memorial of a member.</strong> Should the time come, the household has standing approval for the crest to be placed on the headstone or memorial of any member. This is a long-held privilege of clan membership and one we honour without question.`)}
+${p(`These privileges remain in your name for as long as you are a member in good standing. The Chief regards them as an extension of your standing in the household, not a perk.`)}
+${ctaButtonHtml('Request the digital arms or tartan details', URLS.regalia)}
+${p('If there is a particular use you have in mind that I have not mentioned — a vehicle insignia, a piece of jewellery commissioned for a specific occasion — please write to me directly. I am happy to confirm whether the use is within the household\'s standing approval, and to assist with anything specialised.')}
+${p('Yours, in service of the clan,')}
+${michaelSignatureHtml()}
 `;
   return wrapInChrome({
-    eyebrow: 'A word from the Seanchaí',
-    heading: 'The royal house you have joined',
+    eyebrow: "A note from the Marshall's office",
+    heading: 'The clan crest in your home',
     bodyHtml: body,
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// SENDER FUNCTIONS
+// EMAIL 7 — Paddy lite, standing of the line (+180)
+// Reframed as Gaelic story-telling per Council direction.
 // ─────────────────────────────────────────────────────────────────────
-//
-// Each takes a member row and returns Promise<boolean>. From-field
-// is set per author: clan@ for Herald and Paddy (institutional);
-// chief@ for Fergus; linda@ for Linda's Office voice.
+function buildEmail7_html(member) {
+  const firstName = firstNameOf(member);
+  const body = `
+${p(`Dear ${escapeHtml(firstName)},`)}
+${p(`Paddy here — Paddy Commane of Ballymacooda, your <em>Seanchaí (SHAN-a-kee)</em>. Half a year you've been with us now, and around this time of the year a small voice tends to whisper into the back of the kindred's thoughts: <em>is this real? what is it, exactly, that I've put my name to?</em>`)}
+${p(`The Chief asked me to answer it the Seanchaí's way, which is by telling. So I'll tell you a thing or two, and the long telling I'll keep for the year-end.`)}
+${p(`There's a stone fort on the Burren, in County Clare, called <strong>Cahercommane</strong>. You can stand on the ridge near it of an evening and the wind will come over the limestone the way it has done for four thousand years. The fort was built around 800 BCE — older than the Pyramids of Giza by some accounts, though the Egyptians might quibble. The Ó Comáin chieftains held it as their seat. They did so for so long that when the archaeologists ran the Y-DNA analysis on the present-day kindred and compared it against the bones beneath the fort, the line came up unbroken. <strong>The same blood, four millennia, the same ground.</strong>`)}
+${p(`That's not me telling tales. That's the science.`)}
+${p(`The story of how the clan was recognised again in our own century is shorter. <strong>Clans of Ireland</strong> — the official body of the Republic, established in 1989 under the patronage of the President — verified the antiquity of the Gaelic name, the line, and the Chief's claim. The committee does not give such recognitions lightly. There are very few authenticated Gaelic clans, and Ó Comáin is among them.`)}
+${p(`And the Chief himself — <strong>Fergus Commane Kinfauns</strong> — was consecrated under <em>Brehon law</em>, in the old way, by the <em>derbhfine</em> of the kindred. (The derbhfine is the assembly of those of the clan with the recognised right to confirm the Chief — a Gaelic institution older than Crown or Parliament.) He's the custodian today of <em>Killone Abbey</em> and the <em>Holy Well of St John the Baptist</em>, both upon the Newhall estate. Real places. You can walk to them.`)}
+${p(`So there is the short of it: <strong>a real fort, a real line, a real Chief, lawfully recognised, openly authenticated.</strong> No invention. No fanciful claim. A clan in active modern revival.`)}
+${p(`The longer story — the kings of Déisi, the saint, the long erasure of the Penal years and what is being unmade now — that is the Seanchaí's year-end letter to come. For tonight, only the plainer note: that voice in the back of your thoughts can rest. <strong>You've put your name to something real.</strong>`)}
+${ctaButtonHtml('Read the full pedigree', URLS.pedigree)}
+${p('Yours, in clan and story,')}
+${paddySignatureHtml()}
+`;
+  return wrapInChrome({
+    eyebrow: 'A word from the Seanchaí',
+    heading: 'The standing of the line',
+    bodyHtml: body,
+  });
+}
 
-const FROM_HERALD = 'Clan Ó Comáin <clan@ocomain.org>';
-const FROM_FERGUS = 'Fergus Commane <chief@ocomain.org>';
-const FROM_LINDA  = 'Linda Commane Cryan <linda@ocomain.org>';
-const FROM_CLAN   = 'Clan Ó Comáin <clan@ocomain.org>';
+// ─────────────────────────────────────────────────────────────────────
+// EMAIL 8 — Jessica-Lily, gathering at Newhall (+240)
+// Bubblier voice per Council direction.
+// ─────────────────────────────────────────────────────────────────────
+function buildEmail8_html(member) {
+  const firstName = firstNameOf(member);
+  const body = `
+${p(`Hi ${escapeHtml(firstName)}! 💚`)}
+${p(`Jessica-Lily here — your <em>Coimeádaí na Suíochán</em>, which sounds frightfully grand but really just means I'm the one who makes sure there's a chair at the table for everyone who wants one at Newhall. The Chief asked me to write to you because something rather lovely is being planned and you should be the first to know.`)}
+${p(`We're putting on the <strong>first revival gathering at Newhall this summer</strong> — and after eight hundred years of the clan being scattered, that sentence is still giving me goosebumps as I type it.`)}
+${p(`Here's what we're cooking up. Two days at Newhall House on the estate. The kindred coming in from across Ireland, Britain, the United States, Australia — many of them meeting cousins they never knew they had. There'll be a <strong>formal evening with the Chief and the Privy Council</strong> (which I promise is much more fun than it sounds — there's pipe music, and supper goes very late). On the second morning, a procession to <strong>Cahercommane</strong>, the great stone fort. Music in the long room. The raising of those members the Chief has chosen to honour with <em>Cara</em>, <em>Ardchara</em>, or <em>Onóir</em>. And ample time at the lake and around the gardens — bring a swim, the lake is glorious in July.`)}
+${p(`Children are welcome. So is the dog, if the dog is well-behaved (and your honour will be on the line as to whether it is).`)}
+${p(`The thing I get asked most often is <em>what does one wear?</em> Honest answer: <strong>what you'd wear to a country wedding</strong>. Our tartan if you have it, smart otherwise. The Chief is in tweeds by the second morning, and at the formal evening it's white tie or black tie with our tartan as the trouser (or the skirt — same rules either way, no pressure on style). If anyone tells you there's a strict dress code, that's me, but only because I want everyone to feel right when they arrive.`)}
+${p(`<strong>Members in good standing get priority booking</strong> when registration opens in <strong>early summer</strong>. Capacity is limited — Newhall is a real house, not a function venue — and we expect this first gathering to fill quickly. I'll write again with the booking link the moment it opens.`)}
+${p(`I write now because your year of standing renews in the coming weeks, and <strong>renewal is what unlocks priority booking</strong>. Linda will write to you on the practical side nearer the time. From me, only the warm suggestion that, if you're thinking of coming — and oh, I do hope you are — keeping your standing intact means your seat is held.`)}
+${ctaButtonHtml('Read about the gathering at Newhall', URLS.gathering)}
+${p('Cannot wait to meet you in person,')}
+${jessicaSignatureHtml()}
+`;
+  return wrapInChrome({
+    eyebrow: 'A note from the Keeper of the Seat',
+    heading: 'Plans for the gathering at Newhall',
+    bodyHtml: body,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// EMAIL 9 — Paddy full, royal house and saint (+300)
+// Reframed as full Seanchaí story-telling per Council direction.
+// ─────────────────────────────────────────────────────────────────────
+function buildEmail9_html(member) {
+  const firstName = firstNameOf(member);
+  const body = `
+${p(`Dear ${escapeHtml(firstName)},`)}
+${p(`Paddy here. The year is nearly out, and I owe you the longer telling. Pour yourself something. Settle in. This is a Seanchaí's letter, the way they were always meant to be told — not from a textbook, but as a story passed down to a kinsman who has just come home.`)}
+${p(`We start on the Burren, on the high stone ridge, four thousand years back.`)}
+${p(`The people called themselves the <strong>Déisi Muman</strong> — the Déisi of Munster — and they were a confederation of fierce, learned, wandering peoples whose original seat was in what is now County Waterford. They pressed westward, generation after generation, until their leading line reached the limestone country of Clare and built a fort there. <em>Cahercommane.</em> Three concentric stone walls, raised by the bare hands of men whose names are long gone and whose blood, by the strangest grace, is still in your kinsmen today.`)}
+${p(`Time moved on, as time does. The kings of Déisi held that fort and the lands around it through the long Bronze Age into the Iron Age, and on into the Christian centuries. And here's where the story takes a turn that I love most in all of it.`)}
+${p(`In the seventh century, a man named <strong>Commán</strong> was born of the line. He chose the cloister over the chieftaincy. He went out into the wild west of Ireland and founded the monastery at Roscommon — <em>Ros Comáin</em>, the wood of Commán — and another at Kinvara on the bay. He healed people. He preached the Gospel to the chieftains who still drank their wine in the old halls. He died in odour of sanctity, and the Church recognised him as a saint, and he is venerated to this day.`)}
+${p(`<strong>Saint Commán is our patron.</strong> He is who the clan calls upon. The shamrock border around our coat of arms is for the protection of the Holy Trinity, the saint, and the deep ecclesiastical strand in the clan's heritage. The harp the mermaid plays is for the music of the line. The mermaid herself is for Newhall Lake — the household's mystical guardian, in the story we tell about her.`)}
+${p(`From the saint, the line carries through the medieval centuries. The Lords of Kinvara, who held court at the bay. The Ó Comáin chieftains who fought at the Battle of Knockdoe in 1504, where ten thousand Irishmen of all the clans rose against the encroaching Crown. They lost the battle. They did not lose the line.`)}
+${p(`Then came the long erasure. The Penal years. The Famine. The Catholic Gaelic clans were systematically dismantled — the lands taken, the chiefs scattered, the names anglicised by clerks who could not hear what their bearers were saying. <strong>Ó Comáin became Cummins, Commins, Commons, Comyn, Coman, Hurley</strong> — the same line wearing different names, the way a river runs the same water through a hundred miles of country. The diaspora carried those scattered names to America, Australia, the cities of Britain. The clan was suppressed for almost eight hundred years.`)}
+${p(`And here we come to the part that is happening now.`)}
+${p(`What is occurring is a <strong>revival</strong>. Lawfully recognised, openly authenticated. The Chief's consecration under Brehon law. The recognition by Clans of Ireland. The rebuilding of Newhall as the household seat. The gatherings, the Register, the kindred — none of this is invention. It is restoration. <strong>The line was always there.</strong> What was missing was the household, and that is what is being rebuilt — with your name, now, among those rebuilding it.`)}
+${p(`That, in the shape of a Seanchaí's telling, is the story of the line you carry. <strong>You are not joining a club. You are taking your place in a real and lawful royal house, with a saint at its centre, with a four-thousand-year line behind it, in active modern revival.</strong>`)}
+${p(`I wanted you to hear it told, before the year was out. Sleep on it. Carry it.`)}
+${ctaButtonHtml('Read the full pedigree of the line', URLS.pedigree)}
+${p('Yours, in clan and story,')}
+${paddySignatureHtml()}
+`;
+  return wrapInChrome({
+    eyebrow: "The Seanchaí's year-end letter",
+    heading: 'The royal house and the saint',
+    bodyHtml: body,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// EMAIL 10 — Linda, renewal mechanics (+330) — CONDITIONAL
+// Sent only for non-Life-tier members. Life Members get _330_skipped
+// stamped true. Assumes a card on file (founders invited by the Chief
+// without cards on file receive a separate flow).
+// ─────────────────────────────────────────────────────────────────────
+function buildEmail10_html(member) {
+  const firstName = firstNameOf(member);
+  const renewalDate = '[renewal_date]'; // literal placeholder — substituted in future
+  const body = `
+${p(`Dear ${escapeHtml(firstName)},`)}
+${p(`The Chief has asked me to write with a practical note: your year of standing in the Register of Clan Ó Comáin renews on <strong>${renewalDate}</strong>, which is approximately one month from today.`)}
+${p(`There is nothing for you to do — <strong>the Office shall handle the renewal on your behalf using the card you have on file</strong>. The renewal preserves your standing without break, and <strong>Jessica's priority booking for the gathering at Newhall opens to renewed members the moment the renewal lands</strong>. The two are joined: standing intact, seat at Newhall held.`)}
+${p(`Should you wish to <strong>raise your tier</strong> — to Guardian for the Newhall dinner and printed letter from the Chief, or to Steward for the Roll of Honour, or to Life for standing in perpetuity — please tell me before ${renewalDate} and the renewal will be processed at the new tier instead. The difference is taken at renewal; nothing further is needed from you.`)}
+${ctaButtonHtml('Manage your renewal', URLS.renewal)}
+${p(`Should you wish <strong>not to renew</strong>, you may either click cancel in your members' area or write back to me directly. Either is fine, and there is no awkwardness on this side. We've enjoyed having you among the kindred for the year, and your name shall remain in the Register's historical record either way.`)}
+${p(`With kind regards, and the Chief's thanks for the year of your standing,`)}
+${lindaSignatureHtml()}
+`;
+  return wrapInChrome({
+    eyebrow: 'A note from the Office',
+    heading: 'Your year of standing renews',
+    bodyHtml: body,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// SENDERS
+// ─────────────────────────────────────────────────────────────────────
 
 async function sendRegisterAck_ClanTier(member) {
   return sendEmail({
@@ -442,7 +610,7 @@ async function sendRegisterAck_GuardianPlusDefault(member) {
   return sendEmail({
     to: member.email,
     from: FROM_HERALD,
-    subject: 'Your name in the public online Register of Clan Ó Comáin',
+    subject: 'Your name in the public Register of Clan Ó Comáin',
     html: buildEmail1B_html(member),
   });
 }
@@ -460,58 +628,86 @@ async function sendChiefPersonalLetter(member) {
   return sendEmail({
     to: member.email,
     from: FROM_FERGUS,
-    subject: 'A word from Newhall',
+    subject: 'From the desk of the Chief',
     html: buildEmail2_html(member),
   });
 }
 
-async function sendLindaKindredAsk(member) {
+async function sendAntoinHowIBecameCara(member) {
   return sendEmail({
     to: member.email,
-    from: FROM_LINDA,
-    subject: 'A simple way to grow the clan',
+    from: FROM_ANTOIN,
+    subject: 'How I became Cara — the simplest thing the clan asks of you',
     html: buildEmail3_html(member),
   });
 }
 
-async function sendLindaGiftNudge(member) {
+async function sendLindaBringingKindred(member) {
   return sendEmail({
     to: member.email,
     from: FROM_LINDA,
-    subject: 'If sending an invitation feels like a lot…',
+    subject: 'Bringing the kindred, in practice — a practical note',
     html: buildEmail4_html(member),
   });
 }
 
-async function sendLindaHonoursExplain(member) {
+async function sendHeraldThreeDignities(member) {
   return sendEmail({
     to: member.email,
-    from: FROM_LINDA,
-    subject: 'How the clan\u2019s honours work',
+    from: FROM_HERALD,
+    subject: 'The three titles of dignity — Cara, Ardchara, Onóir',
     html: buildEmail5_html(member),
   });
 }
 
-async function sendSeanchaiPedigree(member) {
+async function sendMichaelClanCrest(member) {
   return sendEmail({
     to: member.email,
-    from: FROM_CLAN,
-    subject: 'The royal house you have joined',
+    from: FROM_MICHAEL,
+    subject: 'The clan crest in your home — what members may display',
     html: buildEmail6_html(member),
+  });
+}
+
+async function sendPaddyStandingOfTheLine(member) {
+  return sendEmail({
+    to: member.email,
+    from: FROM_PADDY,
+    subject: "The standing of the line — a Seanchaí's note",
+    html: buildEmail7_html(member),
+  });
+}
+
+async function sendJessicaGathering(member) {
+  return sendEmail({
+    to: member.email,
+    from: FROM_JESSICA,
+    subject: 'Plans for the gathering at Newhall',
+    html: buildEmail8_html(member),
+  });
+}
+
+async function sendPaddyRoyalHouseAndSaint(member) {
+  return sendEmail({
+    to: member.email,
+    from: FROM_PADDY,
+    subject: "The royal house and the saint — the Seanchaí's year-end letter",
+    html: buildEmail9_html(member),
+  });
+}
+
+async function sendLindaRenewal(member) {
+  return sendEmail({
+    to: member.email,
+    from: FROM_LINDA,
+    subject: 'Your year of standing renews shortly — a practical note',
+    html: buildEmail10_html(member),
   });
 }
 
 // ─────────────────────────────────────────────────────────────────────
 // PREVIEW INTEGRATION
 // ─────────────────────────────────────────────────────────────────────
-//
-// Used by scripts/preview-post-signup-emails.mjs to render each email
-// to a static HTML file for visual review without sending. Returns
-// just the rendered HTML string for the given email key + member.
-//
-// Keys are 1A, 1B, 1C, 2, 3, 4, 5, 6 — the same identifiers used in
-// the cadence document.
-
 const PREVIEW_BUILDERS = {
   '1A': buildEmail1A_html,
   '1B': buildEmail1B_html,
@@ -521,6 +717,10 @@ const PREVIEW_BUILDERS = {
   '4':  buildEmail4_html,
   '5':  buildEmail5_html,
   '6':  buildEmail6_html,
+  '7':  buildEmail7_html,
+  '8':  buildEmail8_html,
+  '9':  buildEmail9_html,
+  '10': buildEmail10_html,
 };
 
 function getPreviewHtml(emailKey, member) {
@@ -535,12 +735,15 @@ module.exports = {
   sendRegisterAck_GuardianPlusDefault,
   sendRegisterAck_GuardianPlusOptedOut,
   sendChiefPersonalLetter,
-  sendLindaKindredAsk,
-  sendLindaGiftNudge,
-  sendLindaHonoursExplain,
-  sendSeanchaiPedigree,
+  sendAntoinHowIBecameCara,
+  sendLindaBringingKindred,
+  sendHeraldThreeDignities,
+  sendMichaelClanCrest,
+  sendPaddyStandingOfTheLine,
+  sendJessicaGathering,
+  sendPaddyRoyalHouseAndSaint,
+  sendLindaRenewal,
   // Preview (used by scripts/preview-post-signup-emails.mjs)
   getPreviewHtml,
-  // For tests / introspection
   PREVIEW_BUILDERS,
 };

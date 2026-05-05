@@ -235,88 +235,88 @@
       </div>
     </section>
 
-    <!-- ─────────── 4. POST-SIGNUP LIFECYCLE — PROPOSED REBUILD ─────────── -->
+    <!-- ─────────── 4. POST-SIGNUP LIFECYCLE — REBUILD (LIVE, GATED) ─────────── -->
     <section class="sequence" style="border-color:rgba(184,151,90,.5)">
       <div class="seq-head" style="background:linear-gradient(135deg,#0C1A0C 0%,#1F2E1F 100%)">
-        <p class="seq-eyebrow" style="color:var(--gold-light)">Sequence four · proposed rebuild</p>
+        <p class="seq-eyebrow" style="color:var(--gold-light)">Sequence four · LIVE (gated rollout)</p>
         <h2>Post-signup lifecycle — ten emails, six voices, full rebuild</h2>
         <p class="lede">A complete reworking of the post-signup journey. New voices brought in (Antoin, Michael, Jessica), pedigree split early/late, renewal-anchored back half, Fergus's letter as the moment.</p>
       </div>
       <div class="seq-meta" style="background:rgba(184,151,90,.12);border-bottom-color:rgba(184,151,90,.4)">
         <strong>10 emails over the first year.</strong> Voices: <strong>The Herald</strong> (3 variants by tier), <strong>Fergus</strong> (Chief), <strong>Antoin</strong> (Cara, Tánaiste), <strong>Linda</strong> (Office, ×2), <strong>Michael</strong> (Marshall), <strong>Paddy</strong> (Seanchaí, lite + full), <strong>Jessica-Lily</strong> (Keeper of the Seat). Trigger: members.created_at.<br>
-        <span style="display:inline-block;margin-top:8px;padding:4px 10px;background:var(--gold);color:var(--ink);font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;border-radius:1px">REVISION 2 — 5 MAY 2026</span>
-        <span style="display:inline-block;margin:8px 0 0 6px;font-style:italic;color:var(--ink-muted);font-size:13px">All Council edits from rev 1 applied · Awaiting final review before implementation.</span>
+        <span style="display:inline-block;margin-top:8px;padding:4px 10px;background:#2E4A2E;color:#fff;font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;border-radius:1px">SHIPPED — 5 MAY 2026</span>
+        <span style="display:inline-block;margin:8px 0 0 6px;font-style:italic;color:var(--ink-muted);font-size:13px">Production cron + lib live. Per-email gating in effect — emails activate as DNS forwarders and assets land. Currently active: <strong>Email 4 (Linda), 7 (Paddy), 9 (Paddy), 10 (Linda)</strong>. Pending: <strong>1A/B/C, 5 (need herald@)</strong>; <strong>2 (needs calligrapher PNG)</strong>; <strong>3 (needs antoin@)</strong>; <strong>6 (needs michael@)</strong>; <strong>8 (needs jessica@)</strong>.</span>
       </div>
       <div class="seq-emails">
-        <a class="email-item" href="/email-previews-lifecycle-rev2/01a-herald-clan-tier.html">
+        <a class="email-item" href="/email-previews/01a-herald-clan-tier.html">
           <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
             <p class="email-title">The Herald — Your name in the Register (Clan tier)</p>
-            <p class="email-meta">Variant 1A: register acknowledgment. Mentions invite/gift path from members' area.</p>
+            <p class="email-meta">Variant 1A: register acknowledgment. Gated — herald@ DNS forwarder pending.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/01b-herald-guardian-default.html">
+        <a class="email-item" href="/email-previews/01b-herald-guardian-default.html">
           <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
             <p class="email-title">The Herald — Your name in the public Register (Guardian+ default)</p>
-            <p class="email-meta">Variant 1B: for Guardian / Steward / Life members on the public Register.</p>
+            <p class="email-meta">Variant 1B: for Guardian / Steward / Life members on the public Register. Gated.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/01c-herald-guardian-private.html">
+        <a class="email-item" href="/email-previews/01c-herald-guardian-private.html">
           <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
             <p class="email-title">The Herald — Your name in the Register (Guardian+ opted out)</p>
-            <p class="email-meta">Variant 1C: for higher-tier members who chose privacy.</p>
+            <p class="email-meta">Variant 1C: for higher-tier members who chose privacy. Gated.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/02-fergus-chiefs-letter.html">
+        <a class="email-item" href="/email-previews/02-fergus-chiefs-letter.html">
           <div class="email-row"><span class="day-pill">+9 d</span><div class="email-detail">
             <p class="email-title">Fergus — From the desk of the Chief</p>
-            <p class="email-meta">From: <em>Fergus Commane</em> · The Kensington-style letterhead, locked separately. The Chief's own letter, calligrapher-written body to come.</p>
+            <p class="email-meta">Image-only Kensington-letterhead PNG, no standard chrome. Gated until calligrapher delivers.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/03-antoin-how-i-became-cara.html">
+        <a class="email-item" href="/email-previews/03-antoin-how-i-became-cara.html">
           <div class="email-row"><span class="day-pill">+21 d</span><div class="email-detail">
             <p class="email-title">Antoin (Cara, Tánaiste) — How I became Cara</p>
-            <p class="email-meta">First-person social proof. Antoin was the first member raised to Cara — for recommending a friend for membership.</p>
+            <p class="email-meta">First-person social proof. Gated — antoin@ DNS forwarder pending.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/04-linda-bringing-kindred.html">
+        <a class="email-item" href="/email-previews/04-linda-bringing-kindred.html">
           <div class="email-row"><span class="day-pill">+35 d</span><div class="email-detail">
-            <p class="email-title">Linda — Bringing the kindred, in practice</p>
-            <p class="email-meta">Practical referral mechanics — invitation vs gift, what to say, how it works. Sent only if no kindred brought in yet.</p>
+            <p class="email-title">Linda — Bringing the kindred, in practice <strong style="color:#2E4A2E">· LIVE</strong></p>
+            <p class="email-meta">Practical referral mechanics. Sent only if no kindred brought in yet.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/05-herald-three-dignities.html">
+        <a class="email-item" href="/email-previews/05-herald-three-dignities.html">
           <div class="email-row"><span class="day-pill">+60 d</span><div class="email-detail">
             <p class="email-title">The Herald — The three titles of dignity</p>
-            <p class="email-meta">Cara, Ardchara, Onóir as ceremonial titles. Onóir at fifteen bringings, Chief's right hand, dignity for life.</p>
+            <p class="email-meta">Cara, Ardchara, Onóir as titles of dignity and rank. Gated — herald@ pending.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/06-michael-clan-crest-in-your-home.html">
+        <a class="email-item" href="/email-previews/06-michael-clan-crest.html">
           <div class="email-row"><span class="day-pill">+90 d</span><div class="email-detail">
             <p class="email-title">Michael (Marshall) — The clan crest in your home</p>
-            <p class="email-meta">Standards, regalia, our tartan worn at the Chief's black-tie dinner, signet rings, headstones.</p>
+            <p class="email-meta">Standards, regalia, our tartan, signet rings, headstones. Gated — michael@ pending.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/07-paddy-standing-of-the-line.html">
+        <a class="email-item" href="/email-previews/07-paddy-standing-of-line.html">
           <div class="email-row"><span class="day-pill">+180 d</span><div class="email-detail">
-            <p class="email-title">Paddy (Seanchaí, lite) — The standing of the line</p>
-            <p class="email-meta">Early pedigree as story — the fort, the line, the Chief's consecration. Answers "is this real?".</p>
+            <p class="email-title">Paddy (Seanchaí, lite) — The standing of the line <strong style="color:#2E4A2E">· LIVE</strong></p>
+            <p class="email-meta">Early pedigree as story — the fort, the line, the Chief's consecration.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/08-jessica-gathering.html">
+        <a class="email-item" href="/email-previews/08-jessica-gathering.html">
           <div class="email-row"><span class="day-pill">+240 d</span><div class="email-detail">
             <p class="email-title">Jessica-Lily — Plans for the gathering at Newhall</p>
-            <p class="email-meta">Bubbly anticipation-builder for the first revival gathering this summer. Renewal-runway opens.</p>
+            <p class="email-meta">Bubbly anticipation-builder for the first revival gathering. Gated — jessica@ pending.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/09-paddy-royal-house-and-saint.html">
+        <a class="email-item" href="/email-previews/09-paddy-royal-house-and-saint.html">
           <div class="email-row"><span class="day-pill">+300 d</span><div class="email-detail">
-            <p class="email-title">Paddy (Seanchaí, full) — The royal house and the saint</p>
-            <p class="email-meta">Full pedigree as a Seanchaí's tale. Déisi, Saint Commán, the Penal years, the modern revival. Identity reinforcement before renewal.</p>
+            <p class="email-title">Paddy (Seanchaí, full) — The royal house and the saint <strong style="color:#2E4A2E">· LIVE</strong></p>
+            <p class="email-meta">Full pedigree as Seanchaí's tale. Identity reinforcement before renewal.</p>
           </div></div>
         </a>
-        <a class="email-item" href="/email-previews-lifecycle-rev2/10-linda-renewal.html">
+        <a class="email-item" href="/email-previews/10-linda-renewal.html">
           <div class="email-row"><span class="day-pill">+330 d</span><div class="email-detail">
-            <p class="email-title">Linda — Your year of standing renews</p>
+            <p class="email-title">Linda — Your year of standing renews <strong style="color:#2E4A2E">· LIVE</strong></p>
             <p class="email-meta">Renewal mechanics. Card on file, gathering booking unlocked. Skipped for Life Members.</p>
           </div></div>
         </a>
