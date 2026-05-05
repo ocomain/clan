@@ -57,6 +57,7 @@
 //     for Cara
 
 const { sendEmail } = require('./email');
+const { generateChiefsLetterPdf } = require('./generate-chiefs-letter-pdf');
 
 const SITE = process.env.SITE_URL || 'https://www.ocomain.org';
 
@@ -338,42 +339,43 @@ ${heraldSignatureHtml()}
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────
 // EMAIL 2 — Fergus, Chief's letter (+9)
 //
-// HTML letterhead — NOT a flat image. The salutation 'Dear [Firstname],'
-// lives inside the letter as live HTML so personalisation works.
+// SHORT COVER NOTE + PDF ATTACHMENT
 //
-// MOBILE RENDERING — the previous version was unreadable on iPhone
-// Gmail because the desktop layout (640px max-width, 64px horizontal
-// padding, 280px+180px signature row) collapsed badly at 375px viewport.
-// This version uses a <style> block in <head> with media queries that
-// Gmail iOS does honour, scaling padding, font sizes, and signature
-// images down at narrow widths. Outlook on Windows ignores <style>
-// tags entirely but renders the desktop layout correctly there.
+// The Chief's full letter is now generated as a real PDF
+// (lib/generate-chiefs-letter-pdf.js) using EB Garamond, the proper
+// chancery stamp, and authentic letterpress aesthetic — none of the
+// email-client constraints that were fighting the previous HTML
+// version (web fonts not loading, position:absolute stripped by
+// Gmail iOS, CSS rotation unreliable, watermarks rendering as
+// blocks above the body).
 //
-// CHANCERY STAMP POSITIONING — per Council direction (5 May 2026):
-// "make the stamp bigger and look as if it's covering some text like
-// the signature and text above". Stamp is now 240px wide (was 180px)
-// and uses negative top-margin to overlap upward into the signature/
-// signoff area. Negative margin works in every mail client; absolute
-// positioning would not (Outlook strips it).
+// This function builds the short, personal cover note that arrives
+// in the inbox alongside the PDF. The cover note's job is small:
+//   - establish that the attached letter is genuinely from Fergus
+//   - give the recipient enough warmth to make them want to open it
+//   - sign personally as 'Fergus' (not 'The Chief', not 'FC') so
+//     the cover reads as a personal note from the same person who
+//     signed the letter
 //
-// IMAGE ASSETS used inside the layout (all live in repo root):
-//   coat_of_arms.png            engraved arms in header
-//   the_commane_signature.png   handwritten signature
-//   the_commane_seal.png        chancery stamp (1200x1200, redrawn
-//                                with bigger legend and tighter spacing
-//                                so the text reads at display size)
+// Reference: Royal House of Georgia secretariat correspondence —
+// short cover, signed personally, formal letter attached. That's
+// the pattern this implements, with the cover coming directly from
+// the Chief rather than from a secretary so the tone is personal
+// rather than transactional.
 //
-// FONT NOTE: web fonts don't load reliably in mail clients. Body
-// renders in Georgia / Times New Roman serif fallback. Same fallback
-// the rest of the lifecycle uses — coherent household voice.
+// SENDER stays Fergus Commane <chief@ocomain.org> — same as the
+// previous HTML version. The PDF attachment ships with the email.
 //
-// Distinct from every other email in the sequence — NO standard
-// chrome wrapper. The letterhead carries its own header (engraved
-// arms, "Clan Ó Comáin", subline, address line) so adding the
-// dark-green-and-gold standard chrome above would double-band the
-// page.
+// Cover note design intentionally minimal:
+//   - No standard chrome (header bar, footer rule)
+//   - No coat-of-arms images or stamps in the cover (those live in
+//     the PDF, where they belong)
+//   - Just plain serif text in a narrow column, signed 'Fergus'
+//   - Tiny footer giving address + website
+// The visual gravity is in the attachment, not in the cover.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail2_html(member) {
   const firstName = firstNameOf(member);
@@ -384,168 +386,32 @@ function buildEmail2_html(member) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <meta name="x-apple-disable-message-reformatting">
-
-  <!-- DARK MODE OVERRIDE — critical for Gmail iOS in dark mode.
-       Without these meta tags + the !important text colours below,
-       Gmail iOS does an aggressive auto-invert that washes the body
-       text out to ghosted grey on the cream paper, making the letter
-       nearly unreadable. (See user inbox screenshots, 5 May 2026).
-
-       'color-scheme: light only' tells the client this email is
-       intentionally a light design; do not auto-invert.
-       'supported-color-schemes: light' is the older syntax that
-       Apple Mail / Outlook honour. Both together cover the field.
-       :root color-scheme is belt-and-braces.
-
-       Then in the body styles below, every text colour is set with
-       !important so Gmail's dark-mode CSS injection (which it does
-       even with the meta tags, just less aggressively) can't
-       override our intent. -->
   <meta name="color-scheme" content="light only">
   <meta name="supported-color-schemes" content="light">
-
-  <style>
-    :root { color-scheme: light only; supported-color-schemes: light; }
-
-    /* Force text colours that survive Gmail iOS dark-mode injection.
-       The same colours are applied inline below (for clients that
-       strip <style> tags), but !important here wins over Gmail's
-       injected overrides for clients that keep <style> tags. */
-    .ink-body, .ink-body p, .ink-typed { color: #1A1A1A !important; }
-    .ink-italic { color: #5A6A5A !important; }
-    .ink-ps { color: #3A4A3A !important; }
-    .ink-eyebrow { color: #8B6F32 !important; }
-    .ink-subline { color: #6C5A4A !important; }
-    .ink-from-desk { color: #5A4A2F !important; }
-    .ink-address { color: #7A6A4F !important; }
-    .ink-motto { color: #8B6F32 !important; }
-    .paper-bg { background-color: #FAF4E6 !important; }
-    .paper-frame-bg { background-color: #FAF4E6 !important; }
-
-    /* Mobile responsive — Gmail iOS honours these. Outlook ignores
-       (renders the desktop layout, which fits its own viewport fine).
-       Approach: shrink horizontal padding so body text isn't squeezed,
-       scale watermark + signature row appropriately, bump body font
-       size up slightly so it reads on a phone. */
-    @media only screen and (max-width: 480px) {
-      .letter-body-pad { padding: 32px 22px 24px !important; }
-      .letter-header-pad { padding: 30px 22px 22px !important; }
-      .letter-body-text { font-size: 16px !important; line-height: 1.65 !important; }
-      .letter-sig { width: 220px !important; max-width: 65% !important; }
-      .letter-stamp { width: 200px !important; max-width: 55% !important; }
-      .letter-stamp-row { margin-top: -130px !important; }
-      .letter-spacer { height: 60px !important; }
-      .letter-typed-name { font-size: 12px !important; }
-      .letter-ps { font-size: 15px !important; padding-left: 16px !important; }
-      .clan-eyebrow { font-size: 10px !important; letter-spacing: .26em !important; }
-      .clan-subline { font-size: 12px !important; }
-      .clan-from-desk { font-size: 9px !important; letter-spacing: .18em !important; }
-      .clan-address { font-size: 9px !important; letter-spacing: .14em !important; }
-    }
-  </style>
 </head>
-<body class="paper-bg" style="margin:0;padding:24px 8px;background:#f3eee2;background-color:#f3eee2;font-family:'Georgia','Times New Roman',serif">
+<body style="margin:0;padding:24px 16px;background:#F8F4EC;font-family:'Georgia','Times New Roman',serif;color:#1A1A1A">
 
-  <!-- THE LETTERHEAD itself -->
-  <div class="paper-frame-bg" style="max-width:640px;margin:0 auto;background:#FAF4E6;background-color:#FAF4E6;background-image:radial-gradient(ellipse at center,#FBF6E9 0%,#F5EFD8 100%);border:1px solid #D8C99A;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08);overflow:hidden">
+  <div style="max-width:560px;margin:0 auto">
 
-    <!-- Inner gold-rule frame — Kensington-Palace border -->
-    <div class="paper-frame-bg" style="margin:14px;border:1px solid #B8975A;padding:0;background-color:#FAF4E6">
+    <p style="font-size:16px;line-height:1.65;margin:0 0 18px;color:#1A1A1A">Dear ${escapeHtml(firstName)},</p>
 
-      <!-- ─────────── HEADER ─────────── -->
-      <div class="letter-header-pad" style="padding:42px 48px 32px;text-align:center;border-bottom:1px solid rgba(184,151,90,.4)">
-        <img src="${SITE}/coat_of_arms.png" alt="Clan Ó Comáin" width="68" style="display:block;margin:0 auto 14px;height:auto;opacity:.92">
-        <p class="clan-eyebrow ink-eyebrow" style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:600;letter-spacing:.32em;color:#8B6F32;margin:0 0 4px;text-transform:uppercase">Clan Ó Comáin</p>
-        <p class="clan-subline ink-subline" style="font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 18px;letter-spacing:.04em">An Ancient Gaelic Royal House</p>
+    <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:#1A1A1A">A short note to say that my welcome letter to you is attached.</p>
 
-        <!-- Decorative gold rule with diamond ornament -->
-        <div style="text-align:center">
-          <span style="display:inline-block;width:50px;height:1px;background:#B8975A;vertical-align:middle"></span>
-          <span style="display:inline-block;width:6px;height:6px;background:#B8975A;transform:rotate(45deg);margin:0 10px;vertical-align:middle"></span>
-          <span style="display:inline-block;width:50px;height:1px;background:#B8975A;vertical-align:middle"></span>
-        </div>
+    <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:#1A1A1A">After a long suppression of eight hundred years, Clan Ó Comáin has been brought back to life — and it means a great deal to me that you have taken your place in the founding family.</p>
 
-        <p class="clan-from-desk ink-from-desk" style="font-family:'Georgia','Times New Roman',serif;font-size:10px;font-weight:600;letter-spacing:.22em;color:#5A4A2F;margin:14px 0 0;text-transform:uppercase">From the desk of the Chief</p>
-        <p class="clan-address ink-address" style="font-family:'Georgia','Times New Roman',serif;font-size:10px;letter-spacing:.18em;color:#7A6A4F;margin:4px 0 0;text-transform:uppercase">Newhall Estate &middot; County Clare &middot; Ireland</p>
-      </div>
+    <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:#1A1A1A">Please open the letter when you have a quiet moment. It carries the household's seal and is signed by my own hand.</p>
 
-      <!-- ─────────── BODY ─────────── -->
-      <!-- The watermark behind body text was removed (5 May 2026 user
-           feedback). It rendered as a visible block above the body
-           text in clients that strip position:absolute (Gmail iOS),
-           and as too-prominent on those that didn't. Letter reads
-           fine without it. -->
-      <div class="letter-body-pad" style="padding:48px 64px 32px">
+    <p style="font-size:16px;line-height:1.65;margin:0 0 22px;color:#1A1A1A">With my warm regards,</p>
 
-        <div class="ink-body" style="font-family:'Georgia','Times New Roman',serif;color:#1A1A1A">
+    <p style="font-size:18px;line-height:1.4;margin:0 0 4px;font-style:italic;color:#1A1A1A">Fergus</p>
 
-          <p class="letter-body-text ink-body" style="font-size:17px;line-height:1.7;margin:0 0 18px;color:#1A1A1A">Dear ${escapeHtml(firstName)},</p>
+    <p style="font-size:13px;line-height:1.5;margin:0 0 0;color:#6C5A4A">Fergus Kinfauns, The Commane<br>Chief of Ó Comáin</p>
 
-          <p class="letter-body-text ink-body" style="font-size:17px;line-height:1.7;margin:0 0 16px;color:#1A1A1A">It is my pleasure to welcome you to the newly revived Clan Ó Comáin!</p>
-
-          <p class="letter-body-text ink-body" style="font-size:17px;line-height:1.7;margin:0 0 16px;color:#1A1A1A">After a long suppression of 800 years, the clan is back, and I am thrilled that you have chosen to be a part of our founding family in 2026.</p>
-
-          <p class="letter-body-text ink-body" style="font-size:17px;line-height:1.7;margin:0 0 16px;color:#1A1A1A">I am incredibly excited to grow our community and would love for you to help &amp; support me and be a part of that journey. I encourage you to browse our website to learn more about our shared heritage, the fascinating history of Irish clans, and how our ancestors lived under Brehon Law. Don&apos;t forget to explore the special Private Members&apos; area.</p>
-
-          <p class="letter-body-text ink-body" style="font-size:17px;line-height:1.7;margin:0 0 16px;color:#1A1A1A">Here&rsquo;s to a long and wonderful friendship!</p>
-
-          <!-- Famous Fergus PS — moved here (5 May 2026) above the
-               signature/stamp section per user direction. Sits naturally
-               between the body and the formal close. -->
-          <p class="letter-ps ink-ps" style="font-family:'Georgia','Times New Roman',serif;font-size:16px;line-height:1.7;margin:24px 0 28px;padding-left:24px;border-left:2px solid #B8975A;color:#3A4A3A;font-style:italic">
-            <span class="ink-eyebrow" style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:700;letter-spacing:.18em;color:#8B6F32;text-transform:uppercase;display:block;margin-bottom:6px;font-style:normal">P.S.</span>
-            &ldquo;Know someone who belongs with us? Inviting them is easy through your members&apos; area!&rdquo;
-          </p>
-
-          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 8px;font-style:italic;color:#1A1A1A"><span class="ink-body" style="color:#1A1A1A">Sl&aacute;n go f&oacute;ill</span> <span class="ink-italic" style="font-style:normal;color:#5A6A5A;font-size:15px">&mdash; (goodbye for now)</span></p>
-
-          <!-- Signature image, on its own line -->
-          <div style="margin:18px 0 0">
-            <img class="letter-sig" src="${SITE}/the_commane_signature.png" alt="The Commane (signed)" style="display:block;width:300px;max-width:100%;height:auto">
-          </div>
-
-          <!-- Typed name + title beneath signature — these are what
-               the chancery stamp will overlap onto. -->
-          <p class="letter-typed-name ink-typed" style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:14px 0 2px">Fergus Kinfauns, The Commane</p>
-          <p class="letter-typed-name ink-typed" style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:0">Chief of &Oacute; Com&aacute;in</p>
-
-          <!-- Chancery stamp: 300px desktop, right-aligned with negative
-               top-margin to overlap the signature/typed-name area.
-               Rotated -8deg via CSS transform (Outlook ignores rotation;
-               stamp shows upright there — acceptable). -->
-          <table class="letter-stamp-row" role="presentation" cellpadding="0" cellspacing="0" border="0" align="right" style="border-collapse:collapse;margin:-200px 0 0">
-            <tr>
-              <td align="right" style="vertical-align:top;padding-left:0">
-                <img class="letter-stamp" src="${SITE}/the_commane_seal.png" alt="The Commane &middot; sealed by the Chancery" style="display:block;width:300px;max-width:65%;height:auto;transform:rotate(-8deg)">
-              </td>
-            </tr>
-          </table>
-
-          <!-- Spacer so the letter footer (motto) sits clear of the
-               floating stamp. Stamp is 300px tall, lifted 200px, so it
-               extends ~100px below source position. -->
-          <div class="letter-spacer" style="height:100px;clear:both">&nbsp;</div>
-
-        </div>
-
-      </div>
-
-      <!-- ─────────── FOOTER ─────────── -->
-      <div style="text-align:center;padding:18px 32px 28px;border-top:1px solid rgba(184,151,90,.4);background-color:rgba(184,151,90,.04)">
-        <div style="text-align:center;margin-bottom:10px">
-          <span style="display:inline-block;width:36px;height:1px;background:#B8975A;vertical-align:middle"></span>
-          <span style="display:inline-block;width:5px;height:5px;background:#B8975A;transform:rotate(45deg);margin:0 8px;vertical-align:middle"></span>
-          <span style="display:inline-block;width:36px;height:1px;background:#B8975A;vertical-align:middle"></span>
-        </div>
-        <p class="ink-motto" style="font-family:'Georgia','Times New Roman',serif;font-size:12px;font-style:italic;color:#8B6F32;margin:0 0 4px;letter-spacing:.02em">Caithfidh an stair a bheith i r&eacute;im &mdash; History must prevail</p>
-      </div>
-
+    <!-- Quiet footer with address + website -->
+    <div style="margin:32px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.3);text-align:center;font-family:'Georgia',serif;font-size:11px;color:#8a8576;line-height:1.6">
+      <p style="margin:0;color:#8a8576">Clan Ó Comáin &middot; Newhall House, County Clare, Ireland &middot; <a href="https://www.ocomain.org" style="color:#8B6F32">www.ocomain.org</a></p>
     </div>
-  </div>
 
-  <!-- Quiet email-client footer outside the letterhead -->
-  <div style="max-width:580px;margin:24px auto 0;padding:0 16px;text-align:center;font-family:'Georgia',serif;font-size:11px;color:#8a8576;line-height:1.6">
-    <p style="margin:0;color:#8a8576">Clan &Oacute; Com&aacute;in &middot; Newhall House, County Clare, Ireland &middot; <a href="https://www.ocomain.org" style="color:#8B6F32">www.ocomain.org</a></p>
   </div>
 
 </body>
@@ -798,11 +664,35 @@ async function sendRegisterAck_GuardianPlusOptedOut(member) {
 }
 
 async function sendChiefPersonalLetter(member) {
+  // Generate the Chief's welcome letter as a PDF, personalised with
+  // the recipient's first name. The PDF is attached to the email and
+  // is the primary artefact of this dispatch — the HTML body is just
+  // a short cover note from Fergus pointing to it.
+  //
+  // PDF generation is best-effort: if it fails, we still ship the
+  // cover email (the recipient gets a personal note from Fergus
+  // explaining the welcome, just without the formal letter attached).
+  // This is graceful degradation — better than blocking the entire
+  // post-signup sequence on a transient PDF failure.
+  let attachments = undefined;
+  try {
+    const firstName = firstNameOf(member);
+    const pdfBytes = await generateChiefsLetterPdf({ firstName });
+    attachments = [{
+      filename: 'A letter from the Chief of Clan Ó Comáin.pdf',
+      content: Buffer.from(pdfBytes).toString('base64'),
+    }];
+  } catch (err) {
+    console.error('sendChiefPersonalLetter: PDF generation failed (non-fatal):', err.message, err.stack);
+    // attachments stays undefined; cover email still ships
+  }
+
   return sendEmail({
     to: member.email,
     from: FROM_FERGUS,
     subject: 'From the desk of the Chief',
     html: buildEmail2_html(member),
+    attachments,
   });
 }
 
