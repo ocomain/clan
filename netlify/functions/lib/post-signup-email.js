@@ -339,28 +339,34 @@ ${heraldSignatureHtml()}
 // ─────────────────────────────────────────────────────────────────────
 // EMAIL 2 — Fergus, Chief's letter (+9)
 //
-// HTML letterhead — NOT a flat image. Built per Council direction
-// (5 May 2026): "if you can't add their name, is it not possible to
-// go back to the html version for the email so their name is
-// properly there Dear X?"
+// HTML letterhead — NOT a flat image. The salutation 'Dear [Firstname],'
+// lives inside the letter as live HTML so personalisation works.
 //
-// The earlier image-only version put the recipient's name as a
-// detached line of text floating above a picture, which read as
-// disconnected. This version composites the entire letter as live
-// HTML — header, body, signature, chancery stamp, footer — so the
-// salutation 'Dear [Firstname],' lives inside the letter where it
-// belongs, properly typeset alongside everything else.
+// MOBILE RENDERING — the previous version was unreadable on iPhone
+// Gmail because the desktop layout (640px max-width, 64px horizontal
+// padding, 280px+180px signature row) collapsed badly at 375px viewport.
+// This version uses a <style> block in <head> with media queries that
+// Gmail iOS does honour, scaling padding, font sizes, and signature
+// images down at narrow widths. Outlook on Windows ignores <style>
+// tags entirely but renders the desktop layout correctly there.
+//
+// CHANCERY STAMP POSITIONING — per Council direction (5 May 2026):
+// "make the stamp bigger and look as if it's covering some text like
+// the signature and text above". Stamp is now 240px wide (was 180px)
+// and uses negative top-margin to overlap upward into the signature/
+// signoff area. Negative margin works in every mail client; absolute
+// positioning would not (Outlook strips it).
 //
 // IMAGE ASSETS used inside the layout (all live in repo root):
 //   coat_of_arms.png            engraved arms in header
 //   the_commane_signature.png   handwritten signature
-//   the_commane_seal.png        chancery stamp
+//   the_commane_seal.png        chancery stamp (1200x1200, redrawn
+//                                with bigger legend and tighter spacing
+//                                so the text reads at display size)
 //
-// FONT NOTE: web fonts (EB Garamond) don't load reliably in mail
-// clients. The body renders in the system serif fallback (Georgia /
-// Times New Roman). That's deliberately the same fallback the rest
-// of the lifecycle uses, so the typography reads as a coherent
-// household voice across all ten emails.
+// FONT NOTE: web fonts don't load reliably in mail clients. Body
+// renders in Georgia / Times New Roman serif fallback. Same fallback
+// the rest of the lifecycle uses — coherent household voice.
 //
 // Distinct from every other email in the sequence — NO standard
 // chrome wrapper. The letterhead carries its own header (engraved
@@ -373,20 +379,47 @@ function buildEmail2_html(member) {
 
   return `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:24px 12px;background:#f3eee2;font-family:'Georgia','Times New Roman',serif">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="x-apple-disable-message-reformatting">
+  <style>
+    /* Mobile responsive — Gmail iOS honours these. Outlook ignores
+       (renders the desktop layout, which fits its own viewport fine).
+       Approach: shrink horizontal padding so body text is not
+       squeezed into a narrow column on small screens, scale the
+       signature row so it doesn't overflow, bump body font size up
+       slightly so it reads on a phone. */
+    @media only screen and (max-width: 480px) {
+      .letter-body-pad { padding: 32px 22px 24px !important; }
+      .letter-header-pad { padding: 30px 22px 22px !important; }
+      .letter-body-text { font-size: 16px !important; line-height: 1.65 !important; }
+      .letter-watermark { display: none !important; }
+      .letter-sig { width: 200px !important; max-width: 60% !important; }
+      .letter-stamp { width: 150px !important; max-width: 42% !important; }
+      .letter-stamp-cell { padding-left: 8px !important; }
+      .letter-typed-name { font-size: 12px !important; }
+      .letter-ps { font-size: 15px !important; padding-left: 16px !important; }
+      .clan-eyebrow { font-size: 10px !important; letter-spacing: .26em !important; }
+      .clan-subline { font-size: 12px !important; }
+      .clan-from-desk { font-size: 9px !important; letter-spacing: .18em !important; }
+      .clan-address { font-size: 9px !important; letter-spacing: .14em !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:24px 8px;background:#f3eee2;font-family:'Georgia','Times New Roman',serif">
 
   <!-- THE LETTERHEAD itself -->
-  <div style="max-width:640px;margin:0 auto;position:relative;background:#FAF4E6;background-image:radial-gradient(ellipse at center,#FBF6E9 0%,#F5EFD8 100%);border:1px solid #D8C99A;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08);overflow:hidden">
+  <div style="max-width:640px;margin:0 auto;background:#FAF4E6;background-image:radial-gradient(ellipse at center,#FBF6E9 0%,#F5EFD8 100%);border:1px solid #D8C99A;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08);overflow:hidden">
 
     <!-- Inner gold-rule frame — Kensington-Palace border -->
     <div style="margin:14px;border:1px solid #B8975A;padding:0">
 
       <!-- ─────────── HEADER ─────────── -->
-      <div style="padding:42px 48px 32px;text-align:center;border-bottom:1px solid rgba(184,151,90,.4)">
+      <div class="letter-header-pad" style="padding:42px 48px 32px;text-align:center;border-bottom:1px solid rgba(184,151,90,.4)">
         <img src="${SITE}/coat_of_arms.png" alt="Clan Ó Comáin" width="68" style="display:block;margin:0 auto 14px;height:auto;opacity:.92">
-        <p style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:600;letter-spacing:.32em;color:#8B6F32;margin:0 0 4px;text-transform:uppercase">Clan Ó Comáin</p>
-        <p style="font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 18px;letter-spacing:.04em">An Ancient Gaelic Royal House</p>
+        <p class="clan-eyebrow" style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:600;letter-spacing:.32em;color:#8B6F32;margin:0 0 4px;text-transform:uppercase">Clan Ó Comáin</p>
+        <p class="clan-subline" style="font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 18px;letter-spacing:.04em">An Ancient Gaelic Royal House</p>
 
         <!-- Decorative gold rule with diamond ornament -->
         <div style="text-align:center">
@@ -395,57 +428,78 @@ function buildEmail2_html(member) {
           <span style="display:inline-block;width:50px;height:1px;background:#B8975A;vertical-align:middle"></span>
         </div>
 
-        <p style="font-family:'Georgia','Times New Roman',serif;font-size:10px;font-weight:600;letter-spacing:.22em;color:#5A4A2F;margin:14px 0 0;text-transform:uppercase">From the desk of the Chief</p>
-        <p style="font-family:'Georgia','Times New Roman',serif;font-size:10px;letter-spacing:.18em;color:#7A6A4F;margin:4px 0 0;text-transform:uppercase">Newhall Estate &middot; County Clare &middot; Ireland</p>
+        <p class="clan-from-desk" style="font-family:'Georgia','Times New Roman',serif;font-size:10px;font-weight:600;letter-spacing:.22em;color:#5A4A2F;margin:14px 0 0;text-transform:uppercase">From the desk of the Chief</p>
+        <p class="clan-address" style="font-family:'Georgia','Times New Roman',serif;font-size:10px;letter-spacing:.18em;color:#7A6A4F;margin:4px 0 0;text-transform:uppercase">Newhall Estate &middot; County Clare &middot; Ireland</p>
       </div>
 
       <!-- ─────────── BODY ─────────── -->
-      <div style="position:relative;padding:48px 64px 32px">
+      <!-- position:relative on body block so the watermark below can
+           anchor against it. Hidden on mobile (it adds no value at
+           small widths and risks overlapping the body text). -->
+      <div class="letter-body-pad" style="position:relative;padding:48px 64px 32px">
 
-        <!-- Faint blind-stamp watermark behind the body. Some mail
-             clients strip absolutely-positioned overlays; the letter
+        <!-- Faint coat-of-arms watermark behind the body. Hidden on
+             mobile via the .letter-watermark class. Some desktop mail
+             clients also strip absolutely-positioned overlays — letter
              still reads correctly without it. -->
-        <div style="position:absolute;top:120px;left:0;right:0;text-align:center;pointer-events:none;z-index:0">
+        <div class="letter-watermark" style="position:absolute;top:120px;left:0;right:0;text-align:center;pointer-events:none;z-index:0">
           <img src="${SITE}/coat_of_arms.png" alt="" width="380" style="display:inline-block;opacity:.05;height:auto;max-width:80%">
         </div>
 
-        <!-- Body content sits above the watermark -->
+        <!-- Body content sits above the watermark. -->
         <div style="position:relative;z-index:1;font-family:'Georgia','Times New Roman',serif;color:#1A1A1A">
 
-          <!-- Personalised salutation, properly typeset as part of the letter -->
-          <p style="font-size:17px;line-height:1.7;margin:0 0 18px">Dear ${escapeHtml(firstName)},</p>
+          <!-- Personalised salutation. -->
+          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 18px">Dear ${escapeHtml(firstName)},</p>
 
-          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">It is my pleasure to welcome you to the newly revived Clan Ó Comáin!</p>
+          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 16px">It is my pleasure to welcome you to the newly revived Clan Ó Comáin!</p>
 
-          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">After a long suppression of 800 years, the clan is back, and I am thrilled that you have chosen to be a part of our founding family in 2026.</p>
+          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 16px">After a long suppression of 800 years, the clan is back, and I am thrilled that you have chosen to be a part of our founding family in 2026.</p>
 
-          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">I am incredibly excited to grow our community and would love for you to help &amp; support me and be a part of that journey. I encourage you to browse our website to learn more about our shared heritage, the fascinating history of Irish clans, and how our ancestors lived under Brehon Law. Don&apos;t forget to explore the special Private Members&apos; area.</p>
+          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 16px">I am incredibly excited to grow our community and would love for you to help &amp; support me and be a part of that journey. I encourage you to browse our website to learn more about our shared heritage, the fascinating history of Irish clans, and how our ancestors lived under Brehon Law. Don&apos;t forget to explore the special Private Members&apos; area.</p>
 
-          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">Here&rsquo;s to a long and wonderful friendship!</p>
+          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 16px">Here&rsquo;s to a long and wonderful friendship!</p>
 
-          <p style="font-size:17px;line-height:1.7;margin:0 0 8px;font-style:italic">Sl&aacute;n go f&oacute;ill <span style="font-style:normal;color:#5A6A5A;font-size:15px">&mdash; (goodbye for now)</span></p>
+          <p class="letter-body-text" style="font-size:17px;line-height:1.7;margin:0 0 8px;font-style:italic">Sl&aacute;n go f&oacute;ill <span style="font-style:normal;color:#5A6A5A;font-size:15px">&mdash; (goodbye for now)</span></p>
 
-          <!-- Signature row: handwritten signature on the left,
-               chancery stamp on the right. Use a table for email
-               compatibility (Outlook in particular doesn't honour
-               flexbox or absolute positioning reliably). -->
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:18px 0 0;border-collapse:collapse">
+          <!-- Signature image, on its own line. The chancery stamp
+               will overlap upward from the row below via negative
+               top-margin — this gives the chancery-stamp-pressed-
+               over-the-signature look without depending on absolute
+               positioning (which Outlook strips). -->
+          <div style="margin:18px 0 0">
+            <img class="letter-sig" src="${SITE}/the_commane_signature.png" alt="The Commane (signed)" style="display:block;width:280px;max-width:100%;height:auto">
+          </div>
+
+          <!-- Typed name + title beneath signature — these are what
+               the stamp will overlap onto. -->
+          <p class="letter-typed-name" style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:14px 0 2px">Fergus Kinfauns, The Commane</p>
+          <p class="letter-typed-name" style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:0">Chief of &Oacute; Com&aacute;in</p>
+
+          <!-- Chancery stamp — sits below the typed name in source
+               order but uses negative top-margin to climb back up
+               and overlap the signature/typed-name area. Right-aligned
+               via a single-cell table (text-align right works in all
+               mail clients; float does not). Rotated -8deg via CSS
+               transform — Outlook ignores the rotation but the stamp
+               still shows upright, which is acceptable. -->
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="right" style="border-collapse:collapse;margin:-160px 0 0">
             <tr>
-              <td style="vertical-align:middle;padding-right:24px">
-                <img src="${SITE}/the_commane_signature.png" alt="The Commane (signed)" style="display:block;width:280px;max-width:100%;height:auto">
-              </td>
-              <td style="vertical-align:middle">
-                <img src="${SITE}/the_commane_seal.png" alt="The Commane &middot; sealed by the Chancery" style="display:block;width:180px;max-width:100%;height:auto;transform:rotate(-8deg)">
+              <td class="letter-stamp-cell" align="right" style="vertical-align:top;padding-left:0">
+                <img class="letter-stamp" src="${SITE}/the_commane_seal.png" alt="The Commane &middot; sealed by the Chancery" style="display:block;width:240px;max-width:60%;height:auto;transform:rotate(-8deg)">
               </td>
             </tr>
           </table>
 
-          <!-- Typed name + title beneath signature -->
-          <p style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:14px 0 2px">Fergus Kinfauns, The Commane</p>
-          <p style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:0">Chief of &Oacute; Com&aacute;in</p>
+          <!-- Spacer to push the PS down past the now-floating stamp.
+               The stamp's negative margin pulls it up by 160px and it's
+               240px tall, so it ends up extending ~80px below its
+               source position. This spacer compensates so the PS
+               appears below the stamp, not behind it. -->
+          <div style="height:80px;clear:both">&nbsp;</div>
 
           <!-- Famous Fergus PS, set off with thin gold left-rule -->
-          <p style="font-family:'Georgia','Times New Roman',serif;font-size:16px;line-height:1.7;margin:32px 0 0;padding-left:24px;border-left:2px solid #B8975A;color:#3A4A3A;font-style:italic">
+          <p class="letter-ps" style="font-family:'Georgia','Times New Roman',serif;font-size:16px;line-height:1.7;margin:32px 0 0;padding-left:24px;border-left:2px solid #B8975A;color:#3A4A3A;font-style:italic;clear:both">
             <span style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:700;letter-spacing:.18em;color:#8B6F32;text-transform:uppercase;display:block;margin-bottom:6px;font-style:normal">P.S.</span>
             &ldquo;Know someone who belongs with us? Inviting them is easy through your members&apos; area!&rdquo;
           </p>
