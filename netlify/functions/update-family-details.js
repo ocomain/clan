@@ -200,6 +200,29 @@ exports.handler = async (event) => {
         update.public_register_opted_in_at = now.toISOString();
       }
       update.public_register_settings_updated_at = now.toISOString();
+    } else if (
+      // ── Dedication-visibility default (opt-in unless they untick) ──
+      //
+      // The seal modal in the dashboard does NOT send privacy flags
+      // (it sends only nameOnCert, ancestorDedication, partnerName,
+      // childrenFirstNames). Without this default, a member who types
+      // a dedication during the welcome/seal flow would have it sit
+      // hidden on the public Register — because the column default is
+      // false and the privacy block above only runs when the front-end
+      // explicitly sends publicRegisterVisible.
+      //
+      // Per user direction: a dedication should appear automatically
+      // on the Register UNLESS the member specifically opts out by
+      // unticking the box on the dashboard's privacy panel. The privacy
+      // panel always sends the flag explicitly, so an opt-out routes
+      // through the block above and is honoured. This branch only fires
+      // when (a) no privacy decision has yet been made (no settings_-
+      // updated_at stamp), and (b) a dedication is now present.
+      cleanAncestor &&
+      !member.public_register_settings_updated_at &&
+      member.dedication_visible_on_register !== true
+    ) {
+      update.dedication_visible_on_register = true;
     }
 
     if (Object.keys(update).length === 0) {
