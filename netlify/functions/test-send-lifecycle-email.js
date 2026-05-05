@@ -17,6 +17,12 @@
 //   name       (optional)  used for "Dear [Firstname]," — defaults
 //                          to the recipient's local-part if omitted
 //   emailKey   (required)  one of: 1A, 1B, 1C, 2, 3, 4, 5, 6, 7, 8, 9, 10
+//   title      (optional)  simulate a titled member: 'cara', 'ardchara',
+//                          or 'onoir'. If set, the salutation will use
+//                          the title-bearing form ('Dear Cara Aoife,').
+//                          Useful for previewing how lifecycle emails
+//                          look for members raised to a dignity.
+//                          Omit for first-name-only address.
 //
 // SAFETY:
 //   - Does NOT update any database tracking columns. Sending a test
@@ -91,7 +97,7 @@ exports.handler = async (event) => {
     return jsonResponse(400, { error: 'Invalid JSON body' });
   }
 
-  const { email, name, emailKey } = payload;
+  const { email, name, emailKey, title } = payload;
 
   if (!email) {
     return jsonResponse(400, { error: 'Missing required field: email' });
@@ -100,6 +106,25 @@ exports.handler = async (event) => {
     return jsonResponse(400, {
       error: `Missing or invalid emailKey. Valid keys: ${Object.keys(SENDERS).join(', ')}`,
     });
+  }
+
+  // Optional title — simulates a member who has been raised to one
+  // of the three sponsor titles of dignity. Reads as the same JSONB
+  // shape as migration 015 stores in production. The salutation
+  // logic in addressFormOf reads this and produces 'Dear Cara Aoife'
+  // (etc.) rather than 'Dear Aoife'. 'higher is taken up' is
+  // automatic — pass 'onoir' and that's what's used, even if you
+  // also pass other entries.
+  const VALID_TITLES = { cara: true, ardchara: true, onoir: true };
+  let sponsor_titles_awarded;
+  if (title) {
+    const lower = String(title).toLowerCase();
+    if (!VALID_TITLES[lower]) {
+      return jsonResponse(400, {
+        error: `Invalid title. Valid: cara, ardchara, onoir. (Received: ${title})`,
+      });
+    }
+    sponsor_titles_awarded = { [lower]: new Date().toISOString() };
   }
 
   // Build the mock member object. Tier and public_register_visible
@@ -112,6 +137,7 @@ exports.handler = async (event) => {
     name: name || firstNameFromEmail(email),
     tier: 'guardian-ind',
     public_register_visible: true,
+    sponsor_titles_awarded,
     created_at: new Date().toISOString(),
   };
 

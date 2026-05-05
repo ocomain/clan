@@ -58,6 +58,7 @@
 
 const { sendEmail } = require('./email');
 const { generateChiefsLetterPdf } = require('./generate-chiefs-letter-pdf');
+const { highestAwardedTitle, formatAddressForm } = require('./sponsor-service');
 
 const SITE = process.env.SITE_URL || 'https://www.ocomain.org';
 
@@ -100,6 +101,43 @@ function escapeHtml(s) {
 }
 function firstNameOf(member) {
   return (member.name || '').trim().split(/\s+/)[0] || 'friend';
+}
+
+/**
+ * Title-aware form-of-address for salutations.
+ *
+ * Returns 'Cara Aoife' / 'Ardchara Aoife' / 'Onóir Aoife' if the
+ * member holds a sponsor title of dignity, otherwise just 'Aoife'.
+ * The chief shows the courtesy of ALWAYS addressing a titled member
+ * by their dignity in correspondence (per honours.html: 'The honours
+ * follow one another: the higher is taken up; the lower is laid by').
+ *
+ * Reads from member.sponsor_titles_awarded (JSONB column added in
+ * migration 015). The cron must SELECT this column for the member
+ * row passed in here — if it's missing, this function gracefully
+ * degrades to first-name-only (no error, no incorrect address).
+ *
+ * highestAwardedTitle handles the 'higher is taken up' rule: if a
+ * member has been raised to Onóir, that's what they're addressed by,
+ * even if Cara/Ardchara timestamps are also present in the JSONB
+ * (the audit trail is preserved; only the current dignity is
+ * spoken).
+ *
+ * Used in EVERY lifecycle email salutation EXCEPT the casual cover
+ * note from Fergus (Email 2), which intentionally stays on
+ * first-name-only as it's an intimate personal note rather than
+ * formal correspondence.
+ *
+ * @param {object} member — must have { name }, may have
+ *                          { sponsor_titles_awarded }
+ * @returns {string}      — 'Cara Aoife', 'Onóir Aoife', or just 'Aoife'
+ */
+function addressFormOf(member) {
+  const title = highestAwardedTitle(member?.sponsor_titles_awarded);
+  // formatAddressForm gracefully handles missing name / missing title
+  // and returns 'friend' fallback if name is unparseable.
+  const result = formatAddressForm(member, title);
+  return result || 'friend';
 }
 
 // ── Shared chrome (used by all emails except #2) ────────────────────
@@ -284,7 +322,7 @@ function heraldSignatureHtml() {
 // EMAIL 1A — Herald, Clan tier (+3)
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1A_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
@@ -321,7 +359,7 @@ ${heraldSignatureHtml()}
 // one muddled sentence.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1B_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
@@ -348,7 +386,7 @@ ${heraldSignatureHtml()}
 // default state and doesn't need the tier callout.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1C_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
@@ -406,6 +444,14 @@ ${heraldSignatureHtml()}
 // The visual gravity is in the attachment, not in the cover.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail2_html(member) {
+  // Cover note INTENTIONALLY uses first-name-only ('Dear Aoife,'),
+  // NOT the formal address form. This is a personal casual note from
+  // the Chief — a quick one-liner pointing at the formal letter
+  // attached. Real correspondence distinguishes informal and formal
+  // registers; using 'Dear Cara Aoife' in a casual personal email
+  // would feel stiff and miss the warmth this note is doing. The
+  // PDF inside the attachment carries the formal title-bearing
+  // salutation.
   const firstName = firstNameOf(member);
 
   // Per Council direction (5 May 2026): 'the cover letter email needs
@@ -441,7 +487,7 @@ function buildEmail2_html(member) {
 // All May 2026 Council edits applied.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail3_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Antoin Commane writing. The Chief has asked me to write to you on a particular matter, but not in my Tánaiste capacity. I write today as the first member ever raised to <strong>Cara</strong> in the present revival, and I want to tell you how that came about.`)}
@@ -467,7 +513,7 @@ ${antoinSignatureHtml()}
 // checks countSponsoredBy(member.id) before dispatching.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail4_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`The Chief has asked me to write with a practical note on bringing kindred into the Register, since Antoin's letter on becoming <em>Cara</em> sometimes raises a small follow-up question: <strong>how, exactly, does one do it.</strong>`)}
@@ -493,7 +539,7 @@ ${lindaSignatureHtml()}
 // All May 2026 Council edits applied.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail5_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`I write again from the Office of the Herald — this time on the matter of the <strong>three titles of dignity of the clan</strong>, which the Chief raises members to by his own hand. <strong>These are titles of dignity and rank.</strong> They are honours of the household.`)}
@@ -518,7 +564,7 @@ ${heraldSignatureHtml()}
 // All May 2026 Council edits applied.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail6_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Michael Commane writing — <em>Marshall and Standard Bearer</em> of Clan Ó Comáin. My office is the keeping of the clan's standards, the regalia, and the heraldic privileges of the kindred. I write today on a question that often comes up among members in the months after joining: <strong>what may I display, wear, or carry, that marks me as of the household?</strong>`)}
@@ -545,7 +591,7 @@ ${michaelSignatureHtml()}
 // Reframed as Gaelic story-telling per Council direction.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail7_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Paddy here — Paddy Commane of Ballymacooda, your <em>Seanchaí (SHAN-a-kee)</em>. Half a year you've been with us now, and around this time of the year a small voice tends to whisper into the back of the kindred's thoughts: <em>is this real? what is it, exactly, that I've put my name to?</em>`)}
@@ -572,7 +618,7 @@ ${paddySignatureHtml()}
 // Bubblier voice per Council direction.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail8_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Hi ${escapeHtml(firstName)}! 💚`)}
 ${p(`Jessica-Lily here — your <em>Coimeádaí na Suíochán</em>, which sounds frightfully grand but really just means I'm the one who makes sure there's a chair at the table for everyone who wants one at Newhall. The Chief asked me to write to you because something rather lovely is being planned and you should be the first to know.`)}
@@ -598,7 +644,7 @@ ${jessicaSignatureHtml()}
 // Reframed as full Seanchaí story-telling per Council direction.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail9_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Paddy here. The year is nearly out, and I owe you the longer telling. Pour yourself something. Settle in. This is a Seanchaí's letter, the way they were always meant to be told — not from a textbook, but as a story passed down to a kinsman who has just come home.`)}
@@ -631,7 +677,7 @@ ${paddySignatureHtml()}
 // without cards on file receive a separate flow).
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail10_html(member) {
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   const renewalDate = '[renewal_date]'; // literal placeholder — substituted in future
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
@@ -682,20 +728,26 @@ async function sendRegisterAck_GuardianPlusOptedOut(member) {
 }
 
 async function sendChiefPersonalLetter(member) {
-  // Generate the Chief's welcome letter as a PDF, personalised with
-  // the recipient's first name. The PDF is attached to the email and
-  // is the primary artefact of this dispatch — the HTML body is just
-  // a short cover note from Fergus pointing to it.
+  // Generate the Chief's welcome letter as a PDF. The PDF is attached
+  // to the email and is the primary artefact of this dispatch — the
+  // HTML body is just a short cover note from Fergus pointing to it.
+  //
+  // ADDRESS FORM — the PDF salutation uses the title-bearing form
+  // ('Dear Cara Aoife,' for a member raised to Cara, etc.) per the
+  // chivalric convention that the Chief always addresses titled
+  // members by their dignity in formal correspondence. The cover
+  // note in the email body uses casual first-name only — informal/
+  // formal registers correctly distinguished.
   //
   // PDF generation is best-effort: if it fails, we still ship the
   // cover email (the recipient gets a personal note from Fergus
   // explaining the welcome, just without the formal letter attached).
-  // This is graceful degradation — better than blocking the entire
-  // post-signup sequence on a transient PDF failure.
+  // Graceful degradation — better than blocking the entire post-
+  // signup sequence on a transient PDF failure.
   let attachments = undefined;
   try {
-    const firstName = firstNameOf(member);
-    const pdfBytes = await generateChiefsLetterPdf({ firstName });
+    const addressForm = addressFormOf(member);
+    const pdfBytes = await generateChiefsLetterPdf({ addressForm });
     attachments = [{
       filename: 'A letter from the Chief of Clan Ó Comáin.pdf',
       content: Buffer.from(pdfBytes).toString('base64'),

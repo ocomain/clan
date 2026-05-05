@@ -135,7 +135,7 @@ exports.handler = async () => {
       const { earliest, latest } = bucketRange(now, 3);
       const { data: targets, error } = await supa()
         .from('members')
-        .select('id, email, name, tier, public_register_visible, created_at')
+        .select('id, email, name, tier, public_register_visible, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id)
         .eq('status', 'active')
         .is('post_signup_email_3_sent_at', null)
@@ -167,7 +167,7 @@ exports.handler = async () => {
     if (SENDER_READY.e2_chief) {
       const { earliest, latest } = bucketRange(now, 9);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_9_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -193,7 +193,7 @@ exports.handler = async () => {
     if (SENDER_READY.e3_antoin) {
       const { earliest, latest } = bucketRange(now, 21);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_21_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -221,7 +221,7 @@ exports.handler = async () => {
     if (SENDER_READY.e4_linda) {
       const { earliest, latest } = bucketRange(now, 35);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_35_sent_at', null)
         .eq('post_signup_email_35_skipped', false)
@@ -255,7 +255,7 @@ exports.handler = async () => {
     if (SENDER_READY.e5_herald) {
       const { earliest, latest } = bucketRange(now, 60);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_60_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -281,7 +281,7 @@ exports.handler = async () => {
     if (SENDER_READY.e6_michael) {
       const { earliest, latest } = bucketRange(now, 90);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_90_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -307,7 +307,7 @@ exports.handler = async () => {
     if (SENDER_READY.e7_paddy) {
       const { earliest, latest } = bucketRange(now, 180);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_180_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -333,7 +333,7 @@ exports.handler = async () => {
     if (SENDER_READY.e8_jess) {
       const { earliest, latest } = bucketRange(now, 240);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_240_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -359,7 +359,7 @@ exports.handler = async () => {
     if (SENDER_READY.e9_paddy) {
       const { earliest, latest } = bucketRange(now, 300);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, created_at')
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_300_sent_at', null)
         .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
@@ -385,7 +385,7 @@ exports.handler = async () => {
     if (SENDER_READY.e10_linda) {
       const { earliest, latest } = bucketRange(now, 330);
       const { data: targets, error } = await supa()
-        .from('members').select('id, email, name, tier, created_at')
+        .from('members').select('id, email, name, tier, sponsor_titles_awarded, created_at')
         .eq('clan_id', clan_id).eq('status', 'active')
         .is('post_signup_email_330_sent_at', null)
         .eq('post_signup_email_330_skipped', false)

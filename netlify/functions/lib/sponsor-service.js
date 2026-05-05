@@ -613,6 +613,55 @@ function formatTitledName(member, titleIrish) {
   return `${name}, ${titleIrish} of Ó Comáin`;
 }
 
+/**
+ * Format the FORM-OF-ADDRESS for a titled member. Used in salutations
+ * ('Dear Cara Aoife,'), in conversational reference ('I had a word with
+ * Cara Aoife...'), and anywhere the bearer is being SPOKEN TO rather
+ * than recorded.
+ *
+ * This is the speech-form companion to formatTitledName (which is the
+ * recording form). The two coexist because they serve different
+ * functions:
+ *
+ *   formatTitledName  — RECORDING form: 'Aoife Murphy, Cara of Ó Comáin'
+ *     Used in: dashboard 'Held in Honour' row, honours.html, the
+ *     Register, the certificate. Postnominal, full name, anchored to
+ *     the household ('of Ó Comáin').
+ *
+ *   formatAddressForm — SPEECH form: 'Cara Aoife'
+ *     Used in: email salutations to titled members, conversational
+ *     reference. Title-prefix-firstname, mirroring 'Sir John' for a
+ *     knight or 'Dame Maggie' for a dame. Tighter, warmer, second-
+ *     person.
+ *
+ * Both are correct simultaneously — same dignity, different functions.
+ *
+ * The pattern is already in use in sponsor-email.js for the
+ * Sponsor's Letter ('Dia dhuit, Cara James'); this helper extracts
+ * the convention so it can be applied consistently across the
+ * post-signup lifecycle and anywhere else the household speaks to
+ * a titled member.
+ *
+ * Examples:
+ *   formatAddressForm({name: 'Aoife Murphy'}, {irish: 'Cara'})
+ *     → 'Cara Aoife'
+ *   formatAddressForm({name: 'Aoife Murphy'}, null)
+ *     → 'Aoife'
+ *   formatAddressForm({name: 'James Comyn'}, {irish: 'Onóir'})
+ *     → 'Onóir James'
+ *
+ * @param {object} member        — must have { name }
+ * @param {object|null} titleObj — title definition (with .irish), or null
+ * @returns {string}
+ */
+function formatAddressForm(member, titleObj) {
+  if (!member?.name) return '';
+  const firstName = String(member.name).trim().split(/\s+/)[0] || '';
+  if (!firstName) return '';
+  if (!titleObj?.irish) return firstName;
+  return `${titleObj.irish} ${firstName}`;
+}
+
 module.exports = {
   SPONSOR_TITLES,
   TAOISEACH_TITLE,
@@ -621,4 +670,5 @@ module.exports = {
   evaluateSponsorTitles,
   highestAwardedTitle,
   formatTitledName,
+  formatAddressForm,
 };

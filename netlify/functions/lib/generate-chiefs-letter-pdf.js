@@ -153,11 +153,22 @@ function drawGoldDiamond(page, cx, cy, size = 3) {
  * Generate the Chief's welcome letter PDF.
  *
  * @param {Object} opts
- * @param {string} opts.firstName  - rendered into 'Dear [Firstname],'
- * @returns {Promise<Uint8Array>}  PDF bytes
+ * @param {string} opts.addressForm  - the title-bearing form-of-address
+ *                                     for the salutation. e.g. 'Cara Aoife'
+ *                                     for a Cara, 'Onóir James' for an
+ *                                     Onóir, plain 'Aoife' if no title.
+ *                                     The Chief addresses titled members
+ *                                     by their dignity in formal
+ *                                     correspondence (per honours.html).
+ *                                     Caller should compute via
+ *                                     addressFormOf(member) in the
+ *                                     post-signup-email lib, which reads
+ *                                     sponsor_titles_awarded and applies
+ *                                     'higher is taken up'.
+ * @returns {Promise<Uint8Array>}     PDF bytes
  */
-async function generateChiefsLetterPdf({ firstName }) {
-  firstName = (firstName || 'friend').trim();
+async function generateChiefsLetterPdf({ addressForm }) {
+  addressForm = (addressForm || 'friend').trim();
 
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
@@ -355,7 +366,7 @@ async function generateChiefsLetterPdf({ firstName }) {
   // Salutation — same size as body (real correspondence doesn't
   // differentiate; the salutation is content, not typography). Slight
   // extra space after to set it apart visually from the first paragraph.
-  drawParagraph(`Dear ${firstName},`);
+  drawParagraph(`Dear ${addressForm},`);
   y -= 4;
 
   drawParagraph('It is my pleasure to welcome you to the newly revived Clan Ó Comáin!');
