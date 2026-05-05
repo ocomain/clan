@@ -302,13 +302,16 @@ async function generateChiefsLetterPdf({ firstName }) {
 
   // ─────────── BODY ZONE ───────────
   // Generous left margin so body doesn't crowd the gold-rule frame.
-  // Body starts 36pt below the header divider for breathing room.
+  // Body starts 18pt below the header divider (was 36pt — tightened
+  // so the date line + salutation fit in the same vertical slot the
+  // salutation alone previously occupied; without this, the PS at
+  // the bottom of the body was being pushed into the footer motto).
   const bodyLeftX = margin + 40;
   const bodyMaxWidth = W - 2 * (margin + 40);
   const bodySize = 12;
   const bodyLineHeight = 18;
   const paragraphGap = 10;
-  let y = headerBottomY - 36;
+  let y = headerBottomY - 18;
 
   const drawParagraph = (text, opts = {}) => {
     const useFont = opts.font || fontSerif;
@@ -327,6 +330,27 @@ async function generateChiefsLetterPdf({ firstName }) {
     }
     y -= paragraphGap;
   };
+
+  // ─────────── DATE ───────────
+  // Right-aligned above the salutation, real letter convention.
+  // Generated at PDF creation time so each recipient's letter is
+  // dated on the day it actually goes out (true to the personal-
+  // correspondence framing). Long-form British/Irish convention:
+  // '5 May 2026' (no comma, no day-of-week, no ordinal suffix).
+  const today = new Date();
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  const dateStr = `${today.getDate()} ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+  const dateSize = 11;
+  const dateWidth = fontSerifItalic.widthOfTextAtSize(dateStr, dateSize);
+  page.drawText(dateStr, {
+    x: bodyLeftX + bodyMaxWidth - dateWidth,
+    y,
+    size: dateSize,
+    font: fontSerifItalic,
+    color: C_MUTED,
+  });
+  y -= bodyLineHeight + 12;  // extra space between date and salutation
 
   // Salutation — same size as body (real correspondence doesn't
   // differentiate; the salutation is content, not typography). Slight
@@ -393,12 +417,13 @@ async function generateChiefsLetterPdf({ firstName }) {
   // PS sits AFTER the signature/typed-name, where postscripts belong
   // by literal definition. Set off with a gold left-rule.
   //
-  // Position: below the chancery stamp's bottom edge so the PS text
-  // reads cleanly and isn't obscured by the stamp. The stamp does its
-  // overlap work over the signature and typed-name above; the PS gets
-  // its own clear space below.
-  const stampBottomY = stampCenterY - stampH / 2;
-  const psTop = stampBottomY - 20;
+  // Position: anchored to typedNameBottom (a fixed reference) rather
+  // than stampBottomY (which varies with stamp size and rotation).
+  // The chancery stamp may extend down past the PS — that's authentic;
+  // a real stamp pressed onto correspondence covers what's beneath
+  // it. The PS itself sits a predictable distance below the typed
+  // name regardless of stamp dimensions.
+  const psTop = typedNameBottom - 28;
   const psHeight = 50;
   page.drawLine({
     start: { x: bodyLeftX - 14, y: psTop + 6 },
