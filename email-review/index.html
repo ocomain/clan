@@ -235,88 +235,88 @@
       </div>
     </section>
 
-    <!-- ─────────── 4. POST-SIGNUP LIFECYCLE — REBUILD (LIVE, GATED) ─────────── -->
+    <!-- ─────────── 4. POST-SIGNUP LIFECYCLE — LIVE ─────────── -->
     <section class="sequence" style="border-color:rgba(184,151,90,.5)">
       <div class="seq-head" style="background:linear-gradient(135deg,#0C1A0C 0%,#1F2E1F 100%)">
-        <p class="seq-eyebrow" style="color:var(--gold-light)">Sequence four · LIVE (gated rollout)</p>
+        <p class="seq-eyebrow" style="color:var(--gold-light)">Sequence four · LIVE</p>
         <h2>Post-signup lifecycle — ten emails, six voices, full rebuild</h2>
         <p class="lede">A complete reworking of the post-signup journey. New voices brought in (Antoin, Michael, Jessica), pedigree split early/late, renewal-anchored back half, Fergus's letter as the moment.</p>
       </div>
       <div class="seq-meta" style="background:rgba(184,151,90,.12);border-bottom-color:rgba(184,151,90,.4)">
         <strong>10 emails over the first year.</strong> Voices: <strong>The Herald</strong> (3 variants by tier), <strong>Fergus</strong> (Chief), <strong>Antoin</strong> (Cara, Tánaiste), <strong>Linda</strong> (Office, ×2), <strong>Michael</strong> (Marshall), <strong>Paddy</strong> (Seanchaí, lite + full), <strong>Jessica-Lily</strong> (Keeper of the Seat). Trigger: members.created_at.<br>
-        <span style="display:inline-block;margin-top:8px;padding:4px 10px;background:#2E4A2E;color:#fff;font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;border-radius:1px">SHIPPED — 5 MAY 2026</span>
-        <span style="display:inline-block;margin:8px 0 0 6px;font-style:italic;color:var(--ink-muted);font-size:13px">Production cron + lib live. Per-email gating in effect — emails activate as DNS forwarders and assets land. Currently active: <strong>Email 4 (Linda), 7 (Paddy), 9 (Paddy), 10 (Linda)</strong>. Pending: <strong>1A/B/C, 5 (need herald@)</strong>; <strong>2 (needs calligrapher PNG)</strong>; <strong>3 (needs antoin@)</strong>; <strong>6 (needs michael@)</strong>; <strong>8 (needs jessica@)</strong>.</span>
+        <span style="display:inline-block;margin-top:8px;padding:4px 10px;background:#2E4A2E;color:#fff;font-family:'Helvetica Neue','Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;border-radius:1px">SHIPPED &amp; FULLY LIVE — 5 MAY 2026</span>
+        <span style="display:inline-block;margin:8px 0 0 6px;font-style:italic;color:var(--ink-muted);font-size:13px">All gates open. All ten emails firing on the daily cron. Email 2 currently uses the rendered visual mockup as its body image; will be swapped for the calligrapher's hand-written version when ready, no code change required.</span>
       </div>
       <div class="seq-emails">
         <a class="email-item" href="/email-previews/01a-herald-clan-tier.html">
           <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
             <p class="email-title">The Herald — Your name in the Register (Clan tier)</p>
-            <p class="email-meta">Variant 1A: register acknowledgment. Gated — herald@ DNS forwarder pending.</p>
+            <p class="email-meta">Variant 1A: register acknowledgment. Sent when tier starts with <code>clan-</code>.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/01b-herald-guardian-default.html">
           <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
             <p class="email-title">The Herald — Your name in the public Register (Guardian+ default)</p>
-            <p class="email-meta">Variant 1B: for Guardian / Steward / Life members on the public Register. Gated.</p>
+            <p class="email-meta">Variant 1B: for Guardian / Steward / Life members on the public Register.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/01c-herald-guardian-private.html">
           <div class="email-row"><span class="day-pill">+3 d</span><div class="email-detail">
             <p class="email-title">The Herald — Your name in the Register (Guardian+ opted out)</p>
-            <p class="email-meta">Variant 1C: for higher-tier members who chose privacy. Gated.</p>
+            <p class="email-meta">Variant 1C: for higher-tier members who chose privacy.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/02-fergus-chiefs-letter.html">
           <div class="email-row"><span class="day-pill">+9 d</span><div class="email-detail">
             <p class="email-title">Fergus — From the desk of the Chief</p>
-            <p class="email-meta">Image-only Kensington-letterhead PNG, no standard chrome. Gated until calligrapher delivers.</p>
+            <p class="email-meta">Image-only Kensington-letterhead PNG, no standard chrome. Personalised salutation rendered as text above the image.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/03-antoin-how-i-became-cara.html">
           <div class="email-row"><span class="day-pill">+21 d</span><div class="email-detail">
             <p class="email-title">Antoin (Cara, Tánaiste) — How I became Cara</p>
-            <p class="email-meta">First-person social proof. Gated — antoin@ DNS forwarder pending.</p>
+            <p class="email-meta">First-person social proof. The load-bearing conversion email of the early sequence.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/04-linda-bringing-kindred.html">
           <div class="email-row"><span class="day-pill">+35 d</span><div class="email-detail">
-            <p class="email-title">Linda — Bringing the kindred, in practice <strong style="color:#2E4A2E">· LIVE</strong></p>
+            <p class="email-title">Linda — Bringing the kindred, in practice</p>
             <p class="email-meta">Practical referral mechanics. Sent only if no kindred brought in yet.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/05-herald-three-dignities.html">
           <div class="email-row"><span class="day-pill">+60 d</span><div class="email-detail">
             <p class="email-title">The Herald — The three titles of dignity</p>
-            <p class="email-meta">Cara, Ardchara, Onóir as titles of dignity and rank. Gated — herald@ pending.</p>
+            <p class="email-meta">Cara, Ardchara, Onóir as titles of dignity and rank.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/06-michael-clan-crest.html">
           <div class="email-row"><span class="day-pill">+90 d</span><div class="email-detail">
             <p class="email-title">Michael (Marshall) — The clan crest in your home</p>
-            <p class="email-meta">Standards, regalia, our tartan, signet rings, headstones. Gated — michael@ pending.</p>
+            <p class="email-meta">Standards, regalia, our tartan, signet rings, headstones.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/07-paddy-standing-of-line.html">
           <div class="email-row"><span class="day-pill">+180 d</span><div class="email-detail">
-            <p class="email-title">Paddy (Seanchaí, lite) — The standing of the line <strong style="color:#2E4A2E">· LIVE</strong></p>
-            <p class="email-meta">Early pedigree as story — the fort, the line, the Chief's consecration.</p>
+            <p class="email-title">Paddy (Seanchaí, lite) — The standing of the line</p>
+            <p class="email-meta">Early pedigree as Gaelic story-telling — the fort, the line, the consecration.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/08-jessica-gathering.html">
           <div class="email-row"><span class="day-pill">+240 d</span><div class="email-detail">
             <p class="email-title">Jessica-Lily — Plans for the gathering at Newhall</p>
-            <p class="email-meta">Bubbly anticipation-builder for the first revival gathering. Gated — jessica@ pending.</p>
+            <p class="email-meta">Bubbly anticipation-builder for the first revival gathering. Renewal-runway opens.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/09-paddy-royal-house-and-saint.html">
           <div class="email-row"><span class="day-pill">+300 d</span><div class="email-detail">
-            <p class="email-title">Paddy (Seanchaí, full) — The royal house and the saint <strong style="color:#2E4A2E">· LIVE</strong></p>
+            <p class="email-title">Paddy (Seanchaí, full) — The royal house and the saint</p>
             <p class="email-meta">Full pedigree as Seanchaí's tale. Identity reinforcement before renewal.</p>
           </div></div>
         </a>
         <a class="email-item" href="/email-previews/10-linda-renewal.html">
           <div class="email-row"><span class="day-pill">+330 d</span><div class="email-detail">
-            <p class="email-title">Linda — Your year of standing renews <strong style="color:#2E4A2E">· LIVE</strong></p>
+            <p class="email-title">Linda — Your year of standing renews</p>
             <p class="email-meta">Renewal mechanics. Card on file, gathering booking unlocked. Skipped for Life Members.</p>
           </div></div>
         </a>
@@ -324,7 +324,7 @@
     </section>
 
     <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin:32px 0 0;line-height:1.65;padding:0 12px">
-      Twenty-eight emails across four sequences (eighteen live, ten in proposed rebuild). Edits and refinements at any stage are welcomed — please reply to <a href="mailto:ddw@ocomain.org" style="color:var(--gold-deep)">ddw@ocomain.org</a> with notes, line edits, or wholesale changes to any voice or email.
+      Twenty-eight emails across four sequences, all live. Edits and refinements at any stage are welcomed — please reply to <a href="mailto:ddw@ocomain.org" style="color:var(--gold-deep)">ddw@ocomain.org</a> with notes, line edits, or wholesale changes to any voice or email.
     </p>
 
   </main>

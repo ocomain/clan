@@ -70,16 +70,18 @@ const PER_BUCKET_LIMIT = 50;
 // ── SENDER_READY gate ──────────────────────────────────────────────
 // Flip these flags as senders come online and assets land.
 //
-// e1_herald: Email 1A/B/C — Herald (herald@). DNS forwarder needed.
-// e2_chief : Email 2 — Fergus (chief@). DNS WIRED, but the
-//            calligrapher PNG asset (the_chiefs_letter_email.png)
-//            is not yet in the repo. Once uploaded, set true.
-// e3_antoin: Email 3 — Antoin (antoin@). DNS forwarder needed.
+// e1_herald: Email 1A/B/C — Herald (herald@). DNS ready as of 5 May 2026.
+// e2_chief : Email 2 — Fergus (chief@). DNS ready. Asset rendered from
+//            the visual mockup at /email-previews-fergus-mockup/ as
+//            the_chiefs_letter_email.png. Will be replaced with the
+//            calligrapher's hand-written version when ready, no code
+//            change needed.
+// e3_antoin: Email 3 — Antoin (antoin@). DNS ready as of 5 May 2026.
 // e4_linda : Email 4 — Linda (linda@). WIRED.
-// e5_herald: Email 5 — Herald (herald@). DNS forwarder needed.
-// e6_michael:Email 6 — Michael (michael@). DNS forwarder needed.
+// e5_herald: Email 5 — Herald (herald@). DNS ready as of 5 May 2026.
+// e6_michael:Email 6 — Michael (michael@). DNS ready as of 5 May 2026.
 // e7_paddy : Email 7 — Paddy (paddy@). WIRED.
-// e8_jess  : Email 8 — Jessica (jessica@). DNS forwarder needed.
+// e8_jess  : Email 8 — Jessica (jessica@). DNS ready as of 5 May 2026.
 // e9_paddy : Email 9 — Paddy (paddy@). WIRED.
 // e10_linda: Email 10 — Linda (linda@). WIRED.
 //
@@ -87,14 +89,14 @@ const PER_BUCKET_LIMIT = 50;
 // per-bucket gates anywhere else in this file — keep this map as
 // the single source of truth for "is this email sendable today".
 const SENDER_READY = {
-  e1_herald:  false,  // herald@ DNS forwarder pending
-  e2_chief:   false,  // calligrapher asset pending
-  e3_antoin:  false,  // antoin@ DNS forwarder pending
+  e1_herald:  true,
+  e2_chief:   true,
+  e3_antoin:  true,
   e4_linda:   true,
-  e5_herald:  false,  // herald@ DNS forwarder pending
-  e6_michael: false,  // michael@ DNS forwarder pending
+  e5_herald:  true,
+  e6_michael: true,
   e7_paddy:   true,
-  e8_jess:    false,  // jessica@ DNS forwarder pending
+  e8_jess:    true,
   e9_paddy:   true,
   e10_linda:  true,
 };

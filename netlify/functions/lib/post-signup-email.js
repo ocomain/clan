@@ -342,14 +342,20 @@ ${heraldSignatureHtml()}
 // Per Council direction (May 2026): "Fergus email strips the normal
 // header and has his letter only which has a header on the headed
 // paper". The body IS the Kensington-letterhead PNG. The wrapper holds
-// only the image and a quiet footer outside the letterhead.
+// the personalised salutation above the image (so the image can be
+// generic across all recipients) and a quiet footer below.
 //
-// ASSET: the_chiefs_letter_email.png — produced by the calligrapher
-// (a few days out per the Chief). The cron's gating layer defers
-// dispatch until the asset is in place. See SENDER_READY map in
-// daily-post-signup-sweep.js.
+// ASSET: the_chiefs_letter_email.png — currently the rendered version
+// of the visual mockup at /email-previews-fergus-mockup/. Will be
+// replaced by the calligrapher's hand-written version when ready,
+// without changes to this code.
+//
+// SALUTATION: rendered as text above the image (the image itself
+// is generic, no recipient name baked in) so this email personalises
+// without needing a per-member image generation pipeline.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail2_html(member) {
+  const firstName = firstNameOf(member);
   const letterImageUrl = `${SITE}/the_chiefs_letter_email.png`;
 
   return `<!DOCTYPE html>
@@ -358,10 +364,17 @@ function buildEmail2_html(member) {
 <body style="margin:0;padding:0;background:#f3eee2;font-family:'Georgia',serif">
 <div style="max-width:660px;margin:0 auto;background:#f3eee2;padding:24px 12px">
 
+  <!-- Personalised salutation, rendered as live text so we do not
+       need a per-recipient image. Sized to read as part of the letter
+       paper rather than as an email subject line. -->
+  <div style="max-width:640px;margin:0 auto 14px;padding:0 36px;font-family:'Georgia','EB Garamond',serif;font-size:20px;color:#1F2A1F;line-height:1.4">
+    Dear ${escapeHtml(firstName)},
+  </div>
+
   <!-- The letter as a single image. Image carries its own header
-       (engraved arms, "Ó Comáin", subline, address line), body
-       (calligrapher's hand), signature, chancery stamp, and footer
-       motto. Adding standard chrome above would double-band the page. -->
+       (engraved arms, "Ó Comáin", subline, address line), body,
+       signature, chancery stamp, and footer motto. Adding standard
+       chrome above would double-band the page. -->
   <img src="${letterImageUrl}"
        alt="A letter from Fergus Commane, Chief of Clan Ó Comáin, sent from Newhall"
        style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08)">
