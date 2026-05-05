@@ -2227,12 +2227,26 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
             ? 'var(--ink-muted)'
             : ratio < 0.9 ? 'var(--gold-deep)' : '#922c1f';
         }
-        // Duplicate prefix detection (only meaningful for non-Custom)
-        const knownPrefixes = ['In memory of', 'In honour of', 'For'];
+        // Duplicate prefix detection (only meaningful for non-Custom).
+        // The list intentionally covers BOTH British and American
+        // spellings ('honour' / 'honor'), bare forms ('Memory of',
+        // 'Honor of'), and the most common informal alternatives
+        // ('Remembering', 'In remembrance of'). A real-world member
+        // (chip 'In honour of' active) typed 'In honor of …' into
+        // the detail field — the detector missed it because its
+        // earlier prefix list was 'In memory of, In honour of, For'
+        // only and didn't include the US spelling.
+        const knownPrefixes = [
+          'In memory of',
+          'In honour of', 'In honor of',
+          'Memory of', 'Honour of', 'Honor of',
+          'In remembrance of', 'Remembering',
+          'For',
+        ];
         const startsWithChipText = activePrefix !== 'Custom…'
           && detail.trim().toLowerCase().startsWith(activePrefix.toLowerCase() + ' ');
         // Also catch the case where they typed a DIFFERENT prefix
-        // than the chip (e.g. chip 'In memory of' + typed 'In honour of …')
+        // than the chip (e.g. chip 'In honour of' + typed 'In honor of …')
         const startsWithAnyPrefix = activePrefix !== 'Custom…'
           && knownPrefixes.some(p => detail.trim().toLowerCase().startsWith(p.toLowerCase() + ' '));
         if (startsWithChipText || startsWithAnyPrefix) {
@@ -2383,8 +2397,21 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           return;
         }
         // Duplicate-prefix check on the COMBINED value. Looks for
-        // 'In memory of In memory of …' / 'In honour of For …' etc.
-        const knownPrefixes = ['In memory of', 'In honour of', 'For'];
+        // 'In memory of In memory of …' / 'In honour of In honor of …'
+        // / 'In honour of For …' etc. Same wider prefix list as the
+        // live detector — both British and American spellings, bare
+        // forms, and common informal alternatives. Real-world bug:
+        // member sealed with 'In honour of In honor of my grandfather…'
+        // because the chip was 'In honour of' (British) but they typed
+        // the American spelling 'In honor of …' into the detail field,
+        // and the earlier 3-item prefix list missed the US variant.
+        const knownPrefixes = [
+          'In memory of',
+          'In honour of', 'In honor of',
+          'Memory of', 'Honour of', 'Honor of',
+          'In remembrance of', 'Remembering',
+          'For',
+        ];
         for (const p of knownPrefixes) {
           const lcd = ancestorRaw.toLowerCase();
           // 'In memory of in memory of …' or any other prefix

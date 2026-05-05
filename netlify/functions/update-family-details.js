@@ -25,6 +25,7 @@ const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 const { computeFamilyDisplay } = require('./lib/generate-cert');
 const { recordConversion, evaluateSponsorTitles, highestAwardedTitle } = require('./lib/sponsor-service');
+const { stripDuplicateAncestorPrefix } = require('./lib/ancestor-dedication');
 const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
 const { looksLikeMultipleNames } = require('./lib/name-format');
 
@@ -108,6 +109,17 @@ exports.handler = async (event) => {
       let cleanAncestor = ancestorDedication !== undefined
         ? ((ancestorDedication || '').trim() || null)
         : member.ancestor_dedication;  // undefined means "don't change"
+
+      // Server-side defensive normalisation against duplicated prefix
+      // variants — see lib/ancestor-dedication.js for full rationale
+      // and the submit-family-details.js mirror. Only applies when
+      // the client actually sent ancestorDedication this turn; an
+      // omitted field falls through to the existing member value
+      // unchanged (which is presumed already normalised by an
+      // earlier write through the same path).
+      if (ancestorDedication !== undefined) {
+        cleanAncestor = stripDuplicateAncestorPrefix(cleanAncestor);
+      }
 
       // Hard cap on dedication length — see submit-family-details.js
       // for full rationale. Truncates rather than rejects so the

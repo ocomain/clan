@@ -38,6 +38,7 @@ const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 const { computeFamilyDisplay } = require('./lib/generate-cert');
 const { recordConversion, evaluateSponsorTitles, highestAwardedTitle } = require('./lib/sponsor-service');
+const { stripDuplicateAncestorPrefix } = require('./lib/ancestor-dedication');
 const { sendSponsorLetter, sendTitleAwardLetter } = require('./lib/sponsor-email');
 const { looksLikeMultipleNames } = require('./lib/name-format');
 
@@ -142,6 +143,18 @@ exports.handler = async (event) => {
       : [];
     const cleanName = (nameOnCert || '').trim();
     let cleanAncestor = (ancestorDedication || '').trim() || null;
+
+    // Server-side defensive normalisation against duplicated prefix
+    // variants (e.g. chip 'In honour of' active + user typed
+    // 'In honor of …' into the detail field → saved value started
+    // with 'In honour of In honor of …'). The dashboard's modal
+    // does both pre-input validation and submit-time blocking on
+    // this, but a determined or accidental bypass — paste-with-
+    // extension, future API client, replayed payload — could still
+    // send a malformed string. The helper strips the second prefix
+    // quietly rather than rejecting, matching the same length-cap
+    // convention immediately below.
+    cleanAncestor = stripDuplicateAncestorPrefix(cleanAncestor);
 
     // Hard cap on dedication length — defence in depth against any
     // path that bypasses the client maxlength=100. The cert layout
