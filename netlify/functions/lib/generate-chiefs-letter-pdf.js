@@ -413,41 +413,26 @@ async function generateChiefsLetterPdf({ firstName }) {
     opacity: 0.92,
   });
 
-  // ─────────── PS ZONE ───────────
-  // PS sits AFTER the signature/typed-name, where postscripts belong
-  // by literal definition. Set off with a gold left-rule.
+  // ─────────── PS ───────────
+  // Inline italic postscript, no callout box, no gold rule. Sits a
+  // predictable distance below the typed name where a handwritten
+  // P.S. would naturally go on a real letter. The 'P.S. ' marker
+  // itself does the work — no decoration needed.
   //
-  // Position: anchored to typedNameBottom (a fixed reference) rather
-  // than stampBottomY (which varies with stamp size and rotation).
-  // The chancery stamp may extend down past the PS — that's authentic;
-  // a real stamp pressed onto correspondence covers what's beneath
-  // it. The PS itself sits a predictable distance below the typed
-  // name regardless of stamp dimensions.
-  const psTop = typedNameBottom - 28;
-  const psHeight = 50;
-  page.drawLine({
-    start: { x: bodyLeftX - 14, y: psTop + 6 },
-    end:   { x: bodyLeftX - 14, y: psTop - psHeight + 6 },
-    thickness: 1.4,
-    color: C_GOLD,
-  });
-  drawSpacedTextCentered(page, {
-    text: 'P.S.',
-    font: fontSansBold,
-    size: 8.5,
-    color: C_GOLD_D,
-    y: psTop - 4,
-    centerX: bodyLeftX + 12,
-    letterSpacing: 1.5,
-  });
-  const psBody = '"Know someone who belongs with us? Inviting them is easy through your members\' area!"';
-  const psLines = wrapTextToLines(psBody, fontSerifItalic, 11.5, bodyMaxWidth - 4);
-  let psY = psTop - 20;
+  // Anchored to typedNameBottom (a fixed reference) so it can't
+  // collide with the footer regardless of stamp dimensions or other
+  // layout shifts. The chancery stamp may extend down past the PS
+  // — that's authentic; a stamp pressed onto correspondence covers
+  // what's beneath it.
+  const psY = typedNameBottom - 28;
+  const psFullText = 'P.S. "Know someone who belongs with us? Inviting them is easy through your members\' area!"';
+  const psLines = wrapTextToLines(psFullText, fontSerifItalic, 11.5, bodyMaxWidth);
+  let psYCursor = psY;
   for (const line of psLines) {
     page.drawText(line, {
-      x: bodyLeftX, y: psY, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
+      x: bodyLeftX, y: psYCursor, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
     });
-    psY -= 16;
+    psYCursor -= 16;
   }
 
   // ─────────── FOOTER ───────────
