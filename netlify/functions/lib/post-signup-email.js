@@ -349,21 +349,32 @@ ${heraldSignatureHtml()}
 // REGISTER DISTINCTION (5 May 2026 Council fix): Two distinct Registers
 // must be kept separate in the copy:
 //   1. The physical Register at Newhall — bound book kept by the Herald,
-//      where the Chief inscribes by hand and applies the seal. Private,
-//      ceremonial.
+//      inscribed by the Herald in their own hand. The Chief's act on
+//      a member's record is signing and sealing the CERTIFICATE, not
+//      writing in the Register itself; the Register is the Herald's
+//      office and book, the certificate is the artefact carrying the
+//      Chief's seal. (Earlier draft of 1B muddled these — see 6 May
+//      2026 fix.) Private, ceremonial.
 //   2. The public online Founding Members Register — the website roll
 //      at /register, browsable to anyone in the world.
-// Previous version conflated them ("inscribed onto the public Founding
-// Members Register at Newhall, ... visible to anyone who comes to the
-// household") which mixed physical-location and online-visibility into
-// one muddled sentence.
+//
+// SCOPE OF 'BY HIS OWN HAND': reserved for the Chief's personal
+// ceremonial acts — primarily raising members to titles of dignity
+// (Cara/Ardchara/Onóir). It carries weight; using it for generic
+// Register administration dilutes it. The Herald has their own
+// equivalent: 'in my own hand' for inscriptions in the Register.
+//
+// Previous version of 1B's first paragraph conflated them
+// ("inscribed onto the public Founding Members Register at Newhall,
+// ... visible to anyone who comes to the household") which mixed
+// physical-location and online-visibility into one muddled sentence.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1B_html(member) {
   const firstName = addressFormOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
-${p(`Your name has been inscribed by the Chief, in his own hand, in the <strong>physical Register kept at Newhall</strong>, and your certificate has been signed and sealed there. Your place is now formally recorded in the household of Ó Comáin.`)}
+${p(`Your name has been inscribed in the <strong>physical Register kept at Newhall</strong>, in my own hand, and the Chief has signed and sealed your certificate there. Your place is now formally recorded in the household of Ó Comáin.`)}
 ${p(`Because of your standing, your name also appears on the <strong>public online Founding Members Register</strong>, in the form you chose, where it stands among the founders of the present revival.`)}
 ${p('Your standing carries with it the right to certain courtesies of the household, which Linda will detail in correspondence to come.')}
 ${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to Cara opens with a single bringing-in. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward it.`)}
