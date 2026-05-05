@@ -416,28 +416,26 @@ async function generateChiefsLetterPdf({ addressForm }) {
   // Anchored to typedNameBottom (a fixed reference) so it can't
   // collide with the footer regardless of stamp dimensions.
   //
-  // HARD-WRAPPED into two lines (per Council direction, 6 May 2026:
-  // 'as the text is going over the stamp, line break it and put
-  // Inviting them is easy through your members area! on a next
-  // line'). The break sits at the natural sentence boundary so the
-  // second sentence drops below the chancery stamp's bottom edge
-  // and reads cleanly. The closing quote stays at the end of line
-  // 2 alongside the rest of its sentence.
-  //
-  // We render the two lines explicitly rather than feeding the full
-  // string through wrapTextToLines — both individual lines fit in
-  // the body width, so wrapTextToLines would just rejoin them onto
-  // one line. The forced two-line layout is the whole point.
-  const psLines = [
-    'P.S. "Know someone who belongs with us?',
-    'Inviting them is easy through your members\' area!"',
-  ];
-  let psY = typedNameBottom - 28;
+  // SINGLE LINE — the PS runs across the full body width and the
+  // chancery stamp is pressed over the right end of it. The stamp's
+  // ~65% washed opacity means the underlying text shows through
+  // faintly through the translucent stamp ink — which is what real
+  // ink stamps look like on real correspondence. The alternative
+  // (briefly tried in commit 6466aa1) of hard-breaking the PS onto
+  // two lines so the text dodges around the stamp is wrong: real
+  // chancery letters don't lay out their text to avoid the seal,
+  // the seal goes wherever it's pressed and the writer doesn't
+  // accommodate it. The authentic look is stamp-on-top-of-text,
+  // not text-arranged-around-stamp.
+  const psY = typedNameBottom - 28;
+  const psFullText = 'P.S. "Know someone who belongs with us? Inviting them is easy through your members\' area!"';
+  const psLines = wrapTextToLines(psFullText, fontSerifItalic, 11.5, bodyMaxWidth);
+  let psYCursor = psY;
   for (const line of psLines) {
     page.drawText(line, {
-      x: bodyLeftX, y: psY, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
+      x: bodyLeftX, y: psYCursor, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
     });
-    psY -= 16;
+    psYCursor -= 16;
   }
 
   // ─────────── CHANCERY STAMP ───────────
