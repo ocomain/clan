@@ -339,55 +339,140 @@ ${heraldSignatureHtml()}
 // ─────────────────────────────────────────────────────────────────────
 // EMAIL 2 — Fergus, Chief's letter (+9)
 //
-// Per Council direction (May 2026): "Fergus email strips the normal
-// header and has his letter only which has a header on the headed
-// paper". The body IS the Kensington-letterhead PNG. The wrapper holds
-// the personalised salutation above the image (so the image can be
-// generic across all recipients) and a quiet footer below.
+// HTML letterhead — NOT a flat image. Built per Council direction
+// (5 May 2026): "if you can't add their name, is it not possible to
+// go back to the html version for the email so their name is
+// properly there Dear X?"
 //
-// ASSET: the_chiefs_letter_email.png — currently the rendered version
-// of the visual mockup at /email-previews-fergus-mockup/. Will be
-// replaced by the calligrapher's hand-written version when ready,
-// without changes to this code.
+// The earlier image-only version put the recipient's name as a
+// detached line of text floating above a picture, which read as
+// disconnected. This version composites the entire letter as live
+// HTML — header, body, signature, chancery stamp, footer — so the
+// salutation 'Dear [Firstname],' lives inside the letter where it
+// belongs, properly typeset alongside everything else.
 //
-// SALUTATION: rendered as text above the image (the image itself
-// is generic, no recipient name baked in) so this email personalises
-// without needing a per-member image generation pipeline.
+// IMAGE ASSETS used inside the layout (all live in repo root):
+//   coat_of_arms.png            engraved arms in header
+//   the_commane_signature.png   handwritten signature
+//   the_commane_seal.png        chancery stamp
+//
+// FONT NOTE: web fonts (EB Garamond) don't load reliably in mail
+// clients. The body renders in the system serif fallback (Georgia /
+// Times New Roman). That's deliberately the same fallback the rest
+// of the lifecycle uses, so the typography reads as a coherent
+// household voice across all ten emails.
+//
+// Distinct from every other email in the sequence — NO standard
+// chrome wrapper. The letterhead carries its own header (engraved
+// arms, "Clan Ó Comáin", subline, address line) so adding the
+// dark-green-and-gold standard chrome above would double-band the
+// page.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail2_html(member) {
   const firstName = firstNameOf(member);
-  const letterImageUrl = `${SITE}/the_chiefs_letter_email.png`;
 
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f3eee2;font-family:'Georgia',serif">
-<div style="max-width:660px;margin:0 auto;background:#f3eee2;padding:24px 12px">
+<body style="margin:0;padding:24px 12px;background:#f3eee2;font-family:'Georgia','Times New Roman',serif">
 
-  <!-- Personalised salutation, rendered as live text so we do not
-       need a per-recipient image. Sized to read as part of the letter
-       paper rather than as an email subject line. -->
-  <div style="max-width:640px;margin:0 auto 14px;padding:0 36px;font-family:'Georgia','EB Garamond',serif;font-size:20px;color:#1F2A1F;line-height:1.4">
-    Dear ${escapeHtml(firstName)},
+  <!-- THE LETTERHEAD itself -->
+  <div style="max-width:640px;margin:0 auto;position:relative;background:#FAF4E6;background-image:radial-gradient(ellipse at center,#FBF6E9 0%,#F5EFD8 100%);border:1px solid #D8C99A;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08);overflow:hidden">
+
+    <!-- Inner gold-rule frame — Kensington-Palace border -->
+    <div style="margin:14px;border:1px solid #B8975A;padding:0">
+
+      <!-- ─────────── HEADER ─────────── -->
+      <div style="padding:42px 48px 32px;text-align:center;border-bottom:1px solid rgba(184,151,90,.4)">
+        <img src="${SITE}/coat_of_arms.png" alt="Clan Ó Comáin" width="68" style="display:block;margin:0 auto 14px;height:auto;opacity:.92">
+        <p style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:600;letter-spacing:.32em;color:#8B6F32;margin:0 0 4px;text-transform:uppercase">Clan Ó Comáin</p>
+        <p style="font-family:'Georgia','Times New Roman',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 18px;letter-spacing:.04em">An Ancient Gaelic Royal House</p>
+
+        <!-- Decorative gold rule with diamond ornament -->
+        <div style="text-align:center">
+          <span style="display:inline-block;width:50px;height:1px;background:#B8975A;vertical-align:middle"></span>
+          <span style="display:inline-block;width:6px;height:6px;background:#B8975A;transform:rotate(45deg);margin:0 10px;vertical-align:middle"></span>
+          <span style="display:inline-block;width:50px;height:1px;background:#B8975A;vertical-align:middle"></span>
+        </div>
+
+        <p style="font-family:'Georgia','Times New Roman',serif;font-size:10px;font-weight:600;letter-spacing:.22em;color:#5A4A2F;margin:14px 0 0;text-transform:uppercase">From the desk of the Chief</p>
+        <p style="font-family:'Georgia','Times New Roman',serif;font-size:10px;letter-spacing:.18em;color:#7A6A4F;margin:4px 0 0;text-transform:uppercase">Newhall Estate &middot; County Clare &middot; Ireland</p>
+      </div>
+
+      <!-- ─────────── BODY ─────────── -->
+      <div style="position:relative;padding:48px 64px 32px">
+
+        <!-- Faint blind-stamp watermark behind the body. Some mail
+             clients strip absolutely-positioned overlays; the letter
+             still reads correctly without it. -->
+        <div style="position:absolute;top:120px;left:0;right:0;text-align:center;pointer-events:none;z-index:0">
+          <img src="${SITE}/coat_of_arms.png" alt="" width="380" style="display:inline-block;opacity:.05;height:auto;max-width:80%">
+        </div>
+
+        <!-- Body content sits above the watermark -->
+        <div style="position:relative;z-index:1;font-family:'Georgia','Times New Roman',serif;color:#1A1A1A">
+
+          <!-- Personalised salutation, properly typeset as part of the letter -->
+          <p style="font-size:17px;line-height:1.7;margin:0 0 18px">Dear ${escapeHtml(firstName)},</p>
+
+          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">It is my pleasure to welcome you to the newly revived Clan Ó Comáin!</p>
+
+          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">After a long suppression of 800 years, the clan is back, and I am thrilled that you have chosen to be a part of our founding family in 2026.</p>
+
+          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">I am incredibly excited to grow our community and would love for you to help &amp; support me and be a part of that journey. I encourage you to browse our website to learn more about our shared heritage, the fascinating history of Irish clans, and how our ancestors lived under Brehon Law. Don&apos;t forget to explore the special Private Members&apos; area.</p>
+
+          <p style="font-size:17px;line-height:1.7;margin:0 0 16px">Here&rsquo;s to a long and wonderful friendship!</p>
+
+          <p style="font-size:17px;line-height:1.7;margin:0 0 8px;font-style:italic">Sl&aacute;n go f&oacute;ill <span style="font-style:normal;color:#5A6A5A;font-size:15px">&mdash; (goodbye for now)</span></p>
+
+          <!-- Signature row: handwritten signature on the left,
+               chancery stamp on the right. Use a table for email
+               compatibility (Outlook in particular doesn't honour
+               flexbox or absolute positioning reliably). -->
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:18px 0 0;border-collapse:collapse">
+            <tr>
+              <td style="vertical-align:middle;padding-right:24px">
+                <img src="${SITE}/the_commane_signature.png" alt="The Commane (signed)" style="display:block;width:280px;max-width:100%;height:auto">
+              </td>
+              <td style="vertical-align:middle">
+                <img src="${SITE}/the_commane_seal.png" alt="The Commane &middot; sealed by the Chancery" style="display:block;width:180px;max-width:100%;height:auto;transform:rotate(-8deg)">
+              </td>
+            </tr>
+          </table>
+
+          <!-- Typed name + title beneath signature -->
+          <p style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:14px 0 2px">Fergus Kinfauns, The Commane</p>
+          <p style="font-family:'Georgia','Times New Roman',serif;font-size:13px;color:#1A1A1A;letter-spacing:.02em;margin:0">Chief of &Oacute; Com&aacute;in</p>
+
+          <!-- Famous Fergus PS, set off with thin gold left-rule -->
+          <p style="font-family:'Georgia','Times New Roman',serif;font-size:16px;line-height:1.7;margin:32px 0 0;padding-left:24px;border-left:2px solid #B8975A;color:#3A4A3A;font-style:italic">
+            <span style="font-family:'Georgia','Times New Roman',serif;font-size:11px;font-weight:700;letter-spacing:.18em;color:#8B6F32;text-transform:uppercase;display:block;margin-bottom:6px;font-style:normal">P.S.</span>
+            &ldquo;Know someone who belongs with us? Inviting them is easy through your members&apos; area!&rdquo;
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- ─────────── FOOTER ─────────── -->
+      <div style="text-align:center;padding:18px 32px 28px;border-top:1px solid rgba(184,151,90,.4);background:rgba(184,151,90,.04)">
+        <div style="text-align:center;margin-bottom:10px">
+          <span style="display:inline-block;width:36px;height:1px;background:#B8975A;vertical-align:middle"></span>
+          <span style="display:inline-block;width:5px;height:5px;background:#B8975A;transform:rotate(45deg);margin:0 8px;vertical-align:middle"></span>
+          <span style="display:inline-block;width:36px;height:1px;background:#B8975A;vertical-align:middle"></span>
+        </div>
+        <p style="font-family:'Georgia','Times New Roman',serif;font-size:12px;font-style:italic;color:#8B6F32;margin:0 0 4px;letter-spacing:.02em">Caithfidh an stair a bheith i r&eacute;im &mdash; History must prevail</p>
+      </div>
+
+    </div>
   </div>
 
-  <!-- The letter as a single image. Image carries its own header
-       (engraved arms, "Ó Comáin", subline, address line), body,
-       signature, chancery stamp, and footer motto. Adding standard
-       chrome above would double-band the page. -->
-  <img src="${letterImageUrl}"
-       alt="A letter from Fergus Commane, Chief of Clan Ó Comáin, sent from Newhall"
-       style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;box-shadow:0 24px 64px rgba(20,30,15,.16),0 4px 12px rgba(20,30,15,.08)">
-
-  <!-- Email-client footer outside the letter. Quiet, minimal,
-       deliberately separate from the letterhead so the letter reads
-       as a self-contained piece of correspondence. -->
+  <!-- Quiet email-client footer outside the letterhead -->
   <div style="max-width:580px;margin:24px auto 0;padding:0 16px;text-align:center;font-family:'Georgia',serif;font-size:11px;color:#8a8576;line-height:1.6">
-    <p style="margin:0 0 6px">This message is from the Chief of Clan Ó Comáin, sent to members of the kindred.</p>
-    <p style="margin:0">Clan Ó Comáin &middot; Newhall House, County Clare, Ireland &middot; <a href="https://www.ocomain.org" style="color:#8B6F32">www.ocomain.org</a></p>
+    <p style="margin:0 0 6px">This message is from the Chief of Clan &Oacute; Com&aacute;in, sent to members of the kindred.</p>
+    <p style="margin:0">Clan &Oacute; Com&aacute;in &middot; Newhall House, County Clare, Ireland &middot; <a href="https://www.ocomain.org" style="color:#8B6F32">www.ocomain.org</a></p>
   </div>
 
-</div>
 </body>
 </html>`;
 }
