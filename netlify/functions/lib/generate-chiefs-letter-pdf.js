@@ -425,12 +425,24 @@ async function generateChiefsLetterPdf({ firstName }) {
   // area AND the right end of the PS line. Drawn LAST so it sits on
   // top of all underlying text (signature, typed name, PS).
   //
-  // Opacity 0.65 (was 0.92) — washed to look like real stamp ink
-  // pressed into paper rather than a digital sticker pasted on. At
-  // 0.65 the underlying text shows through faintly where they overlap,
-  // exactly the way a real chancery stamp behaves on correspondence,
-  // while the stamp's design (XXVI Roman numeral, SIGILLUM legend,
-  // arms in centre) remains clearly readable.
+  // OPACITY NOTE — this is subtler than it looks. The chancery stamp
+  // PNG (the_commane_seal.png) was rendered with natural ink-wash
+  // variation baked into its alpha channel: ~67% of pixels are fully
+  // transparent (the gaps in the ink impression), and the inked
+  // pixels themselves are mostly at alpha 0.65 (giving the ink the
+  // washed-and-pressed-into-paper look). pdf-lib's opacity parameter
+  // MULTIPLIES on top of the PNG's own alpha — so opacity 0.92 was
+  // actually rendering at 0.65 × 0.92 = 0.60 effective opacity, which
+  // washed the stamp too far and let the underlying PS text dominate
+  // visually.
+  //
+  // Setting pdf-lib opacity to 1.0 lets the PNG's own 0.65 alpha do
+  // the wash work alone — that gives the authentic 'pressed ink'
+  // look (you can still see the watermark behind it through the
+  // transparent gaps in the impression) while making the stamp dense
+  // enough at the inked areas to genuinely cover the PS text where
+  // they overlap. Stamp visually 'wins' the layering at those points,
+  // which is the chancery aesthetic we want.
   //
   // Centre pulled inward so the rotated stamp's bounding box fits
   // comfortably within the body content area — right edge sits ~8pt
@@ -445,7 +457,7 @@ async function generateChiefsLetterPdf({ firstName }) {
     width: stampW,
     height: stampH,
     rotate: degrees(-8),
-    opacity: 0.65,
+    opacity: 1.0,
   });
 
   // ─────────── FOOTER ───────────
