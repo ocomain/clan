@@ -326,7 +326,7 @@ function buildEmail1B_html(member) {
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
 ${p(`Your name has been inscribed by the Chief, in his own hand, in the <strong>physical Register kept at Newhall</strong>, and your certificate has been signed and sealed there. Your place is now formally recorded in the household of Ó Comáin.`)}
-${p(`Because of your standing, your name also appears on the <strong>public online Founding Members Register</strong>, in the form you chose, where it stands among the founders of the present revival and is visible to anyone in the world who comes to the household's website.`)}
+${p(`Because of your standing, your name also appears on the <strong>public online Founding Members Register</strong>, in the form you chose, where it stands among the founders of the present revival.`)}
 ${p('Your standing carries with it the right to certain courtesies of the household, which Linda will detail in correspondence to come. From me, the formal note: your place is now recorded both at Newhall and publicly online, and your name stands as a founder.')}
 ${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to Cara opens with a single bringing-in. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward it.`)}
 ${ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)}
@@ -431,7 +431,7 @@ function buildEmail2_html(member) {
   <p style="margin:0 0 14px">Dear ${escapeHtml(firstName)},</p>
   <p style="margin:0 0 14px">A short note to say that my welcome letter to you is attached.</p>
   <p style="margin:0 0 14px">With my warm regards,</p>
-  <p style="margin:0">Fergus<br><a href="${SITE}" style="color:#1A1A1A">www.ocomain.org</a></p>
+  <p style="margin:0">Fergus<br><br><a href="${SITE}" style="color:#1A1A1A">www.ocomain.org</a></p>
 </body>
 </html>`;
 }
