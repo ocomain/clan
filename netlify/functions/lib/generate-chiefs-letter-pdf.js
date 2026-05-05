@@ -395,35 +395,20 @@ async function generateChiefsLetterPdf({ firstName }) {
   });
   const typedNameBottom = y;
 
-  // ─────────── CHANCERY STAMP ───────────
-  // Right side, rotated -8°, overlapping the signature/typed-name area.
-  // Centre pulled inward enough that the rotated stamp's bounding box
-  // fits comfortably within the body content area (not bleeding into
-  // the gold-rule frame). Right edge sits ~8pt inside body content.
-  const stampW = 180;
-  const stampH = stampW * (stamp.height / stamp.width);
-  const stampCenterX = bodyLeftX + bodyMaxWidth - stampW / 2 - 8;
-  const stampCenterY = sigY + sigH * 0.4;
-  page.drawImage(stamp, {
-    x: stampCenterX - stampW / 2,
-    y: stampCenterY - stampH / 2,
-    width: stampW,
-    height: stampH,
-    rotate: degrees(-8),
-    opacity: 0.92,
-  });
-
   // ─────────── PS ───────────
-  // Inline italic postscript, no callout box, no gold rule. Sits a
-  // predictable distance below the typed name where a handwritten
-  // P.S. would naturally go on a real letter. The 'P.S. ' marker
-  // itself does the work — no decoration needed.
+  // Drawn BEFORE the chancery stamp so the stamp sits on top of the
+  // PS where they overlap — a real stamp pressed onto a finished
+  // letter is the topmost ink layer at the point of contact, with
+  // the underlying text showing through faintly through translucent
+  // stamp ink. (Previous version drew stamp first, which put the PS
+  // text on top of the stamp — wrong layering, looked like the PS
+  // was floating over a sticker rather than the stamp pressing onto
+  // the letter.)
   //
+  // Inline italic postscript, no callout box, no gold rule. The
+  // 'P.S. ' marker itself does the work — no decoration needed.
   // Anchored to typedNameBottom (a fixed reference) so it can't
-  // collide with the footer regardless of stamp dimensions or other
-  // layout shifts. The chancery stamp may extend down past the PS
-  // — that's authentic; a stamp pressed onto correspondence covers
-  // what's beneath it.
+  // collide with the footer regardless of stamp dimensions.
   const psY = typedNameBottom - 28;
   const psFullText = 'P.S. "Know someone who belongs with us? Inviting them is easy through your members\' area!"';
   const psLines = wrapTextToLines(psFullText, fontSerifItalic, 11.5, bodyMaxWidth);
@@ -434,6 +419,34 @@ async function generateChiefsLetterPdf({ firstName }) {
     });
     psYCursor -= 16;
   }
+
+  // ─────────── CHANCERY STAMP ───────────
+  // Right side, rotated -8°, overlapping the signature/typed-name
+  // area AND the right end of the PS line. Drawn LAST so it sits on
+  // top of all underlying text (signature, typed name, PS).
+  //
+  // Opacity 0.65 (was 0.92) — washed to look like real stamp ink
+  // pressed into paper rather than a digital sticker pasted on. At
+  // 0.65 the underlying text shows through faintly where they overlap,
+  // exactly the way a real chancery stamp behaves on correspondence,
+  // while the stamp's design (XXVI Roman numeral, SIGILLUM legend,
+  // arms in centre) remains clearly readable.
+  //
+  // Centre pulled inward so the rotated stamp's bounding box fits
+  // comfortably within the body content area — right edge sits ~8pt
+  // inside the body content.
+  const stampW = 180;
+  const stampH = stampW * (stamp.height / stamp.width);
+  const stampCenterX = bodyLeftX + bodyMaxWidth - stampW / 2 - 8;
+  const stampCenterY = sigY + sigH * 0.4;
+  page.drawImage(stamp, {
+    x: stampCenterX - stampW / 2,
+    y: stampCenterY - stampH / 2,
+    width: stampW,
+    height: stampH,
+    rotate: degrees(-8),
+    opacity: 0.65,
+  });
 
   // ─────────── FOOTER ───────────
   // Bottom of page. Mini gold rule + diamond + italic motto.
