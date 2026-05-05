@@ -411,14 +411,16 @@ function buildEmail2_html(member) {
   // Per Council direction (5 May 2026): 'the cover letter email needs
   // to look like a normal casual email no footer no styling no detail
   // no signature'. Just the four lines specified — Dear / one-line note
-  // / regards / Fergus. The PDF carries all the formality; the cover
-  // is genuinely personal because it's genuinely casual.
+  // / regards / Fergus.
+  //
+  // Subsequent direction (5 May 2026): 'add www.ocomain.org after
+  // fergus with a br line break'. Single website link beneath the
+  // sign-off, no formal sig block, still casual.
   //
   // No font-family declared so the recipient's mail client default
   // takes over (Gmail = Arial-ish sans, Apple Mail = Helvetica), which
   // looks like a real personal email rather than something composed
-  // in marketing tooling. No background colour. No borders. No
-  // footer. No formal name + title block. No links.
+  // in marketing tooling.
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -429,7 +431,7 @@ function buildEmail2_html(member) {
   <p style="margin:0 0 14px">Dear ${escapeHtml(firstName)},</p>
   <p style="margin:0 0 14px">A short note to say that my welcome letter to you is attached.</p>
   <p style="margin:0 0 14px">With my warm regards,</p>
-  <p style="margin:0">Fergus</p>
+  <p style="margin:0">Fergus<br><a href="${SITE}" style="color:#1A1A1A">www.ocomain.org</a></p>
 </body>
 </html>`;
 }

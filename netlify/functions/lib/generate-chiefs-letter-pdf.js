@@ -328,8 +328,10 @@ async function generateChiefsLetterPdf({ firstName }) {
     y -= paragraphGap;
   };
 
-  // Salutation — slightly larger.
-  drawParagraph(`Dear ${firstName},`, { size: 13 });
+  // Salutation — same size as body (real correspondence doesn't
+  // differentiate; the salutation is content, not typography). Slight
+  // extra space after to set it apart visually from the first paragraph.
+  drawParagraph(`Dear ${firstName},`);
   y -= 4;
 
   drawParagraph('It is my pleasure to welcome you to the newly revived Clan Ó Comáin!');
