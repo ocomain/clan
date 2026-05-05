@@ -409,26 +409,35 @@ async function generateChiefsLetterPdf({ addressForm }) {
   // ─────────── PS ───────────
   // Drawn BEFORE the chancery stamp so the stamp sits on top of the
   // PS where they overlap — a real stamp pressed onto a finished
-  // letter is the topmost ink layer at the point of contact, with
-  // the underlying text showing through faintly through translucent
-  // stamp ink. (Previous version drew stamp first, which put the PS
-  // text on top of the stamp — wrong layering, looked like the PS
-  // was floating over a sticker rather than the stamp pressing onto
-  // the letter.)
+  // letter is the topmost ink layer at the point of contact.
   //
   // Inline italic postscript, no callout box, no gold rule. The
   // 'P.S. ' marker itself does the work — no decoration needed.
   // Anchored to typedNameBottom (a fixed reference) so it can't
   // collide with the footer regardless of stamp dimensions.
-  const psY = typedNameBottom - 28;
-  const psFullText = 'P.S. "Know someone who belongs with us? Inviting them is easy through your members\' area!"';
-  const psLines = wrapTextToLines(psFullText, fontSerifItalic, 11.5, bodyMaxWidth);
-  let psYCursor = psY;
+  //
+  // HARD-WRAPPED into two lines (per Council direction, 6 May 2026:
+  // 'as the text is going over the stamp, line break it and put
+  // Inviting them is easy through your members area! on a next
+  // line'). The break sits at the natural sentence boundary so the
+  // second sentence drops below the chancery stamp's bottom edge
+  // and reads cleanly. The closing quote stays at the end of line
+  // 2 alongside the rest of its sentence.
+  //
+  // We render the two lines explicitly rather than feeding the full
+  // string through wrapTextToLines — both individual lines fit in
+  // the body width, so wrapTextToLines would just rejoin them onto
+  // one line. The forced two-line layout is the whole point.
+  const psLines = [
+    'P.S. "Know someone who belongs with us?',
+    'Inviting them is easy through your members\' area!"',
+  ];
+  let psY = typedNameBottom - 28;
   for (const line of psLines) {
     page.drawText(line, {
-      x: bodyLeftX, y: psYCursor, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
+      x: bodyLeftX, y: psY, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
     });
-    psYCursor -= 16;
+    psY -= 16;
   }
 
   // ─────────── CHANCERY STAMP ───────────
