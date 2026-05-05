@@ -181,6 +181,8 @@ function paddySignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Historian &amp; Storyteller</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:paddy@ocomain.org" style="color:#B8975A;text-decoration:none">paddy@ocomain.org</a>
+        <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span>
+        <a href="${SITE}" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -202,6 +204,8 @@ function antoinSignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0">Tánaiste</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:antoin@ocomain.org" style="color:#B8975A;text-decoration:none">antoin@ocomain.org</a>
+        <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span>
+        <a href="${SITE}" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -221,6 +225,8 @@ function michaelSignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Maraschall &amp; Iompróir Meirgí</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:michael@ocomain.org" style="color:#B8975A;text-decoration:none">michael@ocomain.org</a>
+        <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span>
+        <a href="${SITE}" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -240,6 +246,8 @@ function jessicaSignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Coimeádaí na Suíochán</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:jessica@ocomain.org" style="color:#B8975A;text-decoration:none">jessica@ocomain.org</a>
+        <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span>
+        <a href="${SITE}" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -264,6 +272,8 @@ function heraldSignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">An tAralt</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:herald@ocomain.org" style="color:#B8975A;text-decoration:none">herald@ocomain.org</a>
+        <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span>
+        <a href="${SITE}" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -297,14 +307,27 @@ ${heraldSignatureHtml()}
 // Per Council edit (May 2026): "delete 'Guardian, Steward, or Life Member'"
 // from the standing-paragraph. The recipient already knows their tier;
 // the public-Register framing carries the importance.
+//
+// REGISTER DISTINCTION (5 May 2026 Council fix): Two distinct Registers
+// must be kept separate in the copy:
+//   1. The physical Register at Newhall — bound book kept by the Herald,
+//      where the Chief inscribes by hand and applies the seal. Private,
+//      ceremonial.
+//   2. The public online Founding Members Register — the website roll
+//      at /register, browsable to anyone in the world.
+// Previous version conflated them ("inscribed onto the public Founding
+// Members Register at Newhall, ... visible to anyone who comes to the
+// household") which mixed physical-location and online-visibility into
+// one muddled sentence.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1B_html(member) {
   const firstName = firstNameOf(member);
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
-${p(`Your name has been entered into the Register and inscribed onto the <strong>public Founding Members Register at Newhall</strong>, in the form you chose. The Chief has signed and sealed your certificate, and a copy of your entry stands among the founders of the present revival, visible to anyone who comes to the household.`)}
-${p('Your standing carries with it the right to certain courtesies of the household, which Linda will detail in correspondence to come. From me, the formal note: your place is now recorded, and your name stands publicly as a founder.')}
+${p(`Your name has been inscribed by the Chief, in his own hand, in the <strong>physical Register kept at Newhall</strong>, and your certificate has been signed and sealed there. Your place is now formally recorded in the household of Ó Comáin.`)}
+${p(`Because of your standing, your name also appears on the <strong>public online Founding Members Register</strong>, in the form you chose, where it stands among the founders of the present revival and is visible to anyone in the world who comes to the household's website.`)}
+${p('Your standing carries with it the right to certain courtesies of the household, which Linda will detail in correspondence to come. From me, the formal note: your place is now recorded both at Newhall and publicly online, and your name stands as a founder.')}
 ${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to Cara opens with a single bringing-in. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward it.`)}
 ${ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)}
 ${p('With the compliments of the Office, and a welcome from the household of Ó Comáin.')}
@@ -312,7 +335,7 @@ ${heraldSignatureHtml()}
 `;
   return wrapInChrome({
     eyebrow: 'A note from the Office of the Herald',
-    heading: 'Your name in the public Register',
+    heading: 'Your name in the Register',
     bodyHtml: body,
   });
 }
