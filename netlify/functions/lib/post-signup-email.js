@@ -444,15 +444,21 @@ ${heraldSignatureHtml()}
 // The visual gravity is in the attachment, not in the cover.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail2_html(member) {
-  // Cover note INTENTIONALLY uses first-name-only ('Dear Aoife,'),
-  // NOT the formal address form. This is a personal casual note from
-  // the Chief — a quick one-liner pointing at the formal letter
-  // attached. Real correspondence distinguishes informal and formal
-  // registers; using 'Dear Cara Aoife' in a casual personal email
-  // would feel stiff and miss the warmth this note is doing. The
-  // PDF inside the attachment carries the formal title-bearing
-  // salutation.
-  const firstName = firstNameOf(member);
+  // Cover note uses the title-bearing form ('Dear Cara Aoife,' for a
+  // titled member, 'Dear Aoife,' otherwise) — same as the PDF inside.
+  //
+  // Per Council direction (6 May 2026): the Chief shows the courtesy
+  // of the dignity in ALL correspondence, regardless of register. The
+  // casualness of this cover note is in its CONTENT (one-line note,
+  // no formal sig block, no styling) and LENGTH (four lines), not in
+  // dropping the address form. A casual note from the Chief to a
+  // titled member still acknowledges the dignity in the salutation;
+  // the warmth and the title aren't in tension — both are courtesies.
+  //
+  // Earlier iteration (5 May 2026) had this on first-name-only
+  // because I'd argued informal register justified dropping the
+  // title — corrected: the Chief always addresses the dignity.
+  const firstName = addressFormOf(member);
 
   // Per Council direction (5 May 2026): 'the cover letter email needs
   // to look like a normal casual email no footer no styling no detail
