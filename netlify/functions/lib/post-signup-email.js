@@ -66,7 +66,12 @@ const SITE = process.env.SITE_URL || 'https://www.ocomain.org';
 // All within the verified ocomain.org domain so Resend doesn't need
 // per-address re-verification — the domain key signs them all.
 
-const FROM_HERALD  = 'The Herald of Ó Comáin <herald@ocomain.org>';
+// FROM_HERALD shortened (5 May 2026) — the longer 'The Herald of Ó
+// Comáin' was being truncated by mail clients to 'The Herald of
+// Ó...' which lost the household name entirely. 'The Herald' stands
+// alone clearly; the household identity is reinforced inside the
+// body, in the signature block, and in the burgundy wax seal.
+const FROM_HERALD  = 'The Herald <herald@ocomain.org>';
 const FROM_FERGUS  = 'Fergus Commane <chief@ocomain.org>';
 const FROM_ANTOIN  = 'Antoin Commane <antoin@ocomain.org>';
 const FROM_LINDA   = 'Linda Commane Cryan <linda@ocomain.org>';
@@ -380,40 +385,28 @@ ${heraldSignatureHtml()}
 function buildEmail2_html(member) {
   const firstName = firstNameOf(member);
 
+  // Per Council direction (5 May 2026): 'the cover letter email needs
+  // to look like a normal casual email no footer no styling no detail
+  // no signature'. Just the four lines specified — Dear / one-line note
+  // / regards / Fergus. The PDF carries all the formality; the cover
+  // is genuinely personal because it's genuinely casual.
+  //
+  // No font-family declared so the recipient's mail client default
+  // takes over (Gmail = Arial-ish sans, Apple Mail = Helvetica), which
+  // looks like a real personal email rather than something composed
+  // in marketing tooling. No background colour. No borders. No
+  // footer. No formal name + title block. No links.
   return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <meta name="x-apple-disable-message-reformatting">
-  <meta name="color-scheme" content="light only">
-  <meta name="supported-color-schemes" content="light">
 </head>
-<body style="margin:0;padding:24px 16px;background:#F8F4EC;font-family:'Georgia','Times New Roman',serif;color:#1A1A1A">
-
-  <div style="max-width:560px;margin:0 auto">
-
-    <p style="font-size:16px;line-height:1.65;margin:0 0 18px;color:#1A1A1A">Dear ${escapeHtml(firstName)},</p>
-
-    <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:#1A1A1A">A short note to say that my welcome letter to you is attached.</p>
-
-    <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:#1A1A1A">After a long suppression of eight hundred years, Clan Ó Comáin has been brought back to life — and it means a great deal to me that you have taken your place in the founding family.</p>
-
-    <p style="font-size:16px;line-height:1.65;margin:0 0 16px;color:#1A1A1A">Please open the letter when you have a quiet moment. It carries the household's seal and is signed by my own hand.</p>
-
-    <p style="font-size:16px;line-height:1.65;margin:0 0 22px;color:#1A1A1A">With my warm regards,</p>
-
-    <p style="font-size:18px;line-height:1.4;margin:0 0 4px;font-style:italic;color:#1A1A1A">Fergus</p>
-
-    <p style="font-size:13px;line-height:1.5;margin:0 0 0;color:#6C5A4A">Fergus Kinfauns, The Commane<br>Chief of Ó Comáin</p>
-
-    <!-- Quiet footer with address + website -->
-    <div style="margin:32px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.3);text-align:center;font-family:'Georgia',serif;font-size:11px;color:#8a8576;line-height:1.6">
-      <p style="margin:0;color:#8a8576">Clan Ó Comáin &middot; Newhall House, County Clare, Ireland &middot; <a href="https://www.ocomain.org" style="color:#8B6F32">www.ocomain.org</a></p>
-    </div>
-
-  </div>
-
+<body style="margin:0;padding:16px;color:#1A1A1A;font-size:15px;line-height:1.5">
+  <p style="margin:0 0 14px">Dear ${escapeHtml(firstName)},</p>
+  <p style="margin:0 0 14px">A short note to say that my welcome letter to you is attached.</p>
+  <p style="margin:0 0 14px">With my warm regards,</p>
+  <p style="margin:0">Fergus</p>
 </body>
 </html>`;
 }
