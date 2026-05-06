@@ -254,6 +254,7 @@ ${p(`If your application sits unfinished because the question was <strong>is it 
 ${p(`The clan has work to do. Your hand on it would matter.`)}
 ${ctaButtonHtml('Complete my application', resumeUrl(application))}
 ${p(`Yours, in clan and kindred,`)}
+${p(`<em>Erin go bragh</em>`)}
 ${antoinSignatureHtml()}
 `;
   return wrapInChrome({

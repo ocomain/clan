@@ -525,6 +525,7 @@ ${p(`<strong>The second: how easy it is</strong>. I had thought "recommending a 
 ${p(`If there is someone in your life — a sibling, a cousin, a friend, anyone with a love of Ireland — who you think might want a place in the Register, <strong>the path is in your members' area</strong>. You can either send them an invitation to join themselves, or gift them membership directly. Both count toward Cara.`)}
 ${ctaButtonHtml('Send an invitation, or gift membership', URLS.invite)}
 ${p('All my very best, in clan and kindred,')}
+${p(`<em>Erin go bragh</em>`)}
 ${antoinSignatureHtml()}
 `;
   return wrapInChrome({
