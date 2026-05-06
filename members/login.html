@@ -266,7 +266,7 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 
     if (ok) {
       status.className = 'mlogin-status show success';
-      status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link has been sent to <em>${email}</em>. The link is valid for 24 hours — open it on any device, any browser. If it doesn't arrive within a few minutes, check your spam folder.`;
+      status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link has been sent to <em>${email}</em>. The link is valid for 24 hours and is single-use — open it on the device you'd like to be signed in on. If you need to sign in on a different device later, just request a fresh link from there. If it doesn't arrive within a few minutes, check your spam folder.`;
       submitBtn.textContent = 'Link sent ✓';
       emailInput.disabled = true;
     } else {

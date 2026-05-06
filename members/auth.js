@@ -13,13 +13,22 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     // NOTE: PKCE intentionally NOT used here. PKCE requires the magic link to
-    // be opened in the same browser/device that requested it — which breaks
-    // for the common pattern where someone requests on their phone and reads
-    // their email on a laptop, or vice versa. For a clan-membership site
-    // (not financial), implicit flow's cross-device tolerance is the right
-    // trade-off vs the marginal additional security of PKCE. If we need to
-    // tighten this later (e.g. for a payment flow), we can layer PKCE in for
-    // those specific routes.
+    // be opened in the same browser/device that requested it (the verifier
+    // lives in sessionStorage of the requesting browser). Implicit flow
+    // removes that requirement, so the link can be opened in a DIFFERENT
+    // browser from the one that requested it — useful for the common
+    // request-on-laptop / read-email-on-phone pattern.
+    //
+    // IMPORTANT: implicit flow does NOT make magic links re-usable. Supabase
+    // enforces server-side single-use token consumption as a separate
+    // security layer: the moment a magic link is opened anywhere, the token
+    // is burned in Supabase's database and any subsequent click on the same
+    // URL gets 'token expired' regardless of device. So 'open on any device'
+    // means 'open on ONE device of your choice' — not 'open on multiple
+    // devices to share the session'. The login.html copy reflects this.
+    //
+    // If we need to tighten cross-device behaviour later (e.g. for a payment
+    // flow), we can layer PKCE in for those specific routes.
     flowType: 'implicit',
   },
 });
