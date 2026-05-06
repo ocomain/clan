@@ -328,173 +328,25 @@ exports.handler = async (event) => {
 
     // Send publication confirmation email + gift-buyer keepsake on first
     // publish. Best-effort — failure here doesn't affect the API response.
+    //
+    // FIRE-AND-FORGET: All publication side-effects run AFTER the response
+    // returns. They're notifications and audit, not blocking work. The
+    // user only needs the cert PDF + signed URL to complete their flow,
+    // and those are already done above. Lambda keeps the container alive
+    // briefly after response, which gives ample time for the side-effect
+    // promises (typically 3-6s total) to complete. If a side-effect fails
+    // we log it; the user is unaffected.
     if (publishingNow && certResultForEmail) {
-      try {
-        await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
-      } catch (emailErr) {
-        console.error('publication email send failed (non-fatal):', emailErr.message);
-      }
-
-      // GIFT BUYER KEEPSAKE — if this published member was a gift
-      // recipient, send the gift buyer a copy of the published cert
-      // as a keepsake.
-      try {
-        const { data: gift } = await supa()
-          .from('gifts')
-          .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
-          .eq('member_id', updated.id)
-          .maybeSingle();
-        if (gift?.buyer_email) {
-          await sendGiftBuyerCertKeepsake(updated, certResultForEmail, gift);
-          await logEvent({
-            clan_id,
-            member_id: updated.id,
-            event_type: 'gift_buyer_keepsake_sent',
-            payload: { buyer_email: gift.buyer_email },
-          });
-        }
-      } catch (keepsakeErr) {
-        console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
-      }
-
-      // SPONSORSHIP CHAIN — if this newly-published member came
-      // through an invitation, record the conversion and reward
-      // the sponsor. Three steps, all best-effort:
-      //
-      //   1. recordConversion: stamp invitations.converted_member_id
-      //      so the count is accurate. Returns the inviter's row if
-      //      this member came through an invitation, null otherwise.
-      //
-      //   2. sendSponsorLetter: short Herald-voiced email to the
-      //      sponsor naming the new member. Fires every conversion.
-      //
-      //   3. evaluateSponsorTitles + sendTitleAwardLetter: check
-      //      whether the new conversion crossed any of the title
-      //      thresholds (1/5/15) and, for each newly-earned title,
-      //      send the title-award letter and stamp
-      //      sponsor_titles_awarded so it doesn't fire again.
-      //
-      // DEDUP GATE (2026-04-28): the chain ALSO fires from
-      // stripe-webhook.js the moment the invitee pays, so for any
-      // member who paid after that fix shipped, the conversion is
-      // already recorded by the time the dashboard publish flow
-      // runs. Skip in that case to avoid double sponsor letter +
-      // double title-award letter. Pre-fix members (who paid before
-      // the webhook chain existed) still trigger the chain here as
-      // a recovery path — converted_member_id stays null until
-      // someone runs it.
-      try {
-        const updEmailLower = String(updated.email || '').toLowerCase().trim();
-        let alreadyProcessed = false;
-        if (updEmailLower) {
-          const { data: priorInv } = await supa()
-            .from('invitations')
-            .select('converted_member_id')
-            .eq('clan_id', clan_id)
-            .ilike('recipient_email', updEmailLower)
-            .order('sent_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          alreadyProcessed = !!priorInv?.converted_member_id;
-        }
-        const inviter = alreadyProcessed ? null : await recordConversion(updated, clan_id);
-        if (inviter) {
-          // Send the sponsor letter — pass the inviter's current
-          // highest title so the greeting can address them by it
-          // ('Dia dhuit, Cara James' rather than 'Dia dhuit, James').
-          // This is read from the JSONB the publish flow already
-          // has on the inviter record (loaded by recordConversion);
-          // no extra query needed.
-          const inviterCurrentTitle = highestAwardedTitle(inviter.sponsor_titles_awarded);
-          try {
-            await sendSponsorLetter(inviter, updated, inviterCurrentTitle);
-            await logEvent({
-              clan_id,
-              member_id: inviter.id,
-              event_type: 'sponsor_letter_sent',
-              payload: { converted_member_id: updated.id },
-            });
-          } catch (letterErr) {
-            console.error('sponsor letter send failed (non-fatal):', letterErr.message);
-          }
-
-          // Evaluate and award titles. The new evaluation returns:
-          //   - count: current converted-invite count
-          //   - allNewlyEarned: every title whose threshold was
-          //     just crossed (1+ entries on a leapfrog from
-          //     4 → 6+ in one event)
-          //   - highestNewlyEarned: the single highest of those,
-          //     or null if none. We email this one ONLY, even on
-          //     a leapfrog — no awkward double-letter on the same
-          //     raising day. Lower titles in the same batch are
-          //     silently stamped to the audit trail.
-          //   - previousTitleIrish: the Irish form of the title
-          //     this member ALREADY HELD before the raising, or
-          //     null if they held none. The email's bestowal
-          //     language uses this for the 'raised from {prior}
-          //     to the dignity of {new}' clause.
-          try {
-            const { count, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
-              await evaluateSponsorTitles(inviter);
-            if (allNewlyEarned.length > 0) {
-              const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
-              const nowIso = new Date().toISOString();
-
-              // Send the title-award letter ONLY for the highest
-              // newly-earned title. Pass priorTitleIrish so the
-              // letter can construct 'raised from {prior} to {new}'.
-              let letterSent = false;
-              if (highestNewlyEarned) {
-                try {
-                  await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, count);
-                  await logEvent({
-                    clan_id,
-                    member_id: inviter.id,
-                    event_type: 'sponsor_title_awarded',
-                    payload: {
-                      title_slug: highestNewlyEarned.slug,
-                      previous_title: previousTitleIrish,
-                      count,
-                      // Note: any leapfrogged titles are recorded
-                      // in the audit-trail stamp below, not in this
-                      // event's payload — the event is about the
-                      // single email that was sent.
-                    },
-                  });
-                  letterSent = true;
-                } catch (titleErr) {
-                  console.error(`title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
-                }
-              }
-
-              // Stamp ALL newly-earned slugs into the JSONB so
-              // the audit trail records every milestone, even
-              // ones that were leapfrogged (no email but the
-              // member did genuinely cross that threshold).
-              // Only stamp if at least the headline letter sent
-              // (or if there's no letter to send, which shouldn't
-              // happen but defensive). If letter failed, retry
-              // on next conversion — better than marking awarded
-              // when nothing arrived.
-              if (letterSent || !highestNewlyEarned) {
-                for (const t of allNewlyEarned) {
-                  stampedAwarded[t.slug] = nowIso;
-                }
-                if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
-                  await supa()
-                    .from('members')
-                    .update({ sponsor_titles_awarded: stampedAwarded })
-                    .eq('id', inviter.id);
-                }
-              }
-            }
-          } catch (titleEvalErr) {
-            console.error('title evaluation failed (non-fatal):', titleEvalErr.message);
-          }
-        }
-      } catch (sponsorErr) {
-        console.error('sponsorship flow failed (non-fatal):', sponsorErr.message);
-      }
+      // Capture references before the response builder runs so the closure
+      // has stable values even if outer scope variables change.
+      firePublicationSideEffects(updated, clan_id, certResultForEmail).catch(err => {
+        // The helper's own try/catch chains catch every internal failure
+        // and log it. This top-level catch is a defensive net for any
+        // unexpected throw (e.g. a coding error in the helper itself)
+        // so we never leave an unhandled promise rejection on the
+        // process.
+        console.error('firePublicationSideEffects unexpected failure:', err.message, err.stack);
+      });
     }
 
     return {
@@ -516,6 +368,201 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────
+// firePublicationSideEffects — runs after the user response goes out.
+//
+// Three blocks, each with its own try/catch:
+//   1. Publication confirmation email to the member.
+//   2. Gift-buyer keepsake (only if this member was a gift recipient).
+//   3. Sponsorship chain — record conversion, send sponsor letter,
+//      evaluate and award sponsor titles.
+//
+// Errors in any block are logged but do NOT propagate to other blocks;
+// each block runs independently. The function returns a promise that
+// resolves when all blocks have settled (used only for the top-level
+// defensive catch in the handler).
+//
+// Why this is safe to fire-and-forget on Netlify/Lambda:
+//   - Lambda containers stay alive briefly after the response returns,
+//     long enough for these calls (typically 3-6s total) to finish.
+//   - If a call doesn't finish in time, Lambda's worst case is the
+//     promise simply doesn't resolve — no user impact, just a missed
+//     email or audit entry. The next user action will recreate the
+//     container and the next side-effect chain will succeed.
+//   - The previous awaited shape extended the user's wait by 3-6s for
+//     work that has no value to them in real time. The user only cares
+//     about the cert; everything else is internal bookkeeping.
+// ─────────────────────────────────────────────────────────────────────
+async function firePublicationSideEffects(updated, clan_id, certResultForEmail) {
+  // (1) PUBLICATION CONFIRMATION EMAIL
+  try {
+    await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
+  } catch (emailErr) {
+    console.error('publication email send failed (non-fatal):', emailErr.message);
+  }
+
+  // (2) GIFT BUYER KEEPSAKE — if this published member was a gift
+  // recipient, send the gift buyer a copy of the published cert
+  // as a keepsake.
+  try {
+    const { data: gift } = await supa()
+      .from('gifts')
+      .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
+      .eq('member_id', updated.id)
+      .maybeSingle();
+    if (gift?.buyer_email) {
+      await sendGiftBuyerCertKeepsake(updated, certResultForEmail, gift);
+      await logEvent({
+        clan_id,
+        member_id: updated.id,
+        event_type: 'gift_buyer_keepsake_sent',
+        payload: { buyer_email: gift.buyer_email },
+      });
+    }
+  } catch (keepsakeErr) {
+    console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
+  }
+
+  // (3) SPONSORSHIP CHAIN — if this newly-published member came
+  // through an invitation, record the conversion and reward
+  // the sponsor. Three steps, all best-effort:
+  //
+  //   1. recordConversion: stamp invitations.converted_member_id
+  //      so the count is accurate. Returns the inviter's row if
+  //      this member came through an invitation, null otherwise.
+  //
+  //   2. sendSponsorLetter: short Herald-voiced email to the
+  //      sponsor naming the new member. Fires every conversion.
+  //
+  //   3. evaluateSponsorTitles + sendTitleAwardLetter: check
+  //      whether the new conversion crossed any of the title
+  //      thresholds (1/5/15) and, for each newly-earned title,
+  //      send the title-award letter and stamp
+  //      sponsor_titles_awarded so it doesn't fire again.
+  //
+  // DEDUP GATE (2026-04-28): the chain ALSO fires from
+  // stripe-webhook.js the moment the invitee pays, so for any
+  // member who paid after that fix shipped, the conversion is
+  // already recorded by the time the dashboard publish flow
+  // runs. Skip in that case to avoid double sponsor letter +
+  // double title-award letter. Pre-fix members (who paid before
+  // the webhook chain existed) still trigger the chain here as
+  // a recovery path — converted_member_id stays null until
+  // someone runs it.
+  try {
+    const updEmailLower = String(updated.email || '').toLowerCase().trim();
+    let alreadyProcessed = false;
+    if (updEmailLower) {
+      const { data: priorInv } = await supa()
+        .from('invitations')
+        .select('converted_member_id')
+        .eq('clan_id', clan_id)
+        .ilike('recipient_email', updEmailLower)
+        .order('sent_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      alreadyProcessed = !!priorInv?.converted_member_id;
+    }
+    const inviter = alreadyProcessed ? null : await recordConversion(updated, clan_id);
+    if (inviter) {
+      // Send the sponsor letter — pass the inviter's current
+      // highest title so the greeting can address them by it
+      // ('Dia dhuit, Cara James' rather than 'Dia dhuit, James').
+      // This is read from the JSONB the publish flow already
+      // has on the inviter record (loaded by recordConversion);
+      // no extra query needed.
+      const inviterCurrentTitle = highestAwardedTitle(inviter.sponsor_titles_awarded);
+      try {
+        await sendSponsorLetter(inviter, updated, inviterCurrentTitle);
+        await logEvent({
+          clan_id,
+          member_id: inviter.id,
+          event_type: 'sponsor_letter_sent',
+          payload: { converted_member_id: updated.id },
+        });
+      } catch (letterErr) {
+        console.error('sponsor letter send failed (non-fatal):', letterErr.message);
+      }
+
+      // Evaluate and award titles. The new evaluation returns:
+      //   - count: current converted-invite count
+      //   - allNewlyEarned: every title whose threshold was
+      //     just crossed (1+ entries on a leapfrog from
+      //     4 → 6+ in one event)
+      //   - highestNewlyEarned: the single highest of those,
+      //     or null if none. We email this one ONLY, even on
+      //     a leapfrog — no awkward double-letter on the same
+      //     raising day. Lower titles in the same batch are
+      //     silently stamped to the audit trail.
+      //   - previousTitleIrish: the Irish form of the title
+      //     this member ALREADY HELD before the raising, or
+      //     null if they held none. The email's bestowal
+      //     language uses this for the 'raised from {prior}
+      //     to the dignity of {new}' clause.
+      try {
+        const { count, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
+          await evaluateSponsorTitles(inviter);
+        if (allNewlyEarned.length > 0) {
+          const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
+          const nowIso = new Date().toISOString();
+
+          // Send the title-award letter ONLY for the highest
+          // newly-earned title. Pass priorTitleIrish so the
+          // letter can construct 'raised from {prior} to {new}'.
+          let letterSent = false;
+          if (highestNewlyEarned) {
+            try {
+              await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, count);
+              await logEvent({
+                clan_id,
+                member_id: inviter.id,
+                event_type: 'sponsor_title_awarded',
+                payload: {
+                  title_slug: highestNewlyEarned.slug,
+                  previous_title: previousTitleIrish,
+                  count,
+                  // Note: any leapfrogged titles are recorded
+                  // in the audit-trail stamp below, not in this
+                  // event's payload — the event is about the
+                  // single email that was sent.
+                },
+              });
+              letterSent = true;
+            } catch (titleErr) {
+              console.error(`title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
+            }
+          }
+
+          // Stamp ALL newly-earned slugs into the JSONB so
+          // the audit trail records every milestone, even
+          // ones that were leapfrogged (no email but the
+          // member did genuinely cross that threshold).
+          // Only stamp if at least the headline letter sent
+          // (or if there's no letter to send, which shouldn't
+          // happen but defensive). If letter failed, retry
+          // on next conversion — better than marking awarded
+          // when nothing arrived.
+          if (letterSent || !highestNewlyEarned) {
+            for (const t of allNewlyEarned) {
+              stampedAwarded[t.slug] = nowIso;
+            }
+            if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+              await supa()
+                .from('members')
+                .update({ sponsor_titles_awarded: stampedAwarded })
+                .eq('id', inviter.id);
+            }
+          }
+        }
+      } catch (titleEvalErr) {
+        console.error('title evaluation failed (non-fatal):', titleEvalErr.message);
+      }
+    }
+  } catch (sponsorErr) {
+    console.error('sponsorship flow failed (non-fatal):', sponsorErr.message);
+  }
+}
 
 // (combineCoupleNames previously lived here as a local copy of the cert's
 // version. Now imported via computeFamilyDisplay from ./lib/generate-cert.js

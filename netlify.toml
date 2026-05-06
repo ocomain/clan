@@ -63,21 +63,24 @@
   schedule = "30 15 * * *"
 
 # Cert publishing functions — extended timeout to 26s (Netlify's
-# synchronous max). The default is 10s, but the cert-publication
-# critical path can comfortably take 8-12s on cold start: PDF
-# generation (5-8s) + Resend publication-confirmation email (1-2s)
-# + optional gift-buyer keepsake email (1-2s) + sponsor service
-# conversion logic (1-2s). When the front-end's fetch() exceeds
-# the function timeout, Netlify drops the connection without
-# returning an error to the client — and the modal hangs on the
-# 'It is done. Your certificate is sealed.' beat indefinitely with
-# no recourse for the member. Raising the limit gives the cert
-# generation room to finish and respond before the front-end hangs.
+# synchronous max). The default is 10s. Originally this was a bandaid
+# for a slow critical path that comfortably took 9-15s on cold start
+# (PDF generation + storage upload + Resend publication email + gift-
+# buyer keepsake + sponsor service conversion logic).
 #
-# Longer-term improvement: move email sends and sponsor-conversion
-# work into a fire-and-forget queue so the user response is
-# returned as soon as the cert PDF is in storage. Until then,
-# this timeout extension is the unblock.
+# As of the firePublicationSideEffects refactor, only the user-blocking
+# steps remain in the awaited path: JWT verify + member fetch +
+# validate + DB row update + cert PDF generation + storage upload +
+# signed URL. That comfortably runs in 6-9s on cold start and 2-4s
+# warm. All publication side-effects (emails, sponsor letters, title
+# awards) now run fire-and-forget after the response, so they no
+# longer add to the critical path.
+#
+# The 26s timeout STAYS as defence in depth. Removing it gains
+# nothing (Netlify only bills on actual runtime) and would risk
+# regression if a cold-start ever exceeded the 10s default. Keep
+# until we have observability data showing the function never
+# approaches 10s in practice.
 [functions."submit-family-details"]
   timeout = 26
 

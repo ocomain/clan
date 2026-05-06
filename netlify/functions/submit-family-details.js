@@ -373,107 +373,16 @@ exports.handler = async (event) => {
 
     // Send publication confirmation email if we actually published.
     // Best-effort — failure here doesn't affect the API response.
+    //
+    // FIRE-AND-FORGET: All publication side-effects run AFTER the
+    // response returns. The user only needs the cert + signed URL to
+    // complete their flow; emails and sponsor-chain work are internal
+    // bookkeeping. See update-family-details.js for the same pattern
+    // and rationale.
     if (publishingNow && certResultForEmail) {
-      try {
-        await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
-      } catch (emailErr) {
-        console.error('publication email send failed (non-fatal):', emailErr.message);
-      }
-
-      // GIFT BUYER KEEPSAKE — if this published member was a gift
-      // recipient, send the gift buyer a copy of the published cert
-      // as a keepsake. Look up the gifts table by member_id to find
-      // the buyer's email + name + personal message context.
-      try {
-        const { data: gift } = await supa()
-          .from('gifts')
-          .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
-          .eq('member_id', updated.id)
-          .maybeSingle();
-        if (gift?.buyer_email) {
-          await sendGiftBuyerCertKeepsake(updated, certResultForEmail, gift);
-          await logEvent({
-            clan_id,
-            member_id: updated.id,
-            event_type: 'gift_buyer_keepsake_sent',
-            payload: { buyer_email: gift.buyer_email },
-          });
-        }
-      } catch (keepsakeErr) {
-        console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
-      }
-
-      // SPONSORSHIP CHAIN — if this newly-published member came
-      // through an invitation, record the conversion and reward
-      // the sponsor. Mirrors the same logic in
-      // update-family-details.js (the dashboard publish path).
-      // Both paths route here on first-publish; the sponsorship
-      // chain handles its own idempotency.
-      try {
-        const inviter = await recordConversion(updated, clan_id);
-        if (inviter) {
-          // Pass the inviter's current highest title so the greeting
-          // can address them by dignity (mirrors update-family-
-          // details.js).
-          const inviterCurrentTitle = highestAwardedTitle(inviter.sponsor_titles_awarded);
-          try {
-            await sendSponsorLetter(inviter, updated, inviterCurrentTitle);
-            await logEvent({
-              clan_id,
-              member_id: inviter.id,
-              event_type: 'sponsor_letter_sent',
-              payload: { converted_member_id: updated.id },
-            });
-          } catch (letterErr) {
-            console.error('sponsor letter send failed (non-fatal):', letterErr.message);
-          }
-
-          try {
-            const { count, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
-              await evaluateSponsorTitles(inviter);
-            if (allNewlyEarned.length > 0) {
-              const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
-              const nowIso = new Date().toISOString();
-
-              let letterSent = false;
-              if (highestNewlyEarned) {
-                try {
-                  await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, count);
-                  await logEvent({
-                    clan_id,
-                    member_id: inviter.id,
-                    event_type: 'sponsor_title_awarded',
-                    payload: {
-                      title_slug: highestNewlyEarned.slug,
-                      previous_title: previousTitleIrish,
-                      count,
-                    },
-                  });
-                  letterSent = true;
-                } catch (titleErr) {
-                  console.error(`title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
-                }
-              }
-
-              if (letterSent || !highestNewlyEarned) {
-                for (const t of allNewlyEarned) {
-                  stampedAwarded[t.slug] = nowIso;
-                }
-                if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
-                  await supa()
-                    .from('members')
-                    .update({ sponsor_titles_awarded: stampedAwarded })
-                    .eq('id', inviter.id);
-                }
-              }
-            }
-          } catch (titleEvalErr) {
-            console.error('title evaluation failed (non-fatal):', titleEvalErr.message);
-          }
-        }
-      } catch (sponsorErr) {
-        console.error('sponsorship flow failed (non-fatal):', sponsorErr.message);
-      }
+      firePublicationSideEffects(updated, clan_id, certResultForEmail).catch(err => {
+        console.error('firePublicationSideEffects unexpected failure:', err.message, err.stack);
+      });
     }
 
     return {
@@ -492,6 +401,133 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────
+// firePublicationSideEffects — runs after the user response goes out.
+//
+// Mirrors the equivalent helper in update-family-details.js with one
+// difference: this is the welcome-flow path, where the publication is
+// always FIRST publish, so there is no dedup-gate against the
+// stripe-webhook chain. The webhook records conversion at payment
+// time but this function ALSO runs on first publish — for members
+// who joined directly (no invitation), the inviter lookup is null
+// so nothing duplicates; for members who joined via invitation, the
+// webhook has already stamped converted_member_id, but we still want
+// to enrich with sponsor letters here for any pre-webhook flow that
+// reached this path.
+//
+// Three blocks, each with its own try/catch:
+//   1. Publication confirmation email to the member.
+//   2. Gift-buyer keepsake (only if this member was a gift recipient).
+//   3. Sponsorship chain — record conversion, send sponsor letter,
+//      evaluate and award sponsor titles.
+//
+// Errors in any block are logged but do not propagate. The function
+// returns a promise that resolves when all blocks have settled (used
+// only for the top-level defensive catch in the handler).
+// ─────────────────────────────────────────────────────────────────────
+async function firePublicationSideEffects(updated, clan_id, certResultForEmail) {
+  // (1) PUBLICATION CONFIRMATION EMAIL
+  try {
+    await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
+  } catch (emailErr) {
+    console.error('publication email send failed (non-fatal):', emailErr.message);
+  }
+
+  // (2) GIFT BUYER KEEPSAKE — if this published member was a gift
+  // recipient, send the gift buyer a copy of the published cert
+  // as a keepsake. Look up the gifts table by member_id to find
+  // the buyer's email + name + personal message context.
+  try {
+    const { data: gift } = await supa()
+      .from('gifts')
+      .select('buyer_email, buyer_name, recipient_email, personal_message, gifted_at')
+      .eq('member_id', updated.id)
+      .maybeSingle();
+    if (gift?.buyer_email) {
+      await sendGiftBuyerCertKeepsake(updated, certResultForEmail, gift);
+      await logEvent({
+        clan_id,
+        member_id: updated.id,
+        event_type: 'gift_buyer_keepsake_sent',
+        payload: { buyer_email: gift.buyer_email },
+      });
+    }
+  } catch (keepsakeErr) {
+    console.error('gift buyer keepsake send failed (non-fatal):', keepsakeErr.message);
+  }
+
+  // (3) SPONSORSHIP CHAIN — if this newly-published member came
+  // through an invitation, record the conversion and reward
+  // the sponsor. Mirrors the same logic in update-family-details.js
+  // (the dashboard publish path). Both paths route here on first-
+  // publish; the sponsorship chain handles its own idempotency.
+  try {
+    const inviter = await recordConversion(updated, clan_id);
+    if (inviter) {
+      // Pass the inviter's current highest title so the greeting
+      // can address them by dignity (mirrors update-family-
+      // details.js).
+      const inviterCurrentTitle = highestAwardedTitle(inviter.sponsor_titles_awarded);
+      try {
+        await sendSponsorLetter(inviter, updated, inviterCurrentTitle);
+        await logEvent({
+          clan_id,
+          member_id: inviter.id,
+          event_type: 'sponsor_letter_sent',
+          payload: { converted_member_id: updated.id },
+        });
+      } catch (letterErr) {
+        console.error('sponsor letter send failed (non-fatal):', letterErr.message);
+      }
+
+      try {
+        const { count, allNewlyEarned, highestNewlyEarned, previousTitleIrish } =
+          await evaluateSponsorTitles(inviter);
+        if (allNewlyEarned.length > 0) {
+          const stampedAwarded = { ...(inviter.sponsor_titles_awarded || {}) };
+          const nowIso = new Date().toISOString();
+
+          let letterSent = false;
+          if (highestNewlyEarned) {
+            try {
+              await sendTitleAwardLetter(inviter, highestNewlyEarned, previousTitleIrish, count);
+              await logEvent({
+                clan_id,
+                member_id: inviter.id,
+                event_type: 'sponsor_title_awarded',
+                payload: {
+                  title_slug: highestNewlyEarned.slug,
+                  previous_title: previousTitleIrish,
+                  count,
+                },
+              });
+              letterSent = true;
+            } catch (titleErr) {
+              console.error(`title-award letter '${highestNewlyEarned.slug}' send failed (non-fatal):`, titleErr.message);
+            }
+          }
+
+          if (letterSent || !highestNewlyEarned) {
+            for (const t of allNewlyEarned) {
+              stampedAwarded[t.slug] = nowIso;
+            }
+            if (Object.keys(stampedAwarded).length > Object.keys(inviter.sponsor_titles_awarded || {}).length) {
+              await supa()
+                .from('members')
+                .update({ sponsor_titles_awarded: stampedAwarded })
+                .eq('id', inviter.id);
+            }
+          }
+        }
+      } catch (titleEvalErr) {
+        console.error('title evaluation failed (non-fatal):', titleEvalErr.message);
+      }
+    }
+  } catch (sponsorErr) {
+    console.error('sponsorship flow failed (non-fatal):', sponsorErr.message);
+  }
+}
 
 // (combineCoupleNames previously lived here as a local copy of the cert's
 // version. It's now imported from ./lib/generate-cert.js as part of
