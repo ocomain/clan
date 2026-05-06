@@ -22,21 +22,20 @@
 //   the Herald, who composed the letter on Fergus's behalf in the
 //   Gaelic warrant convention. Honest about the form.
 //
-//   AUDIENCE: three groups receive THE SAME EMAIL — (1) ~60 who
-//   filled in the older Tally-form signup and got membership numbers,
-//   newsletter, etc; (2) some who Fergus invited but didn't act; (3)
-//   the rest: brand new to the clan. The copy handles all three
-//   gracefully — see the 'as the clan has grown' paragraph which
-//   addresses previously-engaged recipients explicitly without
-//   alienating brand-new ones.
+//   AUDIENCE: by 2026-05, the original three-group audience (Tally-form
+//   signups, prior Fergus invitees who didn't act, and brand-new
+//   contacts) has narrowed. Groups 1 and 2 have all been emailed; from
+//   here onwards the email is only sent to brand-new contacts. The
+//   'as the clan has grown / new platform / wrote to us once before'
+//   paragraph that originally addressed previously-engaged recipients
+//   was removed in af7f417's successor commit because it no longer
+//   applies. If we ever resurrect a wave to previously-engaged folks,
+//   restore that paragraph (see git history of this file).
 //
-//   URGENCY: explicit '—but the new platform keeps no record from the
-//   older one, and I shall need you to press the button below by your
-//   own hand.' This is the must-claim-afresh sentence. It exists
-//   because previously-engaged recipients might otherwise read the
-//   email and think 'I already did this in 2025, no action needed.'
-//   The plain-language consequence ('Without that step, the clan
-//   cannot count you among its number') closes the loophole.
+//   URGENCY: the body now goes straight from 'the Chief has thought of
+//   you' to 'there is but one step to claim your place' — direct, no
+//   migration explanation needed for the current audience. The CTA
+//   button itself remains the must-claim signal.
 
 const { sendEmail } = require('./email');
 
@@ -160,10 +159,6 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
 
     <p style="font-family:'Georgia',serif;font-size:17px;font-style:italic;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
       I write at the wish of Fergus Commane, the Chief of Clan Ó Comáin, who has set down your name among those he calls home in this first hour of the clan's revival. After eight long centuries of silence, the clan stands again — and the Chief has thought of you, by name, as one of those he wishes to see standing with him from its first day. The membership for the year ahead is his gift to you, freely given, and asks nothing of you in return but that you take your place.
-    </p>
-
-    <p style="font-family:'Georgia',serif;font-size:17px;font-style:italic;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
-      As the clan has grown, its ways have been quietly adapted to keep faith with what it is becoming. To those who wrote to us once before, my warm thanks — but the new platform keeps no record from the older one, and I shall need you to press the button below by your own hand, that I may set down your name in the present register beside those of your fellow founders. Without that step, the clan cannot count you among its number.
     </p>
 
     <p style="font-family:'Georgia',serif;font-size:17px;font-style:italic;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
