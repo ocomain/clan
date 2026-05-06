@@ -83,10 +83,40 @@ async function sendInvitation({
   inviteToken,
   unsubscribeUrl,
 }) {
+  const inviterFull = (inviterName || '').trim() || inviterFirstName || 'a member of the clan';
+  const subject = `${inviterFull} has recommended you for membership`;
+  const html = buildInvitationHtml({
+    recipientName,
+    inviterName,
+    inviterFirstName,
+    personalNote,
+    inviteToken,
+    unsubscribeUrl,
+  });
+
+  return await sendEmail({
+    to: recipientEmail,
+    subject,
+    html,
+  });
+}
+
+/**
+ * buildInvitationHtml — construct the member-to-friend invitation
+ * email HTML without sending. Exported so the email-review preview
+ * tooling (scripts/preview-member-invitation-emails.mjs) can render
+ * the live body for Privy Council review without sending anything.
+ */
+function buildInvitationHtml({
+  recipientName,
+  inviterName,
+  inviterFirstName,
+  personalNote,
+  inviteToken,
+  unsubscribeUrl,
+}) {
   const recipFirst = (recipientName || '').trim().split(/\s+/)[0] || 'friend';
   const inviterFull = (inviterName || '').trim() || inviterFirstName || 'a member of the clan';
-
-  const subject = `${inviterFull} has recommended you for membership`;
 
   // Optional personal-note block. Sits at the top, above the clan
   // body, signed by the inviter. Renders only when personalNote is
@@ -194,12 +224,7 @@ async function sendInvitation({
 </div>
 </body>
 </html>`;
-
-  return await sendEmail({
-    to: recipientEmail,
-    subject,
-    html,
-  });
+  return html;
 }
 
 function escapeHtml(s) {
@@ -210,4 +235,4 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
-module.exports = { sendInvitation };
+module.exports = { sendInvitation, buildInvitationHtml };

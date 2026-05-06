@@ -35,8 +35,6 @@ const { signCertUrl, sanitizeFilename } = require('./cert-service');
  */
 async function sendPublicationConfirmation(member, certResult, opts = {}) {
   const autoPublished = !!opts.autoPublished;
-  const firstName = (member.name || '').split(' ')[0] || 'friend';
-  const certNumber = certResult.certNumber || '—';
 
   // Generate a fresh signed download URL valid for 30 days. The PDF is
   // also attached, but the signed URL is provided as a fallback for
@@ -68,6 +66,38 @@ async function sendPublicationConfirmation(member, certResult, opts = {}) {
     ? `Your certificate has been published — Clan Ó Comáin`
     : `Your certificate is published — Clan Ó Comáin`;
 
+  const html = buildPublicationConfirmationHtml({
+    member,
+    certNumber: certResult.certNumber,
+    autoPublished,
+    downloadUrl,
+    hasAttachment: !!pdfBase64,
+  });
+
+  const attachments = pdfBase64 ? [{ filename: pdfFilename, content: pdfBase64 }] : undefined;
+
+  return await sendEmail({
+    to: member.email,
+    subject,
+    html,
+    attachments,
+  });
+}
+
+/**
+ * buildPublicationConfirmationHtml — HTML-only builder for the
+ * cert-published confirmation email. Exposed for the email-review
+ * preview tooling.
+ *
+ * Runtime-derived values (signed URL, attachment presence) are
+ * passed in by the caller; the builder does not call signCertUrl
+ * or read pdf bytes itself. Preview tooling passes a stub URL and
+ * hasAttachment:true to render representative copy.
+ */
+function buildPublicationConfirmationHtml({ member, certNumber, autoPublished, downloadUrl, hasAttachment }) {
+  const firstName = (member.name || '').split(' ')[0] || 'friend';
+  const certNumDisplay = certNumber || '—';
+
   const eyebrow = autoPublished ? 'Auto-published' : 'Published';
   const heading = autoPublished
     ? 'Your certificate, now sealed'
@@ -76,7 +106,7 @@ async function sendPublicationConfirmation(member, certResult, opts = {}) {
     ? `As your 30-day publication window has closed, your certificate has been auto-issued in your name. It is attached to this email and available below.`
     : `Your certificate has been published in your name and entered into the formal Register at Newhall House. It is attached to this email and available below.`;
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
@@ -99,10 +129,10 @@ async function sendPublicationConfirmation(member, certResult, opts = {}) {
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:30px 26px;margin:0 0 28px;border-radius:2px;text-align:center">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
       <p style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#0C1A0C;margin:0 0 8px;line-height:1.2">${escapeHtml(member.name || '')}</p>
-      <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 4px">Cert № ${escapeHtml(certNumber)} · ${escapeHtml(member.tier_label || 'Member')}</p>
+      <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 4px">Cert № ${escapeHtml(certNumDisplay)} · ${escapeHtml(member.tier_label || 'Member')}</p>
       ${member.ancestor_dedication ? `<p style="font-family:'Georgia',serif;font-size:12.5px;font-style:italic;color:#B8975A;margin:14px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.3)">${escapeHtml(member.ancestor_dedication)}</p>` : ''}
       ${downloadUrl ? `<div style="margin-top:24px"><a href="${downloadUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Download PDF →</a></div>` : ''}
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">${pdfBase64 ? 'Also attached to this email.' : ''}${downloadUrl ? ' Download link valid for 30 days.' : ''}</p>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">${hasAttachment ? 'Also attached to this email.' : ''}${downloadUrl ? ' Download link valid for 30 days.' : ''}</p>
     </div>
 
     ${autoPublished ? `
@@ -135,15 +165,6 @@ async function sendPublicationConfirmation(member, certResult, opts = {}) {
 </div>
 </body>
 </html>`;
-
-  const attachments = pdfBase64 ? [{ filename: pdfFilename, content: pdfBase64 }] : undefined;
-
-  return await sendEmail({
-    to: member.email,
-    subject,
-    html,
-    attachments,
-  });
 }
 
 function escapeHtml(s) {
@@ -173,10 +194,7 @@ function escapeHtml(s) {
 async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
   if (!gift?.buyer_email) return false;
 
-  const buyerFirstName = (gift.buyer_name || '').split(' ')[0] || 'friend';
   const recipientFirstName = (member.name || '').split(' ')[0] || 'your recipient';
-  const recipientFull = member.name || gift.recipient_email || 'your recipient';
-  const certNumber = certResult.certNumber || '—';
 
   let downloadUrl = null;
   let pdfBase64 = null;
@@ -197,7 +215,37 @@ async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
     console.error('keepsake: pdf attachment encoding failed (non-fatal):', err.message);
   }
 
-  const html = `<!DOCTYPE html>
+  const html = buildGiftBuyerCertKeepsakeHtml({
+    member,
+    certNumber: certResult.certNumber,
+    gift,
+    downloadUrl,
+    hasAttachment: !!pdfBase64,
+  });
+
+  const attachments = pdfBase64 ? [{ filename: pdfFilename, content: pdfBase64 }] : undefined;
+
+  return await sendEmail({
+    to: gift.buyer_email,
+    subject: `${recipientFirstName} has been welcomed — your gift, in the Register`,
+    html,
+    attachments,
+  });
+}
+
+/**
+ * buildGiftBuyerCertKeepsakeHtml — HTML-only builder for the
+ * gift-buyer keepsake email. Same pattern as
+ * buildPublicationConfirmationHtml: runtime values (signed URL,
+ * attachment flag) are passed in, the builder doesn't compute them.
+ */
+function buildGiftBuyerCertKeepsakeHtml({ member, certNumber, gift, downloadUrl, hasAttachment }) {
+  const buyerFirstName = (gift.buyer_name || '').split(' ')[0] || 'friend';
+  const recipientFirstName = (member.name || '').split(' ')[0] || 'your recipient';
+  const recipientFull = member.name || gift.recipient_email || 'your recipient';
+  const certNumDisplay = certNumber || '—';
+
+  return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
@@ -220,10 +268,10 @@ async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:30px 26px;margin:0 0 28px;border-radius:2px;text-align:center">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Their published certificate</p>
       <p style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#0C1A0C;margin:0 0 8px;line-height:1.2">${escapeHtml(member.name || '')}</p>
-      <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 4px">Cert № ${escapeHtml(certNumber)} · ${escapeHtml(member.tier_label || 'Member')}</p>
+      <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;margin:0 0 4px">Cert № ${escapeHtml(certNumDisplay)} · ${escapeHtml(member.tier_label || 'Member')}</p>
       ${member.ancestor_dedication ? `<p style="font-family:'Georgia',serif;font-size:12.5px;font-style:italic;color:#B8975A;margin:14px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.3)">${escapeHtml(member.ancestor_dedication)}</p>` : ''}
       ${downloadUrl ? `<div style="margin-top:24px"><a href="${downloadUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px">Download PDF →</a></div>` : ''}
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">${pdfBase64 ? 'Also attached to this email.' : ''}${downloadUrl ? ' Download link valid for 30 days.' : ''}</p>
+      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">${hasAttachment ? 'Also attached to this email.' : ''}${downloadUrl ? ' Download link valid for 30 days.' : ''}</p>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 24px">Go raibh míle maith agat — for bringing another name to the clan.</p>
@@ -247,15 +295,11 @@ async function sendGiftBuyerCertKeepsake(member, certResult, gift) {
 </div>
 </body>
 </html>`;
-
-  const attachments = pdfBase64 ? [{ filename: pdfFilename, content: pdfBase64 }] : undefined;
-
-  return await sendEmail({
-    to: gift.buyer_email,
-    subject: `${recipientFirstName} has been welcomed — your gift, in the Register`,
-    html,
-    attachments,
-  });
 }
 
-module.exports = { sendPublicationConfirmation, sendGiftBuyerCertKeepsake };
+module.exports = {
+  sendPublicationConfirmation,
+  sendGiftBuyerCertKeepsake,
+  buildPublicationConfirmationHtml,
+  buildGiftBuyerCertKeepsakeHtml,
+};

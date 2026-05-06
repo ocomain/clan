@@ -90,7 +90,24 @@ function heraldSignoff() {
  */
 async function sendSponsorLetter(sponsor, newMember, sponsorTitle) {
   if (!sponsor?.email) return false;
-  const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
+  const newName = (newMember?.display_name_on_register || newMember?.name || 'A new member').trim();
+  const subject = `${newName} has taken their place — through you`;
+  const html = buildSponsorLetterHtml({ sponsor, newMember, sponsorTitle });
+
+  return await sendEmail({
+    to: sponsor.email,
+    subject,
+    html,
+  });
+}
+
+/**
+ * buildSponsorLetterHtml — HTML-only builder for the sponsor letter
+ * (the email a sponsor receives when one of their invitees converts
+ * to membership). Exposed for the email-review preview tooling.
+ */
+function buildSponsorLetterHtml({ sponsor, newMember, sponsorTitle }) {
+  const sponsorFirst = (sponsor.name || sponsor.email || '').trim().split(/\s+/)[0] || 'friend';
   // Title-aware greeting: 'Dia dhuit, Cara James' if title held,
   // 'Dia dhuit, James' otherwise. The Title-FirstName form mirrors
   // the chivalric 'Sir John' convention.
@@ -102,9 +119,7 @@ async function sendSponsorLetter(sponsor, newMember, sponsorTitle) {
   // the bare name.
   const newName = (newMember?.display_name_on_register || newMember?.name || 'A new member').trim();
 
-  const subject = `${newName} has taken their place — through you`;
-
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
@@ -135,12 +150,6 @@ async function sendSponsorLetter(sponsor, newMember, sponsorTitle) {
 </div>
 </body>
 </html>`;
-
-  return await sendEmail({
-    to: sponsor.email,
-    subject,
-    html,
-  });
 }
 
 /**
@@ -200,7 +209,24 @@ async function sendSponsorLetter(sponsor, newMember, sponsorTitle) {
  */
 async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount) {
   if (!sponsor?.email || !title) return false;
-  const sponsorFirst = (sponsor.name || sponsor.email).trim().split(/\s+/)[0] || 'friend';
+  const subject = title.subjectLine(priorTitleIrish);
+  const html = buildTitleAwardLetterHtml({ sponsor, title, priorTitleIrish, totalCount });
+
+  return await sendEmail({
+    to: sponsor.email,
+    subject,
+    html,
+  });
+}
+
+/**
+ * buildTitleAwardLetterHtml — HTML-only builder for the
+ * title-award letter (the chivalric warrant raising a sponsor to
+ * Cara, Ardchara, or Onóir). Exposed for the email-review preview
+ * tooling.
+ */
+function buildTitleAwardLetterHtml({ sponsor, title, priorTitleIrish, totalCount }) {
+  const sponsorFirst = (sponsor.name || sponsor.email || '').trim().split(/\s+/)[0] || 'friend';
 
   // The greeting addresses the recipient by the NEW title being
   // conferred. The letter IS the moment of bestowal, and from the
@@ -214,12 +240,11 @@ async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount)
   // Resolve the per-title language by calling each template
   // function with the prior-title argument. Each function returns
   // the right form for first-raising vs raising-from-prior.
-  const subject          = title.subjectLine(priorTitleIrish);
   const bodyOpening      = title.bodyOpening(priorTitleIrish);
   const bestowalIntro    = title.bestowalIntro(priorTitleIrish);
   const replacementText  = title.replacementSentence(priorTitleIrish); // null for Cara, or for any first-raising
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
@@ -291,15 +316,11 @@ async function sendTitleAwardLetter(sponsor, title, priorTitleIrish, totalCount)
 </div>
 </body>
 </html>`;
-
-  return await sendEmail({
-    to: sponsor.email,
-    subject,
-    html,
-  });
 }
 
 module.exports = {
   sendSponsorLetter,
   sendTitleAwardLetter,
+  buildSponsorLetterHtml,
+  buildTitleAwardLetterHtml,
 };
