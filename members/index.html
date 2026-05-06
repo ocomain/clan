@@ -32,6 +32,39 @@
     .mwelcome-title em{color:var(--gold);font-style:italic}
     .mwelcome-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);max-width:600px;margin:0 auto;line-height:1.7}
 
+    /* UPCOMING EVENT card — slotted at top of dashboard, below welcome.
+       Auto-hides after the event date passes. Single event surface for
+       now (Feast of St John, 23 June 2026); will be retired after the
+       event and the next event in September 2027 will use this same
+       template. */
+    .mevent{max-width:720px;margin:0 auto 40px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);border-radius:2px;overflow:hidden;box-shadow:0 6px 24px rgba(12,26,12,.06)}
+    .mevent-hero{width:100%;height:280px;background-size:cover;background-position:center;display:block}
+    .mevent-body{padding:32px 36px}
+    .mevent-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .mevent-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,30px);font-weight:400;color:var(--ink);line-height:1.2;margin:0 0 14px}
+    .mevent-when{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);margin:0 0 18px;line-height:1.5}
+    .mevent-when strong{color:var(--ink);font-weight:500}
+    .mevent-desc{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.7;margin:0 0 24px}
+    .mevent-cta{display:inline-block;background:var(--ink);color:var(--gold-pale);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px;border:1px solid var(--ink);cursor:pointer;transition:background .15s,color .15s}
+    .mevent-cta:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+    .mevent-cta:disabled,.mevent-cta[disabled]{opacity:.55;cursor:default}
+    .mevent-confirmed{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--gold-deep);margin:0;padding:14px 18px;background:rgba(184,151,90,.08);border-left:3px solid var(--gold);border-radius:0 2px 2px 0}
+    .mevent-form{display:none;margin-top:18px;padding:20px 22px;background:rgba(184,151,90,.06);border:1px solid var(--gold-border);border-radius:2px}
+    .mevent-form.open{display:block}
+    .mevent-form label{display:block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+    .mevent-form textarea{width:100%;min-height:80px;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);padding:10px 12px;border:1px solid var(--gold-border);border-radius:2px;background:var(--white);box-sizing:border-box;resize:vertical}
+    .mevent-form textarea:focus{outline:none;border-color:var(--gold)}
+    .mevent-form-hint{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin:8px 0 16px;line-height:1.5}
+    .mevent-form-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .mevent-form-cancel{background:transparent;color:var(--ink-soft);border:1px solid var(--gold-border);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;border-radius:1px;cursor:pointer}
+    .mevent-error{margin-top:12px;font-family:'EB Garamond',serif;font-size:14px;color:#a83232}
+    @media (max-width:640px){
+      .mevent-hero{height:200px}
+      .mevent-body{padding:22px 22px}
+      .mevent-form-actions{flex-direction:column}
+      .mevent-form-actions .mevent-cta,.mevent-form-actions .mevent-form-cancel{width:100%}
+    }
+
     /* Status card — the "your membership" panel */
     .mstatus{max-width:720px;margin:0 auto 40px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:36px 40px;border-radius:2px;box-shadow:0 6px 24px rgba(12,26,12,.06)}
     .mstatus-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;margin-bottom:0;padding-bottom:18px;border-bottom:1px solid var(--border)}
@@ -406,6 +439,114 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
     return member.email.split('@')[0];
   }
 
+  // ─────────────────────────────────────────────────────────────────
+  // UPCOMING EVENT — Feast of St John, 23 June 2026.
+  //
+  // Auto-hides after EVENT_END_ISO. Single hard-coded event for now;
+  // when the next event lands (likely September 2027) update the
+  // constants and the body/hero accordingly. See the .mevent CSS
+  // block above for the styling.
+  //
+  // RSVP is mailto-style WITHOUT a server function: clicking 'RSVP'
+  // expands an inline form with a free-text 'others attending' field;
+  // submit fires a window.location to mailto:clan@ocomain.org with
+  // a pre-filled subject + body. Member's email client opens with
+  // the draft; they hit send. Per user direction (06 May 2026):
+  // 'keep it very simple, I doubt many people will RSVP'. If volume
+  // ever justifies it we can promote this to a server-side function
+  // with DB storage.
+  // ─────────────────────────────────────────────────────────────────
+  const EVENT_END_ISO = '2026-06-23T22:00:00Z'; // event date UTC; card auto-hides after this
+  function eventCardHtml(member) {
+    if (Date.now() > new Date(EVENT_END_ISO).getTime()) return '';
+    const name  = member.name || member.email.split('@')[0];
+    const email = member.email;
+    return `
+      <section class="mevent" id="meventCard">
+        <div class="mevent-hero" style="background-image:url('/holy_well_newhall.png')" role="img" aria-label="Holy Well of St John the Baptist at Newhall"></div>
+        <div class="mevent-body">
+          <p class="mevent-eyebrow">Upcoming · Open to all members</p>
+          <h2 class="mevent-title">Feast of St John at the Holy Well</h2>
+          <p class="mevent-when"><strong>Tuesday 23 June 2026 · 6 pm</strong><br>Killone Abbey, County Clare · meet and greet from 5 pm</p>
+          <p class="mevent-desc">A traditional outdoor mass on the eve of the Feast of St John the Baptist, held at the Holy Well in the grounds of Newhall. Members and their families are warmly welcome. Mass will be ~1 hour. The meet and greet at Killone Abbey from 5 pm gives everyone time to arrive at the Well together.</p>
+          <button type="button" class="mevent-cta" id="meventRsvpOpen">RSVP — free for all members</button>
+
+          <div class="mevent-form" id="meventForm">
+            <label for="meventOthers">Others attending</label>
+            <textarea id="meventOthers" placeholder="e.g. partner Mary; children Conor (8) and Aoife (5)"></textarea>
+            <p class="mevent-form-hint">Optional — names of any partner, children or guests joining you. Leave blank if attending alone.</p>
+            <div class="mevent-form-actions">
+              <button type="button" class="mevent-cta" id="meventRsvpSend">Send RSVP</button>
+              <button type="button" class="mevent-form-cancel" id="meventRsvpCancel">Cancel</button>
+            </div>
+          </div>
+
+          <div id="meventConfirmed" class="mevent-confirmed" style="display:none">
+            ✓ RSVP sent to the clan office. Looking forward to seeing you on 23 June.
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  // Wire up the event card's RSVP flow after dashboard renders.
+  // Mailto-style: build a pre-filled email and trigger the user's
+  // mail client. No server work, no DB. The user can edit before
+  // sending, which means the 'others attending' field is a hint
+  // not a guarantee — but for a single event with manual review
+  // by the clan office this is fine.
+  function wireUpEventCard(member) {
+    const card  = document.getElementById('meventCard');
+    if (!card) return; // event already passed, card not rendered
+    const open  = document.getElementById('meventRsvpOpen');
+    const form  = document.getElementById('meventForm');
+    const send  = document.getElementById('meventRsvpSend');
+    const cancel = document.getElementById('meventRsvpCancel');
+    const others = document.getElementById('meventOthers');
+    const confirmed = document.getElementById('meventConfirmed');
+
+    open.addEventListener('click', () => {
+      form.classList.add('open');
+      open.style.display = 'none';
+      others.focus();
+    });
+    cancel.addEventListener('click', () => {
+      form.classList.remove('open');
+      open.style.display = '';
+      others.value = '';
+    });
+    send.addEventListener('click', () => {
+      const memberName  = member.name || '';
+      const memberEmail = member.email || '';
+      const othersText  = (others.value || '').trim();
+      const subject = `RSVP — Feast of St John, 23 June 2026 — ${memberName || memberEmail}`;
+      const bodyLines = [
+        `Member: ${memberName}`,
+        `Email: ${memberEmail}`,
+        '',
+        'Attending the Feast of St John at the Holy Well, Newhall',
+        'Tuesday 23 June 2026, 6 pm',
+        '',
+        othersText ? `Others attending: ${othersText}` : 'Attending alone.',
+        '',
+        '(Sent via the members\' area RSVP form.)',
+      ];
+      const mailto = `mailto:clan@ocomain.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n'))}`;
+      window.location.href = mailto;
+
+      // Optimistically show confirmation. The mailto opens the
+      // user's email client; we can't know whether they actually
+      // hit send, so 'optimistic' is the honest stance. Card stays
+      // on the page in case they want to RSVP again with a
+      // correction.
+      form.classList.remove('open');
+      open.style.display = '';
+      others.value = '';
+      confirmed.style.display = 'block';
+      confirmed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
   function renderDashboard(member) {
     const tierLabel = member.tier_label || 'Clan Member';
     const statusBadge = {
@@ -485,6 +626,8 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <h1 class="mwelcome-title">Dia dhuit, <em>${escHtml(greetingAddress)}</em></h1>
         <p class="mwelcome-sub">Your place in the Register of Clan Ó Comáin is confirmed. This is where the clan keeps its promises to you.</p>
       </div>
+
+      ${eventCardHtml(member)}
 
       <section class="mstatus">
         <div class="mstatus-head">
@@ -1394,6 +1537,9 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
     `;
     loading.style.display = 'none';
     dashboard.style.display = 'block';
+
+    // ── Upcoming event RSVP card (auto-hidden after EVENT_END_ISO) ─────────
+    wireUpEventCard(member);
 
     // ── Family edit modal (only present if Family tier) ────────────────────
     const familyEditBtn = document.getElementById('mfamEditBtn');
