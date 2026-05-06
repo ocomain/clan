@@ -762,15 +762,53 @@ function closeModal2(e){
         <img src="chief_letter.png" alt="Letter from Fergus Commane, Chief of Ó Comáin of Newhall" style="width:100%;display:block;box-shadow:8px 8px 36px rgba(15,31,15,.16);border:1px solid var(--border-strong)">
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Founding-story acknowledgement (added 6 May 2026 with Maria's
-         approval): a single italic line beneath the Chief's letter,
-         pointing readers to Maria's account of how the revival began.
-         Set apart by 40pt of top margin and centred with a constrained
-         max-width so it reads as an editorial aside, not a CTA. -->
-    <p style="margin:40px auto 0;max-width:680px;text-align:center;font-family:'EB Garamond',serif;font-style:italic;font-size:15.5px;color:var(--ink-muted);line-height:1.7">
-      Maria has told <a href="/clan-stories.html" style="color:var(--gold-deep)">the founding story</a> of how the revival began &mdash; the loss of Ronan, the family&rsquo;s choice, the gathering that followed.
-    </p>
+<!-- ── THE FOUNDING STORY ──────────────────────────────────────────────
+     A featured standalone section giving Maria's piece structural
+     weight on the homepage proportionate to its actual importance
+     in the clan's revival.
+
+     Replaces the earlier quiet italic line that sat at the close of
+     the Chief's letter section (commit aded525). That placement read
+     as an afterthought to Fergus's letter and got compressed visually
+     between the letter and the JOIN CTA below. The founding story
+     isn't a footnote to the Chief's letter — it's the reason the
+     letter exists.
+
+     Design refuses to funnel into the JOIN CTA that follows:
+       - Different background (cream-mid) creates a visual break
+         from the cream-toned JOIN CTA below
+       - Single CTA from this section is to READ Maria's piece, NOT
+         to join. Reading her account is presented as its own valid
+         action, not as a step in the conversion funnel
+       - The grief at the centre of the founding story is not
+         leveraged for conversion — that would be the precise sin
+         Maria's piece itself was built to avoid (she chose love,
+         not the legal battle)
+
+     Pullquote 'Then we chose love' is the canonical line from her
+     piece — repetition across pages reinforces it rather than
+     diluting it. Without the surrounding context of the piece, the
+     pullquote functions as a hook precisely because it's incomplete-
+     feeling: the reader doesn't know what was chosen over, which
+     is the pull to click through. The lead-in below provides just
+     enough context (the loss, the choice) for the gravity to land. -->
+<section style="background:var(--cream-mid);padding:80px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="si">
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:center;max-width:960px;margin:0 auto">
+      <div>
+        <img src="maria_kinfauns.jpg" alt="Maria Kinfauns, wife of the Chief and Chancellor of Clan Ó Comáin, photographed at Newhall House" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;border:1px solid var(--gold-border);border-radius:2px;box-shadow:0 8px 28px rgba(12,26,12,.14)">
+      </div>
+      <div>
+        <div class="eyebrow" style="color:var(--gold-deep);margin-bottom:18px">The founding story</div>
+        <blockquote style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,42px);line-height:1.2;color:#6B1F1F;margin:0 0 28px;padding:0;max-width:520px">&ldquo;Then we chose love.&rdquo;</blockquote>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink);margin:0 0 14px;max-width:520px">There is a reason this clan rises now, after eight centuries of silence. Maria &mdash; wife of the Chief and Chancellor of the clan &mdash; has told it in her own words: the loss of their son Ronan in 2023, and the family&rsquo;s choice to honour him not through anger but through building.</p>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink);margin:0 0 28px;max-width:520px">The work you find on this site began there.</p>
+        <a href="/clan-stories.html" style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--gold);padding:14px 26px;text-decoration:none;border-radius:1px;transition:all .2s">Read Maria&rsquo;s account &rarr;</a>
+      </div>
+    </div>
   </div>
 </section>
 
