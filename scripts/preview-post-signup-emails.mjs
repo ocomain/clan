@@ -69,7 +69,13 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 console.log('Rendering email previews to', OUT_DIR);
 
 for (const v of VARIANTS) {
-  const html = getPreviewHtml(v.key, MOCK_MEMBER);
+  let html = getPreviewHtml(v.key, MOCK_MEMBER);
+  // Inject <meta name="robots" content="noindex,nofollow"> into the
+  // <head> so these previews stay out of search engine results.
+  html = html.replace(
+    '<meta charset="UTF-8">',
+    '<meta charset="UTF-8"><meta name="robots" content="noindex,nofollow">'
+  );
   fs.writeFileSync(path.join(OUT_DIR, v.file), html, 'utf8');
   console.log('  ✔', v.file);
 }

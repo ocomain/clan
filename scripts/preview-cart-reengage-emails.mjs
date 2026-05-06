@@ -41,7 +41,13 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 console.log('Rendering cart re-engagement email previews to', OUT_DIR);
 
 for (const v of VARIANTS) {
-  const html = getPreviewHtml(v.key, MOCK_APPLICATION);
+  let html = getPreviewHtml(v.key, MOCK_APPLICATION);
+  // Inject <meta name="robots" content="noindex,nofollow"> into the
+  // <head> so these previews stay out of search engine results.
+  html = html.replace(
+    '<meta charset="UTF-8">',
+    '<meta charset="UTF-8"><meta name="robots" content="noindex,nofollow">'
+  );
   const outPath = path.join(OUT_DIR, v.file);
   fs.writeFileSync(outPath, html, 'utf8');
   console.log('  ✔', v.file);

@@ -43,7 +43,16 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 console.log('Rendering lead-magnet email previews to', OUT_DIR);
 
 for (const v of VARIANTS) {
-  const html = getPreviewHtml(v.key, MOCK_SUBSCRIBER);
+  let html = getPreviewHtml(v.key, MOCK_SUBSCRIBER);
+  // Inject <meta name="robots" content="noindex,nofollow"> into the
+  // <head> so these preview pages — which live in the public www
+  // tree at /email-previews-pdf-lead/ — don't show up in search
+  // engine results. Live emails don't need this (they aren't web
+  // pages); previews do.
+  html = html.replace(
+    '<meta charset="UTF-8">',
+    '<meta charset="UTF-8"><meta name="robots" content="noindex,nofollow">'
+  );
   const outPath = path.join(OUT_DIR, v.file);
   fs.writeFileSync(outPath, html, 'utf8');
   console.log('  ✔', v.file);
