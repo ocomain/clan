@@ -158,7 +158,7 @@ function antoinSignatureHtml() {
       <img src="${SITE}/antoin_tanist.png" width="68" height="68" alt="Antoin Commane, Tánaiste" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
-      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Antoin Commane</strong></p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Antóin Commane</strong></p>
       <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.5;margin:0">Tánaiste</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:antoin@ocomain.org" style="color:#B8975A;text-decoration:none">antoin@ocomain.org</a>
