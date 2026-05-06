@@ -795,18 +795,49 @@ function closeModal2(e){
      feeling: the reader doesn't know what was chosen over, which
      is the pull to click through. The lead-in below provides just
      enough context (the loss, the choice) for the gravity to land. -->
-<section style="background:var(--cream-mid);padding:80px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<!-- Founding-story section styles (added 7 May 2026 to replace the inline
+     grid that broke on mobile <768px). Class-based so a media query can
+     stack the layout properly on small screens, plus the link styling is
+     centralised here for clarity. Scoped with the .fs- prefix to avoid
+     collisions with any other section styles. -->
+<style>
+  .fs-section{background:var(--cream-mid);padding:80px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .fs-grid{display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:center;max-width:960px;margin:0 auto}
+  .fs-portrait{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;border:1px solid var(--gold-border);border-radius:2px;box-shadow:0 8px 28px rgba(12,26,12,.14)}
+  .fs-eyebrow{color:var(--gold-deep);margin-bottom:18px}
+  .fs-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,42px);line-height:1.2;color:#6B1F1F;margin:0 0 28px;padding:0;max-width:520px}
+  .fs-body{font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink);margin:0 0 14px;max-width:520px}
+  .fs-body.last{margin-bottom:28px}
+  /* Link styling: italic serif (matches the section's typography), solid
+     gold-deep underline at proper thickness so it reads unambiguously as
+     a link rather than as decoration. Previous .45-alpha underline was
+     too faint to register. */
+  .fs-link{display:inline-block;font-family:'EB Garamond',serif;font-style:italic;font-size:18px;color:var(--gold-deep);text-decoration:underline;text-decoration-color:var(--gold-deep);text-decoration-thickness:1.5px;text-underline-offset:5px;line-height:1.4}
+  .fs-link:hover{text-decoration-thickness:2px}
+
+  /* Mobile: stack to single column, center the portrait at a modest
+     width so it doesn't dominate the screen, keep prose left-aligned
+     for readability (centred prose is hard to read on small screens). */
+  @media (max-width: 767px){
+    .fs-section{padding:56px 0}
+    .fs-grid{grid-template-columns:1fr;gap:32px}
+    .fs-portrait-wrap{max-width:240px;margin:0 auto}
+    .fs-pullquote{font-size:clamp(26px,7vw,32px);margin-bottom:22px}
+    .fs-body, .fs-body.last{max-width:none}
+  }
+</style>
+<section class="fs-section">
   <div class="si">
-    <div style="display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:center;max-width:960px;margin:0 auto">
-      <div>
-        <img src="maria_kinfauns.jpg" alt="Maria Kinfauns, wife of the Chief and Chancellor of Clan Ó Comáin, photographed at Newhall House" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;border:1px solid var(--gold-border);border-radius:2px;box-shadow:0 8px 28px rgba(12,26,12,.14)">
+    <div class="fs-grid">
+      <div class="fs-portrait-wrap">
+        <img src="maria_kinfauns.jpg" alt="Maria Kinfauns, wife of the Chief and Chancellor of Clan Ó Comáin, photographed at Newhall House" class="fs-portrait">
       </div>
       <div>
-        <div class="eyebrow" style="color:var(--gold-deep);margin-bottom:18px">The founding story</div>
-        <blockquote style="font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,42px);line-height:1.2;color:#6B1F1F;margin:0 0 28px;padding:0;max-width:520px">&ldquo;Then we chose love.&rdquo;</blockquote>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink);margin:0 0 14px;max-width:520px">There is a reason this clan rises now, after eight centuries of silence. Maria &mdash; wife of the Chief and Chancellor of the clan &mdash; has told it in her own words: the loss of their son Ronan in 2023, and the family&rsquo;s choice to honour him not through anger but through building.</p>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink);margin:0 0 28px;max-width:520px">The work you find on this site began there.</p>
-        <a href="/clan-stories.html" style="display:inline-block;font-family:'EB Garamond',serif;font-style:italic;font-size:18px;color:var(--gold-deep);text-decoration:underline;text-decoration-color:rgba(184,151,90,.45);text-underline-offset:4px;line-height:1.4">Read Maria&rsquo;s account &rarr;</a>
+        <div class="eyebrow fs-eyebrow">The founding story</div>
+        <blockquote class="fs-pullquote">&ldquo;Then we chose love.&rdquo;</blockquote>
+        <p class="fs-body">There is a reason this clan rises now, after eight centuries of silence. Maria &mdash; wife of the Chief and Chancellor of the clan &mdash; has told it in her own words: the loss of their son Ronan in 2023, and the family&rsquo;s choice to honour him not through anger but through building.</p>
+        <p class="fs-body last">The work you find on this site began there.</p>
+        <a href="/clan-stories.html" class="fs-link">Read Maria&rsquo;s account &rarr;</a>
       </div>
     </div>
   </div>
