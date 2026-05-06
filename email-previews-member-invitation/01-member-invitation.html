@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="robots" content="noindex,nofollow"></head>
+<body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
+<div style="max-width:560px;margin:0 auto;background:#F8F4EC">
+
+  <!-- Header. Eyebrow reads 'By private welcome' (exclusive-club
+       register) and the headline frames this as a personal gesture
+       from {Inviter} keeping a place open — not an institution
+       writing to a prospect. -->
+  <div style="background:#0C1A0C;padding:34px 40px 26px;text-align:center;border-bottom:2px solid #B8975A">
+    <img src="https://www.ocomain.org/coat_of_arms.png" width="72" alt="Ó Comáin" style="display:block;margin:0 auto 8px;height:auto">
+    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 14px;text-align:center;max-width:84px">Ó COMÁIN</p>
+    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">By private welcome to an Irish clan</p>
+    <h1 style="font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#D4B87A;margin:0;line-height:1.25">Antoin has kept a place beside them for you</h1>
+  </div>
+
+  <!-- Body — friend-voicing throughout, locked text below. -->
+  <div style="padding:32px 38px">
+
+    
+
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
+      Dia dhuit, Mary — God be with you.
+    </p>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
+      Antoin Commane has lately taken a place in Clan Ó Comáin and has thought of you among the small number they would wish to see standing with them — and has asked me, as Herald, to write to you in their stead.
+    </p>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 18px">
+      Clan Ó Comáin is an ancient Gaelic royal house, formally revived in 2025 and recognised by Clans of Ireland under the patronage of the President of Ireland. After many centuries of silence it has been gathered again — and, as in the old Brehon tradition where clans were never built on blood alone, its doors are open to all who feel a pull toward Ireland, her story, and the company of those who keep faith with her. Membership is, by design, a quiet thing: a place in the Register at Newhall House, a certificate sealed in your own name, and a standing among the wider clan family wherever in the world it has been carried.
+    </p>
+
+    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
+      Antoin would have you among them. There is no urgency in it, and no obligation in receiving this note — only the door, opened, and a friend on the other side of it.
+    </p>
+
+    <!-- Single CTA. Burgundy block, central, foregrounds the
+         inviter's name in the action ('beside {Inviter}').
+
+         URL carries ?invite=<token> when migration 021 has applied
+         and the token was generated. /membership.html reads this
+         on load and persists to sessionStorage so the attribution
+         token survives the entire tier-selection → join-chat →
+         Stripe checkout pipeline. The webhook stamps
+         invitations.converted_member_id with the new member's id,
+         giving the inviter sponsorship credit regardless of what
+         email the invitee uses at Stripe checkout (closes the
+         silent attribution-loss bug from before migration 021). -->
+    <div style="text-align:center;margin:6px 0 28px">
+      <a href="https://www.ocomain.org/membership.html?invite=PREVIEW_TOKEN" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:16px 32px;border-radius:1px;border:1px solid #4A1010">Take a place beside Antoin →</a>
+    </div>
+
+    <!-- Sign-off — Herald-voiced single line. The inviter is in
+         the body throughout; the signature is the Herald who
+         composed the words, in the Gaelic warrant convention. -->
+    <p style="font-family:'Georgia',serif;font-size:13.5px;color:#6C5A4A;line-height:1.6;margin:0;text-align:center;font-style:italic">
+      — Clan Herald at Newhall
+    </p>
+
+  </div>
+
+  <!-- Footer — motto + unsubscribe -->
+  <div style="background:#0C1A0C;padding:22px 38px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
+    <p style="font-family:'Georgia',serif;font-size:12.5px;font-style:italic;color:#C8A875;margin:0 0 12px">
+      Caithfidh an stair a bheith i réim — History must prevail
+    </p>
+    <p style="font-family:'Georgia',sans-serif;font-size:10.5px;color:rgba(200,168,117,.7);margin:0;line-height:1.55">
+      You received this because Antoin thought of you. <a href="#preview-unsubscribe" style="color:#C8A875;text-decoration:underline">Unsubscribe from invitations</a>
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

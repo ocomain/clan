@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Clan Ó Comáin website and membership functions",
   "scripts": {
-    "previews": "npm run previews:founder && npm run previews:pdf-lead && npm run previews:cart-reengage && npm run previews:post-signup",
+    "previews": "npm run previews:founder && npm run previews:member-invitation && npm run previews:gift-flow && npm run previews:pdf-lead && npm run previews:cart-reengage && npm run previews:transactional && npm run previews:post-signup",
     "previews:founder": "node scripts/preview-founder-emails.mjs",
+    "previews:member-invitation": "node scripts/preview-member-invitation.mjs",
+    "previews:gift-flow": "node scripts/preview-gift-flow-emails.mjs",
     "previews:pdf-lead": "node scripts/preview-pdf-lead-emails.mjs",
     "previews:cart-reengage": "node scripts/preview-cart-reengage-emails.mjs",
+    "previews:transactional": "node scripts/preview-transactional-emails.mjs",
     "previews:post-signup": "node scripts/preview-post-signup-emails.mjs"
   },
   "dependencies": {

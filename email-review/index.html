@@ -111,10 +111,80 @@
       </div>
     </section>
 
-    <!-- ─────────── 2. POST-SIGNUP LIFECYCLE ─────────── -->
+    <!-- ─────────── 2. MEMBER INVITATION ─────────── -->
     <section class="sequence">
       <div class="seq-head">
         <p class="seq-eyebrow">Sequence two</p>
+        <h2>Member invitation</h2>
+        <p class="lede">For people a clan member personally recommends for membership. Sent on the member's behalf, with their name throughout, framed as a friend's vouch rather than a pitch.</p>
+      </div>
+      <div class="seq-meta">
+        <strong>1 email.</strong> Voice: <strong>The Herald</strong>, written for and on behalf of the inviting member. Trigger: a member submits the invitation form in the members' area.
+      </div>
+      <div class="seq-emails">
+        <a class="email-item" href="/email-previews-member-invitation/01-member-invitation.html">
+          <div class="email-row"><span class="day-pill">Day 0</span><div class="email-detail">
+            <p class="email-title">The Herald — by private welcome to an Irish clan</p>
+            <p class="email-meta">Names the inviting member throughout. Three short paragraphs: the inviter has thought of you among 'the small number they would wish to see standing with them' → what Clan Ó Comáin is (Gaelic royal house, presidential patronage, Clans of Ireland) → 'door, opened, and a friend on the other side'. Optional one-line personal note from the inviter shown above the body when they typed one.</p>
+          </div></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ─────────── 3. GIFT FLOWS ─────────── -->
+    <section class="sequence">
+      <div class="seq-head">
+        <p class="seq-eyebrow">Sequence three</p>
+        <h2>Gift flows</h2>
+        <p class="lede">Emails sent around a gift purchase — to the buyer (their receipt and a later keepsake), and to the recipient (welcome to the clan).</p>
+      </div>
+      <div class="seq-meta">
+        <strong>6 emails across the gift lifecycle.</strong> Voice: <strong>Linda</strong> (Office of the Private Secretary). Triggers: Stripe webhook on gift purchase; cert-publication when the recipient seals their certificate.
+      </div>
+      <div class="seq-emails">
+        <a class="email-item" href="/email-previews-gift-flow/01-gift-buyer-confirmation-deferred.html">
+          <div class="email-row"><span class="day-pill">Buyer · Day 0</span><div class="email-detail">
+            <p class="email-title">Linda — Your gift is on its way (deferred-acceptance)</p>
+            <p class="email-meta">Sent to the buyer post-purchase when the recipient is new to the clan and must claim their place. Sets correct expectations: the gift is held one year, acceptance is the recipient's act, the buyer's sponsorship credit is awarded immediately on payment regardless. Includes a quiet 'tell them the email is on its way' nudge to reduce inbox loss.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-gift-flow/02-gift-buyer-confirmation-upgrade.html">
+          <div class="email-row"><span class="day-pill">Buyer · Day 0</span><div class="email-detail">
+            <p class="email-title">Linda — Your gift is on its way (existing-member tier upgrade)</p>
+            <p class="email-meta">Variant for when the recipient is already a clan member and the gift is a tier upgrade. No 'claim my place' step; existing-member welcome path. The 30-day cert-refinement window applies.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-gift-flow/03-gift-recipient-welcome-deferred.html">
+          <div class="email-row"><span class="day-pill">Recipient · Day 0</span><div class="email-detail">
+            <p class="email-title">Linda — A gift to you from {giver} (deferred)</p>
+            <p class="email-meta">For new-to-clan recipients. Frames the gift as 'freely given' with 'no obligation'. Single CTA: 'View your invitation' → claim flow on /gift-welcome.html. The membership materialises only when they press claim. Quotes the giver's personal message if one was written.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-gift-flow/04-gift-recipient-welcome-upgrade.html">
+          <div class="email-row"><span class="day-pill">Recipient · Day 0</span><div class="email-detail">
+            <p class="email-title">Linda — A gift to you from {giver} (tier upgrade)</p>
+            <p class="email-meta">Variant for when the recipient is already a clan member and this gift is a tier upgrade. Routes to the cert publication flow with the standard 30-day refinement window. One-click magic-link sign-in via the buyer's existing email.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-gift-flow/05-gift-confirmations.html">
+          <div class="email-row"><span class="day-pill">Buyer · Day 0</span><div class="email-detail">
+            <p class="email-title">Linda — Gift confirmed (alt path)</p>
+            <p class="email-meta">A shorter buyer-confirmation variant that still reaches some flows. Lighter than #1: just 'Gift confirmed, the office will be in touch with your recipient'. Worth reviewing for whether this should be retired in favour of the fuller version above.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-gift-flow/06-gift-buyer-keepsake.html">
+          <div class="email-row"><span class="day-pill">Buyer · Later</span><div class="email-detail">
+            <p class="email-title">Linda — {recipient} has been welcomed (keepsake)</p>
+            <p class="email-meta">Sent to the gift buyer after the recipient publishes their certificate, often weeks later. Includes a copy of the published certificate as PDF attachment — a souvenir of the gift given. Closes the loop on the gift transaction.</p>
+          </div></div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ─────────── 4. POST-SIGNUP LIFECYCLE ─────────── -->
+    <section class="sequence">
+      <div class="seq-head">
+        <p class="seq-eyebrow">Sequence four</p>
         <h2>Post-signup lifecycle</h2>
         <p class="lede">For new members in the days and weeks after they have entered the Register.</p>
       </div>
@@ -173,10 +243,10 @@
       </div>
     </section>
 
-    <!-- ─────────── 3. PDF LEAD MAGNET ─────────── -->
+    <!-- ─────────── 5. PDF LEAD MAGNET ─────────── -->
     <section class="sequence">
       <div class="seq-head">
-        <p class="seq-eyebrow">Sequence three</p>
+        <p class="seq-eyebrow">Sequence five</p>
         <h2>Starter-guide lead magnet</h2>
         <p class="lede">For visitors who request the free starter guide on tracing their Irish line — many of whom will not be members yet.</p>
       </div>
@@ -223,10 +293,10 @@
       </div>
     </section>
 
-    <!-- ─────────── 4. CART RE-ENGAGEMENT ─────────── -->
+    <!-- ─────────── 6. CART RE-ENGAGEMENT ─────────── -->
     <section class="sequence">
       <div class="seq-head">
-        <p class="seq-eyebrow">Sequence four</p>
+        <p class="seq-eyebrow">Sequence six</p>
         <h2>Cart re-engagement</h2>
         <p class="lede">For applicants who began the herald-form join chat but did not complete payment — beyond the existing 24-hour reminder.</p>
       </div>
@@ -261,10 +331,10 @@
       </div>
     </section>
 
-    <!-- ─────────── 5. POST-SIGNUP LIFECYCLE — LIVE ─────────── -->
+    <!-- ─────────── 7. POST-SIGNUP LIFECYCLE — LIVE ─────────── -->
     <section class="sequence" style="border-color:rgba(184,151,90,.5)">
       <div class="seq-head" style="background:linear-gradient(135deg,#0C1A0C 0%,#1F2E1F 100%)">
-        <p class="seq-eyebrow" style="color:var(--gold-light)">Sequence five · LIVE</p>
+        <p class="seq-eyebrow" style="color:var(--gold-light)">Sequence seven · LIVE</p>
         <h2>Post-signup lifecycle — ten emails, six voices, full rebuild</h2>
         <p class="lede">A complete reworking of the post-signup journey. New voices brought in (Antoin, Michael, Jessica), pedigree split early/late, renewal-anchored back half, Fergus's letter as the moment.</p>
       </div>
@@ -349,8 +419,70 @@
       </div>
     </section>
 
+    <!-- ─────────── 8. TRANSACTIONAL NOTIFICATIONS ─────────── -->
+    <section class="sequence">
+      <div class="seq-head">
+        <p class="seq-eyebrow">Sequence eight</p>
+        <h2>Transactional notifications</h2>
+        <p class="lede">One-off receipts, confirmations, and audit emails that fire in response to specific actions — purchases, cert publications, sponsor conversions, threshold crossings. Less editorial weight than the campaign sequences (these are notifications, not nurture), but still part of the voice of the clan.</p>
+      </div>
+      <div class="seq-meta">
+        <strong>8 emails.</strong> Voice: <strong>The Herald</strong> (chivalric warrant register for sponsorship work), <strong>Linda</strong> (Office, for direct receipts and confirmations). Triggers: Stripe webhook (purchase, abandonment), cert-publication flow, sponsor conversion service.
+      </div>
+      <div class="seq-emails">
+        <a class="email-item" href="/email-previews-transactional/01-member-welcome.html">
+          <div class="email-row"><span class="day-pill">Day 0</span><div class="email-detail">
+            <p class="email-title">Linda — Céad míle fáilte (direct buyer welcome)</p>
+            <p class="email-meta">The most-seen email in the system. Every paid signup gets this: post-purchase welcome, your tier and benefits, single-click magic-link to confirm certificate details. Linda signs as Office of the Private Secretary; Fergus is named in the body as the Chief on whose behalf this is sent.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/02-publication-confirmation.html">
+          <div class="email-row"><span class="day-pill">On publish</span><div class="email-detail">
+            <p class="email-title">Linda — Your certificate is sealed</p>
+            <p class="email-meta">Sent the moment a member presses the seal on their certificate. PDF attached, signed download URL valid 30 days, audit trail in the Register. The emotional moment of the cert becoming real.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/03-publication-auto-published.html">
+          <div class="email-row"><span class="day-pill">Day 30</span><div class="email-detail">
+            <p class="email-title">Linda — Your certificate, now sealed (auto-published variant)</p>
+            <p class="email-meta">Same email, different framing: when the member's 30-day cert-refinement window closes without action, the cert is auto-issued in their name as it stands. Includes a quiet offer that re-issues are at the Chief's discretion if details should have been refined.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/04-sponsor-letter.html">
+          <div class="email-row"><span class="day-pill">On conversion</span><div class="email-detail">
+            <p class="email-title">The Herald — {newMember} has taken their place, through you</p>
+            <p class="email-meta">Sent to a sponsor whenever one of their invitees converts to membership. Title-aware greeting (addresses the sponsor by their current dignity if they hold one). Short, warm, the Herald's voice on behalf of the Chief.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/05-title-award-cara.html">
+          <div class="email-row"><span class="day-pill">On 1st conversion</span><div class="email-detail">
+            <p class="email-title">The Herald — Raised to the dignity of Cara</p>
+            <p class="email-meta">First raising into honour. Sent to a sponsor when their first invitee converts. Chivalric warrant register: 'It pleases the Chief to confer upon you'. Sets the tone for the sponsorship ladder.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/06-title-award-ardchara.html">
+          <div class="email-row"><span class="day-pill">On 5th conversion</span><div class="email-detail">
+            <p class="email-title">The Herald — Raised from Cara to the dignity of Ardchara</p>
+            <p class="email-meta">Threshold raising: from Cara ('friend') to Ardchara ('high friend'). Replacement model — the prior dignity is laid by, the new one taken up. Measured raising-in-rank tone, friendship-tier deepening.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/07-title-award-onoir.html">
+          <div class="email-row"><span class="day-pill">On 15th conversion</span><div class="email-detail">
+            <p class="email-title">The Herald — Raised from Ardchara to the dignity of Onóir</p>
+            <p class="email-meta">The apex of the sponsorship ladder. Formal 'It hath pleased' chivalric warrant of advancement to the highest rank. Henceforth-clause and place-and-standing privilege-clause. The register shifts from friendship-tier to ceremonial honour.</p>
+          </div></div>
+        </a>
+        <a class="email-item" href="/email-previews-transactional/08-abandoned-reminder.html">
+          <div class="email-row"><span class="day-pill">+1 d</span><div class="email-detail">
+            <p class="email-title">Linda — Your place in Clan Ó Comáin is still open</p>
+            <p class="email-meta">For applicants who started checkout but didn't complete payment. Frames the year-one Founding Members designation as a reason to come back, not as pressure. Single 'Complete your membership' CTA; explicit invitation to write if something went wrong.</p>
+          </div></div>
+        </a>
+      </div>
+    </section>
+
     <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin:32px 0 0;line-height:1.65;padding:0 12px">
-      Twenty-eight emails across four sequences, all live. Edits and refinements at any stage are welcomed — please reply to <a href="mailto:ddw@ocomain.org" style="color:var(--gold-deep)">ddw@ocomain.org</a> with notes, line edits, or wholesale changes to any voice or email.
+      Forty-five emails across eight sequences. Edits and refinements at any stage are welcomed — please reply to <a href="mailto:ddw@ocomain.org" style="color:var(--gold-deep)">ddw@ocomain.org</a> with notes, line edits, or wholesale changes to any voice or email.
     </p>
 
   </main>
