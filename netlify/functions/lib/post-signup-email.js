@@ -327,8 +327,9 @@ function buildEmail1A_html(member) {
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
 ${p(`Your name has been entered into the Register, in the form you chose, and the Chief has signed and sealed your certificate. <strong>Your place is now formally recorded in the household of Ó Comáin</strong>, and you stand among the kindred of the present revival.`)}
-${p(`There is a quiet matter I should also draw to your attention. The Chief raises members of the clan, by his own hand, to one of <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to the first of them, Cara, opens with a single bringing-in. It is a real honour, and one many members find moving when their name is read out at the gatherings.`)}
-${p(`From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a> you may invite or gift others into the Register at any time — both count toward Cara.`)}
+${p(`There is a quiet matter I should also draw to your attention. The Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. Once raised, the holder is addressed by their title among the kindred — informally as <em>Cara [Firstname]</em>, and formally as <em>[Firstname] [Lastname], Cara of Ó Comáin</em>. It is a real honour, and one many members find moving when their name is read out at the gatherings.`)}
+${p(`The path to <em>Cara</em> opens with a single bringing-in — by <strong>inviting one friend or family member into the Register</strong>, or by <strong>gifting them a €49 Clan Membership</strong>.`)}
+${p(`Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward <em>Cara</em> is also kept.`)}
 ${ctaButtonHtml("Visit your members' area", URLS.members)}
 ${p('With the compliments of the Office, and a welcome from the household of Ó Comáin.')}
 ${heraldSignatureHtml()}
