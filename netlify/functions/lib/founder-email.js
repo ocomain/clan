@@ -90,6 +90,26 @@ const SITE_URL = process.env.SITE_URL || 'https://www.ocomain.org';
  * @returns {Promise<boolean>}
  */
 async function sendFounderWelcome({ to, recipientName, personalNote, claimToken }) {
+  const html = buildFounderWelcomeHtml({ recipientName, personalNote, claimToken });
+
+  return await sendEmail({
+    from: FROM,
+    to,
+    subject: SUBJECT,
+    html,
+  });
+}
+
+/**
+ * buildFounderWelcomeHtml — construct the founder-invite email HTML
+ * without sending. Exported so the email-review preview tooling
+ * (scripts/preview-founder-emails.mjs) can render the live body for
+ * Privy Council review without sending anything.
+ *
+ * Inputs are the same shape the sender takes, minus the 'to' address
+ * (irrelevant for HTML rendering).
+ */
+function buildFounderWelcomeHtml({ recipientName, personalNote, claimToken }) {
   // First-name extraction — same approach as publication-email.js.
   // Whitespace-split, take first token. 'Antoin Commane' → 'Antoin'.
   // Falls back to 'friend' if the name is somehow empty (shouldn't
@@ -129,7 +149,7 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
   // rationale captured at the head of this file. If a paragraph needs
   // to change, change it here AND update the rationale comments.
   // No paragraph is decorative; each is doing specific work.
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
@@ -220,13 +240,6 @@ async function sendFounderWelcome({ to, recipientName, personalNote, claimToken 
 </div>
 </body>
 </html>`;
-
-  return await sendEmail({
-    from: FROM,
-    to,
-    subject: SUBJECT,
-    html,
-  });
 }
 
 // Local copy of the standard escapeHtml helper used by other email
@@ -239,4 +252,53 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
-module.exports = { sendFounderWelcome };
+module.exports = { sendFounderWelcome, buildFounderWelcomeHtml, buildFounderReminderHtml };
+
+/**
+ * buildFounderReminderHtml — construct the day-30 founder-reminder
+ * email HTML (the one fired from daily-gift-acceptance-sweep.js
+ * for unaccepted founder gifts at day 30).
+ *
+ * Lives here rather than in the sweep file because (a) it's
+ * conceptually a sibling of sendFounderWelcome and (b) the email-
+ * review preview tooling needs to import the body builder. The
+ * sweep file imports this and wraps it in its own sendEmail call;
+ * preview tooling imports it for rendering.
+ *
+ * @param {object} pendingGift  - shape from pending_founder_gifts
+ *   row, with fields: recipient_name, claim_token, tier_label.
+ *   Mirrors the shape passed to the sweep's sendFounderReminderEmail.
+ * @returns {string}            - full standalone HTML string
+ */
+function buildFounderReminderHtml(pendingGift) {
+  const g = pendingGift || {};
+  const firstName = (g.recipient_name || '').trim().split(/\s+/)[0] || 'friend';
+  const claimUrl = `${SITE_URL}/founder-welcome.html?token=${encodeURIComponent(g.claim_token || 'PREVIEW_TOKEN')}`;
+  const tierLabel = g.tier_label || 'Founding Member';
+
+  return `<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
+<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
+  <div style="background:#0C1A0C;padding:36px 40px;text-align:center;border-bottom:2px solid #B8975A">
+    <img src="${SITE_URL}/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto">
+    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto;text-align:center;max-width:120px">Ó COMÁIN</p>
+  </div>
+  <div style="padding:40px">
+    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">A founding place still held</p>
+    <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">A month has passed since the Chief offered you a founding place in Clan Ó Comáin. The place is still held in your name.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">If the original email is buried, the door is still open below. The membership for the year ahead — <strong>${escapeHtml(tierLabel)}</strong> — is the Chief's gift to you, freely given, awaiting only your acceptance.</p>
+    <div style="text-align:center;margin-bottom:14px">
+      <a href="${claimUrl}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px;border:1px solid #4A1010">View your invitation →</a>
+    </div>
+    <p style="font-family:'Georgia',serif;font-size:13px;color:#8C7A64;text-align:center;margin:0 0 32px;font-style:italic">A founding place is held open for one year from the day it is offered.</p>
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If you did not expect this email, or wish not to take up the place, no further messages will be sent. Write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> if you have any question.</p>
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-top:28px">— The Herald, on behalf of <em>Fergus Commane</em></p>
+  </div>
+  <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Caithfidh an stair a bheith i réim</p>
+    <p style="font-family:'Georgia',serif;font-size:10px;color:#A88B57;margin:4px 0 0">History must prevail</p>
+  </div>
+</div>
+</body></html>`;
+}
