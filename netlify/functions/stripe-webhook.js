@@ -10,6 +10,8 @@ const {
   buildAbandonedReminderHtml,
   buildGiftConfirmationsHtml,
   buildGiftBuyerConfirmationHtml,
+  buildGiftRecipientWelcomeHtml,
+  buildMemberWelcomeHtml,
 } = require('./lib/checkout-email');
 const { evaluateSponsorTitles, recordConversion, highestAwardedTitle } = require('./lib/sponsor-service');
 const { sendTitleAwardLetter, sendSponsorLetter } = require('./lib/sponsor-email');
@@ -988,8 +990,6 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
   const tier = matchTier(productName);
   const firstName = name ? name.split(' ')[0] : 'friend';
 
-  const benefitsList = tier.benefits.map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
-
   // ── ONE-CLICK SIGN-IN URL ────────────────────────────────────────
   // Look up the member row to get its id, then issue a one-click
   // sign-in token. The returned URL goes in both CTA buttons below
@@ -1025,98 +1025,12 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
     signInUrl = `https://www.ocomain.org/members/login.html?email=${encodeURIComponent(email)}`;
   }
 
-  // Certificate block — prominent CTA if cert was successfully generated.
-  // The cert block now ALWAYS appears (whether or not certDownloadUrl was
-  // generated, the buyer has a member row to claim). Direct cert download
-  // removed in favour of routing to the welcome flow / members area where
-  // the buyer first confirms their name + ancestor + family details before
-  // their cert is sealed. This is correct heraldic practice: the cert is a
-  // one-time instrument and the buyer should personalise it before sealing.
-  const certBlock = `
-    <!-- Certificate claim CTA — routes to members area to confirm details first -->
-    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
-      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
-      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
-      <a href="${signInUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">One click signs you in. You have 30 days to refine your certificate details before it is sealed.</p>
-    </div>
-  `;
-
-  const html = `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
-<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
-
-  <!-- Header -->
-  <div style="background:#0C1A0C;padding:40px 40px 32px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:0.22em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:96px">Ó COMÁIN</p>
-    <h1 style="font-family:'Georgia',serif;font-size:36px;font-weight:400;color:#D4B87A;margin:0;line-height:1.1">Céad míle fáilte</h1>
-    <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#D4B483;margin:8px 0 0">A hundred thousand welcomes</p>
-  </div>
-
-  <!-- Body -->
-  <div style="padding:40px">
-    <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;line-height:1.75;margin:0 0 20px">Dear ${firstName},</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">On behalf of Fergus Kinfauns, The Commane — Chief of Ó Comáin — and the assembled derbhfine of Clan Ó Comáin, it is my honour to welcome you as a <strong>${tier.name}</strong> of one of Ireland's oldest and most thoroughly documented Gaelic lineages.</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare, Ireland.</p>
-
-    ${certBlock}
-
-    <!-- Divider -->
-    <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
-
-    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">Your membership includes</p>
-    <ul style="margin:0 0 32px;padding-left:20px">
-      ${benefitsList}
-    </ul>
-
-    <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
-
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
-
-    <!-- Members' Area sign-in CTA — secondary to the cert action above.
-         Members will reference this email later for ongoing access (the
-         cert action becomes irrelevant once published), so a clear
-         button here makes future sign-ins obvious. Outline style keeps
-         the cert action above as the primary post-purchase CTA. -->
-    <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
-      <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — view details, download your certificate, and access members-only content any time.</p>
-      <a href="${signInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
-    </div>
-
-    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
-
-    <!-- Signatory block with round portrait -->
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;width:100%">
-      <tr>
-        <td style="vertical-align:middle;padding-right:18px;width:90px">
-          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
-        </td>
-        <td style="vertical-align:middle">
-          <p style="font-family:'Georgia',serif;font-size:17px;color:#0C1A0C;line-height:1.3;margin:0 0 5px"><strong>Linda Commane Cryan</strong></p>
-          <p style="font-family:'Georgia',serif;font-size:14px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Office of the Private Secretary to the Chief</p>
-          <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Rúnaí Príobháideach an Taoisigh</p><p style="font-family:'Georgia',serif;font-size:13px;color:#6C5A4A;line-height:1.5;margin:7px 0 0"><a href="mailto:linda@ocomain.org" style="color:#B8975A;text-decoration:none">linda@ocomain.org</a> <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span> <a href="https://www.ocomain.org" style="color:#B8975A;text-decoration:none">www.ocomain.org</a></p>
-        </td>
-      </tr>
-    </table>
-
-    <!-- CTA -->
-    <div style="text-align:center;margin-bottom:32px">
-      <a href="https://www.ocomain.org" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:1px">Visit the clan website</a>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div style="background:#0C1A0C;padding:24px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:'Georgia',serif;font-size:11px;color:#A88B57;margin:0;letter-spacing:0.06em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
-  </div>
-</div>
-</body>
-</html>`;
+  const html = buildMemberWelcomeHtml({
+    firstName,
+    tierDisplayName: tier.name,
+    benefits: tier.benefits,
+    signInUrl,
+  });
 
   await sendEmail({
     to: email,
@@ -1139,11 +1053,11 @@ async function sendGiftRecipientWelcome(ctx) {
   const giverName = buyerName || buyerEmail || 'a friend';
 
   // ── ONE-CLICK SIGN-IN URL (existing-recipient branch only) ──────
-  // For the !claimToken branch below (where the recipient is
-  // already a clan member and this gift is a tier upgrade), we
-  // need a sign-in URL that takes them straight into the members
-  // area. The claimToken branch uses /api/claim-and-enter-paid
-  // which already does one-click. This is for the OTHER branch.
+  // For the !claimToken branch (where the recipient is already a
+  // clan member and this gift is a tier upgrade), we need a sign-in
+  // URL that takes them straight into the members area. The
+  // claimToken branch uses /api/claim-and-enter-paid which already
+  // does one-click. This is for the OTHER branch.
   // Best-effort: if member lookup or token issuance fails,
   // buildSignInUrl returns the standard login.html?email URL.
   let recipientSignInUrl;
@@ -1173,127 +1087,15 @@ async function sendGiftRecipientWelcome(ctx) {
     }
   }
 
-  // Personal message block — only shows if the giver wrote one.
-  const msgBlock = personalMsg ? `
-    <!-- Personal message from the giver -->
-    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 24px;border-radius:0 2px 2px 0">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">A personal message from ${escapeHtml(giverName)}</p>
-      <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0;white-space:pre-wrap">${escapeHtml(personalMsg)}</p>
-    </div>
-  ` : '';
-
-  // Acceptance/cert CTA — Phase 2 (2026-04-30) bifurcation:
-  //
-  //   1. If claimToken is set (new recipient via Phase 2 deferred-
-  //      acceptance flow): the recipient must press 'Claim my place'
-  //      on /gift-welcome.html?token=X to materialise their member
-  //      row. Until then no membership exists in their name, no
-  //      certificate is generated, and they don't appear on the
-  //      public Register. The CTA is the SINGLE action they need.
-  //
-  //   2. Otherwise (existing-recipient tier upgrade, or legacy
-  //      pre-Phase-2 path): they are already a member. The CTA
-  //      routes them to the cert publication flow as before, with
-  //      the 30-day auto-publication window.
-  const certBlock = claimToken
-    ? `
-    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Place in the Clan</p>
-      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your acceptance</p>
-      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">A gift, freely given. Press the seal below to take up your place — your name will be entered into the clan's keeping at Newhall, and a sign-in link will be sent to your inbox.</p>
-      <a href="https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px;border:1px solid #4A1010">View your invitation →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">A gift is held open for one year from the day it is offered. Until then, no membership exists in your name — the choice to take your place is yours.</p>
-    </div>
-  `
-    : `
-    <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:28px 26px;margin:0 0 24px;border-radius:2px;text-align:center">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">Your Certificate of Membership</p>
-      <p style="font-family:'Georgia',serif;font-size:22px;font-weight:400;color:#0C1A0C;margin:0 0 6px;line-height:1.2">Awaiting your confirmation</p>
-      <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#6C5A4A;margin:0 0 22px;line-height:1.6">Your certificate is a one-time heraldic instrument. Confirm a few details — how your name should appear, an optional ancestor dedication — and it will be sealed in your name.</p>
-      <a href="${recipientSignInUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Confirm certificate details →</a>
-      <p style="font-family:'Georgia',serif;font-size:11px;color:#8C7A64;margin:14px 0 0;line-height:1.5">One click signs you in. You have 30 days to refine your certificate details before it is sealed.</p>
-    </div>
-  `;
-
-  const benefitsList = (tier.benefits || []).map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
-
-  const html = `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
-<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
-
-  <!-- Header -->
-  <div style="background:#0C1A0C;padding:40px 40px 32px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:0.22em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:96px">Ó COMÁIN</p>
-    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">A gift to you</p>
-    <h1 style="font-family:'Georgia',serif;font-size:36px;font-weight:400;color:#D4B87A;margin:0;line-height:1.1">Céad míle fáilte</h1>
-    <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#D4B483;margin:8px 0 0">A hundred thousand welcomes</p>
-  </div>
-
-  <!-- Body -->
-  <div style="padding:40px">
-    <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;line-height:1.75;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
-
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px"><strong>${escapeHtml(giverName)}</strong> has gifted you a <strong>${escapeHtml(tier.name)}</strong> membership of <strong>Irish Clan Ó Comáin</strong> — an ancient Gaelic royal house, officially recognised by Clans of Ireland under the patronage of the President of Ireland, and recently restored after eight centuries of silence.</p>
-
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Your name is now entered in the <strong>Register of Clan Members</strong>, kept at Newhall House, County Clare. The Chief — <strong>Fergus Kinfauns, The Commane</strong> — will write to you personally in the weeks that follow.</p>
-
-    ${msgBlock}
-
-    ${certBlock}
-
-    <!-- Divider -->
-    <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
-
-    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">Your membership includes</p>
-    <ul style="margin:0 0 32px;padding-left:20px">
-      ${benefitsList}
-    </ul>
-
-    <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
-
-    <!-- Members' Area sign-in CTA — same pattern as member welcome.
-         Recipient will reference this email later for ongoing access
-         and to find the giver's personal gift message; clear button
-         makes future sign-ins obvious. Outline style keeps the cert
-         action above as the primary post-purchase CTA. -->
-    <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
-      <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — sign in any time to view details, find ${escapeHtml(giverName)}'s gift message, download your certificate, and access members-only content.</p>
-      <a href="${claimToken ? `https://www.ocomain.org/gift-welcome.html?token=${encodeURIComponent(claimToken)}` : recipientSignInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
-    </div>
-
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>
-
-    <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — welcome to the clan.</p>
-
-    <!-- Signatory block -->
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;width:100%">
-      <tr>
-        <td style="vertical-align:middle;padding-right:18px;width:90px">
-          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
-        </td>
-        <td style="vertical-align:middle">
-          <p style="font-family:'Georgia',serif;font-size:17px;color:#0C1A0C;line-height:1.3;margin:0 0 5px"><strong>Linda Commane Cryan</strong></p>
-          <p style="font-family:'Georgia',serif;font-size:14px;color:#3C2A1A;line-height:1.5;margin:0 0 2px">Office of the Private Secretary to the Chief</p>
-          <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Rúnaí Príobháideach an Taoisigh</p><p style="font-family:'Georgia',serif;font-size:13px;color:#6C5A4A;line-height:1.5;margin:7px 0 0"><a href="mailto:linda@ocomain.org" style="color:#B8975A;text-decoration:none">linda@ocomain.org</a> <span style="color:rgba(184,151,90,.5);margin:0 4px">·</span> <a href="https://www.ocomain.org" style="color:#B8975A;text-decoration:none">www.ocomain.org</a></p>
-        </td>
-      </tr>
-    </table>
-
-    <div style="text-align:center;margin-bottom:32px">
-      <a href="https://www.ocomain.org" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:1px">Visit the clan website</a>
-    </div>
-  </div>
-
-  <div style="background:#0C1A0C;padding:24px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:'Georgia',serif;font-size:11px;color:#A88B57;margin:0;letter-spacing:0.06em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
-  </div>
-</div>
-</body>
-</html>`;
+  const html = buildGiftRecipientWelcomeHtml({
+    firstName,
+    giverName,
+    tierDisplayName: tier.name,
+    benefits: tier.benefits || [],
+    personalMsg,
+    claimToken,
+    recipientSignInUrl,
+  });
 
   await sendEmail({
     to: recipientEmail,
