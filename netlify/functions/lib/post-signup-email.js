@@ -538,38 +538,39 @@ ${antoinSignatureHtml()}
 
 // ─────────────────────────────────────────────────────────────────────
 // EMAIL 3B — Antoin, "I forgot to attach this" (same day as Email 3)
-// Same-day follow-up to Email 3. Embeds Antoin's actual Cara patent
-// inline as a clickable image so the recipient sees what they would
-// receive. The patent itself becomes the persuasive artefact.
-// Casual register: short, personal, ends with the same CTA as Email 3.
+//
+// COVER-NOTE TREATMENT (per Council direction, 6 May 2026):
+// This email follows the Fergus Email 2 pattern — stripped of all
+// standard chrome (no header bar, no footer, no styling, no
+// signature block, no font-family declarations). The recipient's
+// mail client default font takes over (Gmail = Arial-ish sans,
+// Apple Mail = Helvetica), making it look like a real personal email
+// rather than something composed in marketing tooling.
+//
+// The visual gravity is in the ATTACHMENT (Antoin's actual Cara
+// letters patent PDF), not in the cover. The cover's job is just to
+// say 'I meant to attach this earlier' and let the document speak.
+//
+// Same-day follow-up to Email 3. Triggers data-driven from the cron
+// any time _21_sent_at is set but _21b_sent_at is null.
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail3b_html(member) {
   const firstName = addressFormOf(member);
-  const patentImg = 'https://www.ocomain.org/email-assets/antoin_cara_patent_preview_600.jpg';
-  const patentPdf = 'https://www.ocomain.org/email-assets/antoin_cara_patent.pdf';
-  const body = `
-${p(`${escapeHtml(firstName)},`)}
-${p(`Antoin again — I sent you a note earlier today about how I came to be raised to <strong>Cara</strong>. I meant to attach this and didn't. This is the actual letters patent the Chief sends. Mine arrived in my inbox ahead of the gathering itself, signed by Fergus's own hand, with the Chief's seal and the Herald's seal alongside.`)}
-<div style="margin:28px 0;text-align:center">
-  <a href="${patentPdf}" style="display:inline-block;text-decoration:none">
-    <img src="${patentImg}"
-         width="500" alt="Letters Patent — Antoin Commane, Cara of Ó Comáin"
-         style="display:block;width:100%;max-width:500px;height:auto;border:1px solid rgba(184,151,90,.4);box-shadow:0 6px 24px rgba(0,0,0,.10)">
-  </a>
-  <p style="font-family:'Georgia',serif;font-style:italic;font-size:12px;color:#6C5A4A;margin:10px 0 0">— My patent. Click to open the PDF. —</p>
-</div>
-${p(`I printed mine and framed it. It hangs in the hallway at home now. People ask about it when they come for dinner — the seals catch the eye first, then they read the names, and then I get to tell them about the Chief and the gathering at Newhall and what the dignity actually means. It has been a small but lovely thing to live with.`)}
-${p(`If you bring one person into the clan — by gift or by invitation — yours arrives the same day, with your own name on it. The path is the same one I sent you in my earlier note.`)}
-${ctaButtonHtml('Send an invitation, or gift membership', URLS.invite)}
-${p(`Sorry for the second email in one day. Felt better to send it than to leave it.`)}
-${p('All my best,')}
-${antoinSignatureHtml()}
-`;
-  return wrapInChrome({
-    eyebrow: 'A note from the Tánaiste',
-    heading: 'I forgot to attach this',
-    bodyHtml: body,
-  });
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+</head>
+<body style="margin:0;padding:16px;color:#1A1A1A;font-size:15px;line-height:1.5">
+  <p style="margin:0 0 14px">${escapeHtml(firstName)},</p>
+  <p style="margin:0 0 14px">Antoin again — I sent you a note earlier today about how I came to be raised to <strong>Cara</strong>. I meant to attach this and didn't. This is the actual letters patent the Chief sends, signed by Fergus's own hand, with the Chief's seal and the Herald's seal alongside.</p>
+  <p style="margin:0 0 14px">I printed mine and framed it. It hangs in the hallway at home now. People ask about it when they come for dinner.</p>
+  <p style="margin:0 0 14px">If you bring one person into the clan — by gift or by invitation — yours arrives the same day, with your own name on it. The path is in your members' area, same one I sent you in my earlier note.</p>
+  <p style="margin:0 0 14px">Sorry for the second email in one day. Felt better to send it than to leave it.</p>
+  <p style="margin:0">Antoin<br><br><a href="${SITE}/members/invite" style="color:#1A1A1A">Send an invitation, or gift membership →</a></p>
+</body>
+</html>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -842,11 +843,36 @@ async function sendAntoinHowIBecameCara(member) {
 }
 
 async function sendAntoinForgotToAttach(member) {
+  // Cover note is intentionally plain (per Council direction, 6 May
+  // 2026): looks like a real personal note, not a marketing email.
+  // The visual gravity is the ATTACHMENT — Antoin's actual Cara
+  // letters patent. Same pattern as Fergus Email 2.
+  //
+  // Attachment is best-effort: if the file read fails for any reason,
+  // the cover email still ships (the recipient gets a follow-up note
+  // explaining the patent, just without the file attached). Graceful
+  // degradation matches the sendChiefPersonalLetter pattern.
+  let attachments = undefined;
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const pdfPath = path.join(__dirname, 'assets', 'antoin_cara_patent.pdf');
+    const pdfBytes = fs.readFileSync(pdfPath);
+    attachments = [{
+      filename: 'Letters Patent — Antoin Commane, Cara of Ó Comáin.pdf',
+      content: pdfBytes.toString('base64'),
+    }];
+  } catch (err) {
+    console.error('sendAntoinForgotToAttach: PDF attachment failed (non-fatal):', err.message);
+    // attachments stays undefined; cover email still ships
+  }
+
   return sendEmail({
     to: member.email,
     from: FROM_ANTOIN,
     subject: 'I forgot to attach this',
     html: buildEmail3b_html(member),
+    attachments,
   });
 }
 
