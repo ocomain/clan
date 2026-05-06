@@ -536,6 +536,42 @@ ${antoinSignatureHtml()}
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// EMAIL 3B — Antoin, "I forgot to attach this" (same day as Email 3)
+// Same-day follow-up to Email 3. Embeds Antoin's actual Cara patent
+// inline as a clickable image so the recipient sees what they would
+// receive. The patent itself becomes the persuasive artefact.
+// Casual register: short, personal, ends with the same CTA as Email 3.
+// ─────────────────────────────────────────────────────────────────────
+function buildEmail3b_html(member) {
+  const firstName = addressFormOf(member);
+  const patentImg = 'https://www.ocomain.org/email-assets/antoin_cara_patent_preview_600.jpg';
+  const patentPdf = 'https://www.ocomain.org/email-assets/antoin_cara_patent.pdf';
+  const body = `
+${p(`${escapeHtml(firstName)},`)}
+${p(`Antoin again — I sent you a note earlier today about how I came to be raised to <strong>Cara</strong>. I meant to attach this and didn't. This is the actual letters patent the Chief sends. Mine arrived in my inbox ahead of the gathering itself, signed by Fergus's own hand, with the Chief's seal and the Herald's seal alongside.`)}
+<div style="margin:28px 0;text-align:center">
+  <a href="${patentPdf}" style="display:inline-block;text-decoration:none">
+    <img src="${patentImg}"
+         width="500" alt="Letters Patent — Antoin Commane, Cara of Ó Comáin"
+         style="display:block;width:100%;max-width:500px;height:auto;border:1px solid rgba(184,151,90,.4);box-shadow:0 6px 24px rgba(0,0,0,.10)">
+  </a>
+  <p style="font-family:'Georgia',serif;font-style:italic;font-size:12px;color:#6C5A4A;margin:10px 0 0">— My patent. Click to open the PDF. —</p>
+</div>
+${p(`I printed mine and framed it. It hangs in the hallway at home now. People ask about it when they come for dinner — the seals catch the eye first, then they read the names, and then I get to tell them about the Chief and the gathering at Newhall and what the dignity actually means. It has been a small but lovely thing to live with.`)}
+${p(`If you bring one person into the clan — by gift or by invitation — yours arrives the same day, with your own name on it. The path is the same one I sent you in my earlier note.`)}
+${ctaButtonHtml('Send an invitation, or gift membership', URLS.invite)}
+${p(`Sorry for the second email in one day. Felt better to send it than to leave it.`)}
+${p('All my best,')}
+${antoinSignatureHtml()}
+`;
+  return wrapInChrome({
+    eyebrow: 'A note from the Tánaiste',
+    heading: 'I forgot to attach this',
+    bodyHtml: body,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // EMAIL 4 — Linda, bringing the kindred (+35) — CONDITIONAL
 // Sent only if the member has zero successful sponsorships. The cron
 // checks countSponsoredBy(member.id) before dispatching.
@@ -803,6 +839,15 @@ async function sendAntoinHowIBecameCara(member) {
   });
 }
 
+async function sendAntoinForgotToAttach(member) {
+  return sendEmail({
+    to: member.email,
+    from: FROM_ANTOIN,
+    subject: 'I forgot to attach this',
+    html: buildEmail3b_html(member),
+  });
+}
+
 async function sendLindaBringingKindred(member) {
   return sendEmail({
     to: member.email,
@@ -875,6 +920,7 @@ const PREVIEW_BUILDERS = {
   '1C': buildEmail1C_html,
   '2':  buildEmail2_html,
   '3':  buildEmail3_html,
+  '3B': buildEmail3b_html,
   '4':  buildEmail4_html,
   '5':  buildEmail5_html,
   '6':  buildEmail6_html,
@@ -897,6 +943,7 @@ module.exports = {
   sendRegisterAck_GuardianPlusOptedOut,
   sendChiefPersonalLetter,
   sendAntoinHowIBecameCara,
+  sendAntoinForgotToAttach,
   sendLindaBringingKindred,
   sendHeraldThreeDignities,
   sendMichaelClanCrest,

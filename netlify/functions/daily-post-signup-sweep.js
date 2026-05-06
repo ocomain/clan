@@ -55,6 +55,7 @@ const {
   sendRegisterAck_GuardianPlusOptedOut,
   sendChiefPersonalLetter,
   sendAntoinHowIBecameCara,
+  sendAntoinForgotToAttach,
   sendLindaBringingKindred,
   sendHeraldThreeDignities,
   sendMichaelClanCrest,
@@ -92,6 +93,7 @@ const SENDER_READY = {
   e1_herald:  true,
   e2_chief:   true,
   e3_antoin:  true,
+  e3b_antoin: true,
   e4_linda:   true,
   e5_herald:  true,
   e6_michael: true,
@@ -213,6 +215,36 @@ exports.handler = async () => {
     } else {
       stats.gated += 1;
       console.log('post-signup-sweep: e21 (Antoin) gated — antoin@ DNS forwarder not ready');
+    }
+
+    // ── EMAIL 3B — Antoin, "I forgot to attach this" (same-day follow-up) ──
+    // Fires for any member where _21_sent_at is set but _21b_sent_at is
+    // null. Not bucketed by age: triggered by data state. The next cron
+    // tick after Email 3 sends will dispatch Email 3B. Embeds Antoin's
+    // actual Cara letters patent inline as the persuasive artefact.
+    if (SENDER_READY.e3b_antoin) {
+      const { data: targets, error } = await supa()
+        .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
+        .eq('clan_id', clan_id).eq('status', 'active')
+        .not('post_signup_email_21_sent_at', 'is', null)
+        .is('post_signup_email_21b_sent_at', null)
+        .limit(PER_BUCKET_LIMIT);
+      if (error) console.error('post-signup-sweep: e21b query failed:', error.message);
+      else {
+        for (const m of targets || []) {
+          try {
+            const ok = await sendAntoinForgotToAttach(m);
+            if (ok) {
+              await supa().from('members').update({ post_signup_email_21b_sent_at: new Date().toISOString() }).eq('id', m.id);
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e21b' } });
+              stats.e21b = (stats.e21b || 0) + 1;
+            } else stats.failed += 1;
+          } catch (err) { console.error('post-signup-sweep: e21b send failed for', m.email, err.message); stats.failed += 1; }
+        }
+      }
+    } else {
+      stats.gated += 1;
+      console.log('post-signup-sweep: e21b (Antoin follow-up) gated');
     }
 
     // ── EMAIL 4 — Linda, bringing the kindred (+35, CONDITIONAL) ────
