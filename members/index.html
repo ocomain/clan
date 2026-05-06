@@ -1430,6 +1430,45 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           <span class="maction-btn">${btnText}</span>
         </a>`;
         })()}
+
+        <!-- Founding story (Maria's piece) — added 6 May 2026 with
+             Maria's approval. A 'Read this' content card themed to
+             match the library card (also a content surface), placed
+             right before the Share Your Story card so the two stories
+             cards form a natural editorial cluster: 'Here is the
+             founding story (Maria's account); here is how you submit
+             yours (Steward perk above).'
+
+             Open to all members regardless of tier — this is content
+             to read, not a perk to unlock. The 'From the household'
+             eyebrow distinguishes it from the operational perks that
+             use 'Members only' / 'Steward perk' / 'Live · open'.
+
+             Icon: a single small flame above an open book — flame for
+             remembrance (kept lit), book for the story being told.
+             Quieter than the obituary card's book-and-candle. -->
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/clan-stories.html">
+          <span class="maction-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <!-- Single flame at the top — small, restrained -->
+              <path d="M24 6 C 22 9, 20 11, 20 14 C 20 16.2, 21.8 18, 24 18 C 26.2 18, 28 16.2, 28 14 C 28 11, 26 9, 24 6 Z" fill="var(--gold-deep)" stroke="none"/>
+              <!-- Open book below -->
+              <path d="M8 24 C 8 24, 16 22, 24 26 C 32 22, 40 24, 40 24 L 40 40 C 40 40, 32 38, 24 42 C 16 38, 8 40, 8 40 Z"/>
+              <!-- Centre spine -->
+              <line x1="24" y1="26" x2="24" y2="42"/>
+              <!-- A few text-line marks -->
+              <line x1="12" y1="29" x2="20" y2="30"/>
+              <line x1="12" y1="33" x2="20" y2="34"/>
+              <line x1="28" y1="30" x2="36" y2="29"/>
+              <line x1="28" y1="34" x2="36" y2="33"/>
+            </svg>
+          </span>
+          <div class="maction-eyebrow">From the household</div>
+          <div class="maction-title">The founding story</div>
+          <div class="maction-desc">Maria &mdash; wife of the Chief and Chancellor &mdash; has told how the revival began: the loss of their son Ronan in 2023, and the family&rsquo;s choice to honour him not through anger but through building.</div>
+          <span class="maction-btn">Read Maria&rsquo;s account &rarr;</span>
+        </a>
+
         <!-- Share your story — Steward+ only. This perk doesn't scale
              via automation — each story needs editorial work (curation,
              quality check, sometimes interview). Held at Steward to
