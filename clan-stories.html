@@ -32,7 +32,7 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Clan Stories — voices of Clan Ó Comáin",
-  "description": "Member stories of Clan Ó Comáin — the voices of the diaspora come home, and the chief on why he has resurrected the clan.",
+  "description": "The founding story of Clan Ó Comáin's revival, told by Maria Kinfauns, wife of the Chief — and the gathering voices of members across the diaspora who have come home to the clan.",
   "url": "https://ocomain.org/clan-stories.html",
   "publisher": {
     "@type": "Organization",
@@ -103,6 +103,18 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 .cs-featured{padding:80px 0 60px;background:var(--cream-light)}
 .cs-featured-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start;max-width:1080px;margin:0 auto}
 .cs-featured-portrait{aspect-ratio:3/4;background:var(--ink) center/cover no-repeat;border:1px solid var(--gold-border);box-shadow:0 8px 32px rgba(12,26,12,.18)}
+
+/* Single-column variant — used when a story doesn't have an
+   accompanying portrait. Keeps the same typographic system as the
+   grid layout but lets the body breathe full-width. Used for
+   Maria's piece (first story) where adding a stand-in image would
+   feel intrusive on a grief piece. Future stories with portraits
+   can use the .cs-featured-grid layout above. */
+.cs-featured-single{max-width:720px;margin:0 auto;padding:0 24px}
+.cs-featured-single .cs-featured-eyebrow{text-align:center}
+.cs-featured-single .cs-featured-title{text-align:center;margin-bottom:18px}
+.cs-featured-single .cs-featured-byline{text-align:center;margin-bottom:48px}
+
 .cs-featured-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
 .cs-featured-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,44px);font-weight:400;line-height:1.18;color:var(--ink);margin-bottom:14px}
 .cs-featured-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--ink-muted);margin-bottom:32px}
@@ -217,13 +229,102 @@ function toggleMenu(){
        5. Restore the 'Stories' nav link sitewide (revert this
           commit's nav-strip changes)
      ============================================================ -->
+<!-- ============================================================
+     FEATURED STORY — Maria's piece (first story, founding story)
+     ============================================================
+     Maria Kinfauns, wife of the Chief, has written the founding
+     story of the clan revival — the story of their son Ronan and
+     the family's choice to honour him not through legal battle but
+     through building. Published 6 May 2026.
+
+     Single-column layout (no portrait) chosen deliberately: a
+     stand-in image on a grief piece would feel intrusive, and the
+     contemplative full-width body suits Maria's cadence better
+     than the journalistic two-column grid used for future stories
+     that have portraits.
+
+     PULLQUOTE: 'Then we chose love' — the pivot of the whole piece,
+     the moment everything turns from grief into building. Captures
+     the founding ethos of the clan revival. (If a different lifted
+     line is preferred, candidates include 'There is no name for a
+     parent who loses a child' or the closing triplet 'Not loss—
+     but connection / Not silence—but belonging / Not an ending—
+     but a continuation'.)
+
+     The structural draft for Fergus's piece (preserved below as a
+     comment) is kept for future use — Fergus may still want to
+     write a companion piece in his own voice when he is ready.
+     ============================================================ -->
 <section class="cs-featured">
   <div class="si">
-    <div style="max-width:680px;margin:0 auto;text-align:center;padding:48px 24px">
-      <div class="cs-featured-eyebrow" style="margin-bottom:24px">Story № 1 · The Chief</div>
-      <h2 class="cs-featured-title" style="margin-bottom:18px">Why I am bringing back the clan</h2>
-      <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:18px;line-height:1.7;color:var(--ink-muted);margin-bottom:14px">The chief is writing his story.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink-muted);max-width:520px;margin:0 auto">An account, in his own voice, of why he has chosen to bring Clan Ó Comáin back from eight centuries of silence — and the personal grief from which the work began. To be published in the coming weeks.</p>
+    <div class="cs-featured-single">
+      <div class="cs-featured-eyebrow">Story № 1 · The Founding</div>
+      <h2 class="cs-featured-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h2>
+      <p class="cs-featured-byline">Maria Kinfauns &middot; Wife of the Chief, Newhall House, County Clare</p>
+
+      <div class="cs-featured-body">
+        <p>There are moments in life that arrive without warning &mdash; moments that fracture everything you thought you understood about the world. The sudden loss of someone you love, taken in a way that makes no sense, leaves you searching&hellip; not just for answers, but for meaning. It forces you to ask the deepest questions: What truly mattered in their life? What remains when a life ends? How fragile is the thread that separates breath from silence?</p>
+
+        <p>This is where our journey began.</p>
+
+        <p>Ronan was the very heartbeat of our family. Nestled between his older brother and younger sister, he was our bridge, our light, our constant source of warmth. He was, without question, the most loving and open-hearted soul we have ever known. He adored his older brother with quiet reverence and stood as a fierce, unwavering protector to his little sister.</p>
+
+        <p>But Ronan&rsquo;s love did not stop at family &mdash; it reached everyone.</p>
+
+        <p>He had a rare and extraordinary gift: the ability to love without condition, without judgment, without boundaries. Age, background, belief &mdash; it meant nothing to him. To Ronan, every person mattered. And he had a way of making you feel it. Truly feel it. People left his presence lighter, smiling, laughing &mdash; changed, even if just for a moment.</p>
+
+        <p>Ronan didn&rsquo;t just live life.</p>
+
+        <p>He <em>embraced</em> it.</p>
+
+        <p>And his philosophy was simple, yet profound: love, in action.</p>
+
+        <p>Then, in 2023, everything changed.</p>
+
+        <p>Through hospital negligence, Ronan was taken from us suddenly and tragically at just 33 years old. One moment he was here &mdash; vibrant, full of life &mdash; and the next, he was gone. The devastation that followed cannot be measured. It shattered us, reaching into every corner of our family and leaving a silence that words cannot fill.</p>
+
+        <p>There is no name for a parent who loses a child.</p>
+
+        <p>Because it is something that should never happen.</p>
+
+        <p>In the wake of that loss, we stood at a crossroads. We could allow ourselves to be consumed by a long and painful legal battle &mdash; one that might drain what little strength we had left and erode our faith in people &mdash; or we could choose another path.</p>
+
+        <p>A path Ronan himself would have chosen.</p>
+
+        <p>We knew, with a clarity that only grief can bring, that nothing &mdash; no outcome, no justice &mdash; could bring our son back. And so, with heavy hearts but steady resolve, we accepted an apology from the hospital.</p>
+
+        <blockquote class="cs-featured-pullquote">Then we chose love.</blockquote>
+
+        <p>We chose connection.</p>
+
+        <p>We chose to honour Ronan not through anger, but through everything he stood for.</p>
+
+        <p>Family. Friendship. Belonging.</p>
+
+        <p>We began to look backward &mdash; into our history, into our roots &mdash; and outward, reaching across oceans to gather those who, in some way, shared in our story. What started as remembrance became something more&hellip; something living.</p>
+
+        <p>In 2025, in Ronan&rsquo;s honour, that journey gave rise to the revival of Clan Ó Comáin.</p>
+
+        <p>After eight centuries of silence, it lives again.</p>
+
+        <p>Officially recognised by the clans of Ireland under the patronage of President Michael D. Higgins, Clan Ó Comáin now stands as a legacy &mdash; not just of ancestry, but of love. A living, breathing tribute to a man who believed in people, who brought them together, and who made the world brighter simply by being in it.</p>
+
+        <p>This is Ronan&rsquo;s legacy.</p>
+
+        <p>Not loss &mdash; but connection.</p>
+
+        <p>Not silence &mdash; but belonging.</p>
+
+        <p>Not an ending &mdash; but a continuation.</p>
+
+        <p>Above all, we hold fast to one truth:</p>
+
+        <p style="font-style:italic;color:var(--burgundy);text-align:center;margin:32px 0;font-size:20px"><em>Caithfidh an stair a bheith i réim</em> &mdash; History must prevail.</p>
+
+        <p>And through it, so will love.</p>
+
+        <p>We invite you to join us, to learn more, and to become part of this living story.</p>
+      </div>
     </div>
   </div>
 </section>
