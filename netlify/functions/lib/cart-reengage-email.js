@@ -119,6 +119,8 @@ function lindaSignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Rúnaí Príobháideach an Taoisigh</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:linda@ocomain.org" style="color:#B8975A;text-decoration:none">linda@ocomain.org</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.ocomain.org" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -139,6 +141,8 @@ function paddySignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Historian &amp; Storyteller</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:paddy@ocomain.org" style="color:#B8975A;text-decoration:none">paddy@ocomain.org</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.ocomain.org" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -159,6 +163,8 @@ function antoinSignatureHtml() {
       <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.5;margin:0">Successor to the Chief, in the Brehon line</p>
       <p style="font-family:'Georgia',serif;font-size:12px;color:#6C5A4A;line-height:1.5;margin:6px 0 0">
         <a href="mailto:antoin@ocomain.org" style="color:#B8975A;text-decoration:none">antoin@ocomain.org</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.ocomain.org" style="color:#B8975A;text-decoration:none">www.ocomain.org</a>
       </p>
     </td>
   </tr>
@@ -209,9 +215,9 @@ ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Paddy here — Paddy Commane of Ballymacooda. I serve the clan as <strong><em>Seanchaí (SHAN-a-kee)</em></strong>, the keeper of the stories. The Office tells me your application sits unfinished. Linda has written to you on the practical side; I write only on the question that some folk quietly carry but rarely ask aloud.`)}
 ${p(`<strong>Is the clan real.</strong>`)}
 ${p(`I'll tell you straight, because that is my office. <strong>Clan Ó Comáin is an ancient Gaelic royal house and a recognised Irish Gaelic clan</strong>, authenticated by Clans of Ireland under the patronage of the President of Ireland. The committee verified the antiquity of the Gaelic name and the line, and recognised the clan formally. There are very few such authentications. They are not lightly given.`)}
-${p(`Our ancestral capital is Cahercommane — the great stone fort still standing on the Burren, in County Clare. You can drive to it. You can walk inside its walls. The fort goes back four thousand years, and the Y-DNA of the present kindred runs through that ground without break. Forty-five footnotes set out the line in full, drawn from the Annals, the Brehon Genealogies, the archaeology, and the modern science.`)}
+${p(`Our ancestral capital is Cahercommane — the great stone fort still standing on the Burren, in County Clare. You can drive to it. You can walk inside its walls. The fort goes well back, and the Y-DNA of the present kindred runs through that ground without break. Forty-five footnotes set out the line in full, drawn from the Annals, the Brehon Genealogies, the archaeology, and the modern science.`)}
 ${ctaButtonHtml('Read the full pedigree', pedigreeUrl())}
-${p(`The Chief, <strong>Fergus Commane Kinfauns</strong>, was consecrated under Brehon law by the derbhfine of the kindred. He is the custodian of Killone Abbey and the Holy Well of St John the Baptist, both upon his estate at Newhall. None of this is contemporary invention. It is an old house in lawful and openly recognised revival.`)}
+${p(`The Chief was consecrated under Brehon law by the derbhfine of the kindred. He is the custodian of Killone Abbey and the Holy Well of St John the Baptist, both upon his estate at Newhall. None of this is contemporary invention. It is an old house in lawful and openly recognised revival.`)}
 ${p(`Your application sits unfinished. I do not know what stayed your hand, and I do not press you. I write only that, <strong>if it was the question of whether the thing is real that gave you pause</strong>, I have answered it as plainly as I know how.`)}
 ${ctaButtonHtml('Resume my application', resumeUrl(application))}
 ${p(`Yours,`)}
