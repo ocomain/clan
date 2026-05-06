@@ -416,26 +416,28 @@ async function generateChiefsLetterPdf({ addressForm }) {
   // Anchored to typedNameBottom (a fixed reference) so it can't
   // collide with the footer regardless of stamp dimensions.
   //
-  // SINGLE LINE — the PS runs across the full body width and the
-  // chancery stamp is pressed over the right end of it. The stamp's
-  // ~65% washed opacity means the underlying text shows through
-  // faintly through the translucent stamp ink — which is what real
-  // ink stamps look like on real correspondence. The alternative
-  // (briefly tried in commit 6466aa1) of hard-breaking the PS onto
-  // two lines so the text dodges around the stamp is wrong: real
-  // chancery letters don't lay out their text to avoid the seal,
-  // the seal goes wherever it's pressed and the writer doesn't
-  // accommodate it. The authentic look is stamp-on-top-of-text,
-  // not text-arranged-around-stamp.
-  const psY = typedNameBottom - 28;
-  const psFullText = 'P.S. "Know someone who belongs with us? Inviting them is easy through your members\' area!"';
-  const psLines = wrapTextToLines(psFullText, fontSerifItalic, 11.5, bodyMaxWidth);
-  let psYCursor = psY;
+  // TWO SHORT LINES (per Council direction, 6 May 2026: 'PS second
+  // line shorten to "Invite them!" then no bleed over stamp'). The
+  // first line is a question; the second is a brief imperative.
+  // Both individual lines are short enough to fit entirely to the
+  // left of the chancery stamp, so neither bleeds over it.
+  //
+  // The shortening of line 2 also reads better as postscript voice
+  // — real handwritten PS notes are typically short and punchy, not
+  // long sentences. Brevity suits the form.
+  //
+  // Quote spans both lines: opening quote on line 1, closing quote
+  // on line 2.
+  const psLines = [
+    'P.S. "Know someone who belongs with us?',
+    'Invite them!"',
+  ];
+  let psY = typedNameBottom - 28;
   for (const line of psLines) {
     page.drawText(line, {
-      x: bodyLeftX, y: psYCursor, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
+      x: bodyLeftX, y: psY, size: 11.5, font: fontSerifItalic, color: C_PS_INK,
     });
-    psYCursor -= 16;
+    psY -= 16;
   }
 
   // ─────────── CHANCERY STAMP ───────────
