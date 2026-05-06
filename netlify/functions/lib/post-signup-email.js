@@ -89,7 +89,7 @@ const URLS = {
   clanStories:    `${SITE}/clan-stories`,
   gathering:      `${SITE}/members/gathering`,
   renewal:        `${SITE}/members/renewal`,
-  invite:         `${SITE}/members/invite`,
+  invite:         `${SITE}/members#minvite`,
   gift:           `${SITE}/gift`,
   regalia:        `${SITE}/members/regalia`,
 };
@@ -568,7 +568,7 @@ function buildEmail3b_html(member) {
   <p style="margin:0 0 14px">I printed mine and framed it. It hangs in the hallway at home now. People ask about it when they come for dinner.</p>
   <p style="margin:0 0 14px">If you bring one person into the clan — by gift or by invitation — yours arrives the same day, with your own name on it. The path is in your members' area, same one I sent you in my earlier note.</p>
   <p style="margin:0 0 14px">Sorry for the second email in one day. Felt better to send it than to leave it.</p>
-  <p style="margin:0">Antoin<br><br><a href="${SITE}/members/invite" style="color:#1A1A1A">Send an invitation, or gift membership →</a></p>
+  <p style="margin:0">Antoin<br><br><a href="${URLS.invite}" style="color:#1A1A1A">Send an invitation, or gift membership →</a></p>
 </body>
 </html>`;
 }
