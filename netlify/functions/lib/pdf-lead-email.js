@@ -204,9 +204,9 @@ function buildEmail1Html(subscriber) {
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`The Chief has asked me to write and thank you for requesting the starter guide. It is attached to this message, and a download link is below in case the attachment does not come through cleanly.`)}
 ${ctaButtonHtml('Download First Steps in Tracing Your Irish Line (PDF)', URLS.pdf)}
-${p(`A word about the house from which it comes. Clan Ó Comáin is an ancient Gaelic royal house and a recognised Irish clan — authenticated by Clans of Ireland under the patronage of the President of Ireland — seated at Newhall House in County Clare. The Chief, Fergus Commane Kinfauns, was consecrated under Brehon law by the derbhfine of the kindred.`)}
+${p(`A word about the house from which it comes. Clan Ó Comáin is an ancient Gaelic royal house and a recognised Irish clan — authenticated by Clans of Ireland under the patronage of the President of Ireland — seated at Newhall House in County Clare. The Chief was consecrated under Brehon law by the derbhfine of the kindred.`)}
 ${p(`And a word about who is welcome. Clan Ó Comáin is open to all who love Ireland and its ancient Gaelic culture — whatever surname you carry, and whether or not your line runs into ours. That is not a modern softening of an ancient idea — it is a return to one. The Gaelic clan was never purely a matter of blood; chosen allegiance has always been recognised as a way of belonging.`)}
-${p(`If, having read the guide, you would like to take a place in the Register at Newhall, the Chief will sign and seal your certificate by his own hand. Membership opens at €49 the year (€79 family).`)}
+${p(`If, having read the guide, you would like to take a place in the Register at Newhall, the Chief will sign and seal your certificate by his own hand. Membership opens at €49 yearly (€79 family).`)}
 ${ctaButtonHtml('See the membership tiers in full', URLS.membership)}
 ${p(`I shall write to you again over the coming weeks with a little more about what membership means.`)}
 ${p(`If a question arises in the meantime, please do write back.`)}
@@ -312,7 +312,7 @@ function buildEmail4Html(subscriber) {
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`The Chief has asked me to write to you directly.`)}
-${p(`There is a place for you in the Register of Clan Ó Comáin, if you would like to take it. <strong>Whatever surname you carry, and whether or not your line runs into ours,</strong> you are welcome here. The Chief will enter your name with his own hand, in the form you choose, and will set his seal upon a certificate to be sent to you in the post. Membership opens at <strong>€49 the year (€79 family)</strong>, and the entry can be made today.`)}
+${p(`There is a place for you in the Register of Clan Ó Comáin, if you would like to take it. <strong>Whatever surname you carry, and whether or not your line runs into ours,</strong> you are welcome here. The Chief will enter your name with his own hand, in the form you choose, and will set his seal upon a certificate to be sent to you in the post. Membership opens at <strong>€49 yearly (€79 family)</strong>, and the entry can be made today.`)}
 ${ctaButtonHtml('Take a place in the Register', URLS.joinChat)}
 ${p(`I should mention that the kindred coming to Ó Comáin in the present revival are writing in from <strong>Boston, Chicago, the cities of Britain, Sydney, Auckland, and the towns of Ireland itself</strong> — people of every surname who simply love Ireland and want a real place in its living Gaelic story. Your name would stand among them.`)}
 ${p(`There is also one matter the Chief has asked me to draw to your attention. <strong>2026 is Year One of the Revival.</strong> Members who join this year are recorded in the clan Register as <strong>Founders of the Revival</strong> — a distinction that appears on the certificate as a gold seal, stays with the record for the lifetime of the clan, and can only be earned this year. Once 2026 closes, that distinction will not be conferred again.`)}
@@ -349,7 +349,7 @@ function buildEmail5Html(subscriber) {
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`The Chief has asked me to write once more — and <strong>for the last time on this matter</strong> — in case the moment is now right for you to take a place in the Register.`)}
-${p(`Membership remains at <strong>€49 the year (€79 family)</strong> for the first tier. Upon entry, the Chief will sign and seal your certificate by his own hand, and your name will be inscribed in the Register at Newhall in the form you choose. As 2026 is Year One of the Revival, your record will carry the <strong>Founders of the Revival</strong> distinction permanently.`)}
+${p(`Membership remains at <strong>€49 yearly (€79 family)</strong> for the first tier. Upon entry, the Chief will sign and seal your certificate by his own hand, and your name will be inscribed in the Register at Newhall in the form you choose. As 2026 is Year One of the Revival, your record will carry the <strong>Founders of the Revival</strong> distinction permanently.`)}
 ${ctaButtonHtml('Take a place in the Register', URLS.joinChat)}
 ${p(`If now is not the moment, I will not write again on this matter. You will continue to receive the occasional Chronicle from us — quarterly news from Newhall — which you can leave at any time with one click.`)}
 ${p(`Whatever you decide, the Chief asked me to thank you for the interest you have taken in the clan.`)}
