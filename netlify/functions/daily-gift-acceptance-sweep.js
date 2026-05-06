@@ -315,7 +315,7 @@ async function sendFounderReminderEmail(g) {
     </div>
     <p style="font-family:'Georgia',serif;font-size:13px;color:#8C7A64;text-align:center;margin:0 0 32px;font-style:italic">A founding place is held open for one year from the day it is offered.</p>
     <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If you did not expect this email, or wish not to take up the place, no further messages will be sent. Write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> if you have any question.</p>
-    <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-top:28px">— The Herald, on behalf of <em>Fergus Commane</em>, The Commane</p>
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-top:28px">— The Herald, on behalf of <em>Fergus Commane</em></p>
   </div>
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
     <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Caithfidh an stair a bheith i réim</p>
