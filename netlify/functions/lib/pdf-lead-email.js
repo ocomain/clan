@@ -52,7 +52,12 @@ const PDF_URL = `${SITE}/${PDF_FILENAME}`;
 
 const URLS = {
   pdf:            PDF_URL,
-  membership:     `${SITE}/membership`,
+  // Membership URL points directly to the tiers section anchor so
+  // CTAs land readers on the comparison rather than the page top.
+  // Both 'See the membership tiers in full' CTAs (in Email 1 mid-body
+  // and Email 3 mid-body, plus a new repeat near Email 1's close)
+  // share this destination — the label and the section are matched.
+  membership:     `${SITE}/membership#tiers`,
   joinChat:       `${SITE}/join-chat`,
   pedigree:       `${SITE}/pedigree`,
 };
@@ -209,7 +214,8 @@ ${p(`And a word about who is welcome. Clan Ó Comáin is open to all who love Ir
 ${p(`If, having read the guide, you would like to take a place in the Register at Newhall, the Chief will sign and seal your certificate by his own hand. Membership opens at €49 yearly (€79 family).`)}
 ${ctaButtonHtml('See the membership tiers in full', URLS.membership)}
 ${p(`I shall write to you again over the coming weeks with a little more about what membership means.`)}
-${p(`If a question arises in the meantime, please do write back.`)}
+${p(`If a question arises in the meantime, please do write back. If you would rather see the tiers and decide for yourself, the link below is the same as above.`)}
+${ctaButtonHtml('See the membership tiers in full', URLS.membership)}
 ${p(`With kind regards,`)}
 ${lindaSignatureHtml()}
 `;
