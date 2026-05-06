@@ -55,6 +55,49 @@ exports.handler = async (event) => {
       return { statusCode: 302, headers: { Location: `${SITE}/roots-confirmed.html` }, body: '' };
     }
 
+    // ── Member-check shortcut ─────────────────────────────────────────────
+    //     If this email belongs to a confirmed member by the time the
+    //     confirmation link is clicked, do not send the starter-guide
+    //     Email 1. They may have signed up to /roots and then joined
+    //     before clicking confirm; or this fix landed after they
+    //     submitted but before they clicked. Either way, they don't
+    //     need the lead-magnet drip.
+    //
+    //     Treatment: stamp confirmed_at + converted_to_member_at on the
+    //     subscriber row (so the daily sweep also skips them if they
+    //     ever resurrect), log the event, and redirect to
+    //     /roots-confirmed.html. The confirmed page has the PDF link
+    //     visible regardless, so a member who genuinely wants the PDF
+    //     can grab it from there.
+    const { data: memberMatch, error: memberErr } = await supa()
+      .from('members')
+      .select('id')
+      .eq('clan_id', clan_id)
+      .ilike('email', subscriber.email)
+      .limit(1)
+      .maybeSingle();
+    if (memberErr) {
+      console.warn('confirm-roots: member-check failed, proceeding with Email 1:', memberErr.message);
+      // fall through to normal confirmation flow
+    } else if (memberMatch) {
+      const now = new Date().toISOString();
+      await supa()
+        .from('pdf_subscribers')
+        .update({
+          confirmed_at: now,
+          unsubscribed_at: null,
+          converted_to_member_at: now,
+        })
+        .eq('id', subscriber.id);
+      await logEvent({
+        clan_id,
+        member_id: memberMatch.id,
+        event_type: 'pdf_subscriber_confirmed_already_member',
+        payload: { subscriber_id: subscriber.id },
+      }).catch(() => {});
+      return { statusCode: 302, headers: { Location: `${SITE}/roots-confirmed.html` }, body: '' };
+    }
+
     // First confirmation: stamp confirmed_at, then send Email 1.
     const now = new Date().toISOString();
     const { error: updateErr } = await supa()

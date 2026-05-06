@@ -158,11 +158,21 @@
           const data = await res.json();
 
           if (res.ok && data.ok) {
-            // Replace the form contents with a friendly confirmation message.
-            form.innerHTML = '<div class="ok"><strong>Please check your inbox.</strong>We have sent a confirmation email to <em>' + email.replace(/[<>&"]/g, '') + '</em>. Click the link in that email and the starter guide will arrive moments later.<br><br>If you do not see it, please check your spam folder.<br><br><a href="/" style="display:inline-block;margin-top:14px;font-family:\'EB Garamond\',serif;font-size:17px;color:var(--gold-deep);text-decoration:underline;font-weight:500">&larr; Continue exploring the clan</a></div>';
+            if (data.already_member) {
+              // User is already a clan member — skip the drip entirely
+              // and offer the PDF directly. Linkable from the success
+              // panel so they (or their friend, if they're getting it
+              // for someone else) can grab the guide without an email
+              // round-trip.
+              form.innerHTML = '<div class="ok"><strong>You\'re already a member of Clan Ó Comáin.</strong>There\'s no need to subscribe to the starter guide — but if you\'d like the PDF as a reference (or for a friend), it\'s yours to download directly:<br><br><a href="/first-steps-tracing-irish-line.pdf" target="_blank" rel="noopener" style="display:inline-block;font-family:\'EB Garamond\',serif;font-size:17px;color:var(--gold-deep);text-decoration:underline;font-weight:500">Download <em>First Steps in Tracing Your Irish Line</em> &rarr;</a><br><br><a href="/members" style="display:inline-block;margin-top:14px;font-family:\'EB Garamond\',serif;font-size:17px;color:var(--gold-deep);text-decoration:underline;font-weight:500">&larr; Back to your members\' area</a></div>';
+              // No Lead pixel fire — they're already a member, not a new lead.
+            } else {
+              // Replace the form contents with a friendly confirmation message.
+              form.innerHTML = '<div class="ok"><strong>Please check your inbox.</strong>We have sent a confirmation email to <em>' + email.replace(/[<>&"]/g, '') + '</em>. Click the link in that email and the starter guide will arrive moments later.<br><br>If you do not see it, please check your spam folder.<br><br><a href="/" style="display:inline-block;margin-top:14px;font-family:\'EB Garamond\',serif;font-size:17px;color:var(--gold-deep);text-decoration:underline;font-weight:500">&larr; Continue exploring the clan</a></div>';
 
-            // Fire Meta Pixel Lead event for ad attribution.
-            if (window.fbq) { try { window.fbq('track', 'Lead'); } catch(e){} }
+              // Fire Meta Pixel Lead event for ad attribution.
+              if (window.fbq) { try { window.fbq('track', 'Lead'); } catch(e){} }
+            }
           } else {
             msg.innerHTML = '<p class="err">Something went wrong on our end. Please try again, or write to clan@ocomain.org.</p>';
             submit.disabled = false;
