@@ -378,14 +378,15 @@ ${heraldSignatureHtml()}
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1B_html(member) {
   const firstName = addressFormOf(member);
+  const fullName  = (member.name && member.name.trim()) ? member.name.trim() : firstName;
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
-${p(`Your name has been inscribed in the <strong>physical Register kept at Newhall</strong>, and the Chief has signed and sealed your certificate there. Your place is now formally recorded in the household of Ó Comáin.`)}
-${p(`Because of your standing, your name also appears on the <strong>public online Founding Members Register</strong>, in the form you chose, where it stands among the founders of the present revival.`)}
-${p('Your standing carries with it the right to certain courtesies of the household, which Linda will detail in correspondence to come.')}
-${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. The path to Cara opens with a single bringing-in. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward it.`)}
+${p(`Your name is now in the <strong>Register of Clan Ó Comáin</strong> — both the physical Register kept by hand at Newhall, where the Chief has signed and sealed your certificate, and the <strong>public online Founding Members Register</strong>, where it stands among the founders of the present revival.`)}
 ${ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)}
+${p(`A short word about a quiet privilege of the Register. The Chief raises members, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. The path to <em>Cara</em> opens by bringing one further person into the kindred — either by <strong>inviting a friend or family member to join</strong>, or by <strong>gifting a €49 Clan Member to someone who would value it</strong>. The clan is built for friends and family to share; the title simply marks those who do the sharing.`)}
+${p(`Once raised, the Herald is commanded to make the title known among the kindred, and the holder is addressed by it thereafter — informally as <em>Cara ${escapeHtml(firstName)}</em>, and formally as <em>${escapeHtml(fullName)}, Cara of Ó Comáin</em>.`)}
+${p(`Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward Cara is also kept.`)}
+${p('Your standing also carries with it certain other courtesies of the household, which Linda will detail in correspondence to come.')}
 ${p('With the compliments of the Office, and a welcome from the household of Ó Comáin.')}
 ${heraldSignatureHtml()}
 `;
@@ -405,12 +406,15 @@ ${heraldSignatureHtml()}
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1C_html(member) {
   const firstName = addressFormOf(member);
+  const fullName  = (member.name && member.name.trim()) ? member.name.trim() : firstName;
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
 ${p('Your name has been entered into the Register, in the form you chose. The Chief has signed and sealed your certificate, and your place is formally recorded in the household of Ó Comáin.')}
 ${p(`I have noted that you have chosen <strong>not to appear on the public Register</strong>. That is entirely your right, and it is observed. Your standing as Guardian, Steward, or Life Member is the same — only the public visibility differs, and your courtesies of the household carry as fully as for any other member at your tier.`)}
-${p(`I should also mention that the Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. These are conferred for the bringing of further kindred into the Register, and a member raised to such a title is addressed by it among the kindred. From your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, both invitations and gifts count toward Cara — though your name need not appear publicly should you prefer it remained in the private Register.`)}
+${p(`A short word about a quiet privilege of the Register. The Chief raises members, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. The path to <em>Cara</em> opens by bringing one further person into the kindred — either by <strong>inviting a friend or family member to join</strong>, or by <strong>gifting a €49 Clan Member to someone who would value it</strong>. The clan is built for friends and family to share; the title simply marks those who do the sharing.`)}
+${p(`Once raised, the Herald is commanded to make the title known among the kindred, and the holder is addressed by it thereafter — informally as <em>Cara ${escapeHtml(firstName)}</em>, and formally as <em>${escapeHtml(fullName)}, Cara of Ó Comáin</em>. Your name need not appear on the public Register for this to be so.`)}
+${p(`Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward Cara is also kept.`)}
 ${ctaButtonHtml("Visit your members' area", URLS.members)}
 ${p('With the compliments of the Office.')}
 ${heraldSignatureHtml()}
