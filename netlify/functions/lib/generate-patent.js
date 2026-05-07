@@ -285,11 +285,17 @@ function drawIssuingAuthority(page, fonts) {
   const lineH = 14;
   const fullWidth = W - leftMargin - rightMargin;
 
-  // "We" drop-cap — baseline aligned with line 1
+  // "We" drop-cap — baseline aligned with the chief's name line.
+  // Both share y=topY; the cap-height difference (32pt vs 15pt)
+  // means the top of 'We' rises high above the name line, which is
+  // the correct drop-cap effect. Previously y was topY-18 which put
+  // the We baseline level with the body line BELOW the chief's
+  // name, making 'We' visually lead into 'custodian' instead of
+  // 'Taoiseach'.
   const dropCapWidth = fonts.serifItalic.widthOfTextAtSize('We', 32);
   page.drawText('We', {
     x: leftMargin,
-    y: topY - 18,
+    y: topY,
     size: 32,
     font: fonts.serifItalic,
     color: C_BURGUNDY,
