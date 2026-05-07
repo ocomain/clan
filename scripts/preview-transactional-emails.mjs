@@ -8,13 +8,15 @@
 // these are one-off transactional sends — no drip cadence, no
 // nurture flow.
 //
-// Five emails covered:
+// Emails covered:
 //   01-member-welcome.html              — direct buyer post-purchase
 //                                          welcome (lib/checkout-email.js)
 //   02-publication-confirmation.html    — sent when a cert is published
 //                                          (lib/publication-email.js)
 //   03-publication-auto-published.html  — same email, auto-publication
 //                                          variant (day 30 sweep)
+//   03b-cert-reminder-day29.html         — day-29 'publishes tomorrow'
+//                                          reminder (lib/cert-reminder-email.js)
 //   04-sponsor-letter.html               — sent when a sponsor's invitee
 //                                          converts (lib/sponsor-email.js)
 //   05-title-award-cara.html             — sent when a sponsor crosses
@@ -43,6 +45,10 @@ const {
 const {
   buildPublicationConfirmationHtml,
 } = require(path.join(REPO_ROOT, 'netlify/functions/lib/publication-email.js'));
+
+const {
+  buildCertReminderHtml,
+} = require(path.join(REPO_ROOT, 'netlify/functions/lib/cert-reminder-email.js'));
 
 const {
   buildSponsorLetterHtml,
@@ -98,6 +104,20 @@ const VARIANTS = [
       autoPublished: true,
       downloadUrl: '#preview-download',
       hasAttachment: true,
+    }),
+  },
+  {
+    // Day-29 reminder lives logically between the immediate self-
+    // publish path (02) and the auto-publish path (03) — it's the
+    // "last chance to choose self-publish before auto-publish runs"
+    // moment. Keeping the file numbering monotonic over time
+    // (03 stays 03, this is 03b) avoids renumbering downstream
+    // files which would invalidate review-index links.
+    file: '03b-cert-reminder-day29.html',
+    builder: () => buildCertReminderHtml({
+      member: SAMPLE_MEMBER,
+      suggestedName: 'Antoin Commane', // matches member.name in this preview — no auto-correction shown
+      signInUrl: '#preview-signin',
     }),
   },
   {
