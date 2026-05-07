@@ -46,6 +46,7 @@ const {
   sendRegisterAck_GuardianPlusOptedOut,
   sendChiefPersonalLetter,
   sendAntoinHowIBecameCara,
+  sendAntoinForgotToAttach,
   sendLindaBringingKindred,
   sendHeraldThreeDignities,
   sendMichaelClanCrest,
@@ -57,13 +58,15 @@ const {
 
 // Map emailKey -> sender function. Keys match the cadence document
 // numbering exactly (1A/B/C are the three Herald variants of the +3
-// send; 2-10 are sequential).
+// send; 2-10 are sequential; 3B is the same-day Antoin follow-up to 3
+// that attaches the actual letters patent PDF).
 const SENDERS = {
   '1A': sendRegisterAck_ClanTier,
   '1B': sendRegisterAck_GuardianPlusDefault,
   '1C': sendRegisterAck_GuardianPlusOptedOut,
   '2':  sendChiefPersonalLetter,
   '3':  sendAntoinHowIBecameCara,
+  '3B': sendAntoinForgotToAttach,
   '4':  sendLindaBringingKindred,
   '5':  sendHeraldThreeDignities,
   '6':  sendMichaelClanCrest,
