@@ -281,7 +281,7 @@ function drawTopHeader(page, fonts, images) {
 function drawIssuingAuthority(page, fonts) {
   const leftMargin = 28 * 2.835;
   const rightMargin = 28 * 2.835;
-  const topY = H - 218;
+  const topY = H - 232;  // moved down ~14pt so the issuing block has more breath above
   const lineH = 14;
   const fullWidth = W - leftMargin - rightMargin;
 
@@ -305,10 +305,15 @@ function drawIssuingAuthority(page, fonts) {
     color: C_BURGUNDY,
   });
 
-  // Body text — wrap naturally. First line indents past the drop-cap
+  // Body text — wraps naturally. First line indents past the drop-cap
   // (drop-cap occupies ~2 vertical body lines); from line 2 onwards,
-  // full width. We tokenise the body, then walk through token-by-token
-  // managing the indented vs. full width as we wrap.
+  // full width.
+  //
+  // Gap from chief's name line to first body line is 16pt (down from
+  // 22pt) — reads as a continuation of the same sentence rather than
+  // a paragraph break. The 15pt name + 16pt gap puts the body line
+  // baseline ~16pt below the name baseline, which is the natural
+  // line-leading for 15pt → 11pt cascade.
   //
   // The text uses inline {ITALIC_BURGUNDY}Chief of Ó Comáin{/ITALIC_BURGUNDY}
   // so the office name appears in the conferring colour.
@@ -328,7 +333,7 @@ function drawIssuingAuthority(page, fonts) {
     [indentedW, fullWidth]  // line 0: indented; lines 1+: full
   );
 
-  let y = topY - 22;
+  let y = topY - 16;  // tighter continuation gap (was 22)
   for (let i = 0; i < lines.length; i++) {
     const x = (i === 0) ? indentX : leftMargin;
     drawLineTokens(page, lines[i], fonts.serifItalic, fonts.serifItalic, 11,
