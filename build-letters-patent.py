@@ -515,9 +515,9 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
       </span>
     </div>
 
-    <p>Whereas it hath pleased Us, by the recommendation of Our Privy Council and the
-    Office of the Private Secretary, and in recognition of the standing of <em>{recipient_name}</em>
-    within the kindred and the favour We bear them, {h['body_voice']}:</p>
+    <p>Whereas it hath been represented to Us, by Our Privy Council and the Office of the
+    Private Secretary, that <em>{recipient_name}</em> standeth in good favour within the
+    kindred, {h['body_voice']}:</p>
 
     <div class="hero-conferral">
       <div class="hero-pre">In honour now conferred</div>
