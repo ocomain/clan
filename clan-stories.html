@@ -53,19 +53,32 @@
 }
 </script>
   <link rel="canonical" href="https://www.ocomain.org/clan-stories.html">
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
+  <!-- Open Graph — upgraded 7 May 2026: now points specifically at Maria's
+       founding-story piece (the lead content of the page) rather than at the
+       generic 'Clan Stories' page abstract. og:image is Maria's portrait
+       rather than the coat of arms — for social shares to grip in feed,
+       the image needs to be a face, not a symbol. og:type 'article' (not
+       'website') tells Facebook the page is editorial content, which
+       enables the larger preview card. -->
+  <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.ocomain.org/clan-stories.html">
-  <meta property="og:title" content="Clan Stories — Clan Ó Comáin">
-  <meta property="og:description" content="The voices of Clan Ó Comáin — members and family across the Irish diaspora telling the stories that brought them home to the clan.">
-  <meta property="og:image" content="https://www.ocomain.org/coat_of_arms.png">
+  <meta property="og:title" content="The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence">
+  <meta property="og:description" content="Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of the loss of their son Ronan in 2023, and the family's choice to honour him not through anger but through building.">
+  <meta property="og:image" content="https://www.ocomain.org/maria_kinfauns.jpg">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1536">
+  <meta property="og:image:alt" content="Maria Kinfauns, wife of the Chief, photographed at Newhall House">
   <meta property="og:site_name" content="Clan Ó Comáin">
   <meta property="og:locale" content="en_IE">
-  <!-- Twitter Card -->
+  <meta property="article:author" content="Maria Kinfauns">
+  <meta property="article:published_time" content="2026-05-06">
+  <meta property="article:section" content="Clan Stories">
+  <!-- Twitter Card — matches the upgraded OG metadata above so X/Twitter
+       previews surface Maria's piece specifically. -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Clan Stories — Clan Ó Comáin">
-  <meta name="twitter:description" content="The voices of Clan Ó Comáin — members and family across the Irish diaspora telling the stories that brought them home to the clan.">
-  <meta name="twitter:image" content="https://www.ocomain.org/coat_of_arms.png">
+  <meta name="twitter:title" content="The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence">
+  <meta name="twitter:description" content="Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of loss, remembrance, and the choice to honour through building.">
+  <meta name="twitter:image" content="https://www.ocomain.org/maria_kinfauns.jpg">
 <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 <!-- Microsoft Clarity -->
@@ -314,6 +327,83 @@ function toggleMenu(){
           <p>And through it, so will love.</p>
 
           <p>We invite you to join us, to learn more, and to become part of this living story.</p>
+
+          <!-- ──────────────────────────────────────────────────────────────
+               Share controls (added 7 May 2026 with Council direction).
+               Placed AFTER Maria's closing line, BEFORE the patrons aside,
+               so readers encounter the share option only after they've
+               finished reading the piece. Sharing before reading = marketing;
+               sharing after reading = honouring.
+
+               Typographic treatment, not iconographic — quiet text links
+               matching the editorial palette of the page (italic eyebrow
+               line + four equal-weight share targets in body type with
+               gold rule between them). No coloured social-platform circles,
+               no loud SaaS chrome. The piece deserves restraint.
+
+               Targets:
+                 - Facebook (paste-link share via sharer.php)
+                 - Email (mailto with prefilled subject + body)
+                 - Copy link (clipboard API, with toast confirmation)
+                 - WhatsApp (mobile-friendly, especially for diaspora)
+
+               'X' (Twitter) deliberately omitted — its share preview is
+               unreliable, its audience for this kind of piece is narrow,
+               and including it would clutter for marginal value. Add later
+               if needed.
+               ────────────────────────────────────────────────────────────── -->
+          <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--gold-light)">
+            <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px">Share this story</div>
+            <div style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink)">
+              <a href="#" id="csShareFb" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Facebook</a>
+              <span style="color:var(--gold-light);margin:0 12px">·</span>
+              <a href="#" id="csShareEmail" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Email</a>
+              <span style="color:var(--gold-light);margin:0 12px">·</span>
+              <a href="#" id="csShareWa" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">WhatsApp</a>
+              <span style="color:var(--gold-light);margin:0 12px">·</span>
+              <a href="#" id="csShareCopy" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Copy link</a>
+              <span id="csShareToast" style="display:none;margin-left:14px;font-style:italic;font-size:14px;color:var(--gold-deep)">Link copied</span>
+            </div>
+          </div>
+
+          <script>
+          (function() {
+            // Story metadata for share targets. Defaults match the canonical
+            // values for Maria's piece — when other stories are published,
+            // each story's section can override these via data attributes
+            // or per-story script blocks.
+            var url = 'https://www.ocomain.org/clan-stories.html';
+            var title = 'The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence';
+            var summary = 'Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of loss, remembrance, and the choice to honour through building.';
+
+            var fb = document.getElementById('csShareFb');
+            var em = document.getElementById('csShareEmail');
+            var wa = document.getElementById('csShareWa');
+            var cp = document.getElementById('csShareCopy');
+            var toast = document.getElementById('csShareToast');
+
+            if (fb) fb.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+            if (fb) fb.target = '_blank'; if (fb) fb.rel = 'noopener';
+            if (em) em.href = 'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(summary + '\n\n' + url);
+            if (wa) wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + '\n\n' + url);
+            if (wa) wa.target = '_blank'; if (wa) wa.rel = 'noopener';
+
+            if (cp) cp.addEventListener('click', function(e) {
+              e.preventDefault();
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function() {
+                  toast.style.display = 'inline';
+                  setTimeout(function() { toast.style.display = 'none'; }, 2400);
+                }).catch(function() {
+                  // Fallback: show a prompt with the URL pre-selected
+                  window.prompt('Copy this link:', url);
+                });
+              } else {
+                window.prompt('Copy this link:', url);
+              }
+            });
+          })();
+          </script>
 
           <!-- Quiet cross-link to the patrons page (added 6 May 2026, paired with
                the reciprocal link from patrons -> clan-stories). Italic, muted,
