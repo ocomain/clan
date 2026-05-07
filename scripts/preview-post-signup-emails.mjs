@@ -39,43 +39,29 @@ const require = createRequire(import.meta.url);
 const { getPreviewHtml } = require('../netlify/functions/lib/post-signup-email');
 
 // Mock member used for {{firstName}} substitution in the preview.
-// Two flavours: unsealed (cert_published_at null) and sealed (set).
-// The Herald +3 email branches on this state — see post-signup-email.js
-// isCertSealed(). Renders both flavours for review.
-const MOCK_MEMBER_UNSEALED = {
+const MOCK_MEMBER = {
   id: 'preview-member-uuid-0001',
   email: 'aoife.example@ocomain.org',
   name: 'Aoife Commane',
   tier: 'guardian-ind',
   public_register_visible: true,
   created_at: new Date().toISOString(),
-  cert_published_at: null,
-  cert_locked_at: null,
 };
-const MOCK_MEMBER_SEALED = {
-  ...MOCK_MEMBER_UNSEALED,
-  cert_published_at: new Date(Date.now() - 86400000).toISOString(), // sealed yesterday
-};
-// Default mock for emails that don't depend on cert state.
-const MOCK_MEMBER = MOCK_MEMBER_UNSEALED;
 
 const VARIANTS = [
-  { key: '1A', file: '01a-herald-clan-tier-unsealed.html',     mock: MOCK_MEMBER_UNSEALED, day: '+3',   title: 'Email 1A — Herald — Your name in the Register (Clan tier, UNSEALED)',                       meta: 'Sent when tier starts with <code>clan-</code> AND cert not yet published. Most common +3 case.' },
-  { key: '1A', file: '01a-herald-clan-tier-sealed.html',       mock: MOCK_MEMBER_SEALED,   day: '+3',   title: 'Email 1A — Herald — Your name in the Register (Clan tier, SEALED)',                         meta: 'Sent when tier starts with <code>clan-</code> AND member has already published before +3.' },
-  { key: '1B', file: '01b-herald-guardian-default-unsealed.html', mock: MOCK_MEMBER_UNSEALED, day: '+3', title: 'Email 1B — Herald — Your name in the Register (Guardian+ default, UNSEALED)',                meta: 'Sent when tier ≥ Guardian, public, AND cert not yet published.' },
-  { key: '1B', file: '01b-herald-guardian-default-sealed.html',   mock: MOCK_MEMBER_SEALED,   day: '+3', title: 'Email 1B — Herald — Your name in the Register (Guardian+ default, SEALED)',                  meta: 'Sent when tier ≥ Guardian, public, AND member has already published.' },
-  { key: '1C', file: '01c-herald-guardian-private-unsealed.html', mock: MOCK_MEMBER_UNSEALED, day: '+3', title: 'Email 1C — Herald — Your name in the Register (Guardian+ opted out, UNSEALED)',              meta: 'Sent when tier ≥ Guardian, opted out, AND cert not yet published.' },
-  { key: '1C', file: '01c-herald-guardian-private-sealed.html',   mock: MOCK_MEMBER_SEALED,   day: '+3', title: 'Email 1C — Herald — Your name in the Register (Guardian+ opted out, SEALED)',                meta: 'Sent when tier ≥ Guardian, opted out, AND member has already published.' },
-  { key: '2',  file: '02-fergus-chiefs-letter.html',        mock: MOCK_MEMBER, day: '+9',   title: 'Email 2 — Fergus — From the desk of the Chief',                                              meta: 'Universal — chief@ocomain.org · image-only Kensington-letterhead PNG' },
-  { key: '3',  file: '03-antoin-how-i-became-cara.html',    mock: MOCK_MEMBER, day: '+21',  title: 'Email 3 — Antoin (Cara) — How I became Cara',                                                meta: 'Universal — antoin@ocomain.org · first-person social proof' },
-  { key: '3B', file: '03b-antoin-i-forgot-to-attach.html',   mock: MOCK_MEMBER, day: '+21',  title: 'Email 3B — Antoin (Cara) — I forgot to attach this',                                         meta: 'Same-day follow-up to Email 3 · embeds Antoin\'s actual Cara patent' },
-  { key: '4',  file: '04-linda-bringing-kindred.html',      mock: MOCK_MEMBER, day: '+35',  title: 'Email 4 — Linda — Bringing the kindred, in practice',                                        meta: 'Conditional — only if <code>countSponsoredBy(member) === 0</code>' },
-  { key: '5',  file: '05-herald-three-dignities.html',      mock: MOCK_MEMBER, day: '+60',  title: 'Email 5 — Herald — The three titles of dignity',                                             meta: 'Universal — herald@ocomain.org · Cara / Ardchara / Onóir' },
-  { key: '6',  file: '06-michael-clan-crest.html',          mock: MOCK_MEMBER, day: '+90',  title: 'Email 6 — Michael — The clan crest in your home',                                            meta: 'Universal — michael@ocomain.org · regalia, our tartan, signet rings, headstones' },
-  { key: '7',  file: '07-paddy-standing-of-line.html',      mock: MOCK_MEMBER, day: '+180', title: 'Email 7 — Paddy (Seanchaí lite) — The standing of the line',                                 meta: 'Universal — paddy@ocomain.org · early pedigree as story' },
-  { key: '8',  file: '08-jessica-gathering.html',           mock: MOCK_MEMBER, day: '+240', title: 'Email 8 — Jessica-Lily — Plans for the gathering at Newhall',                                meta: 'Universal — jessica@ocomain.org · bubbly anticipation builder' },
-  { key: '9',  file: '09-paddy-royal-house-and-saint.html', mock: MOCK_MEMBER, day: '+300', title: 'Email 9 — Paddy (Seanchaí full) — The royal house and the saint',                            meta: 'Universal — paddy@ocomain.org · year-end pedigree as story' },
-  { key: '10', file: '10-linda-renewal.html',               mock: MOCK_MEMBER, day: '+330', title: 'Email 10 — Linda — Your year of standing renews',                                            meta: 'Conditional — sent for non-Life tiers only' },
+  { key: '1A', file: '01a-herald-clan-tier.html',           day: '+3',   title: 'Email 1A — Herald — Your name in the Register (Clan tier)',                                  meta: 'Sent when tier starts with <code>clan-</code>' },
+  { key: '1B', file: '01b-herald-guardian-default.html',    day: '+3',   title: 'Email 1B — Herald — Your name in the public Register (Guardian+ default)',                  meta: 'Sent when tier ≥ Guardian AND <code>public_register_visible = true</code>' },
+  { key: '1C', file: '01c-herald-guardian-private.html',    day: '+3',   title: 'Email 1C — Herald — Your name in the Register (Guardian+ opted out)',                       meta: 'Sent when tier ≥ Guardian AND <code>public_register_visible = false</code>' },
+  { key: '2',  file: '02-fergus-chiefs-letter.html',        day: '+9',   title: 'Email 2 — Fergus — From the desk of the Chief',                                              meta: 'Universal — chief@ocomain.org · image-only Kensington-letterhead PNG' },
+  { key: '3',  file: '03-antoin-how-i-became-cara.html',    day: '+21',  title: 'Email 3 — Antoin (Cara) — How I became Cara',                                                meta: 'Universal — antoin@ocomain.org · first-person social proof' },
+  { key: '3B', file: '03b-antoin-i-forgot-to-attach.html',   day: '+21',  title: 'Email 3B — Antoin (Cara) — I forgot to attach this',                                         meta: 'Same-day follow-up to Email 3 · embeds Antoin\'s actual Cara patent' },
+  { key: '4',  file: '04-linda-bringing-kindred.html',      day: '+35',  title: 'Email 4 — Linda — Bringing the kindred, in practice',                                        meta: 'Conditional — only if <code>countSponsoredBy(member) === 0</code>' },
+  { key: '5',  file: '05-herald-three-dignities.html',      day: '+60',  title: 'Email 5 — Herald — The three titles of dignity',                                             meta: 'Universal — herald@ocomain.org · Cara / Ardchara / Onóir' },
+  { key: '6',  file: '06-michael-clan-crest.html',          day: '+90',  title: 'Email 6 — Michael — The clan crest in your home',                                            meta: 'Universal — michael@ocomain.org · regalia, our tartan, signet rings, headstones' },
+  { key: '7',  file: '07-paddy-standing-of-line.html',      day: '+180', title: 'Email 7 — Paddy (Seanchaí lite) — The standing of the line',                                 meta: 'Universal — paddy@ocomain.org · early pedigree as story' },
+  { key: '8',  file: '08-jessica-gathering.html',           day: '+240', title: 'Email 8 — Jessica-Lily — Plans for the gathering at Newhall',                                meta: 'Universal — jessica@ocomain.org · bubbly anticipation builder' },
+  { key: '9',  file: '09-paddy-royal-house-and-saint.html', day: '+300', title: 'Email 9 — Paddy (Seanchaí full) — The royal house and the saint',                            meta: 'Universal — paddy@ocomain.org · year-end pedigree as story' },
+  { key: '10', file: '10-linda-renewal.html',               day: '+330', title: 'Email 10 — Linda — Your year of standing renews',                                            meta: 'Conditional — sent for non-Life tiers only' },
 ];
 
 const OUT_DIR = path.resolve(__dirname, '..', 'email-previews');
@@ -84,7 +70,7 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 console.log('Rendering email previews to', OUT_DIR);
 
 for (const v of VARIANTS) {
-  let html = getPreviewHtml(v.key, v.mock || MOCK_MEMBER);
+  let html = getPreviewHtml(v.key, MOCK_MEMBER);
   // Inject <meta name="robots" content="noindex,nofollow"> into the
   // <head> so these previews stay out of search engine results.
   html = html.replace(
