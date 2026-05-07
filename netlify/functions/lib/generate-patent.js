@@ -72,7 +72,7 @@ function loadImageBuffers() {
 // 'degree_word' is rendered as "Cara is the [first/second/third and
 // highest] degree of honour conferred by the Chief.".
 // 'body_voice' is the closing clause of the Whereas paragraph, joining
-// onto "...standeth in good favour within the kindred,".
+// onto "...within the kindred and the favour We bear them,".
 // 'body_extra' is the explanatory paragraph after the hero block.
 // 'address_intro' is the formal address-formula paragraph.
 const HONOURS = {
@@ -378,15 +378,23 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   let y = H - 310;  // start below the issuing authority — ~22pt below the last styling line
 
   // ── WHEREAS PARAGRAPH ─────────────────────────────────────────
-  // "Whereas it hath been represented to Us, by Our Privy Council
-  // and the Office of the Private Secretary, that <recipientName>
-  // standeth in good favour within the kindred, <body_voice>:"
+  // "Whereas it hath pleased Us, by the recommendation of Our
+  // Privy Council and the Office of the Private Secretary, and in
+  // recognition of the standing of <recipientName> within the
+  // kindred and the favour We bear them, <body_voice>:"
+  //
+  // This wording is from the signed-off reference. The repetition
+  // of "it hath pleased Us" (once at the head, once before the
+  // dignity) was discussed and kept — the warmth of the reference
+  // (the Chief is doing the raising in PERSONAL recognition) is
+  // worth more than tidiness. The earlier "represented to Us...
+  // standeth in good favour" wording read bureaucratic.
   //
   // Recipient name is in italic burgundy mid-sentence.
   const whereas = (
-    `Whereas it hath been represented to Us, by Our Privy Council and the Office of the ` +
-    `Private Secretary, that {ITALIC_BURGUNDY}${recipientName}{/ITALIC_BURGUNDY} standeth in good favour within the ` +
-    `kindred, ${h.body_voice}:`
+    `Whereas it hath pleased Us, by the recommendation of Our Privy Council and the Office of the ` +
+    `Private Secretary, and in recognition of the standing of {ITALIC_BURGUNDY}${recipientName}{/ITALIC_BURGUNDY} within the ` +
+    `kindred and the favour We bear them, ${h.body_voice}:`
   );
   y = drawWrappedJustified(page, {
     text: whereas,
@@ -404,14 +412,61 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   // ── HERO CONFERRAL ────────────────────────────────────────────
   y -= 20;  // gap above hero
 
-  // Top gold rule
+  // ── HERO CONFERRAL BLOCK with INSET BACKGROUND CONTAINER ──────
+  //
+  // The reference renders the hero conferral as a deed-pasted-in:
+  // a slightly-darker beige rectangle behind the eyebrow + name +
+  // dignity + pronunciation, framed top and bottom by gold rules
+  // that extend slightly beyond the inset edges. Without the
+  // background container the conferral reads as plain text
+  // between rules and loses the deed-of-grant presentation.
+  //
+  // We draw the rectangle FIRST (behind), then the rules, then
+  // the text content on top. This requires computing the block
+  // height upfront so the rect dimensions are known.
+  //
+  // Layout from top of block:
+  //   topRule:       0pt
+  //   eyebrow:       14pt below rule (anchored visually)
+  //   name:          eyebrow + 22pt
+  //   dignity:       name + 30pt
+  //   pron line:     dignity + 24pt
+  //   bottomRule:    pron + 14pt
+  // Total inset block height from topRule to bottomRule = ~104pt
+
+  const heroEyebrowGap = 14;
+  const heroNameGap    = 22;
+  const heroDignityGap = 30;
+  const heroPronGap    = 24;
+  const heroBottomGap  = 14;
+  const heroBlockHeight = heroEyebrowGap + heroNameGap + heroDignityGap + heroPronGap + heroBottomGap;
+
+  // y currently points to where the top gold rule will sit. The
+  // background rect sits BETWEEN the top and bottom rules.
+  const heroTopY    = y;
+  const heroBottomY = y - heroBlockHeight;
+
+  // Inset background: slightly inset from page text width so the
+  // rules visibly extend beyond the rect edges. Slightly more
+  // saturated beige than the paper colour.
+  const insetMargin = 6;  // inset from leftMargin/rightMargin
+  const C_INSET_BEIGE = rgb(0.953, 0.937, 0.870);  // slightly darker than paper
+  page.drawRectangle({
+    x: leftMargin + insetMargin,
+    y: heroBottomY,
+    width: (W - leftMargin - rightMargin) - 2 * insetMargin,
+    height: heroBlockHeight,
+    color: C_INSET_BEIGE,
+  });
+
+  // Top gold rule (drawn ABOVE the inset, at the page text width)
   page.drawLine({
-    start: { x: leftMargin, y },
-    end:   { x: W - rightMargin, y },
+    start: { x: leftMargin, y: heroTopY },
+    end:   { x: W - rightMargin, y: heroTopY },
     thickness: 0.6,
     color: C_GOLD,
   });
-  y -= 14;
+  y -= heroEyebrowGap;
 
   // "IN HONOUR NOW CONFERRED" eyebrow
   drawSpacedText(page, {
@@ -423,21 +478,20 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
     centerX: W / 2,
     letterSpacing: 2.6,
   });
-  y -= 22;
+  y -= heroNameGap;
 
   // Recipient name (28pt italic, ink) — centred
   drawCentered(page, `${recipientName},`, fonts.serifItalic, 28, C_INK, y, W / 2);
-  y -= 30;
+  y -= heroDignityGap;
 
   // Dignity line (28pt italic, burgundy) — centred
   drawCentered(page, `${h.irish} of \u00d3 Com\u00e1in`, fonts.serifItalic, 28, C_BURGUNDY, y, W / 2);
-  y -= 24;
+  y -= heroPronGap;
 
   // Pronunciation key — "Cara · /KAR-uh/ · Friend"
-  // Three parts at different italic styles
   const pronLine = `${h.irish}  \u00b7  /${h.pron}/  \u00b7  ${h.english}`;
   drawCentered(page, pronLine, fonts.serifItalic, 11, C_MUTED, y, W / 2);
-  y -= 14;
+  y -= heroBottomGap;
 
   // Bottom gold rule
   page.drawLine({
