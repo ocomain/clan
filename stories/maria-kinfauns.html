@@ -20,7 +20,7 @@
   "headline": "The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence",
   "description": "Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of the loss of their son Ronan in 2023, and the family's choice to honour him not through anger but through building.",
   "url": "https://www.ocomain.org/stories/maria-kinfauns.html",
-  "image": "https://www.ocomain.org/maria_and_ronan_blacktie.jpg",
+  "image": "https://www.ocomain.org/maria_and_ronan_blacktie_landscape.jpg",
   "datePublished": "2026-05-06",
   "publisher": {
     "@type": "Organization",
@@ -49,9 +49,9 @@
   <meta property="og:url" content="https://www.ocomain.org/stories/maria-kinfauns.html">
   <meta property="og:title" content="The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence">
   <meta property="og:description" content="Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of the loss of their son Ronan in 2023, and the family's choice to honour him not through anger but through building.">
-  <meta property="og:image" content="https://www.ocomain.org/maria_and_ronan_blacktie.jpg">
-  <meta property="og:image:width" content="1100">
-  <meta property="og:image:height" content="1466">
+  <meta property="og:image" content="https://www.ocomain.org/maria_and_ronan_blacktie_landscape.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="800">
   <meta property="og:image:alt" content="Maria Kinfauns with her son Ronan">
   <meta property="og:site_name" content="Clan Ó Comáin">
   <meta property="og:locale" content="en_IE">
@@ -62,7 +62,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence">
   <meta name="twitter:description" content="Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of loss, remembrance, and the choice to honour through building.">
-  <meta name="twitter:image" content="https://www.ocomain.org/maria_and_ronan_blacktie.jpg">
+  <meta name="twitter:image" content="https://www.ocomain.org/maria_and_ronan_blacktie_landscape.jpg">
 <!-- Umami analytics -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 <!-- Microsoft Clarity -->
@@ -105,6 +105,25 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 .cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
 .cs-featured-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
 
+/* Landscape banner layout — used on this page (Maria's founding
+   story) where the formal photo is landscape rather than portrait.
+   The image sits as a wide hero above the content rather than
+   beside it. The eyebrow/title/byline/body classes below are
+   reused unchanged from the cs-featured grid layout — only the
+   outer wrapper differs.
+
+   Stephen's page (and any future portrait-hero stories) keeps
+   using cs-featured-grid + cs-featured-portrait; this banner
+   treatment is opt-in per page.
+
+   Magazine-cover proportions on desktop: image runs full
+   .cs-banner width up to a 1080px cap, then content settles
+   into a narrower 720px reading column below — keeps the photo
+   monumental and the prose comfortable at the same time. */
+.cs-banner{padding:60px 0 56px;background:var(--cream-light)}
+.cs-banner-image{aspect-ratio:3/2;background:var(--ink) center/cover no-repeat;border:1px solid var(--gold-border);box-shadow:0 12px 40px rgba(12,26,12,.18);max-width:1080px;margin:0 auto 56px}
+.cs-banner-content{max-width:720px;margin:0 auto;padding:0 24px}
+
 /* "Another voice of the clan" — compact horizontal card placed
    between the piece body and the footer, pointing the reader at
    another story. Whole card is clickable. Stacks on mobile. */
@@ -127,6 +146,13 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
   .cs-next-card{flex-direction:column;align-items:stretch;text-align:center;gap:16px;padding:16px}
   .cs-next-portrait{width:120px;height:120px;margin:0 auto;aspect-ratio:1/1}
   .cs-next-story{padding:40px 0}
+  /* Banner layout: tighten vertical rhythm on mobile, keep image
+     full-width within .si container (which is already padded), drop
+     the box-shadow to a flatter elevation since elevated shadows
+     read as noise on small screens. */
+  .cs-banner{padding:24px 0 32px}
+  .cs-banner-image{margin-bottom:32px;box-shadow:0 4px 16px rgba(12,26,12,.14)}
+  .cs-banner-content{padding:0 18px}
 }
 </style>
 
@@ -191,16 +217,13 @@ function toggleMenu(){
      layout to give equal weight to Stephen's piece (Story № 2)
      and to leave room for future member voices.
      ============================================================ -->
-<section class="cs-featured">
+<section class="cs-banner">
   <div class="si">
-    <div class="cs-featured-grid">
-      <div>
-        <div class="cs-featured-portrait" style="background-image:url('/maria_and_ronan_blacktie.jpg');background-position:center" role="img" aria-label="Maria Kinfauns with her son Ronan"></div>
-      </div>
-      <div>
-        <div class="cs-featured-eyebrow">Story № 1 · The Founding</div>
-        <h1 class="cs-featured-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h1>
-        <p class="cs-featured-byline">Maria Kinfauns &middot; Wife of the Chief, Chancellor of Clan Ó Comáin · Newhall House, County Clare</p>
+    <div class="cs-banner-image" style="background-image:url('/maria_and_ronan_blacktie_landscape.jpg')" role="img" aria-label="Maria Kinfauns with her son Ronan"></div>
+    <div class="cs-banner-content">
+      <div class="cs-featured-eyebrow">Story № 1 · The Founding</div>
+      <h1 class="cs-featured-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h1>
+      <p class="cs-featured-byline">Maria Kinfauns &middot; Wife of the Chief, Chancellor of Clan Ó Comáin · Newhall House, County Clare</p>
 
         <div class="cs-featured-body">
           <p>There are moments in life that arrive without warning &mdash; moments that fracture everything you thought you understood about the world. The sudden loss of someone you love, taken in a way that makes no sense, leaves you searching&hellip; not just for answers, but for meaning. It forces you to ask the deepest questions: What truly mattered in their life? What remains when a life ends? How fragile is the thread that separates breath from silence?</p>
@@ -320,10 +343,9 @@ function toggleMenu(){
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ============================================================
+  <!-- ============================================================
      NEXT VOICE — Stephen Clarke
      ============================================================
      Editorial pointer at the bottom of Maria's piece, leading the
