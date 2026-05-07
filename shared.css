@@ -14,6 +14,15 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
   --ink-muted:#5A7A5A;--ink-faint:#8AAA8A;
   --cream:#F7F9F4;--cream-mid:#EEF3EC;--cream-dark:#E4EDE2;
   --white:#FFFFFF;--border:#D8E4D8;--border-strong:#B8CEB8;
+  /* --burgundy is the conferral colour — used in honours/dignity
+     surfaces (Held in Honour eyebrow, hero conferral title, the
+     Chief styling line). Was previously referenced by .mhonours-*
+     classes and by inline styles throughout members/index.html
+     but never defined in the cascade — silently falling back to
+     inherited or transparent depending on context. Defining it
+     here so all those references render with the intended colour
+     (burgundy red, matching the patent generator's C_BURGUNDY). */
+  --burgundy:#6B1A10;
 }
 body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
