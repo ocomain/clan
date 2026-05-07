@@ -45,6 +45,20 @@
     .mevent-when{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);margin:0 0 18px;line-height:1.5}
     .mevent-when strong{color:var(--ink);font-weight:500}
     .mevent-desc{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.7;margin:0 0 24px}
+    /* Event programme block (added 7 May 2026 for Feast of St John card).
+       A small in-card schedule of the day. Each line is a brief
+       'time · what happens' marker. Set apart from the surrounding desc
+       and CTA by a subtle gold-tinted background and a soft border so it
+       reads as a structured insert rather than as more prose. */
+    .mevent-programme{margin:0 0 18px;padding:14px 18px;background:rgba(184,151,90,.05);border-left:2px solid var(--gold-border);border-radius:1px}
+    .mevent-programme-line{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);line-height:1.6;margin:0 0 4px}
+    .mevent-programme-line:last-child{margin-bottom:0}
+    .mevent-programme-line strong{color:var(--gold-deep);font-weight:600;font-variant-numeric:tabular-nums}
+    /* A quiet aside under the programme — practical bits ('drive in
+       through the gates, no need to bring anything'). Italic, smaller
+       muted ink, set apart by margin so it reads as logistical
+       footnote rather than as prose. */
+    .mevent-note{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);line-height:1.6;margin:0 0 24px}
     .mevent-cta{display:inline-block;background:var(--ink);color:var(--gold-pale);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:1px;border:1px solid var(--ink);cursor:pointer;transition:background .15s,color .15s}
     .mevent-cta:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
     .mevent-cta:disabled,.mevent-cta[disabled]{opacity:.55;cursor:default}
@@ -461,24 +475,33 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
   // ─────────────────────────────────────────────────────────────────
   const EVENT_END_ISO = '2026-06-23T22:00:00Z'; // event date UTC; card auto-hides after this
   const EVENT_SLUG = 'feast-of-st-john-2026';
-  const EVENT_TITLE = 'Feast of St John at the Holy Well';
-  const EVENT_WHEN_DISPLAY = 'Tuesday 23 June 2026, 6 pm — Killone Abbey, County Clare';
+  const EVENT_TITLE = 'Feast of St John at Killone Abbey';
+  const EVENT_WHEN_DISPLAY = 'Tuesday 23 June 2026, 6 pm — Killone Abbey, Newhall Estate, County Clare';
   function eventCardHtml(member) {
     if (Date.now() > new Date(EVENT_END_ISO).getTime()) return '';
     return `
       <section class="mevent" id="meventCard">
-        <div class="mevent-hero" style="background-image:url('/holy_well_newhall.png')" role="img" aria-label="Holy Well of St John the Baptist at Newhall"></div>
+        <div class="mevent-hero" style="background-image:url('/holy_well_newhall.png')" role="img" aria-label="Holy Well of St John the Baptist at Newhall, beside Killone Abbey"></div>
         <div class="mevent-body">
           <p class="mevent-eyebrow">Upcoming · Open to all members</p>
           <h2 class="mevent-title">${escHtml(EVENT_TITLE)}</h2>
-          <p class="mevent-when"><strong>Tuesday 23 June 2026 · 6 pm</strong><br>Killone Abbey, County Clare · meet and greet from 5 pm</p>
-          <p class="mevent-desc">A traditional outdoor mass on the eve of the Feast of St John the Baptist, held at the Holy Well in the grounds of Newhall. Members and their families are warmly welcome. Mass will be ~1 hour. The meet and greet at Killone Abbey from 5 pm gives everyone time to arrive at the Well together.</p>
-          <button type="button" class="mevent-cta" id="meventRsvpOpen">RSVP — free for all members</button>
+          <p class="mevent-when"><strong>Tuesday 23 June 2026</strong><br>Killone Abbey, Newhall Estate, County Clare</p>
+          <p class="mevent-desc">An outdoor mass on the eve of the Feast of St John the Baptist, held at the ruined abbey at Killone, beside the Holy Well of St John on the Newhall Estate. The eve of midsummer has been kept on this land since long before the Christian church arrived &mdash; an old day, kept by the people of this place every year. The parish gathers; the clan is honoured to gather with them.</p>
+
+          <div class="mevent-programme">
+            <p class="mevent-programme-line"><strong>5 pm</strong> &middot; Gates open. Drinks reception at Killone Abbey for clan members and their families.</p>
+            <p class="mevent-programme-line"><strong>6 pm</strong> &middot; Outdoor mass at the abbey ruins (~ 1 hour).</p>
+            <p class="mevent-programme-line"><strong>7 pm</strong> &middot; Tea and coffee after.</p>
+          </div>
+
+          <p class="mevent-note"><em>Drive in through the estate gates and park by Killone Abbey. The Holy Well is a short walk from the abbey. No need to bring anything &mdash; the parish runs the day.</em></p>
+
+          <button type="button" class="mevent-cta" id="meventRsvpOpen">Let us know you're coming</button>
 
           <div class="mevent-form" id="meventForm">
             <label for="meventOthers">Others attending</label>
             <textarea id="meventOthers" placeholder="e.g. partner Mary; children Conor (8) and Aoife (5)" maxlength="600"></textarea>
-            <p class="mevent-form-hint">Optional — names of any partner, children or guests joining you. Leave blank if attending alone.</p>
+            <p class="mevent-form-hint">Optional &mdash; names of any partner, children or guests joining you. Leave blank if attending alone. Helpful for us to plan the clan drinks reception, but no obligation.</p>
             <div class="mevent-form-actions">
               <button type="button" class="mevent-cta" id="meventRsvpSend">Send RSVP</button>
               <button type="button" class="mevent-form-cancel" id="meventRsvpCancel">Cancel</button>
@@ -487,7 +510,7 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           </div>
 
           <div id="meventConfirmed" class="mevent-confirmed" style="display:none">
-            ✓ RSVP received. The Office will be in touch by email if anything else is needed. Looking forward to seeing you on 23 June.
+            ✓ Thank you. The Office has noted you for the clan drinks reception. Looking forward to seeing you on 23 June.
           </div>
         </div>
       </section>
