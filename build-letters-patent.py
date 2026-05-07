@@ -480,7 +480,7 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
 
   <div class="salutation">
     <div class="sal-eyebrow">Letters Patent · Irish Clan Ó Comáin</div>
-    <div class="sal-main">To All and Sundry whom these Presents do or may concern</div>
+    <div class="sal-main">To All and Sundry whom these Presents<br>Do or May Concern</div>
     <div class="sal-rule"></div>
   </div>
 
@@ -540,7 +540,7 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
     </div>
     <div class="foot-right">
       <img src="data:image/png;base64,{herald_seal_b64}" class="seal-img"/>
-      <div class="seal-caption">Sigillum of the Herald</div>
+      <div class="seal-caption">Sigillum of the Clan</div>
     </div>
   </div>
 
