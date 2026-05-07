@@ -489,9 +489,10 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
       <span class="we-cap">We</span>
       <span class="styling">
         <span class="styling-name">Taoiseach Fearghas Ó Comáin, The Commane,</span>
-        custodian of Killone Abbey and the Holy Well of St John the Baptist
-        — also XXVI Baron of Kinfauns (Scotland) and Hereditary Admiral of the Water of Tay —
-        of Newhall Estate in the County of Clare, Chief of Ó Comáin, send Greeting.
+        custodian of Killone Abbey and the Holy Well of St John the Baptist,
+        of Newhall Estate in the County of Clare
+        — and also XXVI Baron of Kinfauns and Hereditary Admiral of the Water of Tay —
+        Chief of Ó Comáin, send Greeting.
       </span>
     </div>
 
@@ -520,7 +521,7 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
 
     <p>{h['address_intro']} <em>{address}</em>.</p>
 
-    <div class="date-line">Given under Our hand and seal at Newhall House, County Clare, on
+    <div class="date-line">Given under Our hand and seal at the seat of Ó Comáin,
     {date_str}.</div>
   </div>
 
