@@ -25,9 +25,48 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const { name, email, country, connection, source, tier } = data;
+  const { name, email, country, connection, source, tier, invite } = data;
   if (!name || !email) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Name and email required' }) };
+  }
+
+  // ── Sponsor lookup (if invite token present) ─────────────────────────────
+  // Surfaces who invited this applicant so the Office sees the sponsor at
+  // triage time, not just after the Stripe webhook lands. Crucially: this
+  // does NOT REPLACE the existing Stripe-metadata-based attribution path
+  // (which is the source of truth for the actual member-to-member sponsor
+  // link in the database). It just gives OPS visibility at the application
+  // stage, before payment, so the Office can:
+  //   - Recognise repeat sponsors (e.g. Antoin sending many invites)
+  //   - Greet the new applicant with sponsor context if they need
+  //     follow-up between application and payment
+  //   - Notice broken attribution early (e.g. token mismatch) rather
+  //     than discovering it weeks later
+  //
+  // Lookup is best-effort — failures don't block the submission. If the
+  // token is malformed, missing from DB, or the lookup errors out, we
+  // simply omit the sponsor row from the notification email.
+  let sponsor = null;
+  if (typeof invite === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(invite)) {
+    try {
+      const { data: invRow } = await supa()
+        .from('invitations')
+        .select('inviter_member_id')
+        .eq('invite_token', invite)
+        .maybeSingle();
+      if (invRow && invRow.inviter_member_id) {
+        const { data: memRow } = await supa()
+          .from('members')
+          .select('name, email')
+          .eq('id', invRow.inviter_member_id)
+          .maybeSingle();
+        if (memRow) sponsor = { name: memRow.name, email: memRow.email };
+      }
+    } catch (e) {
+      // Lookup failed — log for diagnostics but continue. The application
+      // submission itself must not fail because we couldn't enrich one row.
+      console.warn('submit-application sponsor lookup failed:', e.message);
+    }
   }
 
   // ── 1. Persist the application (pre-payment) ─────────────────────────────
@@ -62,6 +101,13 @@ exports.handler = async (event) => {
   }
 
   // ── 2. Notify clan inbox (existing behaviour) ────────────────────────────
+  // Sponsor row is only emitted when an invite token was present AND
+  // resolved to a member. When absent (cold signups, founder-invite flow,
+  // or unattributable invites), no row appears — keeps the email clean.
+  const sponsorRow = sponsor
+    ? `<tr><td style="padding:10px;border:1px solid #ddd;color:#666">Invited by</td><td style="padding:10px;border:1px solid #ddd"><strong style="color:#0C1A0C">${sponsor.name}</strong>${sponsor.email ? ` &middot; <a href="mailto:${sponsor.email}" style="color:#B8975A">${sponsor.email}</a>` : ''}</td></tr>`
+    : '';
+
   const html = `<div style="font-family:sans-serif;max-width:500px">
     <h2 style="color:#0C1A0C;border-bottom:2px solid #B8975A;padding-bottom:10px">New membership application — Clan Ó Comáin</h2>
     <table style="border-collapse:collapse;width:100%;margin-bottom:20px">
@@ -71,8 +117,9 @@ exports.handler = async (event) => {
       <tr><td style="padding:10px;border:1px solid #ddd;color:#666">Connection</td><td style="padding:10px;border:1px solid #ddd">${connection || '—'}</td></tr>
       <tr><td style="padding:10px;border:1px solid #ddd;color:#666">Heard via</td><td style="padding:10px;border:1px solid #ddd">${source || '—'}</td></tr>
       <tr><td style="padding:10px;border:1px solid #ddd;color:#666">Tier selected</td><td style="padding:10px;border:1px solid #ddd"><strong style="color:#B8975A">${tier || 'Not specified'}</strong></td></tr>
+      ${sponsorRow}
     </table>
-    <p style="font-size:13px;color:#666">This application was submitted via the Clan Herald. Payment may or may not have been completed — check Stripe for confirmation.</p>
+    <p style="font-size:13px;color:#666">This application was submitted via the Clan Herald. Payment may or may not have been completed — check Stripe for confirmation.${sponsor ? ' Sponsor attribution will be confirmed in the database when the Stripe webhook lands.' : ''}</p>
   </div>`;
 
   try {

@@ -756,6 +756,10 @@ function showCompletion() {
   // falls back to whatever the buyer typed on the Stripe checkout page.
   // keepalive ensures the request continues until the server responds.
   try {
+    // Capture invite token from URL (same source that flows into Stripe
+    // metadata downstream — keeps the application-stage notification email
+    // consistent with the post-payment sponsor attribution).
+    const inviteFromUrl = new URLSearchParams(window.location.search).get('invite') || '';
     fetch('/api/submit-application', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -766,7 +770,8 @@ function showCompletion() {
         country: collected.country,
         connection: collected.connection,
         source: collected.source,
-        tier: tierInfo ? tierInfo.label : 'Not selected'
+        tier: tierInfo ? tierInfo.label : 'Not selected',
+        invite: inviteFromUrl
       })
     });
   } catch(e) { /* non-blocking */ }
