@@ -825,10 +825,46 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           const explainerLine = isChiefDignity
             ? 'Chief of Clan Ó Comáin and Fount of Honour from which all dignities of the clan flow.'
             : `Recognised by the Chief in the dignity of ${escHtml(t.irish)} — ${escHtml(t.english)}.`;
+
+          // ── PATENT ACTION AREA ──
+          // Below the explainer, surface the letters-patent download
+          // (when available) plus the framed heirloom edition link.
+          // Three possible states:
+          //   (a) cert NOT sealed → no action surfaced here. The cert
+          //       card below already prompts them to seal; once they
+          //       do, the patent generates and this section lights up.
+          //   (b) cert sealed but patent not yet generated → quiet
+          //       "in preparation" line. No big disabled button — the
+          //       row is identity-first; we don't need to draw
+          //       attention to a non-action.
+          //   (c) cert sealed, patent ready → real download button +
+          //       framed heirloom edition link (opens modal).
+          // Chief dignity gets no action — the chief doesn't have a
+          // self-issued patent.
+          let actionArea = '';
+          if (!isChiefDignity) {
+            const certSealed = !!(member.cert_published_at || member.cert_locked_at);
+            const patentEntry = (member.patent_urls || {})[t.slug];
+            const patentReady = !!(patentEntry && patentEntry.path);
+            if (certSealed && !patentReady) {
+              actionArea = `
+              <div style="margin-top:14px;font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);line-height:1.6">
+                Letters patent in preparation by the Office.
+              </div>`;
+            } else if (certSealed && patentReady) {
+              actionArea = `
+              <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+                <button id="mpatentDownloadBtn" type="button" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);background:transparent;border:1px solid var(--gold-deep);padding:10px 18px;cursor:pointer;border-radius:2px">Download letters patent (PDF) &rarr;</button>
+                <button id="mheirloomOpenBtn" type="button" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:none;cursor:pointer;padding:0;border-bottom:1px solid rgba(108,90,74,.4);padding-bottom:2px">Commission the framed heirloom edition</button>
+              </div>`;
+            }
+          }
+
           return `<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gold-border)">
           <div class="mstatus-row-label">Held in Honour</div>
           <div class="mstatus-row-value" style="margin-bottom:6px">${titledLine}</div>
           <div style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.6">${explainerLine}</div>
+          ${actionArea}
         </div>`;
         })()}
       </section>
@@ -1158,85 +1194,19 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
            [diamond] here is how you earn it'. Pure CSS, no SVG. -->
       <div class="mflourish-link" aria-hidden="true"><span></span></div>
 
-      <!-- HELD IN HONOUR — letters patent download card.
-           Shown only to members who have been raised to a dignity
-           (member.sponsorTitle is set). Three states:
-
-             1. Raised, cert NOT sealed yet:
-                Disabled placeholder; routes them to seal the cert
-                first. The name on the patent must match the name
-                they sealed, so the cert MUST be sealed before the
-                patent is issued. This is a deliberate ceremonial
-                sequence: cert (the seal of name) → patent (the
-                seal of honour).
-
-             2. Raised, cert sealed, patent NOT yet generated:
-                'In preparation by the Office.' Not actionable —
-                they will be notified by email when the patent
-                lands. This is the state every titled member sits
-                in until Phase 2 (generator port + storage hook)
-                ships.
-
-             3. Raised, cert sealed, patent ready (Phase 2):
-                Real download button + heirloom-edition upsell.
-                The patent_urls path on the member object is set
-                by the conferral pipeline; absent today, populated
-                in Phase 2.
-
-           Heirloom edition upsell appears in states 2 and 3 —
-           members can pre-order even before the digital is
-           generated. -->
-      ${(() => {
-        if (!member.sponsorTitle) return '';
-        // Cert state — same canonical/legacy column pair the cert
-        // card itself uses (line 638 / 1913 in this file).
-        const certSealed = !!(member.cert_published_at || member.cert_locked_at);
-        // Patent ready — the conferral pipeline writes a metadata
-        // object { path, issued_at, issued_name } to patent_urls[slug]
-        // once both preconditions (raised + cert sealed) are met.
-        // We check .path specifically (not just truthy entry) so we
-        // never enter state 3 if a half-write left the entry without
-        // an actual storage path.
-        const patentUrls = member.patent_urls || {};
-        const patentEntry = patentUrls[member.sponsorTitle.slug];
-        const patentReady = !!(patentEntry && patentEntry.path);
-        // Display strings.
-        const dignityLine = `${escHtml(member.name || '')}, <em>${escHtml(member.sponsorTitle.irish)}</em> of Ó Comáin`;
-        const raisedDate = member.sponsorTitleRaisedAt ? fmtDate(member.sponsorTitleRaisedAt) : null;
-        // Compose the action area depending on state.
-        let actionHtml;
-        if (!certSealed) {
-          actionHtml = `
-            <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · the seal of your honour</p>
-            <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px;max-width:480px;margin-left:auto;margin-right:auto">Your letters patent will be issued under the Chief\u2019s seal once your certificate is sealed — the name on your patent matches the name on your certificate, and so the certificate must be sealed first.</p>
-            <a href="#mfam-section" class="mcert-sealed-btn" style="text-decoration:none">Seal your certificate &rarr;</a>`;
-        } else if (!patentReady) {
-          actionHtml = `
-            <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · the seal of your honour</p>
-            <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px;max-width:480px;margin-left:auto;margin-right:auto">Your letters patent is being prepared by the Office. You will be notified by email when it is ready to download.</p>
-            <button class="mcert-sealed-btn" type="button" disabled>Patent in preparation</button>
-            <div style="margin-top:14px"><span style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);opacity:0.65">Framed heirloom edition · coming soon</span></div>`;
-        } else {
-          // State 3 — patent_urls.<slug> is populated. Phase 2 hooks
-          // this up; the conferral pipeline writes the storage path
-          // here when both preconditions (raised + cert sealed) are
-          // met. The button uses an authenticated fetch (mirroring
-          // the cert-download pattern) rather than a direct <a href>
-          // because Supabase signed URLs need to be freshly
-          // generated server-side on each download click — embedding
-          // a stale signed URL in the page would break after expiry.
-          actionHtml = `
-            <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · sealed under the Chief\u2019s hand</p>
-            <button class="mcert-sealed-btn" id="mpatentDownloadBtn" type="button">Download letters patent (PDF) &rarr;</button>
-            <div style="margin-top:14px"><span style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);opacity:0.65">Framed heirloom edition · coming soon</span></div>`;
-        }
-        return `
-        <section class="mcert-sealed" style="border-top-color:var(--burgundy)">
-          <div class="mcert-sealed-eyebrow">Held in Honour</div>
-          <h2 class="mcert-sealed-title">${dignityLine}</h2>
-          ${actionHtml}
-        </section>`;
-      })()}
+      <!-- HELD IN HONOUR — DELETED 2026-05-07.
+           The dignity + patent download is now part of the
+           membership-card 'Held in Honour' row above (line ~828).
+           That row has always carried the identity statement; the
+           patent download + heirloom upsell now live there too,
+           so we don't have two competing 'Held in Honour' headings
+           on the dashboard. The patent click handler and the
+           heirloom modal still live further down (in the dashboard
+           wiring + modal section).
+           Earlier separate-card implementation history: see git
+           commits 9d377c4 (Phase 1 introduction), be21d37
+           (heirloom-link disable), and the deletion happens here
+           in commit immediately following 2850fe7. -->
 
       <!-- UNIFIED ACTION CARD — restructured 2026-04-28 from two
            separate cards (open invite form + gift CTA below the
@@ -1774,6 +1744,16 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           alert('Could not prepare your letters patent — ' + (e.message || 'please try again, or write to clan@ocomain.org'));
         }
       });
+    }
+
+    // ── Heirloom edition modal trigger ──────────────────────────
+    // Lives next to the patent download button. Opens a modal with a
+    // description of the framed/wax-sealed/wet-signed heirloom edition
+    // and a "register interest" form. The order page itself doesn't
+    // exist yet — once it does, the modal can route there directly.
+    const heirloomOpenBtn = document.getElementById('mheirloomOpenBtn');
+    if (heirloomOpenBtn) {
+      heirloomOpenBtn.addEventListener('click', () => openHeirloomModal(member));
     }
 
     // ── Cert-not-yet-confirmed prompt button — opens the same modal ───────
@@ -3203,6 +3183,105 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
   // is also passed in to disable editing (you can't change the address
   // after Linda posts the cert; the user contacts clan@ocomain.org for
   // exceptions, same pattern as cert lock).
+  // ── HEIRLOOM EDITION MODAL ────────────────────────────────────
+  // Describes the framed/wax-sealed/wet-signed heirloom version of
+  // the letters patent and lets the member register interest. The
+  // order page (/members/heirloom-patent) doesn't exist yet — once
+  // it does, this modal will either link there directly or be
+  // replaced entirely. For now the form posts a "register interest"
+  // record so we can email back when the offering goes live.
+  function openHeirloomModal(member) {
+    const existing = document.getElementById('heirloomModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'heirloomModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(12,26,12,.82);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;overflow-y:auto';
+
+    const titleIrish = (member.sponsorTitle && member.sponsorTitle.irish) ? member.sponsorTitle.irish : '';
+    const dignityLine = titleIrish
+      ? `${escHtml(member.name || '')}, ${escHtml(titleIrish)} of \u00d3 Com\u00e1in`
+      : escHtml(member.name || '');
+
+    modal.innerHTML = `
+      <div style="max-width:560px;width:100%;background:var(--cream);border:1px solid var(--gold-border);border-top:3px solid var(--burgundy);padding:36px 36px 32px;border-radius:2px;max-height:90vh;overflow-y:auto">
+        <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin-bottom:12px">Framed heirloom edition</div>
+        <h3 style="font-family:'EB Garamond',serif;font-size:26px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 6px">Commission your letters patent in its heirloom form</h3>
+        <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin:0 0 22px">For ${dignityLine} &mdash; the same patent, made for the wall.</p>
+
+        <div style="font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.75;margin:0 0 22px">
+          <p style="margin:0 0 14px">The digital patent you have downloaded is the official record &mdash; but for many members the patent is something they want to <em>see</em>, every day, hung in the hall or above the desk where the work of the clan gets done.</p>
+          <p style="margin:0 0 14px">The heirloom edition is the patent you would have received if it were 1726, not 2026:</p>
+          <ul style="margin:0 0 14px;padding-left:20px;list-style:none">
+            <li style="margin:0 0 8px;position:relative;padding-left:18px"><span style="position:absolute;left:0;color:var(--gold-deep)">&#9670;</span>Hand-printed on archival cotton paper, A3 size, ready to frame.</li>
+            <li style="margin:0 0 8px;position:relative;padding-left:18px"><span style="position:absolute;left:0;color:var(--gold-deep)">&#9670;</span>The Chief&rsquo;s seal pressed in real wax &mdash; not a printed reproduction.</li>
+            <li style="margin:0 0 8px;position:relative;padding-left:18px"><span style="position:absolute;left:0;color:var(--gold-deep)">&#9670;</span>Wet-signed by the Chief at Newhall before posting.</li>
+            <li style="margin:0 0 8px;position:relative;padding-left:18px"><span style="position:absolute;left:0;color:var(--gold-deep)">&#9670;</span>Optionally framed in dark oak with gold-leafed inner mount.</li>
+          </ul>
+          <p style="margin:0 0 14px"><strong style="color:var(--ink);font-weight:500">Indicative price: &euro;400 framed, &euro;240 unframed.</strong> Final pricing depends on framing options chosen at checkout.</p>
+          <p style="margin:0 0 0;font-style:italic;font-size:13.5px;color:var(--ink-muted)">The heirloom edition is currently in preparation by the Office. Register your interest below and we will write to you as soon as commissions open.</p>
+        </div>
+
+        <div style="background:rgba(184,151,90,.08);border:1px solid var(--gold-border);padding:16px 18px;border-radius:2px;margin-bottom:22px">
+          <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 8px">A note to the Office &mdash; optional</label>
+          <textarea id="hmNote" rows="3" placeholder="Anything you would like the Office to know &mdash; framing preference, intended recipient, deadline, etc." style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:15px;padding:10px 12px;background:var(--white);border:1px solid var(--gold-border);border-radius:1px;color:var(--ink);outline:none;resize:vertical;line-height:1.5"></textarea>
+        </div>
+
+        <div id="hmStatus" style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--burgundy);margin:0 0 12px;min-height:18px"></div>
+
+        <div style="display:flex;gap:12px;justify-content:flex-end;align-items:center">
+          <button id="hmCancelBtn" type="button" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:none;cursor:pointer;padding:10px 14px">Close</button>
+          <button id="hmSubmitBtn" type="button" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);border:1px solid var(--burgundy);padding:12px 22px;cursor:pointer;border-radius:2px">Register my interest</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Backdrop click closes
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.remove();
+    });
+
+    document.getElementById('hmCancelBtn').addEventListener('click', () => modal.remove());
+
+    document.getElementById('hmSubmitBtn').addEventListener('click', async () => {
+      const submitBtn = document.getElementById('hmSubmitBtn');
+      const statusEl = document.getElementById('hmStatus');
+      const note = (document.getElementById('hmNote').value || '').trim();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Recording...';
+      statusEl.style.color = 'var(--ink-muted)';
+      statusEl.textContent = '';
+      try {
+        const session = await currentSession();
+        if (!session) { window.location.href = '/members/login.html'; return; }
+        const res = await fetch('/api/register-heirloom-interest', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ note }),
+        });
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          throw new Error(errBody.error || `Request failed (${res.status})`);
+        }
+        statusEl.style.color = 'var(--gold-deep)';
+        statusEl.textContent = 'Recorded. The Office will write when commissions open.';
+        submitBtn.textContent = 'Recorded';
+        setTimeout(() => modal.remove(), 1800);
+      } catch (e) {
+        console.error('heirloom interest error:', e);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Try again';
+        statusEl.style.color = 'var(--burgundy)';
+        statusEl.textContent = 'Could not record &mdash; ' + (e.message || 'please try again');
+      }
+    });
+  }
+
   function openPostalModal(member) {
     const existing = document.getElementById('postalModal');
     if (existing) existing.remove();
