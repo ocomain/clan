@@ -349,18 +349,24 @@ function buildEmail1A_html(member) {
   // your entry in" paragraph. The Cara/path-of-honour content below
   // is identical regardless of sealing state.
   //
-  // SEALED: the Chief has signed the cert, the entry is formally
-  //   recorded. Original wording (untouched).
+  // The model: REGISTER ENTRY and CERT SEAL are two separate acts.
+  //   - Register entry happens at signup (member row created, place
+  //     recorded). True at +3 regardless of cert state.
+  //   - Cert sealing is a separate ceremonial act with a 30-day
+  //     window for self-publish or auto-publish (see daily-cert-
+  //     sweep.js). May be done OR pending at +3.
   //
-  // UNSEALED: the name has been entered into the Register, but the
-  //   seal awaits the member confirming the details of their entry.
-  //   This is true to the actual flow and to the cert-sweep day-29
-  //   reminder language. Quiet CTA to confirm details, with the
-  //   reassurance that the auto-seal at +30 will happen if they do
-  //   nothing — no anxiety, no pressure.
+  // SEALED: original wording preserved unchanged. The "and the Chief
+  //   has signed and sealed your certificate" sub-clause is true.
+  //
+  // UNSEALED: split into two sentences. First confirms the entry
+  //   (true). Second explains the cert seal as a forthcoming act
+  //   the member triggers by confirming details, with the +30
+  //   auto-seal as the passive default. No false claim about a
+  //   seal that isn't set yet.
   const stateOpening = sealed
     ? p(`Your name has been entered into the Register, in the form you chose, and the Chief has signed and sealed your certificate. <strong>Your place is now formally recorded in the household of Ó Comáin</strong>, and you stand among the kindred of the present revival.`)
-    : p(`Your name has been entered into the Register, in the form you chose, and stands ready for the Chief's seal upon your certificate. The seal is set when you confirm the details of your entry &mdash; a small act, in your members' area &mdash; and from that moment your place is formally recorded in the household of Ó Comáin. Should you wish your entry to stand as it does, the Chief sets his seal automatically thirty days after your joining, and your certificate is sent to you forthwith.`);
+    : p(`Your name has been entered into the Register, in the form you chose, and <strong>your place is now formally recorded in the household of Ó Comáin</strong>. The Chief sets his seal upon your certificate once you have confirmed the details of your entry &mdash; a small act, in your members' area &mdash; and your sealed certificate is then sent to you. Should you wish your entry to stand as it is, the Chief sets his seal automatically thirty days after your joining.`);
 
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
@@ -420,34 +426,31 @@ function buildEmail1B_html(member) {
   const firstName = addressFormOf(member);
   const sealed = isCertSealed(member);
 
-  // 1B has the additional state-dependence that the PUBLIC Register
-  // (the website roll at /register) filters out unpublished members
-  // (see netlify/functions/register.js — `cert_published_at IS NOT
-  // NULL` is part of the visibility query). So the unsealed variant
-  // must defer BOTH the seal-on-cert claim AND the appearance-on-
-  // public-Register claim.
+  // 1B speaks to Guardian+ members on the public Register. The public
+  // Register query (register.js: tier IN REGISTER_TIERS, opted-in,
+  // active) does NOT filter by cert_published_at — Register entry
+  // happens at signup, sealing is a separate optional act within 30
+  // days. So the recipient IS on the public Register at +3 regardless
+  // of whether their cert is sealed yet.
   //
-  // SEALED: original two-Register sentence + CTA to view the public
-  //   Register. Unchanged.
+  // Original wording conflated three things into one sentence:
+  //   - Register entry (Newhall) — TRUE at +3
+  //   - Cert sealing (Chief's seal) — STATE-DEPENDENT
+  //   - Public Register placement — TRUE at +3
   //
-  // UNSEALED: the name is entered, but neither the cert is sealed
-  //   nor does the name yet appear on the public Register. The CTA
-  //   shifts from "view the public Register" (where they don't yet
-  //   appear, which would feel hollow) to "confirm the details of
-  //   your entry" (the act that triggers both consequences).
+  // The fix unconflates them: keep both Register-entry claims, defer
+  // ONLY the cert-seal claim when unsealed. CTA stays "View the
+  // public Founding Members Register" in both branches because the
+  // member is on it either way.
   const stateOpening = sealed
     ? p(`Your name is now in the <strong>Register of Clan Ó Comáin</strong> — both the physical Register kept by hand at Newhall, where the Chief has signed and sealed your certificate, and the <strong>public online Founding Members Register</strong>, where it stands among the founders of the present revival.`)
-    : p(`Your name has been entered into the <strong>Register of Clan Ó Comáin</strong> at Newhall, in the form you chose, and stands ready for the Chief's seal upon your certificate. Once the seal is set, your name takes its place upon the <strong>public online Founding Members Register</strong>, where it will stand among the founders of the present revival, and your certificate is sent to you. The seal is set when you confirm the details of your entry &mdash; a small act, in your members' area; or, should you wish your entry to stand as it does, the Chief sets his seal automatically thirty days after your joining.`);
-
-  const stateCta = sealed
-    ? ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)
-    : ctaButtonHtml('Confirm the details of your entry', URLS.members);
+    : p(`Your name is now in the <strong>Register of Clan Ó Comáin</strong> — both the physical Register kept by hand at Newhall, and the <strong>public online Founding Members Register</strong>, where it stands among the founders of the present revival. The Chief sets his seal upon your certificate once you have confirmed the details of your entry &mdash; a small act, in your members' area &mdash; and your sealed certificate is then sent to you. Should you wish your entry to stand as it is, the Chief sets his seal automatically thirty days after your joining.`);
 
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${stateOpening}
 ${p('Your standing also carries with it certain other courtesies of the household, which Linda will detail in correspondence to come.')}
-${stateCta}
+${ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)}
 ${p(`A short word about a quiet privilege of the Register. The Chief raises members, by his own hand, to <strong>three titles of dignity</strong> — <em>Cara</em>, <em>Ardchara</em>, and <em>Onóir</em>. Once raised, the Herald is commanded to make the title known among the kindred, and the holder is addressed by it thereafter — informally as <em>Cara [Firstname]</em>, and formally as <em>[Firstname] [Lastname], Cara of Ó Comáin</em>. It is a real honour, and one many members find moving when their name is read out at the gatherings.`)}
 ${p(`The path to <em>Cara</em> opens by bringing one person into the kindred — either by <strong>inviting a friend or family member to join</strong>, or by <strong>gifting a €49 Clan Membership to someone who would value your present</strong>.`)}
 ${p(`The clan is built for friends and family to share; the title marks those who do the sharing. Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward <em>Cara</em> is also kept.`)}
@@ -476,9 +479,12 @@ function buildEmail1C_html(member) {
   // by sealing state — it speaks to the privacy choice, not to the
   // cert status. Only the opening "what state is your entry in"
   // paragraph branches.
+  //
+  // Same model as 1A: Register entry IS recorded at +3, cert seal
+  // is the separate forthcoming act.
   const stateOpening = sealed
     ? p('Your name has been entered into the Register, in the form you chose. The Chief has signed and sealed your certificate, and your place is formally recorded in the household of Ó Comáin.')
-    : p(`Your name has been entered into the Register at Newhall, in the form you chose, and stands ready for the Chief's seal upon your certificate. The seal is set when you confirm the details of your entry &mdash; a small act, in your members' area; or, should you wish your entry to stand as it does, the Chief sets his seal automatically thirty days after your joining, and your certificate is sent to you forthwith.`);
+    : p(`Your name has been entered into the Register, in the form you chose, and your place is formally recorded in the household of Ó Comáin. The Chief sets his seal upon your certificate once you have confirmed the details of your entry &mdash; a small act, in your members' area &mdash; and your sealed certificate is then sent to you. Should you wish your entry to stand as it is, the Chief sets his seal automatically thirty days after your joining.`);
 
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
