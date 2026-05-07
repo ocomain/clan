@@ -564,10 +564,8 @@ function buildEmail3b_html(member) {
 </head>
 <body style="margin:0;padding:16px;color:#1A1A1A;font-size:15px;line-height:1.5">
   <p style="margin:0 0 14px">${escapeHtml(firstName)},</p>
-  <p style="margin:0 0 14px">Antoin again — I sent you a note earlier today about how I came to be raised to <strong>Cara</strong>. I meant to attach this and didn't. This is the actual letters patent the Chief sends, signed by Fergus's own hand, with the Chief's seal and the Herald's seal alongside.</p>
-  <p style="margin:0 0 14px">I printed mine and framed it. It hangs in the hallway at home now. People ask about it when they come for dinner.</p>
-  <p style="margin:0 0 14px">If you bring one person into the clan — by gift or by invitation — yours arrives soon after, with your own name on it. The path is in your members' area, same one I sent you in my earlier note.</p>
-  <p style="margin:0 0 14px">Sorry for the second email in one day. Felt better to send it than to leave it.</p>
+  <p style="margin:0 0 14px">Sorry — meant to attach my letters patent to the earlier note and didn't. Here it is. Mine has been on the wall in the hallway since the day it arrived.</p>
+  <p style="margin:0 0 14px">If you bring one person into the clan, by gift or invitation, yours will arrive soon after.</p>
   <p style="margin:0">Antoin<br><br><a href="${URLS.invite}" style="color:#1A1A1A">Send an invitation, or gift membership →</a></p>
 </body>
 </html>`;
@@ -857,11 +855,28 @@ async function sendAntoinForgotToAttach(member) {
     const fs = require('fs');
     const path = require('path');
     const pdfPath = path.join(__dirname, 'assets', 'antoin_cara_patent.pdf');
-    const pdfBytes = fs.readFileSync(pdfPath);
-    attachments = [{
-      filename: 'Letters Patent — Antoin Commane, Cara of Ó Comáin.pdf',
-      content: pdfBytes.toString('base64'),
-    }];
+    // Explicit existence check so the failure mode is loud in logs
+    // rather than silently swallowed by the catch. The Netlify
+    // bundler does not always include net-new asset files added in
+    // the same commit as their first reference (per the deploy
+    // gotcha in DDW's notes — fix is 'Clear cache and deploy site').
+    if (!fs.existsSync(pdfPath)) {
+      console.error(`sendAntoinForgotToAttach: PDF NOT BUNDLED at ${pdfPath} — likely a Netlify cache issue, try Clear cache and deploy site`);
+      console.error(`sendAntoinForgotToAttach: __dirname is ${__dirname}, contents:`, fs.existsSync(__dirname) ? fs.readdirSync(__dirname).join(', ') : '(__dirname missing)');
+      const assetsDir = path.join(__dirname, 'assets');
+      if (fs.existsSync(assetsDir)) {
+        console.error(`sendAntoinForgotToAttach: assets dir contents:`, fs.readdirSync(assetsDir).join(', '));
+      } else {
+        console.error('sendAntoinForgotToAttach: assets/ dir does not exist in bundle');
+      }
+    } else {
+      const pdfBytes = fs.readFileSync(pdfPath);
+      console.log(`sendAntoinForgotToAttach: PDF loaded, ${pdfBytes.length} bytes`);
+      attachments = [{
+        filename: 'Letters Patent — Antoin Commane, Cara of Ó Comáin.pdf',
+        content: Buffer.from(pdfBytes).toString('base64'),
+      }];
+    }
   } catch (err) {
     console.error('sendAntoinForgotToAttach: PDF attachment failed (non-fatal):', err.message);
     // attachments stays undefined; cover email still ships
