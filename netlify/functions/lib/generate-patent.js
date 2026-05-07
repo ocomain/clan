@@ -425,20 +425,21 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   // the text content on top. This requires computing the block
   // height upfront so the rect dimensions are known.
   //
-  // Layout from top of block:
+  // Layout from top of block (matches reference breath):
   //   topRule:       0pt
-  //   eyebrow:       14pt below rule (anchored visually)
-  //   name:          eyebrow + 22pt
-  //   dignity:       name + 30pt
-  //   pron line:     dignity + 24pt
-  //   bottomRule:    pron + 14pt
-  // Total inset block height from topRule to bottomRule = ~104pt
+  //   eyebrow:       24pt below rule
+  //   name:          eyebrow + 36pt (was 22, too cramped)
+  //   dignity:       name + 38pt (was 30)
+  //   pron line:     dignity + 28pt (was 24)
+  //   bottomRule:    pron + 24pt (was 14)
+  // Block reads as a deed presented with proper breath, not
+  // text squashed between rules.
 
-  const heroEyebrowGap = 14;
-  const heroNameGap    = 22;
-  const heroDignityGap = 30;
-  const heroPronGap    = 24;
-  const heroBottomGap  = 14;
+  const heroEyebrowGap = 24;
+  const heroNameGap    = 36;
+  const heroDignityGap = 38;
+  const heroPronGap    = 28;
+  const heroBottomGap  = 24;
   const heroBlockHeight = heroEyebrowGap + heroNameGap + heroDignityGap + heroPronGap + heroBottomGap;
 
   // y currently points to where the top gold rule will sit. The
@@ -500,7 +501,7 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
     thickness: 0.6,
     color: C_GOLD,
   });
-  y -= 22;
+  y -= 18;
 
   // ── BODY EXTRA paragraph ──────────────────────────────────────
   y = drawWrappedJustified(page, {
@@ -517,7 +518,7 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   });
 
   // ── ADDRESS-FORMULA paragraph ─────────────────────────────────
-  y -= 8;
+  y -= 4;
   const addressFull = `${h.address_intro} {ITALIC_BURGUNDY}${recipientName}, ${h.irish} of \u00d3 Com\u00e1in{/ITALIC_BURGUNDY}.`;
   y = drawWrappedJustified(page, {
     text: addressFull,
@@ -533,11 +534,17 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   });
 
   // ── DATE LINE ─────────────────────────────────────────────────
-  // Positioned RELATIVELY from the address paragraph (40pt of breath
-  // above the date), so it follows naturally from the body rather
-  // than orphaning in the middle of an empty band. The foot stays
-  // independently anchored at the bottom.
-  y -= 40;
+  // Positioned ABSOLUTELY above the foot sign-off. The foot's
+  // 'Le toil an Taoisigh' line sits at footBottom+100 (= 51+100 = 151
+  // points up from page bottom). The date line sits 30pt above that
+  // for proper breath. Foot stays anchored independently.
+  //
+  // (Earlier iterations positioned the date line relatively from the
+  // address paragraph, but with the v13 hero-block expansion the
+  // body got tall enough that relative positioning collided with
+  // the foot. Absolute positioning is the right choice for any
+  // element above the foot — the body grew but the foot didn't.)
+  const dateY = (18 * 2.835) + 130;
   const dateText = `Given under Our hand and seal at the seat of \u00d3 Com\u00e1in, this third day of May, in the year of Our Lord two thousand and twenty-six.`;
   drawWrappedCentered(page, {
     text: dateText,
@@ -545,7 +552,7 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
     size: 9.5,
     color: C_INK_SOFT,
     centerX: W / 2,
-    y,
+    y: dateY,
     width: bodyW * 0.85,
     lineHeight: 13,
   });
