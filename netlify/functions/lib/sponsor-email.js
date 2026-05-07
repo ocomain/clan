@@ -295,15 +295,21 @@ function buildTitleAwardLetterHtml({ sponsor, title, priorTitleIrish, totalCount
       ${escapeHtml(replacementText)}
     </p>` : ''}
 
-    <!-- Members-area CTA — the patent-download landing point. The
-         dashboard surfaces the letters patent under 'Held in Honour'
-         once the recipient's certificate is sealed. The button is
-         deliberately understated (a single gold link rather than a
-         large block button) to fit the dignified register; the email
-         is a chivalric warrant first, a transactional notification
+    <!-- Members-area CTA — the title-conferral download landing
+         point. The button label uses 'title conferral' (plain
+         wayfinding any reader parses) rather than 'letters patent'
+         (heritage register but obscure to most contemporary
+         readers, especially outside the UK/Ireland). The italic
+         subtitle beneath teaches the formal name in context: the
+         dashboard download IS the letters patent, just under
+         clearer wayfinding for the email moment. The button is
+         deliberately understated (gold-bordered outline, not a
+         filled CTA) to fit the dignified register; the email is
+         a chivalric warrant first, a transactional notification
          second. -->
     <div style="text-align:center;margin:0 0 28px">
-      <a href="https://www.ocomain.org/members" style="display:inline-block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;text-decoration:none;border-bottom:1px solid #8B6F32;padding:0 0 2px">View in your members area &rarr;</a>
+      <a href="https://www.ocomain.org/members" style="display:inline-block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;text-decoration:none;border:1px solid #8B6F32;padding:10px 22px;border-radius:2px">Download title conferral in members area &rarr;</a>
+      <div style="font-family:'Georgia',serif;font-size:13.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin-top:10px">issued under the Chief\u2019s seal as letters patent</div>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.85;margin:0 0 28px">
