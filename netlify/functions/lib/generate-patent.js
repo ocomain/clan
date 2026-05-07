@@ -327,17 +327,25 @@ function drawIssuingAuthority(page, fonts) {
   const tokens = tokenize(stylingBody);
   // Wrap with two different widths: first line at indented width
   // (pushed past drop-cap), subsequent lines at full width.
+  // Wrap with three width values: lines 0 AND 1 indented past the
+  // drop-cap (the 32pt 'We' visually occupies two body lines), then
+  // lines 2+ flow back to full width. This avoids the 'We custodian'
+  // misread that happens when line 2 starts at the leftmost margin
+  // directly under the descender of the 'We' drop-cap.
   const indentedW = fullWidth - (dropCapWidth + 8);
   const lines = wrapTokensVariableWidth(
     tokens, fonts.serifItalic, fonts.serifItalic, 11,
-    [indentedW, fullWidth]  // line 0: indented; lines 1+: full
+    [indentedW, indentedW, fullWidth]  // line 0+1: indented; line 2+: full
   );
 
   let y = topY - 16;  // tighter continuation gap (was 22)
   for (let i = 0; i < lines.length; i++) {
-    const x = (i === 0) ? indentX : leftMargin;
+    // First two body lines stay indented past the drop-cap; from the
+    // third body line onwards, return to the full-width left margin.
+    const x = (i < 2) ? indentX : leftMargin;
+    const w = (i < 2) ? indentedW : fullWidth;
     drawLineTokens(page, lines[i], fonts.serifItalic, fonts.serifItalic, 11,
-      C_INK, C_BURGUNDY, x, y, (i === 0 ? indentedW : fullWidth), false);
+      C_INK, C_BURGUNDY, x, y, w, false);
     y -= lineH;
   }
 }
