@@ -50,6 +50,23 @@
   </div>
 </nav>
 
+<!-- MOBILE NAV MENU — toggled by .nav-hamburger via toggleMenu().
+     Mirrors the desktop nav-links above plus the Join CTA which on
+     mobile is hidden (.nav .nav-cta{display:none} in shared.css). -->
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="/surname-variants" class="nav-mobile-link">Variants</a>
+  <a href="/pedigree" class="nav-mobile-link">Pedigree</a>
+  <a href="/timeline" class="nav-mobile-link">Timeline</a>
+  <a href="/heartlands" class="nav-mobile-link">Heartlands</a>
+  <a href="/coat-of-arms" class="nav-mobile-link">Crest</a>
+  <a href="/clan-stories" class="nav-mobile-link">Stories</a>
+  <a href="/patrons" class="nav-mobile-link">Patrons</a>
+  <a href="/privy-council" class="nav-mobile-link">Council</a>
+  <a href="/members/" class="nav-mobile-link">Members</a>
+  <a href="/membership" class="nav-mobile-cta">Join the clan</a>
+</div>
+
+
 <section class="legal-hero">
   <div class="si">
     <h1>Refund Policy</h1>
@@ -160,7 +177,7 @@
 </footer>
 
 <script>
-function toggleMenu(){var n=document.querySelector('.nav-links'),h=document.querySelector('.nav-hamburger');n.classList.toggle('open');h.classList.toggle('open')}
+function toggleMenu(){var menu=document.getElementById('mobile-menu');var btn=document.querySelector('.nav-hamburger');menu.classList.toggle('open');btn.classList.toggle('open')}
 </script>
 
 </body>
