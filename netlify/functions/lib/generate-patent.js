@@ -327,23 +327,29 @@ function drawIssuingAuthority(page, fonts) {
   const tokens = tokenize(stylingBody);
   // Wrap with two different widths: first line at indented width
   // (pushed past drop-cap), subsequent lines at full width.
-  // Wrap with three width values: lines 0 AND 1 indented past the
-  // drop-cap (the 32pt 'We' visually occupies two body lines), then
-  // lines 2+ flow back to full width. This avoids the 'We custodian'
-  // misread that happens when line 2 starts at the leftmost margin
-  // directly under the descender of the 'We' drop-cap.
+  // Wrap with two width values: line 0 of body indented past the
+  // drop-cap (along with the chief's name line above, which is drawn
+  // separately and also indented), then lines 1+ flow back to full
+  // width. The 32pt 'We' drop-cap visually occupies the chief's name
+  // line + ONE body line of vertical space — not two — so only one
+  // body line needs the indent.
+  //
+  // Reference layout (matches WeasyPrint): 2 visual lines indented
+  // (Taoiseach... + custodian...), 2 visual lines at full width
+  // (County of Clare... + Water of Tay... Chief of Ó Comáin, send
+  // Greeting.).
   const indentedW = fullWidth - (dropCapWidth + 8);
   const lines = wrapTokensVariableWidth(
     tokens, fonts.serifItalic, fonts.serifItalic, 11,
-    [indentedW, indentedW, fullWidth]  // line 0+1: indented; line 2+: full
+    [indentedW, fullWidth]  // line 0: indented; lines 1+: full
   );
 
   let y = topY - 16;  // tighter continuation gap (was 22)
   for (let i = 0; i < lines.length; i++) {
-    // First two body lines stay indented past the drop-cap; from the
-    // third body line onwards, return to the full-width left margin.
-    const x = (i < 2) ? indentX : leftMargin;
-    const w = (i < 2) ? indentedW : fullWidth;
+    // Body line 0 stays indented past the drop-cap; from body line 1
+    // onwards, return to the full-width left margin.
+    const x = (i === 0) ? indentX : leftMargin;
+    const w = (i === 0) ? indentedW : fullWidth;
     drawLineTokens(page, lines[i], fonts.serifItalic, fonts.serifItalic, 11,
       C_INK, C_BURGUNDY, x, y, w, false);
     y -= lineH;
