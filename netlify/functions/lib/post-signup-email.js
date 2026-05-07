@@ -87,6 +87,7 @@ const URLS = {
   honours:        `${SITE}/members/honours`,
   pedigree:       `${SITE}/pedigree`,
   clanStories:    `${SITE}/clan-stories`,
+  mariaStory:     `${SITE}/stories/maria-kinfauns.html`,
   gathering:      `${SITE}/members/gathering`,
   renewal:        `${SITE}/members/renewal`,
   invite:         `${SITE}/members#minvite`,
@@ -721,7 +722,7 @@ ${p(`From the saint, the line carries through the medieval centuries. The Lords 
 ${p(`Then came the long erasure. The Penal years. The Famine. The Catholic Gaelic clans were systematically dismantled — the lands taken, the chiefs scattered, the names anglicised by clerks who could not hear what their bearers were saying. <strong>Ó Comáin became Cummins, Commins, Commons, Comyn, Coman, Hurley</strong> — the same line wearing different names, the way a river runs the same water through a hundred miles of country. The diaspora carried those scattered names to America, Australia, the cities of Britain. The clan was suppressed for almost eight hundred years.`)}
 ${p(`And here we come to the part that is happening now.`)}
 ${p(`What is occurring is a <strong>revival</strong>. Lawfully recognised, openly authenticated. The Chief's consecration under Brehon law. The recognition by Clans of Ireland. The rebuilding of Newhall as the household seat. The gatherings, the Register, the kindred — none of this is invention. It is restoration. <strong>The line was always there.</strong> What was missing was the household, and that is what is being rebuilt — with your name, now, among those rebuilding it.`)}
-${p(`And there is one more thread, the hardest to tell. The revival in our own day was not begun for legal reasons or for heritage reasons alone. It began in 2023, in a particular grief, in the Chief's own family. <a href="${URLS.clanStories}" style="color:#8B6F32;text-decoration:underline">Maria has told that story in her own words.</a> I will not retell it here. But you should know that the work you are now part of began there — and the love that has gathered the kindred since is the answer the family chose to give it.`)}
+${p(`And there is one more thread, the hardest to tell. The revival in our own day was not begun for legal reasons or for heritage reasons alone. It began in 2023, in a particular grief, in the Chief's own family. <a href="${URLS.mariaStory}" style="color:#8B6F32;text-decoration:underline">Maria has told that story in her own words.</a> I will not retell it here. But you should know that the work you are now part of began there — and the love that has gathered the kindred since is the answer the family chose to give it.`)}
 ${p(`That, in the shape of a Seanchaí's telling, is the story of the line you carry. <strong>You are not joining a club. You are taking your place in a real and lawful royal house, with a saint at its centre, with a four-thousand-year line behind it, in active modern revival.</strong>`)}
 ${p(`I wanted you to hear it told, before the year was out. Sleep on it. Carry it.`)}
 ${ctaButtonHtml('Read the full pedigree of the line', URLS.pedigree)}
