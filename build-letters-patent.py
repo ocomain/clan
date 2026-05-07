@@ -45,7 +45,7 @@ HONOURS = {
             "Cara is the older Irish word for a friend — and in the Brehon-law tradition, "
             "the Chief's <em>cairde</em> were the trusted kin-allies who carried his interests "
             "outward into the wider world. In raising the bearer to this dignity, We name them "
-            "exactly that — a member through whom the clan reaches another."
+            "as such — a friend of the clan, in the older sense of that word."
         ),
         'address_intro': (
             "By Our command, the Privy Council, the Office of the Private Secretary, and the kindred "
@@ -63,8 +63,8 @@ HONOURS = {
         'body_extra': (
             "Ardchara joins the prefix <em>ard-</em> (high, lofty) to <em>cara</em> (friend) — so "
             "the title reads, by its parts, as <em>Friend of high standing</em>. Where Cara names "
-            "the friend, Ardchara names the high friend — the clan's recognition that the bearer "
-            "carries the work of welcome with particular grace."
+            "the friend, Ardchara names the high friend — and the bearer is so named, in the "
+            "particular regard of the Chief and the kindred."
         ),
         'address_intro': (
             "By Our express command, the Privy Council, the Office of the Private Secretary, and "
@@ -82,10 +82,8 @@ HONOURS = {
         'body_voice': 'it hath pleased Us to raise the said member within the clan, from Ardchara to the highest dignity hereunder',
         'body_extra': (
             "Onóir carries the weight of its meaning: where Cara names the friend and Ardchara "
-            "the high friend, Onóir names the dignity itself — a member whose contribution has been "
-            "marked, and who is held by the Chief and the Herald as one of the clan's standing-bearers. "
-            "Few in any generation carry fifteen to the Register; from this raising, the bearer stands "
-            "among those most honoured by Clan Ó Comáin."
+            "the high friend, Onóir names the dignity itself — and the bearer is so held, in "
+            "particular regard, among those most honoured by Clan Ó Comáin."
         ),
         'address_intro': (
             "By Our express command, the Privy Council, the Office of the Private Secretary, and "
@@ -199,9 +197,9 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
   /* BODY — portrait: tall and narrow */
   .body {{
     position: absolute;
-    top: 80mm;
+    top: 73mm;
     left: 28mm; right: 28mm;
-    bottom: 78mm;
+    bottom: 60mm;
     font-family: 'EBG', serif;
     font-size: 10pt;
     line-height: 1.5;
@@ -242,6 +240,12 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
     line-height: 1.15;
     display: block;
     margin-bottom: 3pt;
+  }}
+  .styling-office {{
+    font-family: 'EBG', serif;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--burgundy);
   }}
 
   .body p {{
@@ -328,7 +332,7 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
 
   /* DATE LINE — flows inline at end of body */
   .date-line {{
-    margin-top: 10pt;
+    margin-top: 36pt;
     font-family: 'EBG', serif;
     font-style: italic;
     font-size: 9.5pt;
@@ -492,15 +496,13 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
         custodian of Killone Abbey and the Holy Well of St John the Baptist,
         of Newhall Estate in the County of Clare
         — and also XXVI Baron of Kinfauns and Hereditary Admiral of the Water of Tay —
-        Chief of Ó Comáin, send Greeting.
+        <span class="styling-office">Chief of Ó Comáin</span>, send Greeting.
       </span>
     </div>
 
-    <p>Whereas it hath been represented to Us, by the recommendation of Our Privy Council and the
-    Office of the Private Secretary, that <em>{recipient_name}</em>, by act of welcome and allegiance
-    to the clan, hath brought {h['threshold']} unto the Register at Newhall — and whereas the labour of
-    bringing-others-in is held by Us as a particular grace, deserving of recognition in the keeping
-    of the clan — {h['body_voice']}:</p>
+    <p>Whereas it hath pleased Us, by the recommendation of Our Privy Council and the
+    Office of the Private Secretary, and in recognition of the standing of <em>{recipient_name}</em>
+    within the kindred and the favour We bear them, {h['body_voice']}:</p>
 
     <div class="hero-conferral">
       <div class="hero-pre">In honour now conferred</div>
