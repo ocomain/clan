@@ -746,17 +746,18 @@ function buildEmail10_html(member) {
   const renewalDate = '[renewal_date]'; // literal placeholder — substituted in future
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`The Chief has asked me to write with a practical note: your year of standing in the Register of Clan Ó Comáin renews on <strong>${renewalDate}</strong>, which is approximately one month from today.`)}
+${p(`In the Brehon law of the old kingdoms, <em>a year and a day</em> marked the threshold of claim &mdash; the time after which a thing was held to be truly yours, by your standing in it rather than by mere arrival. Your year in the Register of Clan Ó Comáin reaches that threshold in the coming weeks.`)}
+${p(`The Chief has asked me to write with a practical note: your year of standing renews on <strong>${renewalDate}</strong>, which is approximately one month from today.`)}
 ${p(`There is nothing for you to do — <strong>the Office shall handle the renewal on your behalf using the card you have on file</strong>. The renewal preserves your standing without break, and <strong>Jessica's priority booking for the gathering at Newhall opens to renewed members the moment the renewal lands</strong>. The two are joined: standing intact, seat at Newhall held.`)}
 ${p(`Should you wish to <strong>raise your tier</strong> — to Guardian for the Newhall dinner and printed letter from the Chief, or to Steward for the Roll of Honour, or to Life for standing in perpetuity — please tell me before ${renewalDate} and the renewal will be processed at the new tier instead. The difference is taken at renewal; nothing further is needed from you.`)}
 ${ctaButtonHtml('Manage your renewal', URLS.renewal)}
 ${p(`Should you wish <strong>not to renew</strong>, you may either click cancel in your members' area or write back to me directly. Either is fine, and there is no awkwardness on this side. We've enjoyed having you among the kindred for the year, and your name shall remain in the Register's historical record either way.`)}
-${p(`With kind regards, and the Chief's thanks for the year of your standing,`)}
+${p(`With kind regards, and the Chief's thanks for the year and a day of your standing,`)}
 ${lindaSignatureHtml()}
 `;
   return wrapInChrome({
     eyebrow: 'A note from the Office',
-    heading: 'Your year of standing renews',
+    heading: 'Your year and a day',
     bodyHtml: body,
   });
 }
@@ -949,7 +950,7 @@ async function sendLindaRenewal(member) {
   return sendEmail({
     to: member.email,
     from: FROM_LINDA,
-    subject: 'Your year of standing renews shortly — a practical note',
+    subject: 'Your year and a day in the Register — a practical note on renewal',
     html: buildEmail10_html(member),
   });
 }
