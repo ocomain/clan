@@ -96,6 +96,24 @@ const URLS = {
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────
+
+// Whether the member's certificate has been published — i.e. the Chief
+// has set his seal upon it. The +3 Herald email goes out before the
+// 30-day auto-publish window closes, so a meaningful proportion of
+// recipients are unsealed at the time of send. The Herald variants
+// branch on this state to avoid claiming the seal is set when it is
+// not yet (which would contradict the day-29 reminder that the cert
+// "publishes tomorrow", and would diminish the meaning of the seal
+// itself when it does eventually drop).
+//
+// We accept both the canonical cert_published_at and the legacy
+// cert_locked_at alias — same check the dashboard uses (members/
+// index.html line 638). Defensive against either being null/absent.
+function isCertSealed(member) {
+  if (!member) return false;
+  return !!(member.cert_published_at || member.cert_locked_at);
+}
+
 function escapeHtml(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -325,14 +343,33 @@ function heraldSignatureHtml() {
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1A_html(member) {
   const firstName = addressFormOf(member);
+  const sealed = isCertSealed(member);
+
+  // Both branches share everything except the opening "what state is
+  // your entry in" paragraph. The Cara/path-of-honour content below
+  // is identical regardless of sealing state.
+  //
+  // SEALED: the Chief has signed the cert, the entry is formally
+  //   recorded. Original wording (untouched).
+  //
+  // UNSEALED: the name has been entered into the Register, but the
+  //   seal awaits the member confirming the details of their entry.
+  //   This is true to the actual flow and to the cert-sweep day-29
+  //   reminder language. Quiet CTA to confirm details, with the
+  //   reassurance that the auto-seal at +30 will happen if they do
+  //   nothing — no anxiety, no pressure.
+  const stateOpening = sealed
+    ? p(`Your name has been entered into the Register, in the form you chose, and the Chief has signed and sealed your certificate. <strong>Your place is now formally recorded in the household of Ó Comáin</strong>, and you stand among the kindred of the present revival.`)
+    : p(`Your name has been entered into the Register, in the form you chose, and stands ready for the Chief's seal upon your certificate. The seal is set when you confirm the details of your entry &mdash; a small act, in your members' area &mdash; and from that moment your place is formally recorded in the household of Ó Comáin. Should you wish your entry to stand as it does, the Chief sets his seal automatically thirty days after your joining, and your certificate is sent to you forthwith.`);
+
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
-${p(`Your name has been entered into the Register, in the form you chose, and the Chief has signed and sealed your certificate. <strong>Your place is now formally recorded in the household of Ó Comáin</strong>, and you stand among the kindred of the present revival.`)}
+${stateOpening}
 ${p(`There is a quiet matter I should also draw to your attention. The Chief raises members of the clan, by his own hand, to <strong>three titles of dignity</strong> — Cara, Ardchara, and Onóir. Once raised, the holder is addressed by their title among the kindred — informally as <em>Cara [Firstname]</em>, and formally as <em>[Firstname] [Lastname], Cara of Ó Comáin</em>. It is a real honour, and one many members find moving when their name is read out at the gatherings.`)}
 ${p(`The path to <em>Cara</em> opens with a single bringing-in — by <strong>inviting one friend or family member into the Register</strong>, or by <strong>gifting them a €49 Clan Membership</strong>.`)}
 ${p(`Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward <em>Cara</em> is also kept.`)}
-${ctaButtonHtml("Visit your members' area", URLS.members)}
+${ctaButtonHtml(sealed ? "Visit your members' area" : "Confirm the details of your entry", URLS.members)}
 ${p('With the compliments of the Office, and a welcome from the household of Ó Comáin.')}
 ${heraldSignatureHtml()}
 `;
@@ -381,11 +418,36 @@ ${heraldSignatureHtml()}
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1B_html(member) {
   const firstName = addressFormOf(member);
+  const sealed = isCertSealed(member);
+
+  // 1B has the additional state-dependence that the PUBLIC Register
+  // (the website roll at /register) filters out unpublished members
+  // (see netlify/functions/register.js — `cert_published_at IS NOT
+  // NULL` is part of the visibility query). So the unsealed variant
+  // must defer BOTH the seal-on-cert claim AND the appearance-on-
+  // public-Register claim.
+  //
+  // SEALED: original two-Register sentence + CTA to view the public
+  //   Register. Unchanged.
+  //
+  // UNSEALED: the name is entered, but neither the cert is sealed
+  //   nor does the name yet appear on the public Register. The CTA
+  //   shifts from "view the public Register" (where they don't yet
+  //   appear, which would feel hollow) to "confirm the details of
+  //   your entry" (the act that triggers both consequences).
+  const stateOpening = sealed
+    ? p(`Your name is now in the <strong>Register of Clan Ó Comáin</strong> — both the physical Register kept by hand at Newhall, where the Chief has signed and sealed your certificate, and the <strong>public online Founding Members Register</strong>, where it stands among the founders of the present revival.`)
+    : p(`Your name has been entered into the <strong>Register of Clan Ó Comáin</strong> at Newhall, in the form you chose, and stands ready for the Chief's seal upon your certificate. Once the seal is set, your name takes its place upon the <strong>public online Founding Members Register</strong>, where it will stand among the founders of the present revival, and your certificate is sent to you. The seal is set when you confirm the details of your entry &mdash; a small act, in your members' area; or, should you wish your entry to stand as it does, the Chief sets his seal automatically thirty days after your joining.`);
+
+  const stateCta = sealed
+    ? ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)
+    : ctaButtonHtml('Confirm the details of your entry', URLS.members);
+
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`Your name is now in the <strong>Register of Clan Ó Comáin</strong> — both the physical Register kept by hand at Newhall, where the Chief has signed and sealed your certificate, and the <strong>public online Founding Members Register</strong>, where it stands among the founders of the present revival.`)}
+${stateOpening}
 ${p('Your standing also carries with it certain other courtesies of the household, which Linda will detail in correspondence to come.')}
-${ctaButtonHtml('View the public Founding Members Register', URLS.publicRegister)}
+${stateCta}
 ${p(`A short word about a quiet privilege of the Register. The Chief raises members, by his own hand, to <strong>three titles of dignity</strong> — <em>Cara</em>, <em>Ardchara</em>, and <em>Onóir</em>. Once raised, the Herald is commanded to make the title known among the kindred, and the holder is addressed by it thereafter — informally as <em>Cara [Firstname]</em>, and formally as <em>[Firstname] [Lastname], Cara of Ó Comáin</em>. It is a real honour, and one many members find moving when their name is read out at the gatherings.`)}
 ${p(`The path to <em>Cara</em> opens by bringing one person into the kindred — either by <strong>inviting a friend or family member to join</strong>, or by <strong>gifting a €49 Clan Membership to someone who would value your present</strong>.`)}
 ${p(`The clan is built for friends and family to share; the title marks those who do the sharing. Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward <em>Cara</em> is also kept.`)}
@@ -408,15 +470,25 @@ ${heraldSignatureHtml()}
 // ─────────────────────────────────────────────────────────────────────
 function buildEmail1C_html(member) {
   const firstName = addressFormOf(member);
+  const sealed = isCertSealed(member);
+
+  // 1C is the opt-out variant. The opt-out paragraph is unchanged
+  // by sealing state — it speaks to the privacy choice, not to the
+  // cert status. Only the opening "what state is your entry in"
+  // paragraph branches.
+  const stateOpening = sealed
+    ? p('Your name has been entered into the Register, in the form you chose. The Chief has signed and sealed your certificate, and your place is formally recorded in the household of Ó Comáin.')
+    : p(`Your name has been entered into the Register at Newhall, in the form you chose, and stands ready for the Chief's seal upon your certificate. The seal is set when you confirm the details of your entry &mdash; a small act, in your members' area; or, should you wish your entry to stand as it does, the Chief sets his seal automatically thirty days after your joining, and your certificate is sent to you forthwith.`);
+
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p('It is the Herald who keeps the Register of Clan Ó Comáin, and it is from that office that I write to you.')}
-${p('Your name has been entered into the Register, in the form you chose. The Chief has signed and sealed your certificate, and your place is formally recorded in the household of Ó Comáin.')}
+${stateOpening}
 ${p(`I have noted that you have chosen <strong>not to appear on the public Register</strong>. That is entirely your right, and it is observed. Your standing as Guardian, Steward, or Life Member is the same — only the public visibility differs, and your courtesies of the household carry as fully as for any other member at your tier.`)}
 ${p(`A short word about a quiet privilege of the Register. The Chief raises members, by his own hand, to <strong>three titles of dignity</strong> — <em>Cara</em>, <em>Ardchara</em>, and <em>Onóir</em>. Once raised, the Herald is commanded to make the title known among the kindred, and the holder is addressed by it thereafter — informally as <em>Cara [Firstname]</em>, and formally as <em>[Firstname] [Lastname], Cara of Ó Comáin</em>. Your name need not appear on the public Register for this to be so.`)}
 ${p(`The path to <em>Cara</em> opens by bringing one person into the kindred — either by <strong>inviting a friend or family member to join</strong>, or by <strong>gifting a €49 Clan Membership to someone who would value your present</strong>.`)}
 ${p(`The clan is built for friends and family to share; the title marks those who do the sharing. Both invitations and gifts can be sent from your <a href="${URLS.members}" style="color:#8B6F32;text-decoration:underline">members' area</a>, where the count toward <em>Cara</em> is also kept.`)}
-${ctaButtonHtml("Visit your members' area", URLS.members)}
+${ctaButtonHtml(sealed ? "Visit your members' area" : "Confirm the details of your entry", URLS.members)}
 ${p('With the compliments of the Office.')}
 ${heraldSignatureHtml()}
 `;

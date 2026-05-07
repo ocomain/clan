@@ -137,7 +137,13 @@ exports.handler = async () => {
       const { earliest, latest } = bucketRange(now, 3);
       const { data: targets, error } = await supa()
         .from('members')
-        .select('id, email, name, tier, public_register_visible, sponsor_titles_awarded, created_at')
+        // cert_published_at + cert_locked_at: required by the Herald
+        // builders (post-signup-email.js: isCertSealed). The +3 send
+        // can land on either side of the publish event, so the email
+        // copy branches on actual seal state at send-time. Without
+        // these fields the builder would always default to the
+        // unsealed branch.
+        .select('id, email, name, tier, public_register_visible, sponsor_titles_awarded, created_at, cert_published_at, cert_locked_at')
         .eq('clan_id', clan_id)
         .eq('status', 'active')
         .is('post_signup_email_3_sent_at', null)
