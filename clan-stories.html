@@ -123,6 +123,23 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 .cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
 .cs-featured-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
 
+/* Magazine-style index cards. Each card is a clickable link to a
+   dedicated /stories/[slug].html page. Two-up on desktop, stacked
+   on mobile. Subtle hover lift signals interactivity without the
+   loud SaaS card-elevation typical of marketing pages. */
+.cs-magazine{padding:72px 0 56px;background:var(--cream-light)}
+.cs-magazine-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1080px;margin:0 auto}
+.cs-magazine-card{display:block;text-decoration:none;color:inherit;background:var(--white);border:1px solid var(--gold-border);transition:box-shadow .25s ease,transform .25s ease}
+.cs-magazine-card:hover{box-shadow:0 14px 40px rgba(12,26,12,.18);transform:translateY(-2px)}
+.cs-magazine-card:hover .cs-magazine-title{color:var(--burgundy)}
+.cs-magazine-portrait{aspect-ratio:3/4;background:var(--ink) center/cover no-repeat}
+.cs-magazine-content{padding:28px 28px 26px}
+.cs-magazine-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
+.cs-magazine-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;line-height:1.22;color:var(--ink);margin-bottom:10px;transition:color .2s ease}
+.cs-magazine-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--ink-muted);margin-bottom:18px;line-height:1.45}
+.cs-magazine-excerpt{font-family:'EB Garamond',serif;font-size:16px;line-height:1.65;color:var(--ink-soft);margin-bottom:22px}
+.cs-magazine-cta{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+
 .cs-grid-section{padding:72px 0;background:var(--cream)}
 .cs-grid-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:14px}
 .cs-grid-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3vw,38px);font-weight:400;text-align:center;color:var(--ink);margin-bottom:48px}
@@ -152,6 +169,9 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
   .cs-featured-portrait{max-width:280px;margin:0 auto}
   .cs-grid{grid-template-columns:1fr;gap:24px}
   .cs-featured{padding:48px 0 40px}
+  .cs-magazine-grid{grid-template-columns:1fr;gap:28px}
+  .cs-magazine{padding:48px 0 36px}
+  .cs-magazine-portrait{aspect-ratio:1/1}
 }
 </style>
 
@@ -204,418 +224,66 @@ function toggleMenu(){
   <div class="si">
     <div class="eyebrow">The voices of the clan</div>
     <h1 style="font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Clan Stories</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6);max-width:560px;margin:0 auto">Members across the world tell the stories that brought them home to Clan Ó Comáin — and the chief on why the clan rises again now.</p>
+    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6);max-width:560px;margin:0 auto">Members across the world tell the stories that brought them home to Clan Ó Comáin.</p>
   </div>
 </div>
 
 <!-- ============================================================
-     INAUGURAL FEATURED STORY — placeholder until Fergus is ready
+     STORIES INDEX — magazine-style two-card grid
      ============================================================
-     The page is currently NOT linked from the global nav (removed
-     in the same commit as this placeholder swap). Anyone arriving
-     here did so via direct link or via the membership-page Steward
-     perk anchor. They see a respectful 'coming soon' message
-     rather than the AI structural scaffolding.
+     Refactored 7 May 2026: previously the page rendered Maria's
+     full piece and Stephen's full piece inline as two stacked
+     cs-featured-grid sections. Now each story lives at its own
+     /stories/[slug].html dedicated page, and this index renders
+     compact cards that link to those pages. The pattern scales:
+     when more member voices publish, the grid simply gains more
+     cards without further refactoring.
 
-     When Fergus has written his piece in his own voice:
-       1. Replace the .cs-coming-soon block below with the
-          structural-draft .cs-featured-grid block preserved as
-          an HTML comment at the bottom of this section
-       2. Replace [BRACKETED] placeholders in that draft with
-          Fergus's actual words
-       3. Replace the chief_letter.png placeholder with a real
-          portrait of Fergus
-       4. Replace the cs-featured-pullquote placeholder text
-          with the strongest line from Fergus's body copy
-       5. Restore the 'Stories' nav link sitewide (revert this
-          commit's nav-strip changes)
+     Each card is a clickable anchor wrapping the whole portrait/
+     content block. Hover lifts the shadow and shifts the title
+     to burgundy — quiet feedback that the card is interactive
+     without resorting to button chrome.
+
+     Both pieces' canonical OG metadata lives on their dedicated
+     pages, so when readers click Facebook/WhatsApp share on a
+     dedicated page the scraper resolves to that page's OG. This
+     /clan-stories.html page keeps Maria's OG metadata in <head>
+     for backwards compatibility — historical shares of this URL
+     (before 7 May) all resolved to her piece, so we preserve
+     that behaviour rather than swap to a generic index OG.
      ============================================================ -->
-<!-- ============================================================
-     FEATURED STORY — Maria's piece (first story, founding story)
-     ============================================================
-     Maria Kinfauns, wife of the Chief and Chancellor of the clan,
-     has written the founding story of the clan revival — the story
-     of their son Ronan and the family's choice to honour him not
-     through legal battle but through building. Published 6 May 2026.
-
-     LAYOUT: two-column .cs-featured-grid with portrait. Uses the
-     maria_kinfauns.jpg that lives in the repo root and is already
-     used on the privy-council page. background-position: center top
-     ensures her face stays prominent in frame regardless of the
-     3:4 crop the .cs-featured-portrait imposes (her natural 2:3
-     image gets a small top/bottom crop with cover; positioning to
-     'top' keeps her face untouched, with the small crop falling
-     in the foot/staircase-base area instead).
-
-     PULLQUOTE: 'Then we chose love' — the pivot of the whole piece,
-     the moment everything turns from grief into building. Captures
-     the founding ethos of the clan revival.
-
-     The structural draft for Fergus's piece (preserved below as a
-     comment) is kept for future use — Fergus may still want to
-     write a companion piece in his own voice when he is ready.
-     ============================================================ -->
-<section class="cs-featured">
+<section class="cs-magazine">
   <div class="si">
-    <div class="cs-featured-grid">
-      <div class="cs-featured-portrait" style="background-image:url('maria_kinfauns.jpg');background-position:center top" role="img" aria-label="Portrait of Maria Kinfauns, wife of the Chief and Chancellor of Clan Ó Comáin, photographed at Newhall House">
-      </div>
-      <div>
-        <div class="cs-featured-eyebrow">Story № 1 · The Founding</div>
-        <h2 class="cs-featured-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h2>
-        <p class="cs-featured-byline">Maria Kinfauns &middot; Wife of the Chief, Chancellor of Clan Ó Comáin · Newhall House, County Clare</p>
+    <div class="cs-magazine-grid">
 
-        <div class="cs-featured-body">
-          <p>There are moments in life that arrive without warning &mdash; moments that fracture everything you thought you understood about the world. The sudden loss of someone you love, taken in a way that makes no sense, leaves you searching&hellip; not just for answers, but for meaning. It forces you to ask the deepest questions: What truly mattered in their life? What remains when a life ends? How fragile is the thread that separates breath from silence?</p>
-
-          <p>This is where our journey began.</p>
-
-          <p>Ronan was the very heartbeat of our family. Nestled between his older brother and younger sister, he was our bridge, our light, our constant source of warmth. He was, without question, the most loving and open-hearted soul we have ever known. He adored his older brother with quiet reverence and stood as a fierce, unwavering protector to his little sister.</p>
-
-          <p>But Ronan&rsquo;s love did not stop at family &mdash; it reached everyone.</p>
-
-          <p>He had a rare and extraordinary gift: the ability to love without condition, without judgment, without boundaries. Age, background, belief &mdash; it meant nothing to him. To Ronan, every person mattered. And he had a way of making you feel it. Truly feel it. People left his presence lighter, smiling, laughing &mdash; changed, even if just for a moment.</p>
-
-          <p>Ronan didn&rsquo;t just live life.</p>
-
-          <p>He <em>embraced</em> it.</p>
-
-          <p>And his philosophy was simple, yet profound: love, in action.</p>
-
-          <p>Then, in 2023, everything changed.</p>
-
-          <p>Through circumstances that should not have happened, Ronan was taken from us suddenly and tragically at just 33 years old. One moment he was here &mdash; vibrant, full of life &mdash; and the next, he was gone. The devastation that followed cannot be measured. It shattered us, reaching into every corner of our family and leaving a silence that words cannot fill.</p>
-
-          <p>There is no name for a parent who loses a child.</p>
-
-          <p>Because it is something that should never happen.</p>
-
-          <p>In the wake of that loss, we stood at a crossroads. We could allow ourselves to be consumed by a long and painful legal battle &mdash; one that might drain what little strength we had left and erode our faith in people &mdash; or we could choose another path.</p>
-
-          <p>A path Ronan himself would have chosen.</p>
-
-          <p>We knew, with a clarity that only grief can bring, that nothing &mdash; no outcome, no justice &mdash; could bring our son back. And so, with heavy hearts but steady resolve, we accepted an apology.</p>
-
-          <blockquote class="cs-featured-pullquote">Then we chose love.</blockquote>
-
-          <p>We chose connection.</p>
-
-          <p>We chose to honour Ronan not through anger, but through everything he stood for.</p>
-
-          <p>Family. Friendship. Belonging.</p>
-
-          <p>We began to look backward &mdash; into our history, into our roots &mdash; and outward, reaching across oceans to gather those who, in some way, shared in our story. What started as remembrance became something more&hellip; something living.</p>
-
-          <p>In 2025, in Ronan&rsquo;s honour, that journey gave rise to the revival of Clan Ó Comáin.</p>
-
-          <p>After eight centuries of silence, it lives again.</p>
-
-          <p>Officially recognised by the clans of Ireland under the patronage of President Michael D. Higgins, Clan Ó Comáin now stands as a legacy &mdash; not just of ancestry, but of love. A living, breathing tribute to a man who believed in people, who brought them together, and who made the world brighter simply by being in it.</p>
-
-          <p>This is Ronan&rsquo;s legacy.</p>
-
-          <p>Not loss &mdash; but connection.</p>
-
-          <p>Not silence &mdash; but belonging.</p>
-
-          <p>Not an ending &mdash; but a continuation.</p>
-
-          <p>Above all, we hold fast to one truth:</p>
-
-          <p style="font-style:italic;color:var(--burgundy);text-align:center;margin:32px 0;font-size:20px"><em>Caithfidh an stair a bheith i réim</em> &mdash; History must prevail.</p>
-
-          <p>And through it, so will love.</p>
-
-          <p>We invite you to join us, to learn more, and to become part of this living story.</p>
-
-          <!-- ──────────────────────────────────────────────────────────────
-               Share controls (added 7 May 2026 with Council direction).
-               Placed AFTER Maria's closing line, BEFORE the patrons aside,
-               so readers encounter the share option only after they've
-               finished reading the piece. Sharing before reading = marketing;
-               sharing after reading = honouring.
-
-               Typographic treatment, not iconographic — quiet text links
-               matching the editorial palette of the page (italic eyebrow
-               line + four equal-weight share targets in body type with
-               gold rule between them). No coloured social-platform circles,
-               no loud SaaS chrome. The piece deserves restraint.
-
-               Targets:
-                 - Facebook (paste-link share via sharer.php)
-                 - Email (mailto with prefilled subject + body)
-                 - Copy link (clipboard API, with toast confirmation)
-                 - WhatsApp (mobile-friendly, especially for diaspora)
-
-               'X' (Twitter) deliberately omitted — its share preview is
-               unreliable, its audience for this kind of piece is narrow,
-               and including it would clutter for marginal value. Add later
-               if needed.
-               ────────────────────────────────────────────────────────────── -->
-          <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--gold-light)">
-            <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px">Share this story</div>
-            <div style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink)">
-              <a href="#" id="csShareFb" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Facebook</a>
-              <span style="color:var(--gold-light);margin:0 12px">·</span>
-              <a href="#" id="csShareEmail" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Email</a>
-              <span style="color:var(--gold-light);margin:0 12px">·</span>
-              <a href="#" id="csShareWa" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">WhatsApp</a>
-              <span style="color:var(--gold-light);margin:0 12px">·</span>
-              <a href="#" id="csShareCopy" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Copy link</a>
-              <span id="csShareToast" style="display:none;margin-left:14px;font-style:italic;font-size:14px;color:var(--gold-deep)">Link copied</span>
-            </div>
-          </div>
-
-          <script>
-          (function() {
-            // Story metadata for share targets. Defaults match the canonical
-            // values for Maria's piece — when other stories are published,
-            // each story's section can override these via data attributes
-            // or per-story script blocks.
-            var url = 'https://www.ocomain.org/clan-stories.html';
-            var title = 'The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence';
-            var summary = 'Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of loss, remembrance, and the choice to honour through building.';
-
-            var fb = document.getElementById('csShareFb');
-            var em = document.getElementById('csShareEmail');
-            var wa = document.getElementById('csShareWa');
-            var cp = document.getElementById('csShareCopy');
-            var toast = document.getElementById('csShareToast');
-
-            if (fb) fb.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
-            if (fb) fb.target = '_blank'; if (fb) fb.rel = 'noopener';
-            if (em) em.href = 'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(summary + '\n\n' + url);
-            if (wa) wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + '\n\n' + url);
-            if (wa) wa.target = '_blank'; if (wa) wa.rel = 'noopener';
-
-            if (cp) cp.addEventListener('click', function(e) {
-              e.preventDefault();
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function() {
-                  toast.style.display = 'inline';
-                  setTimeout(function() { toast.style.display = 'none'; }, 2400);
-                }).catch(function() {
-                  // Fallback: show a prompt with the URL pre-selected
-                  window.prompt('Copy this link:', url);
-                });
-              } else {
-                window.prompt('Copy this link:', url);
-              }
-            });
-          })();
-          </script>
-
-          <!-- Quiet cross-link to the patrons page (added 6 May 2026, paired with
-               the reciprocal link from patrons -> clan-stories). Italic, muted,
-               extra top margin so it reads as an editorial aside under Maria's
-               closing line rather than a CTA pinned to it. -->
-          <p style="margin-top:40px;font-style:italic;font-size:14.5px;color:var(--ink-muted);line-height:1.7">
-            Ronan&rsquo;s memorial &mdash; with his photograph, his dates, and the blessing &mdash; lives on the <a href="/patrons.html" style="color:var(--gold-deep)">patrons page</a>.
-          </p>
+      <!-- Story № 1 · The Founding — Maria Kinfauns -->
+      <a class="cs-magazine-card" href="/stories/maria-kinfauns.html">
+        <div class="cs-magazine-portrait" style="background-image:url('maria_kinfauns.jpg');background-position:center top" role="img" aria-label="Portrait of Maria Kinfauns at Newhall House"></div>
+        <div class="cs-magazine-content">
+          <div class="cs-magazine-eyebrow">Story № 1 · The Founding</div>
+          <h2 class="cs-magazine-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h2>
+          <p class="cs-magazine-byline">Maria Kinfauns &middot; Wife of the Chief, Chancellor of Clan Ó Comáin</p>
+          <p class="cs-magazine-excerpt">After the loss of her son Ronan in 2023, Maria writes of the choice the family made to honour him not through anger but through building &mdash; and how that choice became the rebirth of an ancient royal house.</p>
+          <div class="cs-magazine-cta">Read the founding story &rarr;</div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </a>
 
-<!-- ============================================================
-     STORY № 2 — STEPHEN CLARKE
-     ============================================================
-     Stephen Clarke, Cummins line, North West Tasmania. Born in
-     Rhodesia (now Zimbabwe), Tasmanian for 25 years; Irish by
-     Foreign Births Register through his second great-grandfather
-     William Cummins of Cork (1838–1908) and Anne Hollywood.
-     Travels to Ireland in 2027 as a Fellow of The Gottstein Trust
-     to study continuous cover forestry — a real return to the
-     soil his ancestors left.
-
-     Original prose was a single dense block; published here with
-     three paragraph breaks (at "Though my physical path...",
-     "It is upon the strength...", "The science of my soul...")
-     and the pullquote "I am bound to that land by law and spirit"
-     lifted from para 3 to anchor the piece's pivot from blood
-     to law to DNA. Stephen approved the editorial pass.
-
-     Title "My blood remembers the north" is Stephen's own line
-     from the piece — chosen because it carries the whole arc
-     (south by life, north by lineage) in seven words.
-
-     Caption beneath the portrait surfaces his profession (the
-     trees in the photograph are not decorative — they are his
-     working life) and signals the 2027 return.
-
-     Share buttons target /stories/stephen-clarke.html so the
-     Facebook OG scrape resolves to Stephen's piece (his portrait,
-     his title, his line) rather than Maria's at /clan-stories.html.
-     ============================================================ -->
-<section class="cs-featured" style="border-top:1px solid var(--gold-border)">
-  <div class="si">
-    <div class="cs-featured-grid">
-      <div>
-        <div class="cs-featured-portrait" style="background-image:url('stephen_clarke.jpg');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke, Cummins line, photographed in a young tree plantation in North West Tasmania"></div>
-        <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;line-height:1.6;color:var(--ink-muted);margin-top:14px;text-align:center;max-width:320px;margin-left:auto;margin-right:auto">Stephen Clarke is a Registered Professional Forester in North West Tasmania. He travels to Ireland in 2027 as a Fellow of The Gottstein Trust to study continuous cover forestry. His mother, Margo, will accompany him.</p>
-      </div>
-      <div>
-        <div class="cs-featured-eyebrow">Story № 2 · The Return</div>
-        <h2 class="cs-featured-title">My blood remembers the north</h2>
-        <p class="cs-featured-byline">Stephen Clarke &middot; Cummins line · North West Tasmania</p>
-
-        <div class="cs-featured-body">
-          <p>My life is a tapestry woven from distant red earth and salt-misted green, a journey spanning continents and generations. I was born under the vast skies of Zimbabwe &mdash; then Rhodesia &mdash; but for a quarter of a century, my roots have delved deep into the quiet, rugged beauty of North West Tasmania.</p>
-
-          <p>Though my physical path led south, my blood remembers the north. I carry the lineage of the Emerald Isle, tracing the ghost of my second great-grandfather, William Cummins. Born in the heart of Cork in 1838, he moved through the world until his journey ended in the storied streets of Dublin seventy years later. Through him, and the mysterious Anne Hollywood, the thread of the Cummins name endured, passing through my grandfather, William, whose life story remains a cherished testament to our shared past.</p>
-
-          <p>It is upon the strength of this birthright that my mother, Margo, and I claim our place in the Irish story. Though the Irish Sea has never touched my skin and my feet have yet to find the soil of my ancestors, I am bound to that land by law and spirit. My name is inscribed in the Book of Foreign Births, and I hold an Irish passport &mdash; a key to a home I have only visited in dreams.</p>
-
-          <blockquote class="cs-featured-pullquote">I am bound to that land by law and spirit.</blockquote>
-
-          <p>The science of my soul confirms what the heart suspects: my DNA sings with the signature of the native Irish. The map of my heritage points unmistakably toward Munster, a silent, genetic whisper from the hills of Cork that has survived the long trek across oceans and time to dwell here with me, between the mountains and the Tasmanian sea.</p>
-
-          <!-- Per-story share controls. IDs suffixed with '2' to avoid
-               collision with Maria's share controls earlier on the page.
-               Share URL targets the dedicated /stories/stephen-clarke.html
-               so Facebook's OG scrape resolves to Stephen's metadata. -->
-          <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--gold-light)">
-            <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px">Share this story</div>
-            <div style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink)">
-              <a href="#" id="csShareFb2" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Facebook</a>
-              <span style="color:var(--gold-light);margin:0 12px">·</span>
-              <a href="#" id="csShareEmail2" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Email</a>
-              <span style="color:var(--gold-light);margin:0 12px">·</span>
-              <a href="#" id="csShareWa2" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">WhatsApp</a>
-              <span style="color:var(--gold-light);margin:0 12px">·</span>
-              <a href="#" id="csShareCopy2" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Copy link</a>
-              <span id="csShareToast2" style="display:none;margin-left:14px;font-style:italic;font-size:14px;color:var(--gold-deep)">Link copied</span>
-            </div>
-          </div>
-
-          <script>
-          (function() {
-            var url = 'https://www.ocomain.org/stories/stephen-clarke.html';
-            var title = 'My blood remembers the north';
-            var summary = 'Stephen Clarke writes from North West Tasmania of the Cummins line that endured from Cork through Dublin, of dual citizenship by Foreign Births Register, and of a DNA signature pointing unmistakably to Munster.';
-
-            var fb = document.getElementById('csShareFb2');
-            var em = document.getElementById('csShareEmail2');
-            var wa = document.getElementById('csShareWa2');
-            var cp = document.getElementById('csShareCopy2');
-            var toast = document.getElementById('csShareToast2');
-
-            if (fb) { fb.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url); fb.target = '_blank'; fb.rel = 'noopener'; }
-            if (em) em.href = 'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(summary + '\n\n' + url);
-            if (wa) { wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + '\n\n' + url); wa.target = '_blank'; wa.rel = 'noopener'; }
-
-            if (cp) cp.addEventListener('click', function(e) {
-              e.preventDefault();
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(function() {
-                  toast.style.display = 'inline';
-                  setTimeout(function() { toast.style.display = 'none'; }, 2400);
-                }).catch(function() { window.prompt('Copy this link:', url); });
-              } else {
-                window.prompt('Copy this link:', url);
-              }
-            });
-          })();
-          </script>
+      <!-- Story № 2 · The Return — Stephen Clarke -->
+      <a class="cs-magazine-card" href="/stories/stephen-clarke.html">
+        <div class="cs-magazine-portrait" style="background-image:url('stephen_clarke.jpg');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke in a young tree plantation in North West Tasmania"></div>
+        <div class="cs-magazine-content">
+          <div class="cs-magazine-eyebrow">Story № 2 · The Return</div>
+          <h2 class="cs-magazine-title">My blood remembers the north</h2>
+          <p class="cs-magazine-byline">Stephen Clarke &middot; Cummins line · North West Tasmania</p>
+          <p class="cs-magazine-excerpt">Stephen writes from North West Tasmania of a Cork lineage that endured across three continents &mdash; and of the return to Ireland he plans next year as a Fellow of The Gottstein Trust.</p>
+          <div class="cs-magazine-cta">Read Stephen&rsquo;s story &rarr;</div>
         </div>
-      </div>
+      </a>
+
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     STRUCTURAL DRAFT — PRESERVED FOR FERGUS
-     ============================================================
-     This is the AI-generated scaffolding that was visible on the
-     page until the user (correctly) pointed out it shouldn't ship
-     before Fergus writes the real piece. Preserved here as a
-     comment so Fergus has paragraph shapes / transition logic /
-     length calibration to work from when he's ready.
-
-     INSTRUCTIONS FOR FERGUS (or whoever does the rewrite):
-       1. Replace the .cs-coming-soon block ABOVE with the
-          .cs-featured-grid block below
-       2. Fill every [BRACKETED] placeholder with real specifics
-          (Ronan's age, when, how, who he was; what happened in
-          you after; what you want members to feel)
-       3. Heavily rewrite the connecting prose into your own
-          voice — the AI cadence will sound off if left intact
-       4. Pull the strongest single line from your body into the
-          .cs-featured-pullquote (it should be the line you
-          didn't expect to write)
-       5. Replace chief_letter.png in the portrait div with a
-          real portrait of Fergus
-       6. Restore the 'Stories' nav link across the site
-
-<section class="cs-featured">
-  <div class="si">
-    <div class="cs-featured-grid">
-      <div class="cs-featured-portrait" style="background-image:url('chief_letter.png')" role="img" aria-label="Portrait of Fergus Commane, The Commane, Chief of Clan Ó Comáin">
-      </div>
-      <div>
-        <div class="cs-featured-eyebrow">Story № 1 · The Chief</div>
-        <h2 class="cs-featured-title">Why I am bringing back the clan</h2>
-        <p class="cs-featured-byline">Fergus Commane, The Commane — Chief of Clan Ó Comáin · Newhall House, County Clare</p>
-
-        <div class="cs-featured-body">
-          <p>People ask me why now. Why, after eight centuries of silence, the clan should rise again in 2026. The honest answer is that it began with my son.</p>
-
-          <p>Ronan Ó Comáin was [age] years old when he died on [date]. [One or two sentences in Fergus's own voice about who Ronan was — what he loved, what made him who he was. Specifics matter here. Music? Books? The land at Newhall? The kind of detail that lets a reader feel they have met him in a single line.]</p>
-
-          <p>[Fergus, in your own words: what happened in you after Ronan was gone. The decision to do this work. Was it immediate or did it come slowly? Was it grief, was it duty, was it something he had asked of you, was it something you chose for him? The honest sentence here will carry the whole piece.]</p>
-
-          <blockquote class="cs-featured-pullquote">[A single sentence from above, lifted out — the most important line Fergus writes. Often the line he didn't expect to write.]</blockquote>
-
-          <p>Clan Ó Comáin has existed since the seventh century. It is recorded in the annals; it is in the ground at Cahercommane; it is in the bones of those who carry the name today across Ireland and the diaspora. What was lost was not the clan itself but the gathering of it — the act of saying, together, we are still here. That is the work. [Fergus may want to make this his own; the paragraph reads as me speaking, not him.]</p>
-
-          <p>So when a member joins now, in this first year of the revival, they are joining something that began in a particular grief and has become something larger than it. [Fergus: a sentence here about what you want members to feel. Welcome? Witness? Kinship?] Whatever they bring — a Cummins surname misspelled across three continents, a great-grandmother who left Clare in 1880, a single Y-DNA match they didn't know what to do with — they bring it home.</p>
-
-          <p>The clan is rising in his name. Caithfidh an stair a bheith i réim. History must prevail.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-============================================================ -->
-
-<!-- ============================================================
-     RECENT STORIES GRID
-     ============================================================
-     At launch this is empty — the page is shipping with one
-     featured piece (Fergus). As Steward+ members submit, and as
-     the clan interviews other members regardless of tier, short-
-     form cards (~80-120 words + portrait) populate this grid.
-
-     The empty-state .cs-empty block below is what visitors see
-     while no entries are live. Replace it with .cs-card divs
-     once entries start arriving. Three cards per row on desktop,
-     one per row on mobile (handled by .cs-grid CSS).
-
-     Sample card (for reference, commented out):
-       <div class="cs-card">
-         <div class="cs-card-portrait" style="background-image:url('...')"></div>
-         <div class="cs-card-name">Mary Cummins</div>
-         <div class="cs-card-meta">Boston, MA · Cummins line</div>
-         <div class="cs-card-body">Short paragraph (~80-120 words)
-         in the member's own voice — why they joined, what
-         the clan means to them, lineage line.</div>
-       </div>
-     ============================================================ -->
-<section class="cs-grid-section">
-  <div class="si">
-    <div class="cs-grid-eyebrow">Recent stories</div>
-    <h2 class="cs-grid-title">The clan, in the voices of its members</h2>
-
-    <!-- EMPTY STATE — replace this <div> with a .cs-grid containing
-         .cs-card entries when first short-form submissions arrive. -->
-    <div class="cs-empty">
-      <div class="cs-empty-title">More stories arriving soon</div>
-      <p class="cs-empty-body">As members across the world join, their voices will gather here — short stories of why they came home, who they came home to, and what the clan means in their family. Steward members and above can submit theirs from the members' area. The clan is also pleased to interview any member with a story to tell, regardless of tier.</p>
-    </div>
-  </div>
-</section>
 
 <!-- CTA -->
 <section class="cs-cta">
