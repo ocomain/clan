@@ -281,7 +281,7 @@ function drawTopHeader(page, fonts, images) {
 function drawIssuingAuthority(page, fonts) {
   const leftMargin = 28 * 2.835;
   const rightMargin = 28 * 2.835;
-  const topY = H - 230;
+  const topY = H - 218;
   const lineH = 14;
   const fullWidth = W - leftMargin - rightMargin;
 
@@ -350,7 +350,7 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   const lineH = 14;                 // 10pt × 1.4 line-height
   const bodyW = W - leftMargin - rightMargin;
 
-  let y = H - 340;  // start below the issuing authority
+  let y = H - 310;  // start below the issuing authority — ~22pt below the last styling line
 
   // ── WHEREAS PARAGRAPH ─────────────────────────────────────────
   // "Whereas it hath been represented to Us, by Our Privy Council
@@ -454,12 +454,11 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
   });
 
   // ── DATE LINE ─────────────────────────────────────────────────
-  // Positioned absolutely above the foot, not relatively from the
-  // address paragraph — guarantees the date line sits above the
-  // signature block regardless of how much body content precedes.
-  // foot anchor is 18mm from bottom; foot block is ~120pt tall;
-  // date line sits ~30pt above the top of the foot block.
-  const dateY = (18 * 2.835) + 130;
+  // Positioned RELATIVELY from the address paragraph (40pt of breath
+  // above the date), so it follows naturally from the body rather
+  // than orphaning in the middle of an empty band. The foot stays
+  // independently anchored at the bottom.
+  y -= 40;
   const dateText = `Given under Our hand and seal at the seat of \u00d3 Com\u00e1in, this third day of May, in the year of Our Lord two thousand and twenty-six.`;
   drawWrappedCentered(page, {
     text: dateText,
@@ -467,7 +466,7 @@ function drawBodyBlocks(page, fonts, h, recipientName) {
     size: 9.5,
     color: C_INK_SOFT,
     centerX: W / 2,
-    y: dateY,
+    y,
     width: bodyW * 0.85,
     lineHeight: 13,
   });
