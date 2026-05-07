@@ -105,10 +105,28 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 .cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
 .cs-featured-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
 
+/* "Another voice of the clan" — compact horizontal card placed
+   between the piece body and the footer, pointing the reader at
+   another story. Whole card is clickable. Stacks on mobile. */
+.cs-next-story{padding:56px 0;background:var(--cream-mid);border-top:1px solid var(--gold-border)}
+.cs-next-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:24px}
+.cs-next-card{display:flex;gap:24px;align-items:center;max-width:680px;margin:0 auto;background:var(--white);border:1px solid var(--gold-border);text-decoration:none;color:inherit;padding:20px;transition:box-shadow .25s ease,transform .25s ease}
+.cs-next-card:hover{box-shadow:0 10px 30px rgba(12,26,12,.14);transform:translateY(-2px)}
+.cs-next-card:hover .cs-next-title{color:var(--burgundy)}
+.cs-next-portrait{width:140px;height:180px;flex-shrink:0;background:var(--ink) center/cover no-repeat}
+.cs-next-content{flex:1;min-width:0}
+.cs-next-card-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:8px}
+.cs-next-title{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;line-height:1.25;color:var(--ink);margin-bottom:6px;transition:color .2s ease}
+.cs-next-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:13.5px;color:var(--ink-muted);margin-bottom:14px;line-height:1.5}
+.cs-next-cta{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+
 @media (max-width:780px){
   .cs-featured-grid{grid-template-columns:1fr;gap:32px}
   .cs-featured-portrait{max-width:280px;margin:0 auto}
   .cs-featured{padding:48px 0 40px}
+  .cs-next-card{flex-direction:column;align-items:stretch;text-align:center;gap:16px;padding:16px}
+  .cs-next-portrait{width:120px;height:120px;margin:0 auto;aspect-ratio:1/1}
+  .cs-next-story{padding:40px 0}
 }
 </style>
 
@@ -298,13 +316,38 @@ function toggleMenu(){
           <p style="margin-top:40px;font-style:italic;font-size:14.5px;color:var(--ink-muted);line-height:1.7">
             Ronan&rsquo;s memorial &mdash; with his photograph, his dates, and the blessing &mdash; lives on the <a href="/patrons.html" style="color:var(--gold-deep)">patrons page</a>.
           </p>
-
-          <p style="margin-top:24px;font-style:italic;font-size:14.5px;color:var(--ink-muted);line-height:1.7">
-            More voices of the clan live on the <a href="/clan-stories.html" style="color:var(--gold-deep)">Clan Stories</a> page.
-          </p>
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     NEXT VOICE — Stephen Clarke
+     ============================================================
+     Editorial pointer at the bottom of Maria's piece, leading the
+     reader to another voice on the page. With only two stories
+     live, the relationship is simply Maria ↔ Stephen. As more
+     stories publish, this card should rotate to the most-recent
+     OTHER story (or remain a flagship "first member voice"
+     pointer at Stephen — that's a curatorial choice).
+
+     The phrasing "another voice of the clan" deliberately avoids
+     prev/next semantics, which break down at small story counts
+     and impose an order the reader didn't ask for.
+     ============================================================ -->
+<section class="cs-next-story">
+  <div class="si">
+    <div class="cs-next-eyebrow">Another voice of the clan</div>
+    <a class="cs-next-card" href="/stories/stephen-clarke.html">
+      <div class="cs-next-portrait" style="background-image:url('/stephen_clarke.jpg');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke"></div>
+      <div class="cs-next-content">
+        <div class="cs-next-card-eyebrow">Story № 2 · The Return</div>
+        <h3 class="cs-next-title">My blood remembers the north</h3>
+        <p class="cs-next-byline">Stephen Clarke &middot; Member of Clan Ó Comáin, Cummins line · North West Tasmania, Australia</p>
+        <div class="cs-next-cta">Read this story &rarr;</div>
+      </div>
+    </a>
   </div>
 </section>
 
