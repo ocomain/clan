@@ -88,7 +88,15 @@ const SENDERS = {
 function jsonResponse(status, body) {
   return {
     statusCode: status,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      // CRITICAL: prevent Netlify Durable Cache from caching test
+      // responses. Without this, repeat curl invocations return the
+      // cached success body without ever running the function — and
+      // no email is sent. Symptom: response says {"sent":true} but
+      // 'age:' header is non-zero and function logs are empty.
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+    },
     body: JSON.stringify(body),
   };
 }
