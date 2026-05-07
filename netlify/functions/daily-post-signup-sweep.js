@@ -219,9 +219,16 @@ exports.handler = async () => {
 
     // ── EMAIL 3B — Antoin, "I forgot to attach this" (same-day follow-up) ──
     // Fires for any member where _21_sent_at is set but _21b_sent_at is
-    // null. Not bucketed by age: triggered by data state. The next cron
-    // tick after Email 3 sends will dispatch Email 3B. Embeds Antoin's
-    // actual Cara letters patent inline as the persuasive artefact.
+    // null AND the member has NOT yet been raised to any dignity. The
+    // titled-member gate (skip if sponsor_titles_awarded contains any
+    // entry) is important: Email 3B sends Antoin's Cara patent as
+    // social proof of what the dignity looks like — landing that in a
+    // Cara/Ardchara/Onóir's inbox AFTER they already have their own
+    // patent (sent at conferral) would be confusing and undercut the
+    // singular-issuance ceremony of their own raising. Gate filters
+    // these members out at the JS layer because Supabase JSONB filters
+    // are awkward and the row count after the not-null/is-null filters
+    // is already small enough that an extra in-memory pass is fine.
     if (SENDER_READY.e3b_antoin) {
       const { data: targets, error } = await supa()
         .from('members').select('id, email, name, sponsor_titles_awarded, created_at')
@@ -232,6 +239,24 @@ exports.handler = async () => {
       if (error) console.error('post-signup-sweep: e21b query failed:', error.message);
       else {
         for (const m of targets || []) {
+          // Titled-member gate: skip if member has any dignity awarded.
+          // sponsor_titles_awarded is a JSONB object keyed by dignity
+          // slug ("cara"/"ardchara"/"onoir") with ISO timestamp values
+          // for raisings that have happened. An empty object {} or null
+          // means the member has not been raised. Any non-null value
+          // for any key means they have.
+          const titles = m.sponsor_titles_awarded || {};
+          const isTitled = Object.values(titles).some(v => v != null);
+          if (isTitled) {
+            // Mark as sent so we don't keep re-evaluating this member
+            // every cron tick. They've already moved past Email 3B's
+            // intended audience; treat the email as effectively
+            // delivered for tracking purposes.
+            await supa().from('members').update({ post_signup_email_21b_sent_at: new Date().toISOString() }).eq('id', m.id);
+            await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', metadata: { email: 'e21b', reason: 'member_already_titled' } });
+            stats.e21b_skipped_titled = (stats.e21b_skipped_titled || 0) + 1;
+            continue;
+          }
           try {
             const ok = await sendAntoinForgotToAttach(m);
             if (ok) {

@@ -1158,6 +1158,74 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
            [diamond] here is how you earn it'. Pure CSS, no SVG. -->
       <div class="mflourish-link" aria-hidden="true"><span></span></div>
 
+      <!-- HELD IN HONOUR — letters patent download card.
+           Shown only to members who have been raised to a dignity
+           (member.sponsorTitle is set). Three states:
+
+             1. Raised, cert NOT sealed yet:
+                Disabled placeholder; routes them to seal the cert
+                first. The name on the patent must match the name
+                they sealed, so the cert MUST be sealed before the
+                patent is issued. This is a deliberate ceremonial
+                sequence: cert (the seal of name) → patent (the
+                seal of honour).
+
+             2. Raised, cert sealed, patent NOT yet generated:
+                'In preparation by the Office.' Not actionable —
+                they will be notified by email when the patent
+                lands. This is the state every titled member sits
+                in until Phase 2 (generator port + storage hook)
+                ships.
+
+             3. Raised, cert sealed, patent ready (Phase 2):
+                Real download button + heirloom-edition upsell.
+                The patent_urls path on the member object is set
+                by the conferral pipeline; absent today, populated
+                in Phase 2.
+
+           Heirloom edition upsell appears in states 2 and 3 —
+           members can pre-order even before the digital is
+           generated. -->
+      ${(() => {
+        if (!member.sponsorTitle) return '';
+        // Cert state — same canonical/legacy column pair the cert
+        // card itself uses (line 638 / 1913 in this file).
+        const certSealed = !!(member.cert_published_at || member.cert_locked_at);
+        // Patent ready (Phase 2 backend hook). For now always false.
+        const patentUrls = member.patent_urls || {};
+        const patentReady = !!patentUrls[member.sponsorTitle.slug];
+        // Display strings.
+        const dignityLine = `${escHtml(member.name || '')}, <em>${escHtml(member.sponsorTitle.irish)}</em> of Ó Comáin`;
+        const raisedDate = member.sponsorTitleRaisedAt ? fmtDate(member.sponsorTitleRaisedAt) : null;
+        // Compose the action area depending on state.
+        let actionHtml;
+        if (!certSealed) {
+          actionHtml = `
+            <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · the seal of your honour</p>
+            <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px;max-width:480px;margin-left:auto;margin-right:auto">Your letters patent will be issued under the Chief\u2019s seal once your certificate is sealed — the name on your patent matches the name on your certificate, and so the certificate must be sealed first.</p>
+            <a href="#mfam-section" class="mcert-sealed-btn" style="text-decoration:none">Seal your certificate &rarr;</a>`;
+        } else if (!patentReady) {
+          actionHtml = `
+            <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · the seal of your honour</p>
+            <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px;max-width:480px;margin-left:auto;margin-right:auto">Your letters patent is being prepared by the Office. You will be notified by email when it is ready to download.</p>
+            <button class="mcert-sealed-btn" type="button" disabled>Patent in preparation</button>
+            <div style="margin-top:14px"><a href="/members/heirloom-patent" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(149,117,55,.4);padding:0 0 2px">Order the framed heirloom edition · €400</a></div>`;
+        } else {
+          // State 3 — patent_urls.<slug> is populated. Phase 2 hooks
+          // this up; today the dashboard will never reach this branch.
+          actionHtml = `
+            <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · sealed under the Chief\u2019s hand</p>
+            <a href="${escHtml(patentUrls[member.sponsorTitle.slug])}" target="_blank" rel="noopener" class="mcert-sealed-btn" style="text-decoration:none">Download letters patent (PDF) &rarr;</a>
+            <div style="margin-top:14px"><a href="/members/heirloom-patent" style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(149,117,55,.4);padding:0 0 2px">Order the framed heirloom edition · €400</a></div>`;
+        }
+        return `
+        <section class="mcert-sealed" style="border-top-color:var(--burgundy)">
+          <div class="mcert-sealed-eyebrow">Held in Honour</div>
+          <h2 class="mcert-sealed-title">${dignityLine}</h2>
+          ${actionHtml}
+        </section>`;
+      })()}
+
       <!-- UNIFIED ACTION CARD — restructured 2026-04-28 from two
            separate cards (open invite form + gift CTA below the
            honours bridge). Both acts feed the same honours ladder

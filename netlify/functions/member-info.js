@@ -188,6 +188,7 @@ exports.handler = async (event) => {
     // member can sign in. We just degrade to sponsorTitle=null.
     let sponsorCount = 0;
     let sponsorTitle = null;
+    let sponsorTitleRaisedAt = null;
     try {
       sponsorCount = await countSponsoredBy(member.id);
       const { data: titlesRow, error: titlesErr } = await supa()
@@ -202,6 +203,16 @@ exports.handler = async (event) => {
         console.warn('sponsor_titles_awarded fetch failed (probably missing column — run migration 015):', titlesErr.message);
       } else if (titlesRow?.sponsor_titles_awarded) {
         sponsorTitle = highestAwardedTitle(titlesRow.sponsor_titles_awarded);
+        // Also surface the raised-at timestamp for the highest-held
+        // dignity. The dashboard's letters-patent card needs this for
+        // the 'Raised <date>' meta line. Reading it back from the
+        // JSONB by slug — sponsor_titles_awarded looks like
+        //   { "cara": "2026-04-15T11:42:00Z", "ardchara": "..." }
+        // — and highestAwardedTitle returns the title object whose
+        // slug matches the highest non-null entry.
+        if (sponsorTitle && sponsorTitle.slug) {
+          sponsorTitleRaisedAt = titlesRow.sponsor_titles_awarded[sponsorTitle.slug] || null;
+        }
       }
     } catch (sponsorErr) {
       console.error('sponsor enrichment failed (non-fatal):', sponsorErr.message);
@@ -215,6 +226,7 @@ exports.handler = async (event) => {
         gift: giftContext,
         sponsorCount,
         sponsorTitle,
+        sponsorTitleRaisedAt,
       }),
     };
   } catch (e) {
