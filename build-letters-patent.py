@@ -42,7 +42,8 @@ HONOURS = {
         'threshold_word': 'first',
         'body_voice': 'it hath pleased Us to raise the said member within the clan to the dignity hereunder',
         'body_extra': (
-            "Cara is the older Irish word for a friend — and in the Brehon-law tradition, "
+            "Cara is the first degree of honour conferred by the Chief. "
+            "It is the older Irish word for a friend — and in the Brehon-law tradition, "
             "the Chief's <em>cairde</em> were the trusted kin-allies who carried his interests "
             "outward into the wider world. In raising the bearer to this dignity, We name them "
             "as such — a friend of the clan, in the older sense of that word."
@@ -61,8 +62,9 @@ HONOURS = {
         'threshold_word': 'fifth',
         'body_voice': 'it hath pleased Us to raise the said member within the clan, from Cara to the dignity hereunder',
         'body_extra': (
-            "Ardchara joins the prefix <em>ard-</em> (high, lofty) to <em>cara</em> (friend) — so "
-            "the title reads, by its parts, as <em>Friend of high standing</em>. Where Cara names "
+            "Ardchara is the second degree of honour conferred by the Chief. "
+            "The title joins the prefix <em>ard-</em> (high, lofty) to <em>cara</em> (friend) — so "
+            "by its parts, the title reads as <em>Friend of high standing</em>. Where Cara names "
             "the friend, Ardchara names the high friend — and the bearer is so named, in the "
             "particular regard of the Chief and the kindred."
         ),
@@ -81,7 +83,8 @@ HONOURS = {
         'threshold_word': 'fifteenth',
         'body_voice': 'it hath pleased Us to raise the said member within the clan, from Ardchara to the highest dignity hereunder',
         'body_extra': (
-            "Onóir carries the weight of its meaning: where Cara names the friend and Ardchara "
+            "Onóir is the third and highest degree of honour conferred by the Chief. "
+            "The title carries the weight of its meaning: where Cara names the friend and Ardchara "
             "the high friend, Onóir names the dignity itself — and the bearer is so held, in "
             "particular regard, among those most honoured by Clan Ó Comáin."
         ),
@@ -95,11 +98,12 @@ HONOURS = {
 }
 
 
-def build(honour_key, recipient_name, surname, date_str='this third day of May, in the year of Our Lord two thousand and twenty-six'):
+def build(honour_key, recipient_name, surname, date_str='this third day of May, in the year of Our Lord two thousand and twenty-six', is_specimen=False):
     h = HONOURS[honour_key]
     sig_html = f'<img src="data:image/png;base64,{sig_b64}" class="sig"/>' if sig_b64 else ''
     address = f"{recipient_name}, {h['irish']} of Ó Comáin"
     out_pdf = f'/mnt/user-data/outputs/clan_o_comain_letters_patent_{honour_key}.pdf'
+    specimen_html = '<div class="specimen-watermark">SPECIMEN</div>' if is_specimen else ''
 
     html = f"""<!DOCTYPE html>
 <html><head><meta charset="utf-8"/>
@@ -454,15 +458,26 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
     margin-top: 4pt;
   }}
 
-  .sample {{
+  /* SPECIMEN watermark — diagonal stamp at low opacity, used only for
+     the Antoin sample shared in Email 3B. NEVER applied to real
+     per-member patents. The position-fixed + low z-index keeps it
+     visible across the document without obscuring text legibility. */
+  .specimen-watermark {{
     position: absolute;
-    bottom: 8mm; right: 14mm;
-    font-family: 'Jost', sans-serif;
-    font-size: 6.5pt;
-    color: var(--gold-deep);
-    letter-spacing: 3pt;
-    border: 0.4pt solid var(--gold-deep);
-    padding: 3pt 9pt;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    transform-origin: center center;
+    font-family: 'EBG', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 180pt;
+    color: var(--burgundy);
+    opacity: 0.10;
+    letter-spacing: 14pt;
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
   }}
 
   .ref {{
@@ -484,7 +499,7 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
 
   <div class="salutation">
     <div class="sal-eyebrow">Letters Patent · Irish Clan Ó Comáin</div>
-    <div class="sal-main">To All and Sundry whom these Presents<br>Do or May Concern</div>
+    <div class="sal-main">To All Whom These Presents<br>Do or May Concern</div>
     <div class="sal-rule"></div>
   </div>
 
@@ -547,7 +562,7 @@ def build(honour_key, recipient_name, surname, date_str='this third day of May, 
   </div>
 
   <div class="ref">Cl. Ó.C. · Honours · No. 0001</div>
-  <div class="sample">SAMPLE</div>
+  {specimen_html}
 </body></html>"""
 
     HTML(string=html).write_pdf(out_pdf)
