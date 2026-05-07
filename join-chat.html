@@ -73,6 +73,12 @@
 
     /* INPUT */
     .input-area{padding:16px 24px 20px;border-top:1px solid var(--border);background:var(--ink-mid);flex-shrink:0}
+    /* Friction 3 fix: applied to .input-area when the conversation is
+       complete. Grey/dim the input zone to communicate visually that
+       no more input is expected. The Continue button above carries
+       the next action; the input stays present (shifting layout would
+       be jarring) but visibly inactive. */
+    .input-area.input-finished{opacity:.35;pointer-events:none;transition:opacity .4s ease}
     .input-row{display:flex;gap:10px;align-items:center}
     .input-field{flex:1;background:rgba(24,40,24,.85);border:1px solid rgba(184,151,90,.35);border-radius:2px;padding:16px 18px;color:var(--cream);font-family:var(--font-serif);font-size:18px;outline:none;transition:border .2s}
     .input-field:focus{border-color:var(--gold)}
@@ -260,7 +266,17 @@
     .gold-rule{width:48px;height:2px;background:var(--gold);margin:16px auto}
 
     @media(max-width:600px){
-      .ch-step{display:none}
+      /* Friction 2 fix: previously .ch-step was display:none on mobile,
+         hiding the progress indicator entirely. That meant mobile users
+         had no idea if they were 1/5 through or 4/5 through, and could
+         abandon thinking the conversation is longer than it is. We now
+         keep .ch-step visible but reformat compactly: hide the verbose
+         'Application progress' label (saves vertical space in the chat
+         header), shrink the dots (16x2 instead of 24x3 desktop). */
+      .ch-step{display:block;flex-shrink:0}
+      .ch-step-label{display:none}
+      .ch-progress{gap:3px}
+      .ch-dot{width:16px;height:2px}
       .msg-bubble{font-size:17px;line-height:1.65}
       .msg.user .msg-bubble{font-size:16px}
       .input-field{font-size:17px;padding:15px 16px}
@@ -314,12 +330,18 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 </head>
 <body>
 
-<!-- Minimal exit bar: gives the user a way to return to the main site mid-chat -->
-<a href="/" style="display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--ink);border-bottom:1px solid var(--border);text-decoration:none;transition:background .2s" onmouseover="this.style.background='rgba(184,151,90,.05)'" onmouseout="this.style.background='var(--ink)'">
+<!-- Minimal exit bar: the brand area on the left is now non-clickable
+     visual recognition only (was previously part of a single full-width
+     anchor, which meant any accidental tap on the shield/brand text
+     exited the conversation). Only the explicit 'Return to site' link
+     on the right is now an actual link — abandoning the conversation
+     is now a deliberate choice rather than something a mis-tap
+     can trigger. -->
+<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--ink);border-bottom:1px solid var(--border)">
   <img src="coat_of_arms.png" alt="Clan Ó Comáin" style="width:32px;height:auto;display:block">
   <span style="font-family:'EB Garamond',serif;font-size:16px;color:var(--gold);letter-spacing:.01em">Clan <em>Ó Comáin</em></span>
-  <span style="margin-left:auto;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.5)">Return to site</span>
-</a>
+  <a href="/" style="margin-left:auto;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.45);text-decoration:none;padding:6px 10px;border-radius:2px;transition:color .15s,background .15s" onmouseover="this.style.color='var(--gold)';this.style.background='rgba(184,151,90,.06)'" onmouseout="this.style.color='rgba(184,151,90,.45)';this.style.background='transparent'">Return to site</a>
+</div>
 
 <div class="chat-wrapper">
 
@@ -563,6 +585,10 @@ function sendMessage() {
   if (currentStep >= STEPS.length) {
     // All done — closing message, then a Continue button (or 30s auto-advance) so
     // readers have full manual control over when to proceed to membership options.
+    // disableInput({finished:true}) clears the stale placeholder and visually
+    // greys out the input area so the user clearly sees the conversation is
+    // complete (rather than wondering if there's one more question coming).
+    disableInput({finished: true});
     setTimeout(() => {
       const msg = CLOSING_MSG(collected);
       typeHerald(msg, () => {
@@ -674,9 +700,24 @@ function enableInput(ph) {
   document.getElementById('sendBtn').disabled = false;
   inp.focus();
 }
-function disableInput() {
-  document.getElementById('userInput').disabled = true;
-  document.getElementById('sendBtn').disabled = true;
+function disableInput(opts) {
+  // Default: just disable the input + send button (used between steps
+  // while the herald is typing). With { finished: true }, also clear
+  // the stale placeholder text and apply the .input-finished class
+  // for visual greyed-out treatment, signalling the conversation is
+  // complete and no more input is expected. Without this, the input
+  // field would still show the last step's placeholder ('How you heard
+  // about us…') after the conversation completed, creating 'am I
+  // done?' confusion before the Continue button is read.
+  const inp = document.getElementById('userInput');
+  const btn = document.getElementById('sendBtn');
+  inp.disabled = true;
+  btn.disabled = true;
+  if (opts && opts.finished) {
+    inp.placeholder = '';
+    inp.value = '';
+    document.querySelector('.input-area').classList.add('input-finished');
+  }
 }
 
 function scrollBottom() {
