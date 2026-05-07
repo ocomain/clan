@@ -40,6 +40,13 @@
 // RESPONSE: JSON {"sent":true,"to":"...","emailKey":"..."} on success,
 // {"error":"..."} on failure.
 
+// LINE-1 LOGGING — emitted on every cold start. If the function log
+// shows only '/' and not this banner, the function is crashing during
+// require() at module load before the handler ever runs. That means a
+// stale bundle is still in production despite the deploy: another
+// 'Clear cache and deploy site' should fix it.
+console.log('[test-send-lifecycle-email] module load start');
+
 const {
   sendRegisterAck_ClanTier,
   sendRegisterAck_GuardianPlusDefault,
@@ -55,6 +62,8 @@ const {
   sendPaddyRoyalHouseAndSaint,
   sendLindaRenewal,
 } = require('./lib/post-signup-email');
+
+console.log('[test-send-lifecycle-email] requires resolved. sendAntoinForgotToAttach is:', typeof sendAntoinForgotToAttach);
 
 // Map emailKey -> sender function. Keys match the cadence document
 // numbering exactly (1A/B/C are the three Herald variants of the +3
@@ -92,6 +101,7 @@ function firstNameFromEmail(email) {
 }
 
 exports.handler = async (event) => {
+  console.log('[test-send-lifecycle-email] handler invoked, body length:', (event.body || '').length);
   // Parse JSON body. Tolerate malformed input with a clean error.
   let payload;
   try {
