@@ -308,7 +308,7 @@ function buildTitleAwardLetterHtml({ sponsor, title, priorTitleIrish, totalCount
          a chivalric warrant first, a transactional notification
          second. -->
     <div style="text-align:center;margin:0 0 28px">
-      <a href="https://www.ocomain.org/members" style="display:inline-block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;text-decoration:none;border:1px solid #8B6F32;padding:10px 22px;border-radius:2px">Download title conferral in members area &rarr;</a>
+      <a href="https://www.ocomain.org/members#held-in-honour" style="display:inline-block;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8B6F32;text-decoration:none;border:1px solid #8B6F32;padding:10px 22px;border-radius:2px">Download title conferral in members area &rarr;</a>
       <div style="font-family:'Georgia',serif;font-size:13.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin-top:10px">issued under the Chief\u2019s seal as letters patent</div>
     </div>
 
