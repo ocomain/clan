@@ -854,7 +854,7 @@ async function sendAntoinForgotToAttach(member) {
   try {
     const fs = require('fs');
     const path = require('path');
-    const pdfPath = path.join(__dirname, 'assets', 'antoin_cara_patent.pdf');
+    const pdfPath = path.join(__dirname, '..', 'assets', 'antoin_cara_patent.pdf');
     // Explicit existence check so the failure mode is loud in logs
     // rather than silently swallowed by the catch. The Netlify
     // bundler does not always include net-new asset files added in
