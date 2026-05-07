@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+#
+# pre-commit hook — auto-regenerate email previews when their
+# source templates change.
+#
+# Logic: look at staged files, determine which lib/*-email*.js
+# files were touched, fan out to the matching preview generator
+# scripts, run them, stage the regenerated preview files.
+#
+# The hook is a no-op when the commit doesn't touch any email
+# source. Adds 0–15 seconds depending on how many email types are
+# affected.
+#
+# To skip the hook (e.g. for an emergency rollback commit), use:
+#   git commit --no-verify
+#
+# Install: bash scripts/install-hooks.sh
+
+set -e
+
+# Get a list of all staged files (added/modified/copied/renamed).
+# --diff-filter=ACMR omits deletions; we don't want to regenerate
+# previews when an email module is being deleted (the preview
+# generator would then fail on the missing import).
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# If nothing staged that touches email libs, exit silently.
+EMAIL_FILES=$(echo "$STAGED" | grep -E '^netlify/functions/lib/[a-z-]+-email\.js$' || true)
+if [ -z "$EMAIL_FILES" ]; then
+  exit 0
+fi
+
+# Map each touched email lib → set of preview scripts to run.
+# A few libs are shared across multiple preview scripts; we collect
+# all matching scripts then dedupe at the end.
+SCRIPTS_TO_RUN=""
+
+while IFS= read -r f; do
+  case "$f" in
+    netlify/functions/lib/cart-reengage-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-cart-reengage-emails.mjs"
+      ;;
+    netlify/functions/lib/founder-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-founder-emails.mjs"
+      ;;
+    netlify/functions/lib/checkout-email.js)
+      # Shared: gift flow + transactional both use this
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-gift-flow-emails.mjs scripts/preview-transactional-emails.mjs"
+      ;;
+    netlify/functions/lib/publication-email.js)
+      # Shared: gift flow + transactional both use this
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-gift-flow-emails.mjs scripts/preview-transactional-emails.mjs"
+      ;;
+    netlify/functions/lib/invitation-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-member-invitation.mjs"
+      ;;
+    netlify/functions/lib/pdf-lead-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-pdf-lead-emails.mjs"
+      ;;
+    netlify/functions/lib/post-signup-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-post-signup-emails.mjs"
+      ;;
+    netlify/functions/lib/cert-reminder-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-transactional-emails.mjs"
+      ;;
+    netlify/functions/lib/sponsor-email.js)
+      SCRIPTS_TO_RUN="$SCRIPTS_TO_RUN scripts/preview-transactional-emails.mjs"
+      ;;
+    *)
+      # Some other *-email.js file we don't have a preview for.
+      # Quietly note it so we know to add a mapping if a new email
+      # module gets a preview script later.
+      echo "[pre-commit] note: $f changed but no preview script mapped — add a case in .git/hooks/pre-commit if this email has a preview"
+      ;;
+  esac
+done <<< "$EMAIL_FILES"
+
+# Dedupe and run.
+UNIQUE_SCRIPTS=$(echo "$SCRIPTS_TO_RUN" | tr ' ' '\n' | sort -u | grep -v '^$')
+
+if [ -z "$UNIQUE_SCRIPTS" ]; then
+  exit 0
+fi
+
+echo "[pre-commit] regenerating email previews for changed templates..."
+for s in $UNIQUE_SCRIPTS; do
+  echo "  → $s"
+  if ! node "$s"; then
+    echo "[pre-commit] FAILED running $s"
+    echo "[pre-commit] commit aborted — fix the preview script error or commit with --no-verify to skip"
+    exit 1
+  fi
+done
+
+# Re-stage the regenerated preview files. Use `git add -u` which
+# only updates already-tracked files — this matches our intent
+# (regenerating snapshots that are already in the repo) and
+# silently skips any preview directories that are gitignored
+# entirely (so no noisy gitignore warnings).
+#
+# If a NEW preview file appears (e.g. someone adds a new email
+# type to a generator), it won't be auto-staged — they'll need
+# to `git add` it manually the first time. That's the right
+# behaviour: new files should be deliberate additions, not
+# silently captured by the hook.
+git add -u email-previews email-previews-transactional email-previews-cart-reengage email-previews-founder email-previews-gift-flow email-previews-member-invitation email-previews-pdf-lead 2>/dev/null || true
+
+echo "[pre-commit] previews regenerated and staged ✓"
+exit 0
