@@ -36,6 +36,13 @@
     .ch-inner{display:flex;align-items:center;gap:14px}
     .ch-avatar{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;background:var(--green-dark);flex-shrink:0;overflow:hidden}
     .ch-avatar img{width:32px;height:32px;object-fit:contain}
+    /* Modifier for the round herald seal — fills the entire avatar
+       circle (the seal is itself round, so 'contain' with padding looks
+       like the seal is floating inside another circle). No dark-green
+       background showing; the seal IS the avatar, with the gold border
+       as the frame. */
+    .ch-avatar-seal{background:transparent;padding:0}
+    .ch-avatar-seal img{width:100%;height:100%;object-fit:cover}
     .ch-name{font-family:var(--font-serif);font-size:17px;color:var(--gold-pale);line-height:1.2}
     .ch-role{font-family:var(--font-sans);font-size:10px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,151,90,.6);margin-top:2px}
     .ch-step{margin-left:auto;text-align:right}
@@ -347,7 +354,7 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
 
   <div class="chat-header">
     <div class="ch-inner">
-      <div class="ch-avatar"><img src="coat_of_arms.png" alt="Clan Herald"></div>
+      <div class="ch-avatar ch-avatar-seal"><img src="the_herald_seal.png" alt="Seal of the Clan Herald"></div>
       <div>
         <div class="ch-name">The Clan Herald</div>
         <div class="ch-role">Arailt Clan Ó Comáin</div>
@@ -529,7 +536,7 @@ const STEPS = [
 ];
 
 const CLOSING_MSG = (data) =>
-  `${data.name} — your details have been received with thanks, and shall be conveyed to the Office of the Private Secretary.\n\nOne final formality remains: the completion of your membership contribution on the next screen. Upon its receipt, it shall be the honour of Fergus Kinfauns, The Commane, Chief of Ó Comáin, to enter your name into the Register of Clan Members at Newhall House. The Office shall write to you personally in due course.`;
+  `${data.name} — your details have been received with thanks, and shall be conveyed to the Office of the Private Secretary.\n\nOne final formality remains: the completion of your membership contribution on the next screen. Upon its receipt, it shall be the honour of the Chief of Ó Comáin to enter your name into the Register of Clan Members at Newhall House. The Office shall write to you personally in due course.`;
 
 let currentStep = 0;
 const collected = {};
