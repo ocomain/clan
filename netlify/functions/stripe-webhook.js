@@ -14,6 +14,7 @@ const {
   buildMemberWelcomeHtml,
 } = require('./lib/checkout-email');
 const { evaluateSponsorTitles, recordConversion, highestAwardedTitle } = require('./lib/sponsor-service');
+const { ensurePatent } = require('./lib/patent-service');
 const { sendTitleAwardLetter, sendSponsorLetter } = require('./lib/sponsor-email');
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -427,6 +428,34 @@ exports.handler = async (event) => {
                         .eq('id', buyer.id);
                       console.log(`[gift title-award] stamped sponsor_titles_awarded with: ${JSON.stringify(stampedAwarded)}`);
                     }
+
+                    // Patent generation for newly-earned dignities.
+                    // ensurePatent gracefully defers if the buyer's
+                    // cert isn't sealed yet (waits for next seal
+                    // event — manual or day-30 auto-seal cron).
+                    try {
+                      const { data: buyerFull } = await supa()
+                        .from('members')
+                        .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                        .eq('id', buyer.id)
+                        .single();
+                      if (buyerFull) {
+                        for (const t of allNewlyEarned) {
+                          try {
+                            const result = await ensurePatent(buyerFull, t.slug, clan_id);
+                            if (result.skipped) {
+                              console.log(`[gift title-award] patent for ${t.slug} deferred: ${result.reason}`);
+                            } else if (result.wasGenerated) {
+                              console.log(`[gift title-award] patent generated for ${t.slug}: ${result.path}`);
+                            }
+                          } catch (pErr) {
+                            console.error(`[gift title-award] patent ${t.slug} generation failed (non-fatal):`, pErr.message);
+                          }
+                        }
+                      }
+                    } catch (buyerFetchErr) {
+                      console.error('[gift title-award] buyer re-fetch for patent generation failed (non-fatal):', buyerFetchErr.message);
+                    }
                   }
                 } else {
                   console.log(`[gift title-award] no NEW titles earned at count=${sponsorCount} (existing stamps: ${JSON.stringify(buyer.sponsor_titles_awarded || {})}). Sponsor count updates on dashboard but no letter fires.`);
@@ -830,6 +859,30 @@ exports.handler = async (event) => {
                             .from('members')
                             .update({ sponsor_titles_awarded: stampedAwarded })
                             .eq('id', inviter.id);
+                        }
+
+                        // Patent generation for newly-earned dignities.
+                        // Defers if inviter's cert isn't sealed.
+                        try {
+                          const { data: inviterFull } = await supa()
+                            .from('members')
+                            .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                            .eq('id', inviter.id)
+                            .single();
+                          if (inviterFull) {
+                            for (const t of allNewlyEarned) {
+                              try {
+                                const result = await ensurePatent(inviterFull, t.slug, clan_id);
+                                if (result.skipped) {
+                                  console.log(`[invitation title-award] patent for ${t.slug} deferred: ${result.reason}`);
+                                }
+                              } catch (pErr) {
+                                console.error(`[invitation title-award] patent ${t.slug} generation failed (non-fatal):`, pErr.message);
+                              }
+                            }
+                          }
+                        } catch (inviterFetchErr) {
+                          console.error('[invitation title-award] inviter re-fetch for patent generation failed (non-fatal):', inviterFetchErr.message);
                         }
                       }
                     }

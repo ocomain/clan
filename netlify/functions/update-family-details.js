@@ -22,6 +22,7 @@
 
 const { supa, clanId, logEvent, canAppearOnPublicRegister } = require('./lib/supabase');
 const { ensureCertificate, signCertUrl, sanitizeFilename } = require('./lib/cert-service');
+const { ensurePatent } = require('./lib/patent-service');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
 const { computeFamilyDisplay } = require('./lib/generate-cert');
 const { recordConversion, evaluateSponsorTitles, highestAwardedTitle } = require('./lib/sponsor-service');
@@ -402,6 +403,39 @@ async function firePublicationSideEffects(updated, clan_id, certResultForEmail) 
     console.error('publication email send failed (non-fatal):', emailErr.message);
   }
 
+  // (1.5) PATENT GENERATION — for the publishing member.
+  // Mirrors the equivalent block in submit-family-details.js. If
+  // this member already holds any dignities (e.g. an inviter who
+  // was raised earlier and has only now sealed their cert via the
+  // dashboard), generate their letters patent now.
+  try {
+    const titlesAwarded = updated.sponsor_titles_awarded || {};
+    const dignitiesHeld = Object.entries(titlesAwarded)
+      .filter(([_, raisedAt]) => raisedAt != null)
+      .map(([slug]) => slug);
+    if (dignitiesHeld.length > 0) {
+      const { data: memberFull } = await supa()
+        .from('members')
+        .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+        .eq('id', updated.id)
+        .single();
+      if (memberFull) {
+        for (const slug of dignitiesHeld) {
+          try {
+            const result = await ensurePatent(memberFull, slug, clan_id);
+            if (result.skipped) {
+              console.warn(`patent generation skipped for member ${updated.id} dignity ${slug}: ${result.reason}`);
+            }
+          } catch (patentErr) {
+            console.error(`patent generation failed for member ${updated.id} dignity ${slug} (non-fatal):`, patentErr.message);
+          }
+        }
+      }
+    }
+  } catch (patentBlockErr) {
+    console.error('patent generation block failed (non-fatal):', patentBlockErr.message);
+  }
+
   // (2) GIFT BUYER KEEPSAKE — if this published member was a gift
   // recipient, send the gift buyer a copy of the published cert
   // as a keepsake.
@@ -552,6 +586,31 @@ async function firePublicationSideEffects(updated, clan_id, certResultForEmail) 
                 .from('members')
                 .update({ sponsor_titles_awarded: stampedAwarded })
                 .eq('id', inviter.id);
+            }
+
+            // Patent generation for newly-earned dignities — same
+            // pattern as submit-family-details.js. ensurePatent
+            // gracefully defers if the inviter's cert isn't sealed.
+            try {
+              const { data: inviterFull } = await supa()
+                .from('members')
+                .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                .eq('id', inviter.id)
+                .single();
+              if (inviterFull) {
+                for (const t of allNewlyEarned) {
+                  try {
+                    const result = await ensurePatent(inviterFull, t.slug, clan_id);
+                    if (result.skipped) {
+                      console.log(`inviter ${inviter.id} patent for ${t.slug} deferred: ${result.reason}`);
+                    }
+                  } catch (pErr) {
+                    console.error(`inviter ${inviter.id} patent ${t.slug} generation failed (non-fatal):`, pErr.message);
+                  }
+                }
+              }
+            } catch (inviterFetchErr) {
+              console.error('inviter re-fetch for patent generation failed (non-fatal):', inviterFetchErr.message);
             }
           }
         }

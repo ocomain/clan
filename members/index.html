@@ -1191,9 +1191,15 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         // Cert state — same canonical/legacy column pair the cert
         // card itself uses (line 638 / 1913 in this file).
         const certSealed = !!(member.cert_published_at || member.cert_locked_at);
-        // Patent ready (Phase 2 backend hook). For now always false.
+        // Patent ready — the conferral pipeline writes a metadata
+        // object { path, issued_at, issued_name } to patent_urls[slug]
+        // once both preconditions (raised + cert sealed) are met.
+        // We check .path specifically (not just truthy entry) so we
+        // never enter state 3 if a half-write left the entry without
+        // an actual storage path.
         const patentUrls = member.patent_urls || {};
-        const patentReady = !!patentUrls[member.sponsorTitle.slug];
+        const patentEntry = patentUrls[member.sponsorTitle.slug];
+        const patentReady = !!(patentEntry && patentEntry.path);
         // Display strings.
         const dignityLine = `${escHtml(member.name || '')}, <em>${escHtml(member.sponsorTitle.irish)}</em> of Ó Comáin`;
         const raisedDate = member.sponsorTitleRaisedAt ? fmtDate(member.sponsorTitleRaisedAt) : null;
@@ -1212,10 +1218,16 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
             <div style="margin-top:14px"><span style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);opacity:0.65">Framed heirloom edition · coming soon</span></div>`;
         } else {
           // State 3 — patent_urls.<slug> is populated. Phase 2 hooks
-          // this up; today the dashboard will never reach this branch.
+          // this up; the conferral pipeline writes the storage path
+          // here when both preconditions (raised + cert sealed) are
+          // met. The button uses an authenticated fetch (mirroring
+          // the cert-download pattern) rather than a direct <a href>
+          // because Supabase signed URLs need to be freshly
+          // generated server-side on each download click — embedding
+          // a stale signed URL in the page would break after expiry.
           actionHtml = `
             <p class="mcert-sealed-meta" style="margin:0 0 18px">Issued ${raisedDate || 'recently'} · sealed under the Chief\u2019s hand</p>
-            <a href="${escHtml(patentUrls[member.sponsorTitle.slug])}" target="_blank" rel="noopener" class="mcert-sealed-btn" style="text-decoration:none">Download letters patent (PDF) &rarr;</a>
+            <button class="mcert-sealed-btn" id="mpatentDownloadBtn" type="button">Download letters patent (PDF) &rarr;</button>
             <div style="margin-top:14px"><span style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);opacity:0.65">Framed heirloom edition · coming soon</span></div>`;
         }
         return `
@@ -1724,6 +1736,42 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
           certDownloadBtn.disabled = false;
           certDownloadBtn.textContent = 'Try again →';
           alert('Could not prepare your certificate — ' + (e.message || 'please try again, or write to clan@ocomain.org'));
+        }
+      });
+    }
+
+    // ── Letters patent download button (when state 3 is reached) ──
+    // Mirrors the certificate download flow: authenticated fetch to
+    // /api/download-patent → server returns { url } → window.location
+    // navigates to the signed URL → browser downloads.
+    const patentDownloadBtn = document.getElementById('mpatentDownloadBtn');
+    if (patentDownloadBtn) {
+      patentDownloadBtn.addEventListener('click', async () => {
+        const originalText = patentDownloadBtn.textContent;
+        patentDownloadBtn.disabled = true;
+        patentDownloadBtn.textContent = 'Preparing PDF…';
+        try {
+          const session = await currentSession();
+          if (!session) { window.location.href = '/members/login.html'; return; }
+          const res = await fetch('/api/download-patent', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}));
+            throw new Error(errBody.error || `Request failed (${res.status})`);
+          }
+          const { url } = await res.json();
+          window.location.href = url;
+          setTimeout(() => {
+            patentDownloadBtn.disabled = false;
+            patentDownloadBtn.textContent = originalText;
+          }, 1200);
+        } catch (e) {
+          console.error('patent download error:', e);
+          patentDownloadBtn.disabled = false;
+          patentDownloadBtn.textContent = 'Try again →';
+          alert('Could not prepare your letters patent — ' + (e.message || 'please try again, or write to clan@ocomain.org'));
         }
       });
     }

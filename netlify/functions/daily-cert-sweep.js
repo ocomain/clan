@@ -24,6 +24,7 @@
 
 const { supa, clanId, logEvent } = require('./lib/supabase');
 const { ensureCertificate } = require('./lib/cert-service');
+const { ensurePatent } = require('./lib/patent-service');
 const { autoFixName } = require('./lib/name-format');
 const { sendEmail } = require('./lib/email');
 const { sendPublicationConfirmation, sendGiftBuyerCertKeepsake } = require('./lib/publication-email');
@@ -167,6 +168,37 @@ exports.handler = async () => {
               }
             } catch (keepsakeErr) {
               console.error(`keepsake send failed for member ${m.id} (non-fatal):`, keepsakeErr.message);
+            }
+
+            // Patent generation — if this member already holds any
+            // dignities (raised earlier, never sealed cert manually),
+            // their cert just sealed via the day-30 auto-publish so
+            // the precondition is now met. Generate their letters
+            // patent now and the dashboard will surface it.
+            try {
+              const { data: memberFull } = await supa()
+                .from('members')
+                .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                .eq('id', m.id)
+                .single();
+              if (memberFull) {
+                const titlesAwarded = memberFull.sponsor_titles_awarded || {};
+                const dignitiesHeld = Object.entries(titlesAwarded)
+                  .filter(([_, raisedAt]) => raisedAt != null)
+                  .map(([slug]) => slug);
+                for (const slug of dignitiesHeld) {
+                  try {
+                    const result = await ensurePatent(memberFull, slug, clan_id);
+                    if (result.wasGenerated) {
+                      console.log(`[auto-publish] patent generated for member ${m.id} dignity ${slug}: ${result.path}`);
+                    }
+                  } catch (pErr) {
+                    console.error(`[auto-publish] patent ${slug} for member ${m.id} failed (non-fatal):`, pErr.message);
+                  }
+                }
+              }
+            } catch (patentBlockErr) {
+              console.error(`[auto-publish] patent generation block failed for member ${m.id} (non-fatal):`, patentBlockErr.message);
             }
           }
           autoPublished++;
