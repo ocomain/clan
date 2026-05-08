@@ -152,9 +152,18 @@ const HONOURS = {
 //                                    SPECIMEN watermark across the
 //                                    page. Real conferred patents
 //                                    MUST leave this false.
+// @param {number}  [opts.honourNumber] Clan-wide register number for
+//                                    this conferral, surfaced as
+//                                    "Cl. Ó.C. · Honours · No. NNNN"
+//                                    in the bottom-left reference
+//                                    stamp. Defaults to 1 for
+//                                    previews/specimens. Real
+//                                    conferrals get the value from
+//                                    nextval(honour_number_seq) via
+//                                    patent-service.js.
 // @returns {Promise<Uint8Array>}
 // ──────────────────────────────────────────────────────────────────────────
-async function generatePatent({ honourSlug, recipientName, dateString, isSpecimen = false }) {
+async function generatePatent({ honourSlug, recipientName, dateString, isSpecimen = false, honourNumber = 1 }) {
   const h = HONOURS[honourSlug];
   if (!h) throw new Error(`generatePatent: unknown honourSlug "${honourSlug}"`);
   if (!recipientName) throw new Error('generatePatent: recipientName required');
@@ -210,7 +219,7 @@ async function generatePatent({ honourSlug, recipientName, dateString, isSpecime
   }
 
   // ── REFERENCE STAMP — bottom-left "Cl. Ó.C. · Honours · No. 0001"
-  drawRefStamp(page, fonts);
+  drawRefStamp(page, fonts, honourNumber);
 
   return doc.save();
 }
@@ -639,9 +648,18 @@ function drawFoot(page, fonts, images) {
 }
 
 // ── REFERENCE STAMP ─────────────────────────────────────────────────
-function drawRefStamp(page, fonts) {
+// Bottom-left corner: "Cl. Ó.C. · Honours · No. NNNN" — the clan-wide
+// register number for this conferral. Format zero-padded to 4 digits
+// while we're under 10,000 conferrals; falls through to comma-formatted
+// when we eventually pass that (long after we should have raised the
+// padding to 5 digits, but defensive).
+function drawRefStamp(page, fonts, honourNumber) {
+  const n = Number(honourNumber) || 1;
+  const numText = n < 10000
+    ? String(n).padStart(4, '0')
+    : n.toLocaleString('en-IE');
   drawSpacedText(page, {
-    text: 'Cl. \u00d3.C. \u00B7 Honours \u00B7 No. 0001',
+    text: `Cl. \u00d3.C. \u00B7 Honours \u00B7 No. ${numText}`,
     font: fonts.sans,
     size: 6.5,
     color: C_MUTED,

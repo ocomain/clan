@@ -77,6 +77,8 @@ function defaultDateString() {
  *                                     idempotency hit on existing entry)
  *   issuedAt: string | null,       // ISO timestamp
  *   issuedName: string | null,     // the name on the patent (frozen)
+ *   honourNumber: number | null,   // clan-wide register number,
+ *                                  // surfaces as 'No. NNNN' on patent
  * }>}
  */
 async function ensurePatent(member, dignitySlug, clan_id) {
@@ -96,6 +98,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
       path: existing.path,
       issuedAt: existing.issued_at || null,
       issuedName: existing.issued_name || null,
+      honourNumber: existing.honour_number || null,
     };
   }
 
@@ -108,7 +111,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
       wasGenerated: false,
       skipped: true,
       reason: 'not_raised_to_dignity',
-      path: null, issuedAt: null, issuedName: null,
+      path: null, issuedAt: null, issuedName: null, honourNumber: null,
     };
   }
 
@@ -118,7 +121,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
       wasGenerated: false,
       skipped: true,
       reason: 'cert_not_sealed',
-      path: null, issuedAt: null, issuedName: null,
+      path: null, issuedAt: null, issuedName: null, honourNumber: null,
     };
   }
 
@@ -132,22 +135,46 @@ async function ensurePatent(member, dignitySlug, clan_id) {
       wasGenerated: false,
       skipped: true,
       reason: 'member_name_empty',
-      path: null, issuedAt: null, issuedName: null,
+      path: null, issuedAt: null, issuedName: null, honourNumber: null,
     };
   }
 
-  // ── 4. GENERATE THE PDF ─────────────────────────────────────────
+  // ── 4. ASSIGN HONOUR NUMBER ────────────────────────────────────
+  // Read nextval() from the clan-wide honour_number_seq. This is
+  // atomic in Postgres — concurrent ensurePatent calls never collide
+  // on the same number. Sequences allow gaps (if generation fails
+  // after this read, the number is "consumed" but unassigned), which
+  // is intentional: a collision would corrupt the register.
+  let honourNumber;
+  {
+    const { data: nextRow, error: seqErr } = await supa()
+      .rpc('nextval_honour_number');
+    if (seqErr) {
+      throw new Error(`honour_number_seq nextval failed: ${seqErr.message}`);
+    }
+    // The RPC returns a bigint (string in JS) — coerce to number
+    // since we're well within safe integer range (< 2^53).
+    honourNumber = Number(nextRow);
+    if (!Number.isFinite(honourNumber) || honourNumber < 1) {
+      throw new Error(`honour_number_seq returned invalid value: ${nextRow}`);
+    }
+  }
+
+  // ── 5. GENERATE THE PDF ─────────────────────────────────────────
   // isSpecimen=false ALWAYS for real conferrals. The SPECIMEN
   // watermark is only used for the Antoin-as-social-proof PDF in
-  // Email 3B; never for member-issued patents.
+  // Email 3B; never for member-issued patents. honourNumber comes
+  // from the sequence read above and surfaces in the bottom-left
+  // reference stamp.
   const pdfBytes = await generatePatent({
     honourSlug: dignitySlug,
     recipientName: issuedName,
     dateString: defaultDateString(),
     isSpecimen: false,
+    honourNumber,
   });
 
-  // ── 5. UPLOAD TO SUPABASE STORAGE ───────────────────────────────
+  // ── 6. UPLOAD TO SUPABASE STORAGE ───────────────────────────────
   // Path: patents/<slug>/<member-id>.pdf — flat, deterministic, one
   // file per member per dignity. upsert:true is defensive in case a
   // partial upload from a previous failed attempt left a stub.
@@ -163,13 +190,18 @@ async function ensurePatent(member, dignitySlug, clan_id) {
     throw new Error(`Patent storage upload failed: ${uploadErr.message}`);
   }
 
-  // ── 6. RECORD ON MEMBER ROW ─────────────────────────────────────
+  // ── 7. RECORD ON MEMBER ROW ─────────────────────────────────────
   // JSONB merge: we read the current patent_urls, overlay our new
   // entry, write the whole object back. (Supabase JSONB doesn't have
   // a partial-update primitive.) Race-conditions: if two concurrent
   // ensurePatent calls land for the same member+slug, the loser
   // overwrites the winner — but since the path is deterministic and
   // the issued_name is the same, the resulting state is identical.
+  // (The honour_number on the loser's PDF in storage will differ
+  // from what's in the JSONB, but since the JSONB is the source of
+  // truth and the storage upload uses upsert:true, the LATEST
+  // upload wins. So in the very rare race case, the assigned
+  // number in the JSONB matches the PDF in storage.)
   const issuedAt = new Date().toISOString();
   const newPatentUrls = {
     ...(member.patent_urls || {}),
@@ -177,6 +209,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
       path: storagePath,
       issued_at: issuedAt,
       issued_name: issuedName,
+      honour_number: honourNumber,
     },
   };
   const { error: updateErr } = await supa()
@@ -192,7 +225,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
     throw new Error(`Patent DB update failed: ${updateErr.message}`);
   }
 
-  // ── 7. AUDIT LOG ────────────────────────────────────────────────
+  // ── 8. AUDIT LOG ────────────────────────────────────────────────
   await logEvent({
     clan_id,
     member_id: member.id,
@@ -201,6 +234,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
       dignity: dignitySlug,
       storage_path: storagePath,
       issued_name: issuedName,
+      honour_number: honourNumber,
     },
   });
 
@@ -211,6 +245,7 @@ async function ensurePatent(member, dignitySlug, clan_id) {
     path: storagePath,
     issuedAt,
     issuedName,
+    honourNumber,
   };
 }
 
