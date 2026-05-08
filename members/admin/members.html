@@ -280,12 +280,15 @@
     } else if (m.stripe_customer_id) {
       out.push(pill('pill-paid', 'Paid'));
     }
-    // Engagement signal — auth_user_id is only linked when the member
-    // visits /members/ via a magic-link session. They may have paid,
-    // sealed a cert, etc. without ever doing so — the welcome and
-    // welcome-form flows are unauthenticated. So this label is about
-    // dashboard engagement, not authentication.
-    if (!m.auth_user_id) out.push(pill('pill-mute', 'Hasn\u2019t visited dashboard'));
+    // Note: previously had a "Hasn't visited dashboard" pill keyed off
+    // auth_user_id IS NULL. Removed because (a) it conflated two
+    // distinct things — the welcome flow is unauthenticated, so the
+    // signal didn't actually mean "hasn't engaged", just "hasn't
+    // logged in to the dashboard via magic link", and (b) members
+    // who have demonstrably been active (sealed certs, sent
+    // invitations, etc.) often had auth_user_id NULL anyway. People
+    // who haven't yet acted on an invite live in pending-invitations,
+    // not here on the members list.
     return out.join('');
   }
 
@@ -430,8 +433,6 @@
     const pills = [];
     if (m.status === 'active') pills.push(pill('pill-ok', 'Active'));
     else if (m.status) pills.push(pill('pill-warn', m.status));
-    if (m.auth_user_id) pills.push(pill('pill-ok', 'Has visited dashboard'));
-    else pills.push(pill('pill-mute', 'Hasn\u2019t visited dashboard'));
     // Origin pills — same three-way as the list table.
     if (m.comped_by_chief) pills.push(pill('pill-chief', 'Chief gift'));
     else if (m.is_gift_recipient) pills.push(pill('pill-gift', 'Gift'));

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pending Invitations — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* :root + chrome — same as the rest of /admin/. */
+    :root{
+      --burgundy:#6B1F1F;
+      --burgundy-deep:#4A1010;
+      --gold-faint:rgba(184,151,90,.22);
+      --rule:rgba(184,151,90,.18);
+    }
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1180px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .wrap{max-width:1180px;margin:0 auto;padding:48px 24px 80px}
+    .gate{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);text-align:center;padding:60px 20px}
+    .gate-denied h2{font-family:'EB Garamond',serif;font-size:28px;color:var(--burgundy);margin:0 0 12px}
+    .gate-denied p{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.6}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .page-title{font-family:'EB Garamond',serif;font-size:38px;font-weight:400;color:var(--ink);margin:0 0 14px;line-height:1.15}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6;margin:0 0 28px}
+
+    .toolbar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:16px 20px;background:#fff;border:1px solid var(--rule);border-radius:2px;margin-bottom:16px;box-shadow:0 4px 16px rgba(12,26,12,.04)}
+    .search-wrap{flex:1 1 320px;min-width:220px;display:flex;align-items:center;gap:10px}
+    .search-input{flex:1;font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);background:#fafaf6;border:1px solid var(--rule);border-radius:1px;padding:10px 14px}
+    .search-input:focus{outline:none;border-color:var(--burgundy);background:#fff}
+    .count-line{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint,#7a7060)}
+    .count-line strong{color:var(--burgundy);font-weight:600}
+    .count-line .breakdown{margin-left:8px;color:var(--ink-faint,#9a9080);font-weight:400;letter-spacing:.1em;text-transform:none;font-style:italic;font-family:'EB Garamond',serif;font-size:14px}
+
+    .invitations-table-wrap{background:#fff;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+    .invitations-table{width:100%;border-collapse:collapse;font-family:'EB Garamond',serif;font-size:15px}
+    .invitations-table thead th{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint,#7a7060);text-align:left;padding:14px 16px;background:rgba(184,151,90,.06);border-bottom:1px solid var(--rule);white-space:nowrap}
+    .invitations-table tbody tr{border-bottom:1px solid var(--rule)}
+    .invitations-table tbody tr:last-child{border-bottom:none}
+    .invitations-table td{padding:14px 16px;color:var(--ink);vertical-align:top}
+    .col-recipient-name{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);font-weight:500}
+    .col-recipient-email{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-faint,#5a5043);font-style:italic;display:block;margin-top:2px}
+    .col-from{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink)}
+    .col-from-email{font-size:12px;color:var(--ink-faint,#7a7060);font-style:italic;display:block;margin-top:2px}
+    .col-tier{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--burgundy);white-space:nowrap}
+    .col-date{font-size:14px;color:var(--ink-faint,#5a5043);white-space:nowrap}
+    .col-days-fresh{color:#3c6e3c}    /* < 7 days, green */
+    .col-days-warn{color:#8a6a1a}     /* 7-29 days, amber */
+    .col-days-stale{color:var(--burgundy);font-weight:500} /* 30+ days, burgundy */
+    .col-note{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);font-style:italic;max-width:280px;line-height:1.4}
+    .col-note.empty{color:var(--ink-faint,#9a9080);font-style:italic}
+
+    .pill{font-family:'Jost',sans-serif;font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:1px;border:1px solid currentColor;white-space:nowrap;display:inline-block}
+    .pill-chief{color:var(--burgundy);background:rgba(107,31,31,.04)}
+    .pill-gift{color:#8a6a1a;background:rgba(184,151,90,.10)}
+
+    .empty-state{padding:60px 30px;text-align:center;font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-faint,#7a7060);font-style:italic}
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/admin/">Admin</a>
+      <a href="/members/">Dashboard</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="authGate">
+  <div class="gate" id="gateLoading">Verifying your access…</div>
+  <div class="gate-denied" id="gateDenied" style="display:none">
+    <h2>This area is reserved</h2>
+    <p>Sign-in is required, and only specific addresses may use this tool. If you believe you should have access, please write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.</p>
+    <p style="margin-top:18px"><a href="/members/">← Return to dashboard</a></p>
+  </div>
+</div>
+
+<main class="wrap" id="adminBody" style="display:none">
+
+  <div class="page-eyebrow">Operational dashboard</div>
+  <h1 class="page-title">Pending <em>invitations</em></h1>
+  <p class="page-sub">
+    Everyone who has received an invitation but not yet claimed their place — both founding gifts from the Chief and member-to-member gifts. Once a recipient clicks <em>Claim my place</em>, they vanish from this list and appear on the Members dashboard.
+  </p>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <input type="search" id="searchInput" class="search-input" placeholder="Search by recipient or sender…" autocomplete="off">
+    </div>
+    <div class="count-line" id="countLine">Loading…</div>
+  </div>
+
+  <div class="invitations-table-wrap">
+    <table class="invitations-table" id="invitationsTable">
+      <thead>
+        <tr>
+          <th>Recipient</th>
+          <th>Type</th>
+          <th>From</th>
+          <th>Tier</th>
+          <th>Sent</th>
+          <th>Pending</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="invitationsTbody">
+        <tr><td colspan="7" class="empty-state">Loading invitations…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '../auth.js';
+
+  const ADMIN_ALLOWLIST = new Set([
+    'clan@ocomain.org',
+  ]);
+
+  const $ = (id) => document.getElementById(id);
+  const gateLoading = $('gateLoading');
+  const gateDenied  = $('gateDenied');
+  const adminBody   = $('adminBody');
+  const authGate    = $('authGate');
+  const tbody       = $('invitationsTbody');
+  const countLine   = $('countLine');
+  const searchInput = $('searchInput');
+
+  let accessToken = null;
+  let allInvites = [];
+  let filtered = [];
+  let counts = { chief: 0, paid: 0 };
+
+  async function verifyAccess() {
+    const session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent('/members/admin/pending-invitations.html');
+      return;
+    }
+    accessToken = session.access_token;
+    const userEmail = (session.user.email || '').toLowerCase().trim();
+    if (!ADMIN_ALLOWLIST.has(userEmail)) {
+      gateLoading.style.display = 'none';
+      gateDenied.style.display = 'block';
+      return;
+    }
+    authGate.style.display = 'none';
+    adminBody.style.display = 'block';
+    loadInvitations();
+  }
+
+  $('signOutBtn').addEventListener('click', async () => { await signOut(); });
+
+  // ── helpers ────────────────────────────────────────────────────────
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtShortDate(s) {
+    if (!s) return '—';
+    try {
+      const d = new Date(s);
+      const opts = { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' };
+      return d.toLocaleString('en-GB', opts);
+    } catch { return s; }
+  }
+  function daysSince(s) {
+    if (!s) return null;
+    const ms = Date.now() - new Date(s).getTime();
+    return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)));
+  }
+  function daysClass(days) {
+    if (days == null) return '';
+    if (days >= 30) return 'col-days-stale';
+    if (days >= 7)  return 'col-days-warn';
+    return 'col-days-fresh';
+  }
+
+  async function loadInvitations() {
+    try {
+      const res = await fetch('/.netlify/functions/admin-pending-invitations-list', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: '{}',
+      });
+      const data = await res.json();
+      if (res.status !== 200 || !data.ok) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Could not load invitations: ${escHtml(data.error || 'unknown error')}</td></tr>`;
+        countLine.textContent = '';
+        return;
+      }
+      allInvites = data.invitations || [];
+      counts = data.counts || { chief: 0, paid: 0 };
+      filtered = allInvites;
+      renderTable();
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Network error: ${escHtml(err.message)}</td></tr>`;
+      countLine.textContent = '';
+    }
+  }
+
+  function renderTable() {
+    if (filtered.length === 0) {
+      tbody.innerHTML = allInvites.length === 0
+        ? `<tr><td colspan="7" class="empty-state">No pending invitations. Every invite sent so far has been claimed.</td></tr>`
+        : `<tr><td colspan="7" class="empty-state">No invitations match this search.</td></tr>`;
+    } else {
+      tbody.innerHTML = filtered.map(inv => {
+        const days = daysSince(inv.sent_at);
+        const typePill = inv.type === 'chief_gift'
+          ? '<span class="pill pill-chief">Chief gift</span>'
+          : '<span class="pill pill-gift">Gift</span>';
+        const fromCell = inv.type === 'chief_gift'
+          ? `<span class="col-from">The Chief</span>`
+          : `<span class="col-from">${escHtml(inv.from_label || '—')}</span>${inv.from_email && inv.from_email !== inv.from_label ? `<span class="col-from-email">${escHtml(inv.from_email)}</span>` : ''}`;
+        const noteCell = inv.note
+          ? `<div class="col-note">${escHtml(inv.note)}</div>`
+          : `<div class="col-note empty">—</div>`;
+        return `
+          <tr>
+            <td>
+              <div class="col-recipient-name">${escHtml(inv.recipient_name || '—')}</div>
+              <span class="col-recipient-email">${escHtml(inv.recipient_email || '')}</span>
+            </td>
+            <td>${typePill}</td>
+            <td>${fromCell}</td>
+            <td class="col-tier">${escHtml(inv.tier_label || inv.tier || '—')}</td>
+            <td class="col-date">${escHtml(fmtShortDate(inv.sent_at))}</td>
+            <td class="col-date ${daysClass(days)}">${days != null ? days + 'd' : '—'}</td>
+            <td>${noteCell}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    const total = allInvites.length;
+    const shown = filtered.length;
+    let breakdown = '';
+    if (total > 0) {
+      breakdown = ` <span class="breakdown">— ${counts.chief} Chief gift${counts.chief === 1 ? '' : 's'}, ${counts.paid} member gift${counts.paid === 1 ? '' : 's'}</span>`;
+    }
+    countLine.innerHTML = shown === total
+      ? `<strong>${total}</strong> pending${breakdown}`
+      : `<strong>${shown}</strong> of ${total} shown`;
+  }
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) {
+      filtered = allInvites;
+    } else {
+      filtered = allInvites.filter(inv => {
+        return (inv.recipient_email || '').toLowerCase().includes(q) ||
+               (inv.recipient_name  || '').toLowerCase().includes(q) ||
+               (inv.from_email      || '').toLowerCase().includes(q) ||
+               (inv.from_label      || '').toLowerCase().includes(q);
+      });
+    }
+    renderTable();
+  });
+
+  verifyAccess();
+</script>
+
+</body>
+</html>
