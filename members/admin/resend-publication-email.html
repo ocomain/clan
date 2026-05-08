@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resend Publication Email — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* Match founders.html chrome — same :root vars, same header style,
+       same body/wrap layout. Keeps this page recognisable as an admin
+       sibling without inheriting the gift-form complexity. */
+    :root{
+      --burgundy:#6B1F1F;
+      --burgundy-deep:#4A1010;
+      --gold-faint:rgba(184,151,90,.22);
+      --rule:rgba(184,151,90,.18);
+    }
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    /* Header — copied verbatim from founders.html for consistency. */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .wrap{max-width:680px;margin:0 auto;padding:48px 24px 80px}
+    .gate{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);text-align:center;padding:60px 20px}
+    .gate-denied h2{font-family:'EB Garamond',serif;font-size:28px;color:var(--burgundy);margin:0 0 12px}
+    .gate-denied p{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.6}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .page-title{font-family:'EB Garamond',serif;font-size:38px;font-weight:400;color:var(--ink);margin:0 0 14px;line-height:1.15}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6;margin:0 0 36px}
+
+    .form-card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:32px;box-shadow:0 4px 16px rgba(12,26,12,.06)}
+    .form-card h2{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin:0 0 8px}
+    .form-card-sub{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-faint,#5a5043);line-height:1.6;margin:0 0 22px}
+
+    .form-label{display:block;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
+    .form-input{width:100%;font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);background:#fafaf6;border:1px solid var(--rule);border-radius:1px;padding:12px 14px;box-sizing:border-box}
+    .form-input:focus{outline:none;border-color:var(--burgundy);background:#fff}
+    .form-help{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-faint,#7a7060);margin:8px 0 0;font-style:italic}
+
+    .btn-send{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-pale);background:var(--burgundy);border:none;border-radius:1px;padding:14px 28px;cursor:pointer;margin-top:24px}
+    .btn-send:hover{background:var(--burgundy-deep)}
+    .btn-send:disabled{opacity:.55;cursor:not-allowed}
+
+    .status-line{display:none;margin-top:20px;padding:14px 18px;border-radius:1px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.55}
+    .status-line.show{display:block}
+    .status-success{background:rgba(60,110,60,.08);border-left:3px solid #3c6e3c;color:#244c24}
+    .status-error{background:rgba(107,31,31,.06);border-left:3px solid var(--burgundy);color:var(--burgundy-deep)}
+    .status-warn{background:rgba(184,151,90,.10);border-left:3px solid var(--gold);color:#5a4a1f}
+
+    /* Why / when block — explains the purpose so future operators
+       (Linda, Fergus) understand WHEN to reach for this tool. */
+    .why-block{margin-top:36px;padding:22px 24px;background:rgba(184,151,90,.06);border-left:2px solid var(--gold-faint);border-radius:1px}
+    .why-block h3{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--burgundy);margin:0 0 10px}
+    .why-block p{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);line-height:1.65;margin:0 0 8px}
+    .why-block p:last-child{margin-bottom:0}
+    .why-block code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:rgba(0,0,0,.05);padding:1px 5px;border-radius:2px}
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- AUTH GATE — same three-state pattern as founders.html. -->
+<div class="wrap" id="authGate">
+  <div class="gate" id="gateLoading">Verifying your access…</div>
+  <div class="gate-denied" id="gateDenied" style="display:none">
+    <h2>This area is reserved</h2>
+    <p>Sign-in is required, and only specific addresses may use this tool. If you believe you should have access, please write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.</p>
+    <p style="margin-top:18px"><a href="/members/">← Return to dashboard</a></p>
+  </div>
+</div>
+
+<!-- ADMIN BODY -->
+<main class="wrap" id="adminBody" style="display:none">
+
+  <div class="page-eyebrow">Operational tool</div>
+  <h1 class="page-title">Resend <em>publication email</em></h1>
+  <p class="page-sub">
+    For members whose certificate has been published but whose publication-confirmation email did not reach them. Re-fires the same email, with the same sealed cert PDF attached.
+  </p>
+
+  <div class="form-card">
+    <h2>Recipient</h2>
+    <p class="form-card-sub">Enter the email address on the member's record. The system will look up their published certificate and re-send the publication email to that address.</p>
+
+    <form id="resendForm" onsubmit="return false">
+      <label class="form-label" for="recipientEmail">Member email</label>
+      <input type="email" id="recipientEmail" class="form-input" placeholder="name@example.com" required autocomplete="off">
+      <p class="form-help">Must match the email on the member's record exactly.</p>
+
+      <button type="submit" class="btn-send" id="sendBtn">Resend publication email</button>
+
+      <div class="status-line" id="formStatus"></div>
+    </form>
+  </div>
+
+  <aside class="why-block">
+    <h3>When to use this</h3>
+    <p>The publication email is sent automatically when a member seals their certificate (either via the dashboard or the auto-publish at day 30). In the rare case that the system reports the cert is sealed but the member did not receive the confirmation email, this tool re-fires the send.</p>
+    <p>The action is logged in the events table as <code>publication_email_resent</code> with the operator's email, and is safe to re-run if the first attempt fails.</p>
+  </aside>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '../auth.js';
+
+  const ADMIN_ALLOWLIST = new Set([
+    'clan@ocomain.org',
+  ]);
+
+  const gateLoading = document.getElementById('gateLoading');
+  const gateDenied  = document.getElementById('gateDenied');
+  const adminBody   = document.getElementById('adminBody');
+  const authGate    = document.getElementById('authGate');
+
+  let session = null;
+  let accessToken = null;
+
+  async function verifyAccess() {
+    session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent('/members/admin/resend-publication-email.html');
+      return;
+    }
+    accessToken = session.access_token;
+    const userEmail = (session.user.email || '').toLowerCase().trim();
+
+    if (!ADMIN_ALLOWLIST.has(userEmail)) {
+      gateLoading.style.display = 'none';
+      gateDenied.style.display = 'block';
+      return;
+    }
+
+    authGate.style.display = 'none';
+    adminBody.style.display = 'block';
+  }
+
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await signOut();
+  });
+
+  // ── Form ──────────────────────────────────────────────────────────
+  const form = document.getElementById('resendForm');
+  const sendBtn = document.getElementById('sendBtn');
+  const formStatus = document.getElementById('formStatus');
+
+  function setStatus(klass, html) {
+    formStatus.className = 'status-line show ' + klass;
+    formStatus.innerHTML = html;
+  }
+  function clearStatus() {
+    formStatus.className = 'status-line';
+    formStatus.innerHTML = '';
+  }
+  function escapeHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearStatus();
+
+    const email = document.getElementById('recipientEmail').value.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setStatus('status-error', '<strong>Email looks invalid.</strong> Check for typos.');
+    }
+
+    // Confirmation step — irreversible from the recipient's perspective
+    // (an email lands in their inbox).
+    const confirmed = confirm(
+      `Resend publication email to:\n\n${email}\n\n` +
+      `The system will look up their member record, find the sealed cert, and re-fire the publication-confirmation email with the PDF attached.\n\n` +
+      `OK to proceed?`
+    );
+    if (!confirmed) return;
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch('/.netlify/functions/admin-resend-publication-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 200 && data.ok) {
+        setStatus('status-success',
+          `<strong>Sent.</strong> Publication email re-fired to ${escapeHtml(email)} with cert <code>${escapeHtml(data.cert_number || '—')}</code> attached. The action is recorded in the events log.`);
+        form.reset();
+      } else if (res.status === 404) {
+        setStatus('status-error', `<strong>No member with that email.</strong> Check the spelling — the email must match the member's record exactly.`);
+      } else if (res.status === 409) {
+        setStatus('status-warn', `<strong>This member has not published their certificate yet.</strong> The publication email is only sent once a cert is sealed. If they're trying to publish, ask them to complete the welcome form or open the publish modal in their dashboard.`);
+      } else if (res.status === 401 || res.status === 403) {
+        setStatus('status-error', '<strong>Access denied.</strong> Try signing out and signing back in, or contact clan@ocomain.org.');
+      } else {
+        setStatus('status-error', `<strong>Could not send.</strong> ${escapeHtml(data.error || 'Unknown error')}${data.detail ? ' — <em>' + escapeHtml(data.detail) + '</em>' : ''}`);
+      }
+    } catch (err) {
+      setStatus('status-error', `<strong>Network error.</strong> ${escapeHtml(err.message || String(err))}`);
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Resend publication email';
+    }
+  });
+
+  verifyAccess();
+</script>
+
+</body>
+</html>
