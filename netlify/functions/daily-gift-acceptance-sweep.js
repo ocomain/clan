@@ -303,7 +303,7 @@ async function sendFounderReminderEmail(g) {
 
   await sendEmail({
     to: g.recipient_email,
-    subject: 'Your founding place in Clan Ó Comáin — still held',
+    subject: 'Your founding place in Clan Ó Comáin — a final note',
     html,
   });
 }

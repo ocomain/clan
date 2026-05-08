@@ -288,14 +288,14 @@ function buildFounderReminderHtml(pendingGift) {
     <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto;text-align:center;max-width:120px">Ó COMÁIN</p>
   </div>
   <div style="padding:40px">
-    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">A founding place still held</p>
+    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">A final note</p>
     <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">A month has passed since the Chief offered you a founding place in Clan Ó Comáin. The place is still held in your name.</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">If the original email is buried, the door is still open below. The membership for the year ahead — <strong>${escapeHtml(tierLabel)}</strong> — is the Chief's gift to you, freely given, awaiting only your acceptance.</p>
-    <div style="text-align:center;margin-bottom:14px">
-      <a href="${claimUrl}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px;border:1px solid #4A1010">View your invitation →</a>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">A month has passed since the Chief offered you a founding place in Clan Ó Comáin. This is the last note you will receive on the matter.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The founding-place gift is a one-time courtesy from the Chief's own hand, given in this founding year only. It is not re-offered. Should you wish to join Clan Ó Comáin in future, the door remains open through the standard <strong>Clan Membership, from €49 a year</strong> — but the founding place set down in your name today will not be set down again.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">If you wish to take it up &mdash; <strong>${escapeHtml(tierLabel)}</strong>, complimentary &mdash; click below.</p>
+    <div style="text-align:center;margin-bottom:32px">
+      <a href="${claimUrl}" style="display:inline-block;background:#6B1F1F;color:#F7F4ED;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px;border:1px solid #4A1010">Take up my founding place →</a>
     </div>
-    <p style="font-family:'Georgia',serif;font-size:13px;color:#8C7A64;text-align:center;margin:0 0 32px;font-style:italic">A founding place is held open for one year from the day it is offered.</p>
     <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If you did not expect this email, or wish not to take up the place, no further messages will be sent. Write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> if you have any question.</p>
     <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-top:28px;margin-bottom:4px">— The Herald, on behalf of <em>Fergus Commane</em></p>
     <p style="font-family:'Georgia',serif;font-size:13px;color:#6C5A4A;line-height:1.5;margin:0"><a href="https://www.ocomain.org" style="color:#B8975A;text-decoration:none">www.ocomain.org</a></p>
