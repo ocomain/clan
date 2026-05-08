@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Lookup — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* :root vars + chrome — same as the rest of /admin/. */
+    :root{
+      --burgundy:#6B1F1F;
+      --burgundy-deep:#4A1010;
+      --gold-faint:rgba(184,151,90,.22);
+      --rule:rgba(184,151,90,.18);
+    }
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .wrap{max-width:880px;margin:0 auto;padding:48px 24px 80px}
+    .gate{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);text-align:center;padding:60px 20px}
+    .gate-denied h2{font-family:'EB Garamond',serif;font-size:28px;color:var(--burgundy);margin:0 0 12px}
+    .gate-denied p{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.6}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .page-title{font-family:'EB Garamond',serif;font-size:38px;font-weight:400;color:var(--ink);margin:0 0 14px;line-height:1.15}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6;margin:0 0 36px}
+
+    /* LOOKUP FORM — single email field + button. Inline horizontal
+       layout to feel like a search box rather than a long form. */
+    .lookup-card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:24px 28px;box-shadow:0 4px 16px rgba(12,26,12,.06);margin-bottom:32px}
+    .lookup-form{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+    .lookup-field{flex:1 1 320px;min-width:220px}
+    .form-label{display:block;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
+    .form-input{width:100%;font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);background:#fafaf6;border:1px solid var(--rule);border-radius:1px;padding:12px 14px;box-sizing:border-box}
+    .form-input:focus{outline:none;border-color:var(--burgundy);background:#fff}
+    .btn-send{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-pale);background:var(--burgundy);border:none;border-radius:1px;padding:14px 24px;cursor:pointer;white-space:nowrap}
+    .btn-send:hover{background:var(--burgundy-deep)}
+    .btn-send:disabled{opacity:.55;cursor:not-allowed}
+
+    .status-line{display:none;margin-top:18px;padding:14px 18px;border-radius:1px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.55}
+    .status-line.show{display:block}
+    .status-success{background:rgba(60,110,60,.08);border-left:3px solid #3c6e3c;color:#244c24}
+    .status-error{background:rgba(107,31,31,.06);border-left:3px solid var(--burgundy);color:var(--burgundy-deep)}
+    .status-warn{background:rgba(184,151,90,.10);border-left:3px solid var(--gold);color:#5a4a1f}
+
+    /* RESULT — sectioned read-only display. */
+    #result{display:none}
+    .result-header{padding:24px 28px;background:#fff;border:1px solid var(--rule);border-radius:2px;margin-bottom:18px}
+    .result-tier{display:inline-block;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--burgundy);background:rgba(107,31,31,.08);padding:4px 10px;border-radius:1px;margin-bottom:10px}
+    .result-name{font-family:'EB Garamond',serif;font-size:30px;font-weight:400;color:var(--ink);margin:0 0 4px;line-height:1.2}
+    .result-email{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-faint,#5a5043);font-style:italic}
+
+    /* STATUS PILLS — quick visual indicators alongside the header. */
+    .pills{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+    .pill{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:1px;border:1px solid currentColor}
+    .pill-ok{color:#3c6e3c}
+    .pill-warn{color:#8a6a1a}
+    .pill-info{color:var(--burgundy)}
+    .pill-mute{color:var(--ink-faint,#7a7060)}
+
+    /* SECTION CARDS — one per logical group. */
+    .section{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:22px 28px;margin-bottom:14px}
+    .section h2{font-family:'EB Garamond',serif;font-size:18px;font-weight:400;color:var(--burgundy);margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--rule);letter-spacing:.02em}
+    .row{display:grid;grid-template-columns:200px 1fr;gap:12px;padding:6px 0;font-family:'EB Garamond',serif;font-size:15px;line-height:1.5;align-items:start}
+    .row dt{color:var(--ink-faint,#7a7060);font-style:italic}
+    .row dd{margin:0;color:var(--ink);word-break:break-word}
+    .row dd.muted{color:var(--ink-faint,#9a9080);font-style:italic}
+    .row dd code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:rgba(0,0,0,.04);padding:1px 5px;border-radius:2px}
+
+    /* ACTION ROW — only the Resend Publication Email button for now. */
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .btn-action{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--burgundy);background:#fff;border:1px solid var(--burgundy);border-radius:1px;padding:10px 18px;cursor:pointer}
+    .btn-action:hover:not(:disabled){background:var(--burgundy);color:var(--gold-pale)}
+    .btn-action:disabled{opacity:.45;cursor:not-allowed;color:var(--ink-faint,#888);border-color:var(--rule)}
+    .btn-action-help{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-faint,#7a7060);font-style:italic;margin:8px 0 0}
+
+    /* EVENTS — compact log table. */
+    .events-table{width:100%;border-collapse:collapse;font-family:'EB Garamond',serif;font-size:14px}
+    .events-table th{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint,#7a7060);text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule)}
+    .events-table td{padding:10px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink)}
+    .events-table td:first-child{white-space:nowrap;color:var(--ink-faint,#5a5043);font-size:13px}
+    .events-table .event-type{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:var(--burgundy)}
+    .events-table .event-payload{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--ink-faint,#5a5043);white-space:pre-wrap;word-break:break-word;max-width:380px}
+
+    .empty-note{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-faint,#7a7060);font-style:italic;padding:8px 0}
+
+    /* Hidden until lookup completes. */
+    .hide{display:none}
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/admin/">Admin</a>
+      <a href="/members/">Dashboard</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="authGate">
+  <div class="gate" id="gateLoading">Verifying your access…</div>
+  <div class="gate-denied" id="gateDenied" style="display:none">
+    <h2>This area is reserved</h2>
+    <p>Sign-in is required, and only specific addresses may use this tool. If you believe you should have access, please write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.</p>
+    <p style="margin-top:18px"><a href="/members/">← Return to dashboard</a></p>
+  </div>
+</div>
+
+<main class="wrap" id="adminBody" style="display:none">
+
+  <div class="page-eyebrow">Operational tool</div>
+  <h1 class="page-title">Member <em>lookup</em></h1>
+  <p class="page-sub">
+    Pull up a member by email — read-only view of their record, lifecycle email status, and last twenty events. Replaces the need to open the Supabase SQL editor for routine triage.
+  </p>
+
+  <div class="lookup-card">
+    <form id="lookupForm" onsubmit="return false">
+      <div class="lookup-form">
+        <div class="lookup-field">
+          <label class="form-label" for="lookupEmail">Member email</label>
+          <input type="email" id="lookupEmail" class="form-input" placeholder="name@example.com" required autocomplete="off">
+        </div>
+        <button type="submit" class="btn-send" id="lookupBtn">Look up</button>
+      </div>
+      <div class="status-line" id="lookupStatus"></div>
+    </form>
+  </div>
+
+  <!-- RESULT — populated client-side after a successful lookup. -->
+  <div id="result"></div>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '../auth.js';
+
+  const ADMIN_ALLOWLIST = new Set([
+    'clan@ocomain.org',
+  ]);
+
+  const gateLoading = document.getElementById('gateLoading');
+  const gateDenied  = document.getElementById('gateDenied');
+  const adminBody   = document.getElementById('adminBody');
+  const authGate    = document.getElementById('authGate');
+
+  let accessToken = null;
+
+  async function verifyAccess() {
+    const session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent('/members/admin/member-lookup.html');
+      return;
+    }
+    accessToken = session.access_token;
+    const userEmail = (session.user.email || '').toLowerCase().trim();
+    if (!ADMIN_ALLOWLIST.has(userEmail)) {
+      gateLoading.style.display = 'none';
+      gateDenied.style.display = 'block';
+      return;
+    }
+    authGate.style.display = 'none';
+    adminBody.style.display = 'block';
+  }
+
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await signOut();
+  });
+
+  // ── helpers ────────────────────────────────────────────────────────
+  const $ = (id) => document.getElementById(id);
+  const lookupForm   = $('lookupForm');
+  const lookupBtn    = $('lookupBtn');
+  const lookupStatus = $('lookupStatus');
+  const lookupEmail  = $('lookupEmail');
+  const result       = $('result');
+
+  function setStatus(klass, html) {
+    lookupStatus.className = 'status-line show ' + klass;
+    lookupStatus.innerHTML = html;
+  }
+  function clearStatus() {
+    lookupStatus.className = 'status-line';
+    lookupStatus.innerHTML = '';
+  }
+  function escHtml(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtDate(s) {
+    if (!s) return null;
+    try {
+      const d = new Date(s);
+      // Format: 8 May 2026, 19:13 UTC — admin context wants UTC for
+      // alignment with the database timestamps and Netlify logs.
+      const opts = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false };
+      return d.toLocaleString('en-GB', opts) + ' UTC';
+    } catch { return s; }
+  }
+  function fmtDateOrNever(s, fallback = 'never') {
+    return s ? fmtDate(s) : `<span class="muted">${fallback}</span>`;
+  }
+  function row(label, value, opts = {}) {
+    if (value == null || value === '' || value === false) {
+      if (!opts.alwaysShow) return '';
+      value = `<span class="muted">${opts.fallback || '—'}</span>`;
+    }
+    return `<div class="row"><dt>${escHtml(label)}</dt><dd${opts.muted ? ' class="muted"' : ''}>${value}</dd></div>`;
+  }
+  function pill(klass, text) {
+    return `<span class="pill ${klass}">${escHtml(text)}</span>`;
+  }
+
+  // ── lookup flow ────────────────────────────────────────────────────
+  lookupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearStatus();
+    result.innerHTML = '';
+    result.style.display = 'none';
+
+    const email = lookupEmail.value.trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setStatus('status-error', '<strong>Email looks invalid.</strong>');
+    }
+
+    lookupBtn.disabled = true;
+    lookupBtn.textContent = 'Looking up…';
+
+    try {
+      const res = await fetch('/.netlify/functions/admin-member-lookup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (res.status === 200 && data.ok) {
+        renderResult(data.member, data.events || []);
+      } else if (res.status === 404) {
+        setStatus('status-warn', `<strong>No member with that email.</strong> Check the spelling, or try variants if the member uses multiple addresses.`);
+      } else if (res.status === 401 || res.status === 403) {
+        setStatus('status-error', '<strong>Access denied.</strong> Try signing out and signing back in.');
+      } else {
+        setStatus('status-error', `<strong>Lookup failed.</strong> ${escHtml(data.error || 'Unknown error')}`);
+      }
+    } catch (err) {
+      setStatus('status-error', `<strong>Network error.</strong> ${escHtml(err.message || String(err))}`);
+    } finally {
+      lookupBtn.disabled = false;
+      lookupBtn.textContent = 'Look up';
+    }
+  });
+
+  // ── render ─────────────────────────────────────────────────────────
+  function renderResult(m, events) {
+    // Status pills — quick read-at-a-glance signals.
+    const pills = [];
+    if (m.status === 'active') pills.push(pill('pill-ok', 'Active'));
+    else if (m.status) pills.push(pill('pill-warn', m.status));
+
+    if (m.auth_user_id) pills.push(pill('pill-ok', 'Has signed in'));
+    else pills.push(pill('pill-mute', 'Never signed in'));
+
+    if (m.comped_by_chief) pills.push(pill('pill-info', 'Comped by Chief'));
+    else if (m.stripe_customer_id) pills.push(pill('pill-info', 'Paid via Stripe'));
+
+    if (m.cert_published_at) pills.push(pill('pill-ok', 'Cert sealed'));
+    else pills.push(pill('pill-warn', 'Cert not yet sealed'));
+
+    if (m.public_register_visible) pills.push(pill('pill-ok', 'On public Register'));
+
+    // ── HEADER ──────────────────────────────────────────────────────
+    let html = `
+      <div class="result-header">
+        <div class="result-tier">${escHtml(m.tier_label || m.tier || 'Member')}</div>
+        <h2 class="result-name">${escHtml(m.name || '(no name on record)')}</h2>
+        <div class="result-email">${escHtml(m.email)}</div>
+        <div class="pills">${pills.join('')}</div>
+      </div>
+    `;
+
+    // ── MEMBERSHIP ─────────────────────────────────────────────────
+    html += `
+      <div class="section">
+        <h2>Membership</h2>
+        <dl>
+          ${row('Member ID', `<code>${escHtml(m.id)}</code>`)}
+          ${row('Tier', escHtml(m.tier_label || m.tier))}
+          ${row('Family tier', m.tier_family ? 'Yes' : 'No', { alwaysShow: true })}
+          ${row('Status', escHtml(m.status || '—'), { alwaysShow: true })}
+          ${row('Created', fmtDateOrNever(m.created_at), { alwaysShow: true })}
+          ${row('Joined', fmtDateOrNever(m.joined_at), { alwaysShow: true })}
+          ${row('Renewed', fmtDateOrNever(m.renewed_at, 'never'))}
+          ${row('Expires', fmtDateOrNever(m.expires_at, 'no expiry'))}
+          ${m.comped_by_chief ? row('Comped by Chief', `Yes — ${fmtDate(m.comped_at)}`) : ''}
+          ${m.comped_note ? row('Chief\'s note', escHtml(m.comped_note)) : ''}
+          ${m.stripe_customer_id ? row('Stripe customer', `<code>${escHtml(m.stripe_customer_id)}</code>`) : ''}
+          ${m.stripe_subscription_id ? row('Stripe subscription', `<code>${escHtml(m.stripe_subscription_id)}</code>`) : ''}
+        </dl>
+      </div>
+    `;
+
+    // ── CERTIFICATE ─────────────────────────────────────────────────
+    const canResendPub = !!m.cert_published_at;
+    html += `
+      <div class="section">
+        <h2>Certificate</h2>
+        <dl>
+          ${row('Version', m.cert_version != null ? String(m.cert_version) : '—', { alwaysShow: true })}
+          ${row('Locked', fmtDateOrNever(m.cert_locked_at, 'not locked'), { alwaysShow: true })}
+          ${row('Published', fmtDateOrNever(m.cert_published_at, 'not published'), { alwaysShow: true })}
+          ${m.cert_publish_reminder_sent_at ? row('Publish reminder', fmtDate(m.cert_publish_reminder_sent_at)) : ''}
+          ${m.ancestor_dedication ? row('Dedication', escHtml(m.ancestor_dedication)) : ''}
+          ${m.name_confirmed_on_cert != null ? row('Name confirmed', m.name_confirmed_on_cert ? 'Yes' : 'Not yet') : ''}
+        </dl>
+        <div class="actions">
+          <button type="button" class="btn-action" id="resendPubBtn" ${canResendPub ? '' : 'disabled'}>
+            Resend publication email
+          </button>
+        </div>
+        <p class="btn-action-help">
+          ${canResendPub
+            ? 'Re-fires the publication-confirmation email with the sealed PDF attached. Audit-logged.'
+            : 'Available only once the certificate is sealed. Members publish via the welcome form or dashboard.'}
+        </p>
+      </div>
+    `;
+
+    // ── LIFECYCLE EMAILS ────────────────────────────────────────────
+    html += `
+      <div class="section">
+        <h2>Lifecycle emails</h2>
+        <dl>
+          ${row('+3d Herald', fmtDateOrNever(m.post_signup_email_3_sent_at, 'not sent'), { alwaysShow: true })}
+          ${row('+9d Chief\'s letter', fmtDateOrNever(m.post_signup_email_9_sent_at, 'not sent'), { alwaysShow: true })}
+          ${m.gift_renewal_reminded_at ? row('Renewal reminder', fmtDate(m.gift_renewal_reminded_at)) : ''}
+          ${m.family_details_completed_at ? row('Welcome form completed', fmtDate(m.family_details_completed_at)) : ''}
+        </dl>
+      </div>
+    `;
+
+    // ── FAMILY ──────────────────────────────────────────────────────
+    if (m.partner_name || (m.children_first_names && m.children_first_names.length)) {
+      html += `
+        <div class="section">
+          <h2>Family</h2>
+          <dl>
+            ${m.partner_name ? row('Partner', escHtml(m.partner_name)) : ''}
+            ${m.children_first_names && m.children_first_names.length
+              ? row('Children', escHtml((m.children_first_names || []).join(', ')))
+              : ''}
+            ${m.children_visible_on_register != null ? row('Children on register', m.children_visible_on_register ? 'Yes' : 'No') : ''}
+          </dl>
+        </div>
+      `;
+    }
+
+    // ── PUBLIC REGISTER ─────────────────────────────────────────────
+    html += `
+      <div class="section">
+        <h2>Public Register</h2>
+        <dl>
+          ${row('Visible', m.public_register_visible ? 'Yes' : 'No', { alwaysShow: true })}
+          ${m.public_register_opted_in_at ? row('Opted in', fmtDate(m.public_register_opted_in_at)) : ''}
+          ${m.display_name_on_register ? row('Display name', escHtml(m.display_name_on_register)) : ''}
+          ${m.dedication_visible_on_register != null ? row('Dedication shown', m.dedication_visible_on_register ? 'Yes' : 'No') : ''}
+        </dl>
+      </div>
+    `;
+
+    // ── POSTAL (only if any data) ───────────────────────────────────
+    if (m.postal_address || m.postal_address_provided_at || m.cert_posted_at) {
+      html += `
+        <div class="section">
+          <h2>Postal</h2>
+          <dl>
+            ${m.postal_address ? row('Address', `<pre style="font-family:'EB Garamond',serif;font-size:15px;margin:0;white-space:pre-wrap">${escHtml(m.postal_address)}</pre>`) : ''}
+            ${m.postal_address_provided_at ? row('Provided', fmtDate(m.postal_address_provided_at)) : ''}
+            ${m.cert_posted_at ? row('Cert posted', fmtDate(m.cert_posted_at)) : ''}
+          </dl>
+        </div>
+      `;
+    }
+
+    // ── METADATA (compact JSON dump) ────────────────────────────────
+    if (m.metadata && Object.keys(m.metadata).length) {
+      html += `
+        <div class="section">
+          <h2>Metadata</h2>
+          <pre style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:rgba(0,0,0,.04);padding:12px;border-radius:2px;overflow-x:auto;margin:0">${escHtml(JSON.stringify(m.metadata, null, 2))}</pre>
+        </div>
+      `;
+    }
+
+    // ── EVENTS ──────────────────────────────────────────────────────
+    if (events.length) {
+      const rows = events.map(ev => `
+        <tr>
+          <td>${escHtml(fmtDate(ev.created_at))}</td>
+          <td><span class="event-type">${escHtml(ev.event_type)}</span></td>
+          <td><div class="event-payload">${escHtml(ev.payload ? JSON.stringify(ev.payload) : '')}</div></td>
+        </tr>
+      `).join('');
+      html += `
+        <div class="section">
+          <h2>Recent events <span style="font-family:'Jost',sans-serif;font-size:11px;font-weight:400;color:var(--ink-faint,#9a9080);letter-spacing:.1em;text-transform:none">— last ${events.length} of up to 20</span></h2>
+          <table class="events-table">
+            <thead><tr><th>When</th><th>Event</th><th>Payload</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      html += `<div class="section"><h2>Recent events</h2><p class="empty-note">No events recorded for this member.</p></div>`;
+    }
+
+    result.innerHTML = html;
+    result.style.display = 'block';
+
+    // Wire up the Resend button if it's enabled.
+    if (canResendPub) {
+      document.getElementById('resendPubBtn').addEventListener('click', async () => {
+        await resendPublicationEmail(m.email);
+      });
+    }
+  }
+
+  // ── action: resend publication email ───────────────────────────────
+  async function resendPublicationEmail(email) {
+    const btn = document.getElementById('resendPubBtn');
+    if (!confirm(`Resend publication email to:\n\n${email}\n\nThe sealed cert PDF will be attached. Proceed?`)) return;
+
+    btn.disabled = true;
+    const originalLabel = btn.textContent;
+    btn.textContent = 'Sending…';
+    clearStatus();
+
+    try {
+      const res = await fetch('/.netlify/functions/admin-resend-publication-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (res.status === 200 && data.ok) {
+        setStatus('status-success', `<strong>Sent.</strong> Publication email re-fired to ${escHtml(email)} with cert <code>${escHtml(data.cert_number || '—')}</code> attached. Action recorded in events.`);
+        // Re-run the lookup so the events log refreshes with the
+        // newly-stamped publication_email_resent entry.
+        lookupForm.dispatchEvent(new Event('submit'));
+      } else if (res.status === 409) {
+        setStatus('status-warn', `<strong>Cannot resend:</strong> this member's certificate is not yet sealed.`);
+      } else {
+        setStatus('status-error', `<strong>Could not send.</strong> ${escHtml(data.error || 'Unknown error')}${data.detail ? ' — <em>' + escHtml(data.detail) + '</em>' : ''}`);
+      }
+    } catch (err) {
+      setStatus('status-error', `<strong>Network error.</strong> ${escHtml(err.message || String(err))}`);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  verifyAccess();
+</script>
+
+</body>
+</html>
