@@ -416,7 +416,7 @@ async function firePublicationSideEffects(updated, clan_id, certResultForEmail) 
     if (dignitiesHeld.length > 0) {
       const { data: memberFull } = await supa()
         .from('members')
-        .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+        .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls, joined_at')
         .eq('id', updated.id)
         .single();
       if (memberFull) {
@@ -594,7 +594,7 @@ async function firePublicationSideEffects(updated, clan_id, certResultForEmail) 
             try {
               const { data: inviterFull } = await supa()
                 .from('members')
-                .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls, joined_at')
                 .eq('id', inviter.id)
                 .single();
               if (inviterFull) {

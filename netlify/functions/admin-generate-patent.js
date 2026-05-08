@@ -113,7 +113,7 @@ exports.handler = async (event) => {
     // Fetch member with all the columns ensurePatent needs.
     const { data: member, error: fetchErr } = await supa()
       .from('members')
-      .select('id, email, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+      .select('id, email, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls, joined_at')
       .eq('clan_id', clan_id)
       .eq('email', email)
       .maybeSingle();

@@ -436,7 +436,7 @@ exports.handler = async (event) => {
                     try {
                       const { data: buyerFull } = await supa()
                         .from('members')
-                        .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                        .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls, joined_at')
                         .eq('id', buyer.id)
                         .single();
                       if (buyerFull) {
@@ -866,7 +866,7 @@ exports.handler = async (event) => {
                         try {
                           const { data: inviterFull } = await supa()
                             .from('members')
-                            .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls')
+                            .select('id, name, sponsor_titles_awarded, cert_published_at, cert_locked_at, patent_urls, joined_at')
                             .eq('id', inviter.id)
                             .single();
                           if (inviterFull) {

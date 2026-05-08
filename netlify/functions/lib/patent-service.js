@@ -77,8 +77,10 @@ function defaultDateString() {
  *                                     idempotency hit on existing entry)
  *   issuedAt: string | null,       // ISO timestamp
  *   issuedName: string | null,     // the name on the patent (frozen)
- *   honourNumber: number | null,   // clan-wide register number,
- *                                  // surfaces as 'No. NNNN' on patent
+ *   honourReference: string | null,// honour reference (OCH-YYYY-NNNNNN)
+ *                                  // surfaces in patent reference stamp.
+ *                                  // Same value across all of a member's
+ *                                  // patents (Cara/Ardchara/Onóir).
  * }>}
  */
 async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
@@ -95,9 +97,9 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
   // Exception: when force=true, skip the early-return and proceed
   // to regenerate. This is the operational hatch for cases where
   // the template changed and we need the storage file refreshed
-  // (e.g. the moment a copy change goes out) WITHOUT consuming a
-  // new register number. We preserve the existing honour_number
-  // when it's set.
+  // (e.g. the moment a copy change goes out). The honour_reference
+  // is deterministic from member identity, so regen produces the
+  // same reference automatically — no preservation logic needed.
   const existing = (member.patent_urls || {})[dignitySlug];
   if (existing && existing.path && !force) {
     return {
@@ -107,7 +109,7 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
       path: existing.path,
       issuedAt: existing.issued_at || null,
       issuedName: existing.issued_name || null,
-      honourNumber: existing.honour_number || null,
+      honourReference: existing.honour_reference || null,
     };
   }
 
@@ -120,7 +122,7 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
       wasGenerated: false,
       skipped: true,
       reason: 'not_raised_to_dignity',
-      path: null, issuedAt: null, issuedName: null, honourNumber: null,
+      path: null, issuedAt: null, issuedName: null, honourReference: null,
     };
   }
 
@@ -130,7 +132,7 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
       wasGenerated: false,
       skipped: true,
       reason: 'cert_not_sealed',
-      path: null, issuedAt: null, issuedName: null, honourNumber: null,
+      path: null, issuedAt: null, issuedName: null, honourReference: null,
     };
   }
 
@@ -144,51 +146,37 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
       wasGenerated: false,
       skipped: true,
       reason: 'member_name_empty',
-      path: null, issuedAt: null, issuedName: null, honourNumber: null,
+      path: null, issuedAt: null, issuedName: null, honourReference: null,
     };
   }
 
-  // ── 4. ASSIGN HONOUR NUMBER ────────────────────────────────────
-  // Read nextval() from the clan-wide honour_number_seq. This is
-  // atomic in Postgres — concurrent ensurePatent calls never collide
-  // on the same number. Sequences allow gaps (if generation fails
-  // after this read, the number is "consumed" but unassigned), which
-  // is intentional: a collision would corrupt the register.
+  // ── 4. COMPUTE HONOUR REFERENCE ────────────────────────────────
+  // Deterministic identifier derived from member.id + joined_at —
+  // mirrors the cert pattern (shortCertNumber → OC-YYYY-NNNNNN).
+  // Patents prefix with OCH for "Ó Comáin Honours" to distinguish
+  // from the membership cert.
   //
-  // EXCEPT: when force=true and the existing entry already has a
-  // honour_number, preserve it. This is the regenerate-PDF path
-  // (template change, backfill from migration, etc.) — we want a
-  // fresh PDF in storage but the register entry stays the same.
-  // Antoin gets to keep being No. 0001.
-  let honourNumber;
-  if (force && existing && existing.honour_number) {
-    honourNumber = Number(existing.honour_number);
-  } else {
-    const { data: nextRow, error: seqErr } = await supa()
-      .rpc('nextval_honour_number');
-    if (seqErr) {
-      throw new Error(`honour_number_seq nextval failed: ${seqErr.message}`);
-    }
-    // The RPC returns a bigint (string in JS) — coerce to number
-    // since we're well within safe integer range (< 2^53).
-    honourNumber = Number(nextRow);
-    if (!Number.isFinite(honourNumber) || honourNumber < 1) {
-      throw new Error(`honour_number_seq returned invalid value: ${nextRow}`);
-    }
-  }
+  // The reference is stable across all of a member's patents:
+  // Cara, Ardchara, Onóir all share the same OCH-YYYY-NNNNNN. It's
+  // the member's honour reference, not a per-patent number.
+  //
+  // Computed fresh each time (no sequence, no RPC, no race
+  // conditions). When force=true on a regen, this just recomputes
+  // to the same value — safe.
+  const honourReference = shortHonourReference(member.id, member.joined_at);
 
   // ── 5. GENERATE THE PDF ─────────────────────────────────────────
   // isSpecimen=false ALWAYS for real conferrals. The SPECIMEN
   // watermark is only used for the Antoin-as-social-proof PDF in
-  // Email 3B; never for member-issued patents. honourNumber comes
-  // from the sequence read above and surfaces in the bottom-left
+  // Email 3B; never for member-issued patents. honourReference is
+  // computed deterministically above and surfaces in the bottom-left
   // reference stamp.
   const pdfBytes = await generatePatent({
     honourSlug: dignitySlug,
     recipientName: issuedName,
     dateString: defaultDateString(),
     isSpecimen: false,
-    honourNumber,
+    honourReference,
   });
 
   // ── 6. UPLOAD TO SUPABASE STORAGE ───────────────────────────────
@@ -213,12 +201,8 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
   // a partial-update primitive.) Race-conditions: if two concurrent
   // ensurePatent calls land for the same member+slug, the loser
   // overwrites the winner — but since the path is deterministic and
-  // the issued_name is the same, the resulting state is identical.
-  // (The honour_number on the loser's PDF in storage will differ
-  // from what's in the JSONB, but since the JSONB is the source of
-  // truth and the storage upload uses upsert:true, the LATEST
-  // upload wins. So in the very rare race case, the assigned
-  // number in the JSONB matches the PDF in storage.)
+  // the issued_name + honour_reference are deterministic too, the
+  // resulting state is identical regardless of which write wins.
   const issuedAt = new Date().toISOString();
   const newPatentUrls = {
     ...(member.patent_urls || {}),
@@ -226,7 +210,7 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
       path: storagePath,
       issued_at: issuedAt,
       issued_name: issuedName,
-      honour_number: honourNumber,
+      honour_reference: honourReference,
     },
   };
   const { error: updateErr } = await supa()
@@ -251,7 +235,7 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
       dignity: dignitySlug,
       storage_path: storagePath,
       issued_name: issuedName,
-      honour_number: honourNumber,
+      honour_reference: honourReference,
     },
   });
 
@@ -262,7 +246,7 @@ async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
     path: storagePath,
     issuedAt,
     issuedName,
-    honourNumber,
+    honourReference,
   };
 }
 
@@ -314,6 +298,21 @@ async function downloadPatentBytes(storagePath) {
 // ──────────────────────────────────────────────────────────────────
 // HELPERS
 // ──────────────────────────────────────────────────────────────────
+
+// Compute the unique honour reference for a member, mirroring the
+// shortCertNumber pattern in cert-service.js. Format:
+//   OCH-YYYY-NNNNNN
+// where YYYY is the year the member joined and NNNNNN is the first
+// 6 hex chars of their UUID. Stable per member — same across Cara,
+// Ardchara, Onóir if they're raised through multiple dignities.
+//
+// Mirrors cert pattern (OC-YYYY-NNNNNN) with OCH prefix to
+// distinguish honour reference from cert reference at a glance.
+function shortHonourReference(memberId, joinedAt) {
+  const year = new Date(joinedAt).getFullYear();
+  const shortId = (memberId || '').replace(/-/g, '').slice(0, 6);
+  return `OCH-${year}-${shortId}`;
+}
 
 // Convert a JS Date to the chivalric long-form date string used on
 // the patent's date line. Example output:
