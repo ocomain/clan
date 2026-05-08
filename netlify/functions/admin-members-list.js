@@ -89,9 +89,38 @@ exports.handler = async (event) => {
     return jsonResponse(500, { error: 'Fetch failed', detail: listErr.message });
   }
 
+  // ── GIFT RECIPIENT FLAG ─────────────────────────────────────────────
+  // A member is a "gift" recipient (distinct from "Chief comped") if
+  // they appear in the gifts table — i.e. another paying member bought
+  // a gift membership for them and the recipient claimed it. We fetch
+  // the gifts table separately rather than join because Supabase joins
+  // require named foreign-key relationships and the gifts.member_id
+  // column may be null on unclaimed rows. Two queries + Set merge in
+  // JS is simpler and the dataset is small.
+  const giftMemberIds = new Set();
+  try {
+    const { data: gifts, error: giftsErr } = await supa()
+      .from('gifts')
+      .select('member_id')
+      .eq('clan_id', cid)
+      .not('member_id', 'is', null);
+    if (giftsErr) {
+      console.error('[admin-members-list] gifts fetch failed (non-fatal):', giftsErr.message);
+    } else {
+      for (const g of (gifts || [])) giftMemberIds.add(g.member_id);
+    }
+  } catch (e) {
+    console.error('[admin-members-list] gifts query threw (non-fatal):', e.message);
+  }
+
+  const enriched = (members || []).map(m => ({
+    ...m,
+    is_gift_recipient: giftMemberIds.has(m.id),
+  }));
+
   return jsonResponse(200, {
     ok: true,
-    count: (members || []).length,
-    members: members || [],
+    count: enriched.length,
+    members: enriched,
   });
 };

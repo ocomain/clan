@@ -72,7 +72,16 @@
     .pill{font-family:'Jost',sans-serif;font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:1px;border:1px solid currentColor;white-space:nowrap}
     .pill-ok{color:#3c6e3c}
     .pill-warn{color:#8a6a1a}
+    /* Origin-of-membership pills — three distinct colors so the
+       relationship type is readable at a glance:
+         pill-chief : Chief gift (burgundy, ceremonial)
+         pill-gift  : Gift from another member (heritage gold)
+         pill-paid  : Self-paid via Stripe (slate, transactional)
+       pill-info kept as a generic burgundy alias for non-origin uses. */
     .pill-info{color:var(--burgundy)}
+    .pill-chief{color:var(--burgundy);background:rgba(107,31,31,.04)}
+    .pill-gift{color:#8a6a1a;background:rgba(184,151,90,.10)}
+    .pill-paid{color:#3a4a5a;background:rgba(58,74,90,.05)}
     .pill-mute{color:var(--ink-faint,#7a7060)}
 
     .empty-state{padding:60px 30px;text-align:center;font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-faint,#7a7060);font-style:italic}
@@ -263,9 +272,20 @@
   }
   function statusPills(m) {
     const out = [];
-    if (m.comped_by_chief) out.push(pill('pill-info', 'Comped'));
-    else if (m.stripe_customer_id) out.push(pill('pill-info', 'Paid'));
-    if (!m.auth_user_id) out.push(pill('pill-mute', 'Never signed in'));
+    // Origin of membership — exactly one of three:
+    if (m.comped_by_chief) {
+      out.push(pill('pill-chief', 'Chief gift'));
+    } else if (m.is_gift_recipient) {
+      out.push(pill('pill-gift', 'Gift'));
+    } else if (m.stripe_customer_id) {
+      out.push(pill('pill-paid', 'Paid'));
+    }
+    // Engagement signal — auth_user_id is only linked when the member
+    // visits /members/ via a magic-link session. They may have paid,
+    // sealed a cert, etc. without ever doing so — the welcome and
+    // welcome-form flows are unauthenticated. So this label is about
+    // dashboard engagement, not authentication.
+    if (!m.auth_user_id) out.push(pill('pill-mute', 'Hasn\u2019t visited dashboard'));
     return out.join('');
   }
 
@@ -410,10 +430,12 @@
     const pills = [];
     if (m.status === 'active') pills.push(pill('pill-ok', 'Active'));
     else if (m.status) pills.push(pill('pill-warn', m.status));
-    if (m.auth_user_id) pills.push(pill('pill-ok', 'Has signed in'));
-    else pills.push(pill('pill-mute', 'Never signed in'));
-    if (m.comped_by_chief) pills.push(pill('pill-info', 'Comped by Chief'));
-    else if (m.stripe_customer_id) pills.push(pill('pill-info', 'Paid via Stripe'));
+    if (m.auth_user_id) pills.push(pill('pill-ok', 'Has visited dashboard'));
+    else pills.push(pill('pill-mute', 'Hasn\u2019t visited dashboard'));
+    // Origin pills — same three-way as the list table.
+    if (m.comped_by_chief) pills.push(pill('pill-chief', 'Chief gift'));
+    else if (m.is_gift_recipient) pills.push(pill('pill-gift', 'Gift'));
+    else if (m.stripe_customer_id) pills.push(pill('pill-paid', 'Paid'));
     if (m.cert_published_at) pills.push(pill('pill-ok', 'Cert sealed'));
     else pills.push(pill('pill-warn', 'Cert not yet sealed'));
     if (m.public_register_visible) pills.push(pill('pill-ok', 'On public Register'));

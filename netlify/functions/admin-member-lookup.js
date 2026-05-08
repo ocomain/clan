@@ -134,6 +134,24 @@ exports.handler = async (event) => {
     return jsonResponse(404, { error: 'No member with that email' });
   }
 
+  // ── GIFT RECIPIENT FLAG ─────────────────────────────────────────────
+  // Same logic as admin-members-list: a member is a "gift" recipient
+  // (vs Chief-comped) if they appear in the gifts table. Single-row
+  // lookup here so just check existence.
+  let isGiftRecipient = false;
+  try {
+    const { data: giftRow } = await supa()
+      .from('gifts')
+      .select('id')
+      .eq('clan_id', cid)
+      .eq('member_id', member.id)
+      .maybeSingle();
+    isGiftRecipient = !!giftRow;
+  } catch (e) {
+    console.error('[admin-member-lookup] gift check threw (non-fatal):', e.message);
+  }
+  member.is_gift_recipient = isGiftRecipient;
+
   // ── 4. EVENTS — newest first, capped at 20 ──────────────────────────
   const { data: events, error: eventsErr } = await supa()
     .from('events')
