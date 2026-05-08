@@ -327,6 +327,32 @@ exports.handler = async (event) => {
       }
     }
 
+    // ── PUBLICATION EMAIL (AWAITED) ─────────────────────────────────
+    // Hoisted out of the fire-and-forget side-effects below because
+    // this is the emotional moment of the cert becoming real for the
+    // member — the only side-effect with direct user-visible impact at
+    // this transaction. Lambda's post-response freeze previously
+    // dropped this send for at least one member (Blackie, 8 May 2026:
+    // events show certificate_published + certificate_regenerated
+    // landed but no publication_email_sent or non-fatal-error log,
+    // consistent with container freeze before the side-effect chain
+    // completed). Awaiting costs the user 3-6s before they see the
+    // 'Cert sealed!' response — an acceptable trade for not silently
+    // dropping the most important email in the lifecycle. Other
+    // side-effects (patent, gift keepsake, sponsor chain) remain
+    // fire-and-forget below since they're internal bookkeeping.
+    if (publishingNow && certResultForEmail) {
+      try {
+        await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
+      } catch (emailErr) {
+        // Same swallow-and-log as before; at least now any throw is
+        // visible in the function log of THIS request, which is
+        // dramatically easier to find than logs from a frozen
+        // background promise.
+        console.error('publication email send failed (non-fatal):', emailErr.message);
+      }
+    }
+
     // Send publication confirmation email + gift-buyer keepsake on first
     // publish. Best-effort — failure here doesn't affect the API response.
     //
@@ -396,12 +422,10 @@ exports.handler = async (event) => {
 //     about the cert; everything else is internal bookkeeping.
 // ─────────────────────────────────────────────────────────────────────
 async function firePublicationSideEffects(updated, clan_id, certResultForEmail) {
-  // (1) PUBLICATION CONFIRMATION EMAIL
-  try {
-    await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
-  } catch (emailErr) {
-    console.error('publication email send failed (non-fatal):', emailErr.message);
-  }
+  // (1) PUBLICATION CONFIRMATION EMAIL — moved out of this helper as
+  //     of 8 May 2026; it is now awaited in the handler before the
+  //     response returns, to prevent lambda-freeze drops. See the
+  //     "PUBLICATION EMAIL (AWAITED)" block in the handler above.
 
   // (1.5) PATENT GENERATION — for the publishing member.
   // Mirrors the equivalent block in submit-family-details.js. If

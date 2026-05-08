@@ -372,6 +372,23 @@ exports.handler = async (event) => {
       }
     }
 
+    // ── PUBLICATION EMAIL (AWAITED) ─────────────────────────────────
+    // Hoisted out of the fire-and-forget side-effects below as of
+    // 8 May 2026. See update-family-details.js for the full rationale —
+    // short version: the publication email is the emotional moment of
+    // the cert becoming real, and lambda's post-response freeze can
+    // silently drop it from the side-effect chain. Awaiting costs the
+    // user 3-6s before the success response but guarantees the email
+    // attempts before lambda can suspend the container. Other
+    // side-effects (patent, sponsor chain) remain fire-and-forget below.
+    if (publishingNow && certResultForEmail) {
+      try {
+        await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
+      } catch (emailErr) {
+        console.error('publication email send failed (non-fatal):', emailErr.message);
+      }
+    }
+
     // Send publication confirmation email if we actually published.
     // Best-effort — failure here doesn't affect the API response.
     //
@@ -428,12 +445,10 @@ exports.handler = async (event) => {
 // only for the top-level defensive catch in the handler).
 // ─────────────────────────────────────────────────────────────────────
 async function firePublicationSideEffects(updated, clan_id, certResultForEmail) {
-  // (1) PUBLICATION CONFIRMATION EMAIL
-  try {
-    await sendPublicationConfirmation(updated, certResultForEmail, { autoPublished: false });
-  } catch (emailErr) {
-    console.error('publication email send failed (non-fatal):', emailErr.message);
-  }
+  // (1) PUBLICATION CONFIRMATION EMAIL — moved out of this helper as
+  //     of 8 May 2026; it is now awaited in the handler before the
+  //     response returns, to prevent lambda-freeze drops. See the
+  //     "PUBLICATION EMAIL (AWAITED)" block in the handler above.
 
   // (1.5) PATENT GENERATION — for the publishing member.
   // The cert was just sealed in this transaction (publishingNow was
