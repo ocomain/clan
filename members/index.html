@@ -3861,7 +3861,7 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         const ADMIN_EMAILS = new Set(['clan@ocomain.org']);
         const signedInEmail = (member.email || '').toLowerCase().trim();
         if (ADMIN_EMAILS.has(signedInEmail)) {
-          window.location.href = '/members/admin/founders.html';
+          window.location.href = '/members/admin/';
           return;
         }
         loading.style.display = 'none';

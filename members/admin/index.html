@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* Same chrome / :root variables as founders.html and
+       resend-publication-email.html — keeps the admin pages cohesive
+       as a sibling cluster. */
+    :root{
+      --burgundy:#6B1F1F;
+      --burgundy-deep:#4A1010;
+      --gold-faint:rgba(184,151,90,.22);
+      --rule:rgba(184,151,90,.18);
+    }
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .wrap{max-width:880px;margin:0 auto;padding:48px 24px 80px}
+    .gate{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);text-align:center;padding:60px 20px}
+    .gate-denied h2{font-family:'EB Garamond',serif;font-size:28px;color:var(--burgundy);margin:0 0 12px}
+    .gate-denied p{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.6}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .page-title{font-family:'EB Garamond',serif;font-size:42px;font-weight:400;color:var(--ink);margin:0 0 14px;line-height:1.15}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6;margin:0 0 40px}
+
+    /* SECTION HEADING — used to group tools by purpose. */
+    .section-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin:36px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--rule)}
+    .section-eyebrow:first-of-type{margin-top:0}
+
+    /* TOOL CARDS — one per admin tool. Click anywhere on the card to
+       navigate. Heritage-tan styling consistent with the rest of the
+       admin chrome. */
+    .tool-grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .tool-card{display:block;background:#fff;border:1px solid var(--rule);border-radius:2px;padding:24px 28px;text-decoration:none;color:inherit;transition:border-color .15s ease, box-shadow .15s ease}
+    .tool-card:hover{border-color:var(--burgundy);box-shadow:0 4px 16px rgba(107,31,31,.08)}
+    .tool-card-title{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin:0 0 6px}
+    .tool-card-title em{font-style:italic;color:var(--burgundy)}
+    .tool-card-desc{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-faint,#5a5043);line-height:1.55;margin:0}
+    .tool-card-arrow{float:right;font-family:'EB Garamond',serif;font-size:22px;color:var(--burgundy);margin-left:12px;line-height:1}
+
+    /* When more tools are added, group under headings — shape already
+       in place so the third tool slots in without a redesign. */
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- AUTH GATE — same three-state pattern as the rest of /admin/. -->
+<div class="wrap" id="authGate">
+  <div class="gate" id="gateLoading">Verifying your access…</div>
+  <div class="gate-denied" id="gateDenied" style="display:none">
+    <h2>This area is reserved</h2>
+    <p>Sign-in is required, and only specific addresses may use this tool. If you believe you should have access, please write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.</p>
+    <p style="margin-top:18px"><a href="/members/">← Return to dashboard</a></p>
+  </div>
+</div>
+
+<!-- ADMIN BODY -->
+<main class="wrap" id="adminBody" style="display:none">
+
+  <div class="page-eyebrow">Admin</div>
+  <h1 class="page-title">Office of the <em>Private Secretary</em></h1>
+  <p class="page-sub">
+    Operational tools for the running of the clan platform. Each action below is logged in the events ledger with the operator's email.
+  </p>
+
+  <!-- INVITATIONS — outbound chief-warrant correspondence. -->
+  <div class="section-eyebrow">By warrant of the Chief</div>
+  <div class="tool-grid">
+    <a class="tool-card" href="/members/admin/founders.html">
+      <span class="tool-card-arrow">→</span>
+      <div class="tool-card-title">Founding gifts <em>— send a new invite</em></div>
+      <p class="tool-card-desc">Send a founding place to a new recipient by warrant of the Chief. Each invite is set down by hand: name, email, tier, and an optional line of personal greeting from Fergus. The recipient receives the Herald's letter and a single link by which to claim their place.</p>
+    </a>
+  </div>
+
+  <!-- OPERATIONAL — recovery and maintenance tools. -->
+  <div class="section-eyebrow">Operational</div>
+  <div class="tool-grid">
+    <a class="tool-card" href="/members/admin/resend-publication-email.html">
+      <span class="tool-card-arrow">→</span>
+      <div class="tool-card-title">Resend <em>publication email</em></div>
+      <p class="tool-card-desc">For members whose certificate has been published but whose publication-confirmation email did not reach them. Re-fires the same email, with the sealed certificate PDF attached.</p>
+    </a>
+  </div>
+
+</main>
+
+<script type="module">
+  import { currentSession, signOut } from '../auth.js';
+
+  const ADMIN_ALLOWLIST = new Set([
+    'clan@ocomain.org',
+  ]);
+
+  const gateLoading = document.getElementById('gateLoading');
+  const gateDenied  = document.getElementById('gateDenied');
+  const adminBody   = document.getElementById('adminBody');
+  const authGate    = document.getElementById('authGate');
+
+  async function verifyAccess() {
+    const session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent('/members/admin/');
+      return;
+    }
+    const userEmail = (session.user.email || '').toLowerCase().trim();
+    if (!ADMIN_ALLOWLIST.has(userEmail)) {
+      gateLoading.style.display = 'none';
+      gateDenied.style.display = 'block';
+      return;
+    }
+    authGate.style.display = 'none';
+    adminBody.style.display = 'block';
+  }
+
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await signOut();
+  });
+
+  verifyAccess();
+</script>
+
+</body>
+</html>
