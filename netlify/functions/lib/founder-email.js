@@ -308,7 +308,7 @@ function buildFounderReminderHtml(pendingGift) {
          tappable. Per DDW: 'have a prominent link to the website so
          they can check it out'. -->
     <div style="text-align:center;margin-bottom:32px">
-      <a href="https://www.ocomain.org" style="display:inline-block;background:transparent;color:#3C2A1A;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:1px;border:1px solid #B8975A">Visit the clan website →</a>
+      <a href="https://www.ocomain.org" style="display:inline-block;background:transparent;color:#3C2A1A;font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:14px 32px;border-radius:1px;border:1px solid #B8975A">or visit the clan website →</a>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If you did not expect this email, or wish not to take up the place, no further messages will be sent. Write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> if you have any question.</p>
