@@ -81,7 +81,9 @@ function defaultDateString() {
  *                                  // surfaces as 'No. NNNN' on patent
  * }>}
  */
-async function ensurePatent(member, dignitySlug, clan_id) {
+async function ensurePatent(member, dignitySlug, clan_id, opts = {}) {
+  const { force = false } = opts;
+
   if (!HONOURS[dignitySlug]) {
     throw new Error(`ensurePatent: unknown dignitySlug "${dignitySlug}"`);
   }
@@ -89,8 +91,15 @@ async function ensurePatent(member, dignitySlug, clan_id) {
   // ── 1. IDEMPOTENCY ──────────────────────────────────────────────
   // If we've already issued this patent, return the existing entry
   // without doing any further work. Singular issuance.
+  //
+  // Exception: when force=true, skip the early-return and proceed
+  // to regenerate. This is the operational hatch for cases where
+  // the template changed and we need the storage file refreshed
+  // (e.g. the moment a copy change goes out) WITHOUT consuming a
+  // new register number. We preserve the existing honour_number
+  // when it's set.
   const existing = (member.patent_urls || {})[dignitySlug];
-  if (existing && existing.path) {
+  if (existing && existing.path && !force) {
     return {
       wasGenerated: false,
       skipped: false,
@@ -145,8 +154,16 @@ async function ensurePatent(member, dignitySlug, clan_id) {
   // on the same number. Sequences allow gaps (if generation fails
   // after this read, the number is "consumed" but unassigned), which
   // is intentional: a collision would corrupt the register.
+  //
+  // EXCEPT: when force=true and the existing entry already has a
+  // honour_number, preserve it. This is the regenerate-PDF path
+  // (template change, backfill from migration, etc.) — we want a
+  // fresh PDF in storage but the register entry stays the same.
+  // Antoin gets to keep being No. 0001.
   let honourNumber;
-  {
+  if (force && existing && existing.honour_number) {
+    honourNumber = Number(existing.honour_number);
+  } else {
     const { data: nextRow, error: seqErr } = await supa()
       .rpc('nextval_honour_number');
     if (seqErr) {

@@ -129,8 +129,10 @@ exports.handler = async (event) => {
       };
     }
 
-    console.log(`[admin-generate-patent] calling ensurePatent for member=${member.id} email=${email} dignity=${dignitySlug}`);
-    const result = await ensurePatent(member, dignitySlug, clan_id);
+    console.log(`[admin-generate-patent] calling ensurePatent for member=${member.id} email=${email} dignity=${dignitySlug} force=${!!body.force}`);
+    const result = await ensurePatent(member, dignitySlug, clan_id, {
+      force: !!body.force,
+    });
     console.log(`[admin-generate-patent] result:`, JSON.stringify(result));
 
     return {
