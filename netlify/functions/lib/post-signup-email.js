@@ -636,7 +636,7 @@ ${p(`<strong><em>Cara —</em></strong> in Irish, "friend". Conferred upon a mem
 ${p(`<strong><em>Ardchara —</em></strong> "high friend". Conferred upon a member who has brought five into the Register. The Chief regards Ardchara as the working honour — the dignity of the kindred who carry the household into the world more than once or twice. At the gatherings, those raised to Ardchara dine at a table near the Chief's own.`)}
 ${p(`<strong><em>Onóir —</em></strong> "honour". Conferred upon a member who has brought fifteen or more. Onóir is the senior dignity of the clan and is rarely conferred. Those raised to it sit on the Chief's right hand at the gatherings and are recorded as such in the Roll of the kindred. They speak in council when the Chief invites it. The dignity stays with the holder for life.`)}
 ${p(`All three are bestowed in person at the gatherings, where the Chief reads each name aloud and lays his hand on the shoulder of the member raised. The Herald is then commanded to make the title known among the kindred, and the holder is addressed by it thereafter — as <em>Cara [Firstname]</em>, <em>Ardchara [Firstname]</em>, or <em>Onóir [Firstname]</em>.`)}
-${p(`I write because the path begins with a single act: <strong>one bringing-in</strong>, and Cara is conferred.`)}
+${p(`I write because the path opens with a single act: <strong>one bringing-in</strong>, and Cara is conferred. Those who carry the work further reach Ardchara at five, and Onóir at fifteen.`)}
 ${ctaButtonHtml('Read the order of honours', URLS.honours)}
 ${p('With the compliments of the Office.')}
 ${heraldSignatureHtml()}
@@ -777,7 +777,7 @@ ${p(`The Chief has asked me to write with a practical note: your year of standin
 ${p(`There is nothing for you to do — <strong>the Office shall handle the renewal on your behalf using the card you have on file</strong>. The renewal preserves your standing without break, and <strong>Jessica's priority booking for the gathering at Newhall opens to renewed members the moment the renewal lands</strong>. The two are joined: standing intact, seat at Newhall held.`)}
 ${p(`Should you wish to <strong>raise your tier</strong> — to Guardian for the Newhall dinner and printed letter from the Chief, or to Steward for your name engraved on the Clan Roll of Honour at Newhall House (a permanent physical record in the clan seat), or to Life for standing in perpetuity — please tell me before ${renewalDate} and the renewal will be processed at the new tier instead. The difference is taken at renewal; nothing further is needed from you.`)}
 ${ctaButtonHtml('Manage your renewal', URLS.renewal)}
-${p(`Should you wish <strong>not to renew</strong>, you may either click cancel in your members' area or write back to me directly. Either is fine, and there is no awkwardness on this side. We've enjoyed having you among the kindred for the year.`)}
+${p(`Should you wish <strong>not to renew</strong>, you may either click cancel in your members' area or write back to me directly. Either is fine, and there is no awkwardness on this side. We've enjoyed having you among the kindred for the year. Your name and the year of your standing are inscribed in the Herald's Register at Newhall &mdash; a hand-bound annual volume, written alphabetically by a professional scribe at year's end, and kept permanently in the clan seat.`)}
 ${p(`With kind regards, and the Chief's thanks for the year and a day of your standing,`)}
 ${lindaSignatureHtml()}
 `;

@@ -48,7 +48,7 @@
 // steady-state volume (a few signups per day) this is more than enough.
 
 const { supa, clanId, logEvent } = require('./lib/supabase');
-const { countSponsoredBy } = require('./lib/sponsor-service');
+const { countSponsoredBy, highestAwardedTitle } = require('./lib/sponsor-service');
 const {
   sendRegisterAck_ClanTier,
   sendRegisterAck_GuardianPlusDefault,
@@ -320,6 +320,22 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            // Suppress the three-titles letter for Onóir holders. The
+            // email's purpose is to introduce the title ladder and the
+            // path to Cara — the apex of that ladder being someone who
+            // has done the path many times over, the Office writing to
+            // explain how to start would read as the system having
+            // forgotten what they did. Mark sent_at to prevent the
+            // sweep from re-evaluating this row daily, and log a
+            // distinct event_type so this isn't conflated with normal
+            // sends in analytics.
+            const titleNow = highestAwardedTitle(m?.sponsor_titles_awarded);
+            if (titleNow && titleNow.slug === 'onoir') {
+              await supa().from('members').update({ post_signup_email_60_sent_at: new Date().toISOString() }).eq('id', m.id);
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_suppressed', metadata: { email: 'e60', reason: 'onoir_apex' } });
+              stats.suppressed = (stats.suppressed || 0) + 1;
+              continue;
+            }
             const ok = await sendHeraldThreeDignities(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_60_sent_at: new Date().toISOString() }).eq('id', m.id);
