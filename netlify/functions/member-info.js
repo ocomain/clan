@@ -119,22 +119,31 @@ exports.handler = async (event) => {
     }
 
     // ── last_seen_at heartbeat ──────────────────────────────────────────
-    // Stamp the most-recent dashboard-load time on the member row. Fire-
-    // and-forget — failure here must NOT impact the dashboard response,
-    // it's an engagement signal, not a critical write. We don't await
-    // because the user shouldn't pay extra latency for our analytics.
+    // AWAITED. We tried fire-and-forget originally and discovered the
+    // same lambda-freeze drop pattern that lost Blackie's publication
+    // email on 8 May: lambda can suspend the container after the
+    // response returns but before the background promise settles, so
+    // every UPDATE was being silently lost and every member's
+    // last_seen_at stayed NULL.
     //
-    // Single timestamp, last-write-wins. NOT a page-view log; this row
-    // is updated every time the dashboard loads, the previous value is
-    // simply overwritten. See migration 030_member_last_seen.sql for
-    // rationale and what this is NOT.
-    supa()
-      .from('members')
-      .update({ last_seen_at: new Date().toISOString() })
-      .eq('id', member.id)
-      .then(({ error }) => {
-        if (error) console.error('member-info: last_seen_at update failed (non-fatal):', error.message);
-      });
+    // Cost of awaiting: ~50ms additional latency on every dashboard
+    // load. Imperceptible to the user. Worth it for a write that
+    // actually persists.
+    //
+    // Still try/catch + don't propagate, because this is an analytics
+    // write — a real failure should log and move on, not break the
+    // dashboard.
+    try {
+      const { error: seenErr } = await supa()
+        .from('members')
+        .update({ last_seen_at: new Date().toISOString() })
+        .eq('id', member.id);
+      if (seenErr) {
+        console.error('member-info: last_seen_at update failed (non-fatal):', seenErr.message);
+      }
+    } catch (e) {
+      console.error('member-info: last_seen_at update threw (non-fatal):', e.message);
+    }
 
     // ── Gift enrichment ──────────────────────────────────────────────────
     // If this member's record was created through the gift flow, surface the
