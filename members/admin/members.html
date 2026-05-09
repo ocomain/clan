@@ -67,6 +67,12 @@
     .col-cert{font-size:14px;color:var(--ink-faint,#5a5043);white-space:nowrap}
     .col-cert.is-sealed{color:#244c24}
     .col-cert.is-not-sealed{color:#8a6a1a;font-style:italic}
+    /* Last-seen freshness — same threshold scheme as the pending-
+       invitations Pending column (7 days fresh / 7-30 drifting /
+       30+ lapsed) for visual consistency across admin views. */
+    .col-seen-fresh{color:#3c6e3c;white-space:nowrap}
+    .col-seen-drifting{color:#8a6a1a;white-space:nowrap}
+    .col-seen-lapsed{color:var(--burgundy);white-space:nowrap}
 
     .pills-cell{display:flex;flex-wrap:wrap;gap:5px}
     .pill{font-family:'Jost',sans-serif;font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:1px;border:1px solid currentColor;white-space:nowrap}
@@ -180,12 +186,13 @@
           <th>Email</th>
           <th>Tier</th>
           <th>Joined</th>
+          <th>Last seen</th>
           <th>Cert</th>
           <th>Status</th>
         </tr>
       </thead>
       <tbody id="membersTbody">
-        <tr><td colspan="6" class="empty-state">Loading members…</td></tr>
+        <tr><td colspan="7" class="empty-state">Loading members…</td></tr>
       </tbody>
     </table>
   </div>
@@ -260,6 +267,32 @@
   function fmtDateOrNever(s, fallback = 'never') {
     return s ? fmtDate(s) : `<span class="muted">${fallback}</span>`;
   }
+  // Format last_seen as "today / 2d ago / 3w ago / 4mo ago" — short
+  // enough to fit a column cell, semantic enough that you can scan
+  // the dashboard at a glance for who's gone quiet. Returns a span
+  // with a colour class keyed to staleness:
+  //   < 7 days  : fresh    (green)
+  //   7–29 days : drifting (amber)
+  //   30+ days  : lapsed   (burgundy)
+  //   never     : muted
+  // Same colour scheme as the pending-invitations Pending column,
+  // for cross-page consistency.
+  function fmtLastSeen(s) {
+    if (!s) return '<span class="muted">never visited</span>';
+    const ms = Date.now() - new Date(s).getTime();
+    const days = Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)));
+    let label;
+    if (days === 0)       label = 'today';
+    else if (days === 1)  label = 'yesterday';
+    else if (days < 7)    label = days + 'd ago';
+    else if (days < 30)   label = Math.floor(days / 7) + 'w ago';
+    else if (days < 365)  label = Math.floor(days / 30) + 'mo ago';
+    else                  label = Math.floor(days / 365) + 'y ago';
+    let klass = 'col-seen-fresh';
+    if (days >= 30)       klass = 'col-seen-lapsed';
+    else if (days >= 7)   klass = 'col-seen-drifting';
+    return `<span class="${klass}">${label}</span>`;
+  }
   function row(label, value, opts = {}) {
     if (value == null || value === '' || value === false) {
       if (!opts.alwaysShow) return '';
@@ -305,7 +338,7 @@
       });
       const data = await res.json();
       if (res.status !== 200 || !data.ok) {
-        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Could not load members: ${escHtml(data.error || 'unknown error')}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Could not load members: ${escHtml(data.error || 'unknown error')}</td></tr>`;
         countLine.textContent = '';
         return;
       }
@@ -313,7 +346,7 @@
       filteredMembers = allMembers;
       renderTable();
     } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Network error: ${escHtml(err.message)}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Network error: ${escHtml(err.message)}</td></tr>`;
       countLine.textContent = '';
     }
   }
@@ -321,7 +354,7 @@
   // ── render table ───────────────────────────────────────────────────
   function renderTable() {
     if (filteredMembers.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No members match this search.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No members match this search.</td></tr>`;
     } else {
       tbody.innerHTML = filteredMembers.map(m => {
         const certCell = m.cert_published_at
@@ -334,6 +367,7 @@
             <td class="col-email">${escHtml(m.email)}</td>
             <td class="col-tier">${escHtml(m.tier_label || m.tier || '—')}</td>
             <td class="col-date">${escHtml(fmtShortDate(m.created_at))}</td>
+            <td class="col-date">${fmtLastSeen(m.last_seen_at)}</td>
             <td>${certCell}</td>
             <td><div class="pills-cell">${statusPills(m)}</div></td>
           </tr>
@@ -467,6 +501,7 @@
           ${row('Status', escHtml(m.status || '—'), { alwaysShow: true })}
           ${row('Created', fmtDateOrNever(m.created_at), { alwaysShow: true })}
           ${row('Joined', fmtDateOrNever(m.joined_at), { alwaysShow: true })}
+          ${row('Last seen', m.last_seen_at ? fmtDate(m.last_seen_at) + ' <span class="muted" style="margin-left:6px">(' + fmtLastSeen(m.last_seen_at).replace(/<\/?span[^>]*>/g, '') + ')</span>' : '<span class="muted">never visited the dashboard</span>', { alwaysShow: true })}
           ${row('Renewed', fmtDateOrNever(m.renewed_at, 'never'))}
           ${row('Expires', fmtDateOrNever(m.expires_at, 'no expiry'))}
           ${m.comped_by_chief ? row('Comped by Chief', `Yes — ${fmtDate(m.comped_at)}`) : ''}

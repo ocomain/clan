@@ -41,6 +41,7 @@ const MEMBER_FIELDS = [
   'id', 'email', 'name',
   // lifecycle timestamps
   'created_at', 'joined_at', 'renewed_at', 'expires_at',
+  'last_seen_at',
   // tier
   'tier', 'tier_label', 'tier_family',
   'status',

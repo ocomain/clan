@@ -37,6 +37,7 @@ const LIST_FIELDS = [
   'tier', 'tier_label', 'tier_family',
   // lifecycle
   'created_at', 'joined_at',
+  'last_seen_at',
   'status',
   // status flags the dashboard renders as pills
   'auth_user_id',          // null = never signed in

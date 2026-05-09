@@ -118,6 +118,24 @@ exports.handler = async (event) => {
       };
     }
 
+    // ── last_seen_at heartbeat ──────────────────────────────────────────
+    // Stamp the most-recent dashboard-load time on the member row. Fire-
+    // and-forget — failure here must NOT impact the dashboard response,
+    // it's an engagement signal, not a critical write. We don't await
+    // because the user shouldn't pay extra latency for our analytics.
+    //
+    // Single timestamp, last-write-wins. NOT a page-view log; this row
+    // is updated every time the dashboard loads, the previous value is
+    // simply overwritten. See migration 030_member_last_seen.sql for
+    // rationale and what this is NOT.
+    supa()
+      .from('members')
+      .update({ last_seen_at: new Date().toISOString() })
+      .eq('id', member.id)
+      .then(({ error }) => {
+        if (error) console.error('member-info: last_seen_at update failed (non-fatal):', error.message);
+      });
+
     // ── Gift enrichment ──────────────────────────────────────────────────
     // If this member's record was created through the gift flow, surface the
     // gift context (giver name, personal message, gift date) so the dashboard
