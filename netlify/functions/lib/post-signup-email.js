@@ -849,10 +849,26 @@ async function sendChiefPersonalLetter(member) {
     // attachments stays undefined; cover email still ships
   }
 
+  // Personalise the subject with the recipient's address-form. This is
+  // the same string used in the PDF salutation: 'Cara Aoife' if the
+  // member has been raised to a sponsor dignity, otherwise just
+  // 'Aoife'. Subject becomes:
+  //     'Letter for Cara Aoife from the desk of the Chief'   (titled)
+  //     'Letter for Aoife from the desk of the Chief'         (untitled)
+  // If addressFormOf returns its 'friend' fallback (no parseable name
+  // on the row, shouldn't happen in production but possible if a
+  // founder gift was created without a recipient_name) we ship the
+  // unpersonalised subject — "Letter for friend from..." would read
+  // worse than just dropping the personalisation.
+  const addressee = addressFormOf(member);
+  const subject = addressee && addressee !== 'friend'
+    ? `Letter for ${addressee} from the desk of the Chief`
+    : 'From the desk of the Chief';
+
   return sendEmail({
     to: member.email,
     from: FROM_FERGUS,
-    subject: 'From the desk of the Chief',
+    subject,
     html: buildEmail2_html(member),
     attachments,
   });
