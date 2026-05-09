@@ -249,7 +249,7 @@ ${p(`Clan Ó Comáin is <strong>authenticated by Clans of Ireland</strong>, the 
 ${p(`The pedigree is the subject of a full scholarly account, with <strong>forty-five footnotes</strong> drawn from the Annals, the Brehon Genealogies, the archaeological record at Cahercommane, and Y-DNA analysis tracing the kindred back almost four thousand years. The line runs from the Bronze Age, through the kings of Déisi Muman, into the Burren of County Clare, and forward into the modern record. Three academic endorsements are presently in train.`)}
 ${ctaButtonHtml('Read the full pedigree', URLS.pedigree)}
 ${p(`The Chief is the custodian of <strong>Killone Abbey and the Holy Well of St John the Baptist</strong>, both upon the Newhall estate. He was consecrated under Brehon law by the derbhfine of the kindred — that is, by the assembly of those of the clan with a recognised right to elect or confirm the chief.`)}
-${p(`I mention all of this so that you might know what you are looking at. There is no obligation; but if you do choose to join, you will find it is a real Irish clan, with real history, and a welcome that is genuinely open to anyone who loves Ireland.`)}
+${p(`I mention all of this so that you might know what you are looking at. There is no obligation; but if you do choose to join, <strong>you join an ancient Gaelic royal house with a living Irish clan household around it</strong> — real history, a real seat, and a welcome that is genuinely open to anyone who loves Ireland.`)}
 ${p(`With kind regards,`)}
 ${lindaSignatureHtml()}
 `;
