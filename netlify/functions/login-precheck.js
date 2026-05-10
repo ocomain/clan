@@ -47,7 +47,7 @@
 const { supa, clanId } = require('./lib/supabase');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_HERALD = 'Herald of Clan Ó Comáin <herald@ocomain.org>';
+const FROM_CLAN = 'Clan Ó Comáin <clan@ocomain.org>';
 
 // Light in-memory rate limit. Per Netlify-lambda-instance, not
 // across instances, so it's a soft floor. For real abuse we'd need
@@ -81,7 +81,8 @@ function escapeHtml(s) {
 }
 
 // HTML body for the non-member fallback email. Heritage-styled,
-// in the Herald's voice (consistent with the +3d Herald welcome).
+// sent from clan@ (the main mailbox — login-failure fallbacks are
+// general correspondence rather than lifecycle Herald comms).
 // Soft CTA — invitation, not pressure. Closes with the explicit
 // "ignore this if you weren't trying to sign in" line because the
 // recipient didn't ask for marketing — they were trying to log in.
@@ -98,7 +99,7 @@ function buildNoAccountEmail(recipientEmail) {
   <tr><td style="padding:48px 24px">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid rgba(184,151,90,.18)">
       <tr><td style="padding:40px 40px 24px;text-align:center">
-        <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#6B1F1F;margin-bottom:18px">From the Herald</div>
+        <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#6B1F1F;margin-bottom:18px">From the Office</div>
         <h1 style="font-family:'EB Garamond',Georgia,serif;font-size:28px;font-weight:400;color:#1F1B14;margin:0;line-height:1.3">No clan account <em style="font-style:italic;color:#6B1F1F">for this email</em></h1>
       </td></tr>
       <tr><td style="padding:8px 40px 16px;font-family:'EB Garamond',Georgia,serif;font-size:17px;color:#3C2A1A;line-height:1.75">
@@ -116,7 +117,7 @@ function buildNoAccountEmail(recipientEmail) {
         <p style="margin:0">If you did not try to sign in just now, you may safely ignore this letter.</p>
       </td></tr>
       <tr><td style="padding:24px 40px;border-top:1px solid rgba(184,151,90,.18);font-family:'EB Garamond',Georgia,serif;font-size:13px;color:#7A7060;line-height:1.6;text-align:center">
-        Sent with respect from the Herald's desk · Clan Ó Comáin
+        Sent with respect from the Office of Clan Ó Comáin
       </td></tr>
     </table>
   </td></tr>
@@ -138,7 +139,7 @@ async function sendNoAccountEmail(recipientEmail) {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: FROM_HERALD,
+        from: FROM_CLAN,
         to: recipientEmail,
         subject: 'No clan account for this email',
         html: buildNoAccountEmail(recipientEmail),
