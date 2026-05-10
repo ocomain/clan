@@ -264,18 +264,54 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
     submitBtn.textContent = 'Sending…';
     status.className = 'mlogin-status';
 
-    const { ok, error } = await sendMagicLink(email, nextUrl);
+    // PRE-CHECK before signInWithOtp. Supabase's signInWithOtp silently
+    // does nothing for emails that aren't in auth.users, leaving non-
+    // members staring at "check your inbox" with nothing arriving.
+    // The pre-check looks up the members table; if the email isn't a
+    // member it fires a friendly "no clan account for this email"
+    // letter from herald@ pointing them at /membership. Either way,
+    // the user-visible success state is identical so the flow remains
+    // smooth for both real members and curious non-members.
+    //
+    // Fails open: if the pre-check itself errors (network, server),
+    // we fall through to signInWithOtp anyway — better to let a real
+    // member sign in than to block them on our intermediate check.
+    let isMember = true; // default — fail open
+    try {
+      const pc = await fetch('/.netlify/functions/login-precheck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (pc.ok) {
+        const data = await pc.json();
+        isMember = data.is_member !== false; // default true on unexpected shape
+      }
+    } catch {
+      // network blip — fail open, continue with signInWithOtp
+    }
 
-    if (ok) {
-      status.className = 'mlogin-status show success';
-      status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link has been sent to <em>${email}</em>. The link is valid for 24 hours and is single-use — open it on the device you'd like to be signed in on. If you need to sign in on a different device later, just request a fresh link from there. If it doesn't arrive within a few minutes, check your spam folder.`;
-      submitBtn.textContent = 'Link sent ✓';
-      emailInput.disabled = true;
+    if (isMember) {
+      const { ok, error } = await sendMagicLink(email, nextUrl);
+      if (ok) {
+        status.className = 'mlogin-status show success';
+        status.innerHTML = `<strong>Check your inbox.</strong> A one-time access link has been sent to <em>${email}</em>. The link is valid for 24 hours and is single-use — open it on the device you'd like to be signed in on. If you need to sign in on a different device later, just request a fresh link from there. If it doesn't arrive within a few minutes, check your spam folder.`;
+        submitBtn.textContent = 'Link sent ✓';
+        emailInput.disabled = true;
+      } else {
+        status.className = 'mlogin-status show error';
+        status.textContent = error || 'Something went wrong sending the link. Please try again, or write to clan@ocomain.org for assistance.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send me the link →';
+      }
     } else {
-      status.className = 'mlogin-status show error';
-      status.textContent = error || 'Something went wrong sending the link. Please try again, or write to clan@ocomain.org for assistance.';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send me the link →';
+      // Non-member. login-precheck has already fired the friendly
+      // fallback email server-side. Show the same success state so
+      // the UX is consistent.
+      status.className = 'mlogin-status show success';
+      status.innerHTML = `<strong>Check your inbox.</strong> We've sent a letter to <em>${email}</em> with what to do next.`;
+      submitBtn.textContent = 'Sent ✓';
+      emailInput.disabled = true;
     }
   });
 </script>
