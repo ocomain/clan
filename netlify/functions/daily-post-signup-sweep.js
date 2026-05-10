@@ -68,6 +68,82 @@ const {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const PER_BUCKET_LIMIT = 50;
 
+// ── claimEmailSlot ──────────────────────────────────────────────────
+// Conditional-UPDATE mutex used by every per-email branch below to
+// prevent duplicate sends across concurrent invocations. The race we
+// observed on 10 May 2026 (jessica-lily@hotmail.co.uk received the
+// Chief's letter twice) traced to two cron invocations both finding
+// her row unstamped at the same moment — the original "send-then-
+// stamp" pattern had a 2-second window where two parallel runs could
+// both reach the same member.
+//
+// New pattern is "claim-then-send-then-log":
+//   1. UPDATE column = NOW() WHERE column IS NULL — atomic at the DB
+//      level. The WHERE clause means only one writer wins.
+//   2. If the UPDATE returned a row, we have the claim — proceed to
+//      send and log.
+//   3. If the UPDATE returned no rows, another invocation already
+//      claimed this member — we silently skip.
+//   4. If the send subsequently fails, we roll back the stamp so a
+//      future cron run can retry on the next day's bucket.
+//
+// The trade-off vs the old pattern is that a member whose stamp gets
+// written but whose send then fails gets a NULL rollback. If THAT
+// rollback also fails (very unlikely — it's a single-column UPDATE
+// against the same row we just wrote), we end up with a stamp but
+// no send — the member is silently skipped going forward. That's
+// strictly better than the old failure mode (silent duplicate
+// send), and the rollback failure rate is essentially zero in
+// practice.
+//
+// Returns true if we own the claim (caller proceeds to send),
+// false if we don't (caller skips this member silently).
+async function claimEmailSlot(memberId, columnName) {
+  const { data, error } = await supa()
+    .from('members')
+    .update({ [columnName]: new Date().toISOString() })
+    .eq('id', memberId)
+    .is(columnName, null)
+    .select('id');
+  if (error) {
+    console.error(`post-signup-sweep: claim ${columnName} failed for ${memberId}:`, error.message);
+    return false;
+  }
+  return Array.isArray(data) && data.length > 0;
+}
+
+// Roll the slot back to NULL so a future cron can retry. Used only
+// when the claim succeeded but the subsequent send failed — clears
+// the stamp so the member re-enters the next bucket sweep.
+async function releaseEmailSlot(memberId, columnName) {
+  const { error } = await supa()
+    .from('members')
+    .update({ [columnName]: null })
+    .eq('id', memberId);
+  if (error) {
+    console.error(`post-signup-sweep: release ${columnName} failed for ${memberId}:`, error.message);
+  }
+}
+
+// Boolean-flag variant of the claim mutex. Used by e35 and e330,
+// which have a separate "_skipped" boolean column as well as the
+// "_sent_at" timestamp. Conditional UPDATE on the boolean: only
+// flip false→true if it's currently false. Same atomic semantics as
+// claimEmailSlot, returns true if we won the claim.
+async function claimSkipFlag(memberId, columnName) {
+  const { data, error } = await supa()
+    .from('members')
+    .update({ [columnName]: true })
+    .eq('id', memberId)
+    .eq(columnName, false)
+    .select('id');
+  if (error) {
+    console.error(`post-signup-sweep: claim skip ${columnName} failed for ${memberId}:`, error.message);
+    return false;
+  }
+  return Array.isArray(data) && data.length > 0;
+}
+
 // ── SENDER_READY gate ──────────────────────────────────────────────
 // Flip these flags as senders come online and assets land.
 //
@@ -148,16 +224,26 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            // Claim before sending — see claimEmailSlot doc for race
+            // rationale. If another invocation got there first, skip.
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_3_sent_at');
+            if (!claimed) continue;
             let ok;
             if (isClanTier(m.tier)) ok = await sendRegisterAck_ClanTier(m);
             else if (m.public_register_visible !== false) ok = await sendRegisterAck_GuardianPlusDefault(m);
             else ok = await sendRegisterAck_GuardianPlusOptedOut(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_3_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e3', tier: m.tier } });
               stats.e3 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e3 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_3_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e3 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_3_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -177,13 +263,21 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_9_sent_at');
+            if (!claimed) continue;
             const ok = await sendChiefPersonalLetter(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_9_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e9' } });
               stats.e9 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e9 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_9_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e9 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_9_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -203,13 +297,21 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_21_sent_at');
+            if (!claimed) continue;
             const ok = await sendAntoinHowIBecameCara(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_21_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e21' } });
               stats.e21 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e21 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_21_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e21 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_21_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -248,23 +350,33 @@ exports.handler = async () => {
           const titles = m.sponsor_titles_awarded || {};
           const isTitled = Object.values(titles).some(v => v != null);
           if (isTitled) {
-            // Mark as sent so we don't keep re-evaluating this member
-            // every cron tick. They've already moved past Email 3B's
-            // intended audience; treat the email as effectively
-            // delivered for tracking purposes.
-            await supa().from('members').update({ post_signup_email_21b_sent_at: new Date().toISOString() }).eq('id', m.id);
+            // Claim the slot (idempotently — if another invocation
+            // already marked them, we just skip silently). The stamp
+            // also serves to mark them as effectively-delivered for
+            // tracking purposes — they've moved past this email's
+            // intended audience.
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_21b_sent_at');
+            if (!claimed) continue;
             await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', payload: { email: 'e21b', reason: 'member_already_titled' } });
             stats.e21b_skipped_titled = (stats.e21b_skipped_titled || 0) + 1;
             continue;
           }
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_21b_sent_at');
+            if (!claimed) continue;
             const ok = await sendAntoinForgotToAttach(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_21b_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e21b' } });
               stats.e21b = (stats.e21b || 0) + 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e21b send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_21b_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e21b send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_21b_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -289,18 +401,26 @@ exports.handler = async () => {
           try {
             const sponsoredCount = await countSponsoredBy(m.id);
             if (sponsoredCount > 0) {
-              await supa().from('members').update({ post_signup_email_35_skipped: true }).eq('id', m.id);
+              const claimed = await claimSkipFlag(m.id, 'post_signup_email_35_skipped');
+              if (!claimed) continue;
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', payload: { email: 'e35', reason: 'already_sponsored', count: sponsoredCount } });
               stats.e35_skipped += 1;
             } else {
+              const claimed = await claimEmailSlot(m.id, 'post_signup_email_35_sent_at');
+              if (!claimed) continue;
               const ok = await sendLindaBringingKindred(m);
               if (ok) {
-                await supa().from('members').update({ post_signup_email_35_sent_at: new Date().toISOString() }).eq('id', m.id);
                 await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e35' } });
                 stats.e35_sent += 1;
-              } else stats.failed += 1;
+              } else {
+                await releaseEmailSlot(m.id, 'post_signup_email_35_sent_at');
+                stats.failed += 1;
+              }
             }
-          } catch (err) { console.error('post-signup-sweep: e35 send failed for', m.email, err.message); stats.failed += 1; }
+          } catch (err) {
+            console.error('post-signup-sweep: e35 send failed for', m.email, err.message);
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -331,18 +451,26 @@ exports.handler = async () => {
             // sends in analytics.
             const titleNow = highestAwardedTitle(m?.sponsor_titles_awarded);
             if (titleNow && titleNow.slug === 'onoir') {
-              await supa().from('members').update({ post_signup_email_60_sent_at: new Date().toISOString() }).eq('id', m.id);
+              const claimed = await claimEmailSlot(m.id, 'post_signup_email_60_sent_at');
+              if (!claimed) continue;
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_suppressed', payload: { email: 'e60', reason: 'onoir_apex' } });
               stats.suppressed = (stats.suppressed || 0) + 1;
               continue;
             }
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_60_sent_at');
+            if (!claimed) continue;
             const ok = await sendHeraldThreeDignities(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_60_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e60' } });
               stats.e60 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e60 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_60_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e60 send failed for', m.email, err.message);
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -362,13 +490,21 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_90_sent_at');
+            if (!claimed) continue;
             const ok = await sendMichaelClanCrest(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_90_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e90' } });
               stats.e90 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e90 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_90_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e90 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_90_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -388,13 +524,21 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_180_sent_at');
+            if (!claimed) continue;
             const ok = await sendPaddyStandingOfTheLine(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_180_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e180' } });
               stats.e180 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e180 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_180_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e180 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_180_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -414,13 +558,21 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_240_sent_at');
+            if (!claimed) continue;
             const ok = await sendJessicaGathering(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_240_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e240' } });
               stats.e240 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e240 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_240_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e240 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_240_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -440,13 +592,21 @@ exports.handler = async () => {
       else {
         for (const m of targets || []) {
           try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_300_sent_at');
+            if (!claimed) continue;
             const ok = await sendPaddyRoyalHouseAndSaint(m);
             if (ok) {
-              await supa().from('members').update({ post_signup_email_300_sent_at: new Date().toISOString() }).eq('id', m.id);
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e300' } });
               stats.e300 += 1;
-            } else stats.failed += 1;
-          } catch (err) { console.error('post-signup-sweep: e300 send failed for', m.email, err.message); stats.failed += 1; }
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_300_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e300 send failed for', m.email, err.message);
+            await releaseEmailSlot(m.id, 'post_signup_email_300_sent_at');
+            stats.failed += 1;
+          }
         }
       }
     } else {
@@ -468,18 +628,26 @@ exports.handler = async () => {
         for (const m of targets || []) {
           try {
             if (isLifeTier(m.tier)) {
-              await supa().from('members').update({ post_signup_email_330_skipped: true }).eq('id', m.id);
+              const claimed = await claimSkipFlag(m.id, 'post_signup_email_330_skipped');
+              if (!claimed) continue;
               await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', payload: { email: 'e330', reason: 'life_tier_no_renewal', tier: m.tier } });
               stats.e330_skipped += 1;
             } else {
+              const claimed = await claimEmailSlot(m.id, 'post_signup_email_330_sent_at');
+              if (!claimed) continue;
               const ok = await sendLindaRenewal(m);
               if (ok) {
-                await supa().from('members').update({ post_signup_email_330_sent_at: new Date().toISOString() }).eq('id', m.id);
                 await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e330', tier: m.tier } });
                 stats.e330_sent += 1;
-              } else stats.failed += 1;
+              } else {
+                await releaseEmailSlot(m.id, 'post_signup_email_330_sent_at');
+                stats.failed += 1;
+              }
             }
-          } catch (err) { console.error('post-signup-sweep: e330 send failed for', m.email, err.message); stats.failed += 1; }
+          } catch (err) {
+            console.error('post-signup-sweep: e330 send failed for', m.email, err.message);
+            stats.failed += 1;
+          }
         }
       }
     } else {
