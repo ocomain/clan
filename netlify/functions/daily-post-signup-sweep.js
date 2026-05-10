@@ -154,7 +154,7 @@ exports.handler = async () => {
             else ok = await sendRegisterAck_GuardianPlusOptedOut(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_3_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e3', tier: m.tier } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e3', tier: m.tier } });
               stats.e3 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e3 send failed for', m.email, err.message); stats.failed += 1; }
@@ -180,7 +180,7 @@ exports.handler = async () => {
             const ok = await sendChiefPersonalLetter(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_9_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e9' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e9' } });
               stats.e9 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e9 send failed for', m.email, err.message); stats.failed += 1; }
@@ -206,7 +206,7 @@ exports.handler = async () => {
             const ok = await sendAntoinHowIBecameCara(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_21_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e21' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e21' } });
               stats.e21 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e21 send failed for', m.email, err.message); stats.failed += 1; }
@@ -253,7 +253,7 @@ exports.handler = async () => {
             // intended audience; treat the email as effectively
             // delivered for tracking purposes.
             await supa().from('members').update({ post_signup_email_21b_sent_at: new Date().toISOString() }).eq('id', m.id);
-            await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', metadata: { email: 'e21b', reason: 'member_already_titled' } });
+            await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', payload: { email: 'e21b', reason: 'member_already_titled' } });
             stats.e21b_skipped_titled = (stats.e21b_skipped_titled || 0) + 1;
             continue;
           }
@@ -261,7 +261,7 @@ exports.handler = async () => {
             const ok = await sendAntoinForgotToAttach(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_21b_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e21b' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e21b' } });
               stats.e21b = (stats.e21b || 0) + 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e21b send failed for', m.email, err.message); stats.failed += 1; }
@@ -290,13 +290,13 @@ exports.handler = async () => {
             const sponsoredCount = await countSponsoredBy(m.id);
             if (sponsoredCount > 0) {
               await supa().from('members').update({ post_signup_email_35_skipped: true }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', metadata: { email: 'e35', reason: 'already_sponsored', count: sponsoredCount } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', payload: { email: 'e35', reason: 'already_sponsored', count: sponsoredCount } });
               stats.e35_skipped += 1;
             } else {
               const ok = await sendLindaBringingKindred(m);
               if (ok) {
                 await supa().from('members').update({ post_signup_email_35_sent_at: new Date().toISOString() }).eq('id', m.id);
-                await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e35' } });
+                await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e35' } });
                 stats.e35_sent += 1;
               } else stats.failed += 1;
             }
@@ -332,14 +332,14 @@ exports.handler = async () => {
             const titleNow = highestAwardedTitle(m?.sponsor_titles_awarded);
             if (titleNow && titleNow.slug === 'onoir') {
               await supa().from('members').update({ post_signup_email_60_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_suppressed', metadata: { email: 'e60', reason: 'onoir_apex' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_suppressed', payload: { email: 'e60', reason: 'onoir_apex' } });
               stats.suppressed = (stats.suppressed || 0) + 1;
               continue;
             }
             const ok = await sendHeraldThreeDignities(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_60_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e60' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e60' } });
               stats.e60 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e60 send failed for', m.email, err.message); stats.failed += 1; }
@@ -365,7 +365,7 @@ exports.handler = async () => {
             const ok = await sendMichaelClanCrest(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_90_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e90' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e90' } });
               stats.e90 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e90 send failed for', m.email, err.message); stats.failed += 1; }
@@ -391,7 +391,7 @@ exports.handler = async () => {
             const ok = await sendPaddyStandingOfTheLine(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_180_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e180' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e180' } });
               stats.e180 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e180 send failed for', m.email, err.message); stats.failed += 1; }
@@ -417,7 +417,7 @@ exports.handler = async () => {
             const ok = await sendJessicaGathering(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_240_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e240' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e240' } });
               stats.e240 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e240 send failed for', m.email, err.message); stats.failed += 1; }
@@ -443,7 +443,7 @@ exports.handler = async () => {
             const ok = await sendPaddyRoyalHouseAndSaint(m);
             if (ok) {
               await supa().from('members').update({ post_signup_email_300_sent_at: new Date().toISOString() }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e300' } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e300' } });
               stats.e300 += 1;
             } else stats.failed += 1;
           } catch (err) { console.error('post-signup-sweep: e300 send failed for', m.email, err.message); stats.failed += 1; }
@@ -469,13 +469,13 @@ exports.handler = async () => {
           try {
             if (isLifeTier(m.tier)) {
               await supa().from('members').update({ post_signup_email_330_skipped: true }).eq('id', m.id);
-              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', metadata: { email: 'e330', reason: 'life_tier_no_renewal', tier: m.tier } });
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_skipped', payload: { email: 'e330', reason: 'life_tier_no_renewal', tier: m.tier } });
               stats.e330_skipped += 1;
             } else {
               const ok = await sendLindaRenewal(m);
               if (ok) {
                 await supa().from('members').update({ post_signup_email_330_sent_at: new Date().toISOString() }).eq('id', m.id);
-                await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', metadata: { email: 'e330', tier: m.tier } });
+                await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e330', tier: m.tier } });
                 stats.e330_sent += 1;
               } else stats.failed += 1;
             }
