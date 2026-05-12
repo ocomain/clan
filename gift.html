@@ -127,6 +127,21 @@
     .ind-only{display:block}.fam-only{display:none}
     body.fam-mode .ind-only{display:none}
     body.fam-mode .fam-only{display:block}
+    /* .gift-perk uses display:flex for the check-mark + text layout.
+       The body.fam-mode rule above would override it to display:block
+       and break the bullet alignment — explicit override here keeps
+       the flex layout when a fam-only perk bullet is shown. Same
+       pattern as membership.html line 180. */
+    body.fam-mode .gift-perk.fam-only{display:flex}
+    /* Vertical-space reservation pattern, mirrored from
+       membership.html lines 432-433. The "family description" line
+       above each tier's price renders &nbsp; in individual mode and
+       the actual description in family mode. Without this, the
+       family-mode bullets above push the grid downward when the
+       toggle is flipped, causing the perks rows to shift. With this,
+       a placeholder row reserves the same vertical space in
+       individual mode so the grid stays still. */
+    .gift-family-price{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:14px;min-height:22px;text-align:center}
 </style>
   <link rel="canonical" href="https://www.ocomain.org/gift.html">
   <!-- Open Graph -->
@@ -274,6 +289,8 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <div class="gift-tier-name">Clan Member</div>
         <div class="gift-price ind-only">€49</div>
         <div class="gift-price fam-only">€79</div>
+        <div class="gift-family-price ind-only">&nbsp;</div>
+        <div class="gift-family-price fam-only">Family · 2 adults + children</div>
         <div class="gift-cadence ind-only">one-year gift · no auto-renewal</div>
         <div class="gift-cadence fam-only">one-year family gift · no auto-renewal</div>
         <a href="gift-form.html?tier=clan-ind" class="gift-btn ind-only" style="margin-top:18px">Gift Clan Member — €49</a>
@@ -297,6 +314,8 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <div class="gift-tier-name">Guardian of the Clan</div>
         <div class="gift-price ind-only">€150</div>
         <div class="gift-price fam-only">€220</div>
+        <div class="gift-family-price ind-only">&nbsp;</div>
+        <div class="gift-family-price fam-only">Family · 2 adults + children</div>
         <div class="gift-cadence ind-only">one-year gift · no auto-renewal</div>
         <div class="gift-cadence fam-only">one-year family gift · no auto-renewal</div>
         <a href="gift-form.html?tier=guardian-ind" class="gift-btn solid ind-only" style="margin-top:18px">Gift Guardian — €150</a>
@@ -319,6 +338,8 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <div class="gift-tier-name">Life Member</div>
         <div class="gift-price ind-only">€750</div>
         <div class="gift-price fam-only">€1,100</div>
+        <div class="gift-family-price ind-only">&nbsp;</div>
+        <div class="gift-family-price fam-only">Family · 2 adults + children</div>
         <div class="gift-cadence ind-only">permanent membership · one-time gift</div>
         <div class="gift-cadence fam-only">permanent family membership · one-time gift</div>
         <a href="gift-form.html?tier=life-ind" class="gift-btn ind-only" style="margin-top:18px">Gift Life Member — €750</a>
