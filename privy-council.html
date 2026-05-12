@@ -368,8 +368,11 @@ function toggleMenu(){
              italic 'Photo to follow' below. To replace: swap this
              entire <div class="council-photo-placeholder">…</div>
              block for an <img> matching the Tanist card's pattern. -->
-        <div class="council-photo-placeholder" style="width:100%;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--cream-mid) 0%,var(--cream) 100%);border:1px solid var(--gold-border);border-radius:2px;margin-bottom:16px" aria-label="Portrait of Oisín Ó Ruairc — photo to follow">
-          <div style="font-family:'EB Garamond',serif;font-size:54px;font-weight:400;color:var(--gold-deep);letter-spacing:.06em;line-height:1">OÓR</div>
+        <div class="council-photo-placeholder" style="width:100%;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--cream-mid) 0%,var(--cream) 100%);border:1px solid var(--gold-border);border-radius:2px;margin-bottom:16px;color:var(--ink-muted)" aria-label="Portrait of Oisín Ó Ruairc — photo to follow">
+          <svg width="92" height="112" viewBox="0 0 92 112" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="opacity:.38">
+            <circle cx="46" cy="36" r="22" fill="currentColor"/>
+            <path d="M 6 112 Q 6 68 46 68 Q 86 68 86 112 Z" fill="currentColor"/>
+          </svg>
           <div style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:14px">Photograph to follow</div>
         </div>
         <div class="council-name">Oisín Ó Ruairc</div>
@@ -395,13 +398,19 @@ function toggleMenu(){
         <p class="council-desc">In the oldest Irish tradition, the <em>anam cara</em> — literally "soul friend" — was the trusted companion with whom one could share the deepest troubles of the heart, and be met with wisdom, discretion, and steady care. The Anam Cara to Clan Ó Comáin offers a confidential, listening presence to members navigating grief, loss, isolation, questions of identity, or the quiet weight of being far from home. The role is pastoral, not clinical — it complements rather than replaces professional mental-health care, and the office will always direct members to qualified support where it is needed. We seek someone with training in counselling, pastoral care, or psychotherapy, and a genuine feel for the Celtic tradition this office revives.</p>
       </div>
 
-      <!-- OLLAMH LEIGHIS — CLAN HEALTH ADVISOR — VACANT -->
+      <!-- OLLAMH LEIGHIS — CLAN HEALTH ADVISOR — FILLED, NAME AND PHOTO TO FOLLOW -->
       <div class="council-card">
         <div class="council-role">Ollamh Leighis <span style="font-family:'EB Garamond',serif;font-weight:400;font-size:13px;letter-spacing:0;text-transform:none;color:var(--ink-faint);font-style:italic;margin-left:6px">(OL-əv LAY-ish)</span></div>
         <div class="council-irish">Master Physician · Clan Health Advisor · Body</div>
-        <div class="council-vacant">— Role open to the right person —</div>
-        <div class="council-title">Medical practitioners welcomed</div>
-        <p class="council-desc">In the medieval Gaelic clan, the <em>ollamh leighis</em> was one of the seven great learned offices — the hereditary physician to the chief and his people, drawn from scholarly medical families such as the Ó hÍceadha of Thomond, whose standing rested on long study of herbal, dietary, and contemplative traditions. The Ollamh Leighis of Clan Ó Comáin offers members a trusted voice on general health and preventive wellbeing, and a steady pointer toward the appropriate professional care when it is needed. The role is not a substitute for a doctor, and no diagnosis or treatment is provided through it — it is a relationship of counsel that honours the ancient place of the physician within the clan. We seek a qualified medical practitioner willing to offer some of their time to this office.</p>
+        <div class="council-photo-placeholder" style="width:100%;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--cream-mid) 0%,var(--cream) 100%);border:1px solid var(--gold-border);border-radius:2px;margin-bottom:16px;color:var(--ink-muted)" aria-label="Portrait of the Ollamh Leighis — photo to follow">
+          <svg width="92" height="112" viewBox="0 0 92 112" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="opacity:.38">
+            <circle cx="46" cy="36" r="22" fill="currentColor"/>
+            <path d="M 6 112 Q 6 68 46 68 Q 86 68 86 112 Z" fill="currentColor"/>
+          </svg>
+          <div style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:14px">Name and photograph to follow</div>
+        </div>
+        <div class="council-title">Position filled · name to be announced</div>
+        <p class="council-desc">In the medieval Gaelic clan, the <em>ollamh leighis</em> was one of the seven great learned offices — the hereditary physician to the chief and his people, drawn from scholarly medical families such as the Ó hÍceadha of Thomond, whose standing rested on long study of herbal, dietary, and contemplative traditions. The Ollamh Leighis of Clan Ó Comáin offers members a trusted voice on general health and preventive wellbeing, and a steady pointer toward the appropriate professional care when it is needed. The role is not a substitute for a doctor, and no diagnosis or treatment is provided through it — it is a relationship of counsel that honours the ancient place of the physician within the clan.</p>
       </div>
 
       <!-- CRAOIBHSCRIOBHAI — CLAN GENEALOGIST — VACANT -->
@@ -571,7 +580,6 @@ function toggleMenu(){
       <option value="unsure">Not sure — open to a conversation</option>
       <option value="viceroy">Viceroy</option>
       <option value="anam-cara">Anam Cara · Counsellor</option>
-      <option value="ollamh-leighis">Ollamh Leighis · Health Advisor</option>
       <option value="craoibhscriobhai">Craoibhscríobhaí · Genealogist</option>
       <option value="piobaire">Clan Píobaire (Piper)</option>
       <option value="chaplain">Clan Chaplain</option>
