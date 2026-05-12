@@ -803,7 +803,17 @@ function closeModal2(e){
 <style>
   .fs-section{background:var(--cream-mid);padding:80px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
   .fs-grid{display:grid;grid-template-columns:300px 1fr;gap:56px;align-items:center;max-width:960px;margin:0 auto}
-  .fs-portrait{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;border:1px solid var(--gold-border);border-radius:2px;box-shadow:0 8px 28px rgba(12,26,12,.14)}
+  .fs-portrait{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:center top;display:block;border:1px solid var(--gold-border);border-radius:2px;box-shadow:0 8px 28px rgba(12,26,12,.14);transition:box-shadow .25s, transform .25s}
+  /* Portrait link added 11 May 2026 — Clarity heatmap showed a user
+     attempting to click Maria's image to reach her story. The visible
+     'Read Maria's account →' link below is the explicit CTA; this
+     anchor adds the unstated affordance the image is signalling.
+     Subtle hover lift + slightly deeper shadow tell the cursor that
+     the image is interactive without distracting from the
+     section's reverent register. */
+  .fs-portrait-link{display:block;text-decoration:none;border-radius:2px}
+  .fs-portrait-link:hover .fs-portrait{box-shadow:0 14px 38px rgba(12,26,12,.22);transform:translateY(-2px)}
+  .fs-portrait-link:focus-visible{outline:2px solid var(--gold-deep);outline-offset:4px}
   .fs-eyebrow{color:var(--gold-deep);margin-bottom:18px}
   .fs-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:clamp(28px,3.6vw,42px);line-height:1.2;color:#6B1F1F;margin:0 0 28px;padding:0;max-width:520px}
   .fs-body{font-family:'EB Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink);margin:0 0 14px;max-width:520px}
@@ -830,7 +840,9 @@ function closeModal2(e){
   <div class="si">
     <div class="fs-grid">
       <div class="fs-portrait-wrap">
-        <img src="maria_kinfauns.jpg" alt="Maria Kinfauns, wife of the Chief and Chancellor of Clan Ó Comáin, photographed at Newhall House" class="fs-portrait">
+        <a href="/stories/maria-kinfauns.html" class="fs-portrait-link" aria-label="Read Maria's account">
+          <img src="maria_kinfauns.jpg" alt="Maria Kinfauns, wife of the Chief and Chancellor of Clan Ó Comáin, photographed at Newhall House" class="fs-portrait">
+        </a>
       </div>
       <div>
         <div class="eyebrow fs-eyebrow">The founding story</div>
