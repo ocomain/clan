@@ -39,9 +39,11 @@
     /* Modifier for the round herald seal — fills the entire avatar
        circle (the seal is itself round, so 'contain' with padding looks
        like the seal is floating inside another circle). No dark-green
-       background showing; the seal IS the avatar, with the gold border
-       as the frame. */
-    .ch-avatar-seal{background:transparent;padding:0}
+       background showing; the seal IS the avatar. Gold border also
+       removed (border:none below) since the seal carries its own
+       outer ring graphic — adding a second gold ring on top read as
+       a double-rim and made the seal look framed rather than stamped. */
+    .ch-avatar-seal{background:transparent;padding:0;border:none}
     .ch-avatar-seal img{width:100%;height:100%;object-fit:cover}
     .ch-name{font-family:var(--font-serif);font-size:17px;color:var(--gold-pale);line-height:1.2}
     .ch-role{font-family:var(--font-sans);font-size:10px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(184,151,90,.6);margin-top:2px}
