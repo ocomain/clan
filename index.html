@@ -6,6 +6,46 @@
 <title>Irish Clan Ó Comáin · open to all who love Ireland · official</title>
 <meta name="description" content="Clan Ó Comáin is an ancient royal house in the Gaelic nobility of Ireland, with ancestral capital at Cahercommane in the Burren, County Clare. Officially recognised by Clans of Ireland 2025. Open to all who love Irish culture and heritage.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<!-- Preload the four font files used in the hero. Without these, the
+     browser only discovers them after parsing fonts.css, leaving a
+     visible 1-2s FOUT (Flash of Unstyled Text) where the hero renders
+     in a system fallback before swapping to EB Garamond / Jost.
+     With preload, the fonts download in parallel with the HTML so the
+     swap happens before the user perceives the fallback. crossorigin
+     is required for font preloads even on same-origin to match the
+     fetch mode that font-face uses. -->
+<link rel="preload" href="/fonts/EBGaramond-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/fonts/EBGaramond-Italic.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/fonts/Jost-Medium.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<!-- Hero reveal: gate the entrance animation on document.fonts.ready
+     so the eyebrow/title don't fade up in the system fallback then
+     swap mid-animation. Timeout failsafe (1500ms) ensures the hero
+     always reveals even if fonts never load (slow connection, font
+     server down, etc) — better a fallback-font hero than a permanent
+     blank one. Inline in <head> to run as early as possible and avoid
+     a flash of hidden content. -->
+<script>
+  (function(){
+    var reveal = function(){ document.documentElement.classList.add('hero-fonts-ready'); };
+    var revealed = false;
+    var go = function(){ if (revealed) return; revealed = true;
+      var h = document.querySelector('.hero'); if (h) h.classList.add('hero-reveal'); };
+    if (document.fonts && document.fonts.ready && document.fonts.ready.then){
+      document.fonts.ready.then(go);
+    }
+    // Failsafe: reveal after 1.5s even if fonts.ready never resolves.
+    setTimeout(go, 1500);
+  })();
+</script>
+<!-- JS-disabled fallback: if the script never runs, the hero stays
+     invisible. Force everything visible via a class on <html>. -->
+<noscript>
+  <style>
+    .hero-eyebrow,.hero-title,.hero-irish,.hero-year,
+    .hero-div,.hero-desc,.hero-ctas{opacity:1 !important;transform:none !important;transition:none !important}
+  </style>
+</noscript>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -55,6 +95,35 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .hero-scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(184,151,90,.5);font-size:9px;letter-spacing:0.16em;text-transform:uppercase}
 .hero-scroll-line{width:1px;height:32px;background:rgba(184,151,90,.35)}
+
+/* Hero entrance cascade — elements start hidden (opacity:0 + 12px
+   down) and fade-up when the .hero-reveal class is added to the
+   hero by JS once fonts have loaded. Staggered so the eye is led
+   down the hero in sequence rather than everything appearing at
+   once. Slow easing (cubic-bezier well-suited to heritage register)
+   and ~700ms duration — unhurried, deliberate, not flashy.
+   Users with prefers-reduced-motion or JS disabled get the hero
+   immediately with no animation (see .hero-reveal-ready below). */
+.hero-eyebrow,
+.hero-title,
+.hero-irish,
+.hero-year,
+.hero-div,
+.hero-desc,
+.hero-ctas{opacity:0;transform:translateY(12px);transition:opacity .7s cubic-bezier(.2,.65,.3,1),transform .7s cubic-bezier(.2,.65,.3,1)}
+.hero-reveal .hero-eyebrow{opacity:1;transform:none;transition-delay:0ms}
+.hero-reveal .hero-title{opacity:1;transform:none;transition-delay:180ms}
+.hero-reveal .hero-irish{opacity:1;transform:none;transition-delay:340ms}
+.hero-reveal .hero-year{opacity:1;transform:none;transition-delay:440ms}
+.hero-reveal .hero-div{opacity:1;transform:none;transition-delay:520ms}
+.hero-reveal .hero-desc{opacity:1;transform:none;transition-delay:640ms}
+.hero-reveal .hero-ctas{opacity:1;transform:none;transition-delay:760ms}
+
+/* Reduced-motion or JS-off: show everything instantly, no fade. */
+@media (prefers-reduced-motion: reduce){
+  .hero-eyebrow,.hero-title,.hero-irish,.hero-year,
+  .hero-div,.hero-desc,.hero-ctas{opacity:1;transform:none;transition:none}
+}
 
 /* BADGE BAR */
 .badge-bar{background:var(--cream);padding:13px 40px;border-bottom:1px solid var(--border)}
@@ -555,7 +624,7 @@ function toggleMenu(){
     <div class="hero-eyebrow">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
     <h1 class="hero-title">Irish Clan<br class="mobile-br"> <em>Ó Comáin</em></h1>
     <p class="hero-irish">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:'Jost',sans-serif;font-size:clamp(9px,1vw,11px);font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:rgba(184,151,90,.72);margin:-18px 0 24px">· Year One of the Revival · 2026 ·</p>
+    <p class="hero-year" style="font-family:'Jost',sans-serif;font-size:clamp(9px,1vw,11px);font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:rgba(184,151,90,.72);margin:-18px 0 24px">· Year One of the Revival · 2026 ·</p>
     <div class="hero-div"></div>
     <p class="hero-desc">An ancient Gaelic royal house, awake after centuries of silence. Whether Ireland comes to you by name or by love — there is a place for you in the clan.</p>
     <div class="hero-ctas">
