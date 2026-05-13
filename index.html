@@ -58,6 +58,7 @@
   <style>
     .hero-eyebrow,.hero-title,.hero-irish,.hero-year,
     .hero-div,.hero-desc,.hero-ctas{opacity:1 !important;transform:none !important;transition:none !important}
+    .hero::before{display:none}
   </style>
 </noscript>
 <style>
@@ -138,10 +139,54 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .hero-reveal .hero-desc{opacity:1;transform:none;transition-delay:640ms}
 .hero-reveal .hero-ctas{opacity:1;transform:none;transition-delay:760ms}
 
-/* Reduced-motion or JS-off: show everything instantly, no fade. */
+/* Loading shimmer — a soft horizontal gold sweep that plays across
+   the hero centre while we're waiting for fonts to arrive. On a fast
+   connection (or cached returning visit) this is barely visible
+   because document.fonts.ready resolves quickly and the .hero-reveal
+   class is added before the user notices. On a slow first-visit
+   mobile connection where fonts can take 1-2 seconds, the shimmer
+   carries the wait — the eye has something deliberate to look at,
+   suggesting 'something precious is being prepared' rather than
+   showing a blank green box.
+   
+   Pseudo-element approach: ::before sits on top of the hero's static
+   inline-SVG tartan background, behind the .hero-inner content. Once
+   .hero-reveal lands the shimmer fades out as the title fades in,
+   so there's no jarring transition. Z-index 1 keeps it above the
+   tartan but below the text (which uses z-index 2 via hero-inner). */
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:linear-gradient(110deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(184,151,90,.06) 46%,
+    rgba(212,184,122,.14) 50%,
+    rgba(184,151,90,.06) 54%,
+    transparent 62%,
+    transparent 100%);
+  background-size:280% 100%;
+  background-position:100% 0;
+  animation:hero-shimmer 2.8s ease-in-out infinite;
+  opacity:1;
+  transition:opacity .9s ease-out;
+}
+@keyframes hero-shimmer{
+  0%   {background-position:120% 0}
+  100% {background-position:-20% 0}
+}
+/* Stop the shimmer + fade it out the moment the hero reveals. */
+.hero.hero-reveal::before{opacity:0;animation:none}
+
+/* Reduced-motion or JS-off: show everything instantly, no fade,
+   and disable the loading shimmer too. */
 @media (prefers-reduced-motion: reduce){
   .hero-eyebrow,.hero-title,.hero-irish,.hero-year,
   .hero-div,.hero-desc,.hero-ctas{opacity:1;transform:none;transition:none}
+  .hero::before{display:none}
 }
 
 /* BADGE BAR */
