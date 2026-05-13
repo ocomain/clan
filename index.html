@@ -2,7 +2,21 @@
 <head>
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<!-- iOS Safari top-of-page grey strip fix —
+     - theme-color tints Safari's URL bar background to match the
+       hero's dark green (#080F08) instead of the default system
+       grey, eliminating the visible grey strip at the top of the
+       page on iPhone.
+     - media variants for prefers-color-scheme so the same dark
+       brand tint applies regardless of system theme.
+     - viewport-fit=cover (in the viewport meta above) tells iOS
+       to draw the page edge-to-edge under the safe areas, which
+       prevents the visible 'gap' between the URL bar and our
+       hero on devices with a notch / Dynamic Island. -->
+<meta name="theme-color" content="#080F08">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#080F08">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#080F08">
 <title>Irish Clan Ó Comáin · open to all who love Ireland · official</title>
 <meta name="description" content="Clan Ó Comáin is an ancient royal house in the Gaelic nobility of Ireland, with ancestral capital at Cahercommane in the Burren, County Clare. Officially recognised by Clans of Ireland 2025. Open to all who love Irish culture and heritage.">
 <link rel="stylesheet" href="/fonts/fonts.css">
@@ -48,7 +62,12 @@
 </noscript>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;background:#080F08}
+/* html background is set to hero's dark green so when iOS users
+   rubber-band overscroll past the top of the page, they see green
+   matching the hero rather than the cream body background — which
+   was showing through as a brief grey-ish strip at the top of the
+   page on iPhone. */
 :root{
   --gold:#B8975A;--gold-light:#D4B483;--gold-pale:#F5ECD8;
   --gold-border:rgba(184,151,90,0.25);--gold-strong:rgba(184,151,90,0.45);
