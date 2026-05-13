@@ -1,7 +1,17 @@
 /* Self-hosted fonts for Clan Ó Comáin
  * Replaces the Google Fonts CDN dependency.
- * font-display:swap so text renders in fallback fonts first, then swaps in
- * (same behaviour as the previous Google Fonts loader).
+ *
+ * 13 May 2026: switched src order to WOFF2-first with TTF fallback
+ * for very old browsers. WOFF2 cuts file size by ~70% vs TTF (e.g.
+ * EBGaramond-Regular goes from 558KB → 151KB). On mobile cellular
+ * this is the difference between an imperceptible font swap and a
+ * visible one — Fergus noticed the homepage hero animation
+ * loading slower on iPhone than desktop, and font weight over the
+ * wire was the cause. WOFF2 is supported on ~99% of browsers in
+ * use today (Chrome 36+, Firefox 39+, Safari 12+, Edge 14+).
+ *
+ * font-display:swap so text renders in fallback fonts first, then
+ * swaps in (same behaviour as the previous Google Fonts loader).
  */
 
 @font-face {
@@ -9,7 +19,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/EBGaramond-Regular.ttf') format('truetype');
+  src: url('/fonts/EBGaramond-Regular.woff2') format('woff2'),
+       url('/fonts/EBGaramond-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -17,7 +28,8 @@
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/EBGaramond-Italic.ttf') format('truetype');
+  src: url('/fonts/EBGaramond-Italic.woff2') format('woff2'),
+       url('/fonts/EBGaramond-Italic.ttf') format('truetype');
 }
 
 @font-face {
@@ -25,7 +37,8 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/EBGaramond-Medium.ttf') format('truetype');
+  src: url('/fonts/EBGaramond-Medium.woff2') format('woff2'),
+       url('/fonts/EBGaramond-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -33,7 +46,8 @@
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url('/fonts/Jost-Regular.ttf') format('truetype');
+  src: url('/fonts/Jost-Regular.woff2') format('woff2'),
+       url('/fonts/Jost-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -41,7 +55,8 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/Jost-Regular.ttf') format('truetype');
+  src: url('/fonts/Jost-Regular.woff2') format('woff2'),
+       url('/fonts/Jost-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -49,7 +64,8 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/Jost-Medium.ttf') format('truetype');
+  src: url('/fonts/Jost-Medium.woff2') format('woff2'),
+       url('/fonts/Jost-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -57,5 +73,6 @@
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/Jost-SemiBold.ttf') format('truetype');
+  src: url('/fonts/Jost-SemiBold.woff2') format('woff2'),
+       url('/fonts/Jost-SemiBold.ttf') format('truetype');
 }
