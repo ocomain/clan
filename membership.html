@@ -29,19 +29,17 @@
     .mem-hero-cta:hover{background:var(--gold-pale);transform:translateY(-1px);box-shadow:0 1px 0 rgba(0,0,0,.35),0 10px 32px rgba(184,151,90,.28)}
     .mem-hero-cta-tag{display:inline-flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-size:11px;font-weight:300;letter-spacing:.1em;color:rgba(184,151,90,.62)}
     /* mini cert visual in hero — mirrors gift.html */
-    .hero-cert-wrap{position:relative}
-    .hero-cert-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:32px 28px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);transform:rotate(-1.2deg);max-width:340px;margin-left:auto}
-    .hero-cert-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(184,151,90,.32);pointer-events:none}
-    .hero-cert-card::after{content:'SAMPLE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-22deg);font-family:'EB Garamond',serif;font-weight:400;font-size:clamp(38px,5vw,56px);letter-spacing:.14em;color:rgba(184,151,90,.18);pointer-events:none;white-space:nowrap;user-select:none;z-index:1}
-    .hero-cert-card > *{position:relative;z-index:2}
-    .hero-cert-crest{display:block;width:42px;height:42px;margin:0 auto 10px;opacity:.85}
-    .hero-cert-eyebrow{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--gold-strong);text-align:center;margin-bottom:4px}
-    .hero-cert-title{font-family:'EB Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);text-align:center;letter-spacing:.04em;margin-bottom:14px}
-    .hero-cert-rule{width:32px;height:1px;background:var(--gold);margin:0 auto 14px;opacity:.55}
-    .hero-cert-body{font-family:'EB Garamond',serif;font-size:11.5px;color:var(--ink-soft);text-align:center;line-height:1.55;margin-bottom:8px;font-style:italic}
-    .hero-cert-name{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);text-align:center;letter-spacing:.04em;margin:6px 0 8px;font-style:italic}
-    .hero-cert-sig{font-family:'EB Garamond',serif;font-size:10.5px;color:var(--ink-muted);text-align:center;font-style:italic;margin-top:14px;padding-top:12px;border-top:1px solid rgba(184,151,90,.2)}
-    .hero-cert-stamp{position:absolute;top:-10px;right:-10px;background:var(--ink);color:var(--gold);font-family:'Jost',sans-serif;font-size:8px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:8px 12px;border:1px solid var(--gold);transform:rotate(8deg);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+    .hero-fund-wrap{position:relative}
+    .hero-fund-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:36px 32px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);max-width:360px;margin-left:auto}
+    .hero-fund-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(184,151,90,.32);pointer-events:none}
+    .hero-fund-card > *{position:relative;z-index:2}
+    .hero-fund-crest{display:block;width:44px;height:44px;margin:0 auto 16px;opacity:.85}
+    .hero-fund-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-strong);text-align:center;margin-bottom:18px}
+    .hero-fund-rule{width:32px;height:1px;background:var(--gold);margin:0 auto 20px;opacity:.55}
+    .hero-fund-body{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);text-align:center;line-height:1.7;margin-bottom:14px;font-style:italic}
+    .hero-fund-coda{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);text-align:center;line-height:1.6;margin-bottom:18px;font-style:italic}
+    .hero-fund-motto-ga{font-family:'EB Garamond',serif;font-size:13px;color:var(--gold-strong);text-align:center;letter-spacing:.04em;font-style:italic;margin-top:14px;padding-top:14px;border-top:1px solid rgba(184,151,90,.2)}
+    .hero-fund-motto-en{font-family:'EB Garamond',serif;font-size:11px;color:var(--ink-muted);text-align:center;font-style:italic;margin-top:4px;letter-spacing:.02em}
 
     /* ── WHAT THIS FUNDS ── */
     .funds-section{background:var(--ink-mid);padding:64px 0;border-bottom:1px solid var(--border)}
@@ -157,7 +155,7 @@
       .tier.featured{margin:0;border-width:2px 0}
       .life-inner,.chief-grid,.faq-grid{grid-template-columns:1fr}
       .mem-hero-grid{grid-template-columns:1fr;gap:36px}
-      .hero-cert-card{margin:0 auto;transform:rotate(-0.8deg)}
+      .hero-fund-card{margin:0 auto}
       .mem-hero{padding:48px 0;min-height:auto}
     }
 
@@ -309,17 +307,15 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         </div>
         <div class="mem-hero-note">Recognised by Clans of Ireland · Under the patronage of the President of Ireland</div>
       </div>
-      <div class="hero-cert-wrap">
-        <div class="hero-cert-card">
-          <span class="hero-cert-stamp">Sample</span>
-          <img src="coat_of_arms.png" alt="Ó Comáin" class="hero-cert-crest" loading="lazy">
-          <div class="hero-cert-eyebrow">Clan Ó Comáin</div>
-          <div class="hero-cert-title">CERTIFICATE OF MEMBERSHIP</div>
-          <div class="hero-cert-rule"></div>
-          <div class="hero-cert-body">This is to certify that</div>
-          <div class="hero-cert-name">[ Your name ]</div>
-          <div class="hero-cert-body">is hereby entered as a Member of Clan Ó Comáin in the Register of the clan, held at Newhall House, County Clare.</div>
-          <div class="hero-cert-sig">— Signed by the Chief of Ó Comáin —</div>
+      <div class="hero-fund-wrap">
+        <div class="hero-fund-card">
+          <img src="coat_of_arms.png" alt="Ó Comáin" class="hero-fund-crest" loading="lazy">
+          <div class="hero-fund-eyebrow">On Membership</div>
+          <div class="hero-fund-rule"></div>
+          <div class="hero-fund-body">Membership of Clan Ó Comáin is offered as a contribution to a wider revival — of Gaelic Ireland, of Brehon law, of the clan tradition itself.</div>
+          <div class="hero-fund-coda">The work is at depth: language, lineage, memory, place. A return to what was nearly lost.</div>
+          <div class="hero-fund-motto-ga">Caithfidh an stair a bheith i réim</div>
+          <div class="hero-fund-motto-en">History must prevail</div>
         </div>
       </div>
     </div>
@@ -339,11 +335,17 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
   </div>
 </section>
 
-<!-- WHAT YOUR MEMBERSHIP FUNDS -->
+<!-- THE REVIVAL IN PRACTICE — formerly 'What your membership funds'.
+     Renamed to sit with the soul-level framing in the hero 'On Membership'
+     panel. Same five items; the preface bridges the hero declaration to
+     the concrete work. -->
 <section class="funds-section">
   <div class="si">
     <div style="text-align:center;margin-bottom:32px">
-      <div class="eyebrow" style="color:var(--gold)">What your membership funds</div>
+      <div class="eyebrow" style="color:var(--gold)">The revival in practice</div>
+      <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:clamp(15px,1.4vw,17px);color:var(--ink-muted);line-height:1.65;max-width:620px;margin:14px auto 0">
+        The revival is held up by particular work in particular places. The contribution funds it.
+      </p>
     </div>
     <div class="funds-row">
       <div class="fund-item">
@@ -372,6 +374,9 @@ src="https://www.facebook.com/tr?id=2218274272324729&ev=PageView&noscript=1"
         <div class="fund-desc">Supporting the restoration of Killone Abbey — the 12th-century Augustinian priory at Newhall — for the people of Ireland and its diaspora</div>
       </div>
     </div>
+    <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:var(--ink-muted);text-align:center;line-height:1.6;max-width:640px;margin:42px auto 0;letter-spacing:.01em">
+      The work of the year is set down in the Herald's Register at Newhall and published to members at year's end.
+    </p>
   </div>
 </section>
 
