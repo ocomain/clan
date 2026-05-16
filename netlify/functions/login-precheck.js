@@ -44,7 +44,7 @@
 //   try again — which re-fires this endpoint, which retries the
 //   send. Sustainable degradation.
 
-const { supa, clanId } = require('./lib/supabase');
+const { supa, clanId, isFounderAdmin } = require('./lib/supabase');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const FROM_CLAN = 'Clan Ó Comáin <clan@ocomain.org>';
@@ -179,6 +179,17 @@ exports.handler = async (event) => {
   const email = String(body.email || '').toLowerCase().trim();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return jsonResponse(400, { error: 'Missing or invalid email' });
+  }
+
+  // FOUNDER-ADMIN GATE — admin accounts (clan@ocomain.org, linda@,
+  // etc.) sign in via the same login flow but DO NOT have a row in
+  // the members table. Without this short-circuit, an admin trying
+  // to log in would be told they have no account and would be sent
+  // the "no clan account for this email" fallback letter — which is
+  // exactly the bug Fergus reported on 13 May 2026 when clan@ couldn't
+  // sign in. Admins always pass through to signInWithOtp.
+  if (isFounderAdmin(email)) {
+    return jsonResponse(200, { is_member: true });
   }
 
   const cid = await clanId();
