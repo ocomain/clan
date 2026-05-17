@@ -188,8 +188,23 @@ sup a:hover{text-decoration:underline}
 .endorsement-card-creds{font-family:'EB Garamond',serif;font-size:13.5px;line-height:1.5;color:var(--ink-muted);font-style:italic}
 .endorsement-card-creds a{color:var(--ink-muted);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.18)}
 @media(max-width:600px){
-  .endorsements-strip{gap:14px}
-  .endorsement-card{flex:1 1 100%;max-width:none;padding:22px 20px 20px}
+  .endorsements-strip{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    gap:14px;
+    padding:4px 20px 12px;
+    margin:0 -20px;
+    scrollbar-width:none;
+  }
+  .endorsements-strip::-webkit-scrollbar{display:none}
+  .endorsement-card{
+    flex:0 0 86%;
+    max-width:86%;
+    scroll-snap-align:center;
+    padding:22px 20px 20px;
+  }
   .endorsement-card-quote{font-size:16px}
 }
 </style>
@@ -266,19 +281,19 @@ function toggleMenu(){
       <div class="endorsements-strip">
         <div class="endorsement-card">
           <div class="endorsement-card-photo">
-            <img src="dick_cronin.jpg" alt="Risteárd Ua Cróinín (Dick Cronin)">
-          </div>
-          <p class="endorsement-card-quote">"Fantastic, professional and most impressive, based on proven authentic historical sources. A well researched and detailed piece of work. It covers the genealogical, ecclesiastical, historical and archaeological aspects of this ancient clan linked to both the Connacht Uí Maine and Munster Déisi royal families. Expertly compiled and designed to appeal to the more learned and academic members of the diaspora."</p>
-          <div class="endorsement-card-name">Risteárd Ua Cróinín <span style="font-weight:400;color:var(--ink-mid)">(Dick Cronin)</span></div>
-          <div class="endorsement-card-creds">Author of <em>O'Dea: The Story of a Rebel Clan</em></div>
-        </div>
-        <div class="endorsement-card">
-          <div class="endorsement-card-photo">
             <img src="martin_breen.jpg" alt="Martin Breen, historian of Clare">
           </div>
           <p class="endorsement-card-quote">"Worthy of a great endorsement. The depth of scholarship and academic research is astounding. Any Gaelic clan would be proud to have this as an interrogation of their Gaelic roots — a solid foundation of erudite material on which later researchers can expand."</p>
           <div class="endorsement-card-name">Martin Breen</div>
           <div class="endorsement-card-creds">Historian of Clare — 40 years studying the castles and history of the county; co-author of <em>The Edenvale Castle Survey of Co. Clare 1671–1679</em>; contributor to <em>North Munster Antiquarian Journal</em>, <em>The Other Clare</em> and <em>Studia Hibernica</em></div>
+        </div>
+        <div class="endorsement-card">
+          <div class="endorsement-card-photo">
+            <img src="dick_cronin.jpg" alt="Risteárd Ua Cróinín (Dick Cronin)">
+          </div>
+          <p class="endorsement-card-quote">"Fantastic, professional and most impressive, based on proven authentic historical sources. A well researched and detailed piece of work. It covers the genealogical, ecclesiastical, historical and archaeological aspects of this ancient clan linked to both the Connacht Uí Maine and Munster Déisi royal families. Expertly compiled and designed to appeal to the more learned and academic members of the diaspora."</p>
+          <div class="endorsement-card-name">Risteárd Ua Cróinín <span style="font-weight:400;color:var(--ink-mid)">(Dick Cronin)</span></div>
+          <div class="endorsement-card-creds">Author of <em>O'Dea: The Story of a Rebel Clan</em></div>
         </div>
       </div>
     </div>
