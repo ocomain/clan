@@ -38,6 +38,17 @@
 [functions."daily-gift-acceptance-sweep"]
   schedule = "30 15 * * *"
 
+# Council broadcast sweep — releases queued member_broadcast_sends rows
+# whose release_at has passed. Two waves per broadcast:
+#   - Stewards + Life Members at broadcast.start_at
+#   - Everyone else at broadcast.start_at + 24h
+# Runs every 15 minutes so scheduled start times honour ±15min precision.
+# Per-run send LIMIT 100 keeps fan-out bounded — for a 1000-member clan
+# a broadcast ships in ~2.5 hours per wave, comfortable for any
+# letter that isn't time-critical to the minute.
+[functions."daily-broadcast-sweep"]
+  schedule = "*/15 * * * *"
+
 # Post-signup email lifecycle sweep — dispatches the +3/+9/+18/+28/+60/+90 day
 # sequence (Herald → Fergus → Linda Office × 3 → Paddy Seanchaí). Runs once per
 # day, age-bucketed (each member becomes eligible for exactly one bucket on
