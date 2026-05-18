@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Council Broadcasts — Admin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* Match founders.html / resend-publication-email.html chrome so
+       this page reads as a sibling tool in the admin suite. */
+    :root{
+      --burgundy:#6B1F1F;
+      --burgundy-deep:#4A1010;
+      --gold-faint:rgba(184,151,90,.22);
+      --rule:rgba(184,151,90,.18);
+    }
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-signout{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(215,235,215,.55);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;cursor:pointer}
+    .mhdr-signout:hover{color:var(--gold-light);border-color:var(--gold)}
+
+    .wrap{max-width:920px;margin:0 auto;padding:48px 24px 80px}
+    .gate{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);text-align:center;padding:60px 20px}
+    .gate-denied h2{font-family:'EB Garamond',serif;font-size:28px;color:var(--burgundy);margin:0 0 12px}
+    .gate-denied p{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);line-height:1.6}
+
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .page-title{font-family:'EB Garamond',serif;font-size:38px;font-weight:400;color:var(--ink);margin:0 0 14px;line-height:1.15}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.6;margin:0 0 36px}
+
+    .form-card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:32px;box-shadow:0 4px 16px rgba(12,26,12,.06);margin-bottom:36px}
+    .form-card h2{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin:0 0 22px}
+
+    .form-row{margin-bottom:18px}
+    .form-label{display:block;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
+    .form-input,.form-select,.form-textarea{width:100%;font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);background:#fafaf6;border:1px solid var(--rule);border-radius:1px;padding:12px 14px;box-sizing:border-box}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--burgundy);background:#fff}
+    .form-textarea{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;line-height:1.5;min-height:280px;resize:vertical}
+    .form-help{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-faint,#7a7060);margin:6px 0 0;font-style:italic;line-height:1.5}
+
+    .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .form-grid-2-7-3{display:grid;grid-template-columns:7fr 3fr;gap:18px}
+    @media(max-width:680px){.form-grid-2,.form-grid-2-7-3{grid-template-columns:1fr}}
+
+    .schedule-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+    .schedule-row label{display:flex;align-items:center;gap:6px;cursor:pointer;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink)}
+    .schedule-row input[type="radio"]{margin:0}
+
+    .btn-primary{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-pale);background:var(--burgundy);border:none;border-radius:1px;padding:14px 28px;cursor:pointer}
+    .btn-primary:hover{background:var(--burgundy-deep)}
+    .btn-primary:disabled{opacity:.55;cursor:not-allowed}
+    .btn-ghost{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:1px;padding:13px 22px;cursor:pointer}
+    .btn-ghost:hover{border-color:var(--burgundy);color:var(--burgundy)}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+
+    .preview-badges{display:flex;gap:8px;margin-left:auto;align-items:center;font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint,#7a7060)}
+    .preview-tick{display:inline-block;width:16px;height:16px;border-radius:50%;background:rgba(184,151,90,.15);color:#5a4a1f;text-align:center;line-height:16px;font-size:11px;font-weight:700;margin-right:4px}
+    .preview-tick.done{background:#3c6e3c;color:#fff}
+
+    .status-line{display:none;margin-top:20px;padding:14px 18px;border-radius:1px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.55}
+    .status-line.show{display:block}
+    .status-success{background:rgba(60,110,60,.08);border-left:3px solid #3c6e3c;color:#244c24}
+    .status-error{background:rgba(107,31,31,.06);border-left:3px solid var(--burgundy);color:var(--burgundy-deep)}
+    .status-warn{background:rgba(184,151,90,.10);border-left:3px solid var(--gold);color:#5a4a1f}
+
+    /* Preview modal */
+    .modal-back{display:none;position:fixed;inset:0;background:rgba(12,26,12,.55);z-index:50;justify-content:center;align-items:flex-start;padding:32px 16px;overflow-y:auto}
+    .modal-back.show{display:flex}
+    .modal{background:#F8F4EC;max-width:620px;width:100%;border-radius:2px;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+    .modal-head{padding:16px 22px;background:var(--ink);color:var(--gold-pale);font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--gold)}
+    .modal-close{background:transparent;border:1px solid rgba(184,151,90,.4);color:var(--gold-pale);font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.16em;text-transform:uppercase;padding:6px 12px;cursor:pointer}
+    .modal-close:hover{border-color:var(--gold)}
+    .modal-body{padding:0}
+    .modal-body iframe{display:block;width:100%;border:0;min-height:60vh;background:#F8F4EC}
+
+    /* History table */
+    .history-card{background:#fff;border:1px solid var(--rule);border-radius:2px;padding:28px 32px;box-shadow:0 4px 16px rgba(12,26,12,.06)}
+    .history-card h2{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin:0 0 18px}
+    .history-table{width:100%;border-collapse:collapse;font-family:'EB Garamond',serif;font-size:15px}
+    .history-table th{text-align:left;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint,#7a7060);padding:8px 6px;border-bottom:1px solid var(--rule)}
+    .history-table td{padding:12px 6px;border-bottom:1px solid rgba(184,151,90,.08);vertical-align:top;color:var(--ink)}
+    .history-table tr:last-child td{border-bottom:none}
+    .history-empty{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-faint,#7a7060);text-align:center;padding:32px 0}
+    .status-pill{display:inline-block;font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:3px 8px;border-radius:1px}
+    .pill-scheduled{background:rgba(184,151,90,.15);color:#7a6035}
+    .pill-sending{background:rgba(60,110,60,.12);color:#2e5e2e}
+    .pill-sent{background:rgba(60,110,60,.08);color:#244c24}
+    .pill-cancelled{background:rgba(107,31,31,.06);color:var(--burgundy-deep)}
+    .row-action{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--burgundy);background:transparent;border:1px solid var(--rule);padding:5px 10px;border-radius:1px;cursor:pointer;margin-right:4px}
+    .row-action:hover{border-color:var(--burgundy)}
+  </style>
+</head>
+<body>
+
+<header class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Clan Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/admin/">Admin</a>
+      <a href="/members/">Dashboard</a>
+      <button class="mhdr-signout" id="signOutBtn">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<!-- AUTH GATE — same three-state pattern as the rest of /admin/. -->
+<div class="wrap" id="authGate">
+  <div class="gate" id="gateLoading">Verifying your access…</div>
+  <div class="gate-denied" id="gateDenied" style="display:none">
+    <h2>This area is reserved</h2>
+    <p>Sign-in is required, and only specific addresses may use this tool. If you believe you should have access, please write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a>.</p>
+    <p style="margin-top:18px"><a href="/members/admin/">← Return to admin home</a></p>
+  </div>
+</div>
+
+<main class="wrap" id="adminBody" style="display:none">
+  <p class="page-eyebrow">Admin tool</p>
+  <h1 class="page-title">Council <em>broadcasts</em></h1>
+  <p class="page-sub">Compose a one-off letter from a named Council voice and schedule it to the membership. Stewards and Life Members receive every broadcast 24 hours before the kindred at large — Stewards' Privilege. Markdown supported in the body. Always preview both variants before scheduling, and use the test send if you want to see exactly what arrives.</p>
+
+  <!-- ── COMPOSE ──────────────────────────────────────────────────── -->
+  <div class="form-card">
+    <h2>Compose a broadcast</h2>
+
+    <div class="form-row form-grid-2">
+      <div>
+        <label class="form-label" for="senderVoice">Sender voice</label>
+        <select id="senderVoice" class="form-select">
+          <option value="maria">Maria Kinfauns — Chancellor</option>
+          <option value="antoin">Antóin Commane — Tánaiste</option>
+          <option value="jessica">Jessica-Lily Commane — Keeper of the Seat</option>
+          <option value="herald">The Herald</option>
+          <option value="fergus">Fergus Kinfauns — Chief</option>
+          <option value="linda">Linda Commane Cryan — Private Secretary</option>
+        </select>
+        <p class="form-help">From: drives the From-address, eyebrow, and signature block.</p>
+      </div>
+      <div>
+        <label class="form-label" for="subject">Subject</label>
+        <input id="subject" class="form-input" type="text" maxlength="200" placeholder="A letter from the Chancellor…">
+        <p class="form-help">Shown in the inbox preview and as the email heading.</p>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label" for="bodyMd">Body <span style="color:var(--ink-faint,#7a7060);text-transform:none;letter-spacing:.04em;font-size:11px;font-weight:400">(markdown · {first_name} substitutes the member's first name)</span></label>
+      <textarea id="bodyMd" class="form-textarea" maxlength="20000" placeholder="Dear {first_name},&#10;&#10;Maria Kinfauns writing. I write today with news of two new appointments…&#10;&#10;**The Ollamh** — Clan Health Advisor — is now held by Michael O Doherty…&#10;&#10;Full biographies are on the [Council page](https://www.ocomain.org/privy-council.html)."></textarea>
+      <p class="form-help">Markdown: **bold**, *italic*, [link text](url), &gt; quote, blank line separates paragraphs, lines starting "- " become a bulleted list. Raw HTML is escaped — paste safely. The signature and footer are added automatically.</p>
+    </div>
+
+    <div class="form-row form-grid-2-7-3">
+      <div>
+        <label class="form-label" for="ctaLabel">CTA button label <span style="color:var(--ink-faint,#7a7060);text-transform:none;letter-spacing:.04em;font-size:11px;font-weight:400">(optional)</span></label>
+        <input id="ctaLabel" class="form-input" type="text" maxlength="80" placeholder="Read on the Council page">
+      </div>
+      <div>
+        <label class="form-label" for="ctaUrl">CTA URL</label>
+        <input id="ctaUrl" class="form-input" type="text" maxlength="500" placeholder="https://www.ocomain.org/privy-council.html">
+      </div>
+    </div>
+    <p class="form-help" style="margin-top:-10px">If you set one you must set both. URL must be http/https/mailto.</p>
+
+    <!-- Scheduling -->
+    <div class="form-row" style="margin-top:30px;border-top:1px solid var(--rule);padding-top:24px">
+      <label class="form-label">When to send</label>
+      <div class="schedule-row" style="margin-bottom:14px">
+        <label><input type="radio" name="schedule" value="now" checked> Send now</label>
+        <label><input type="radio" name="schedule" value="later"> Schedule for…</label>
+      </div>
+      <div id="laterFields" style="display:none">
+        <input id="scheduleAt" type="datetime-local" class="form-input" style="max-width:280px">
+        <p class="form-help">Local time. Stewards + Life Members receive at this moment; other members 24 hours later. Must be in the future.</p>
+      </div>
+    </div>
+
+    <!-- Preview / test / schedule -->
+    <div class="btn-row" style="margin-top:30px;padding-top:18px;border-top:1px solid var(--rule)">
+      <button class="btn-ghost" id="btnPreviewSteward"><span class="preview-tick" id="tickSteward">·</span> Preview as Steward</button>
+      <button class="btn-ghost" id="btnPreviewMember"><span class="preview-tick" id="tickMember">·</span> Preview as Member</button>
+      <button class="btn-ghost" id="btnTestSend">Send test to me</button>
+      <button class="btn-primary" id="btnSchedule" disabled style="margin-left:auto">Schedule broadcast</button>
+    </div>
+    <p class="form-help">Both previews must be opened at least once before Schedule unlocks.</p>
+
+    <div class="status-line" id="composeStatus"></div>
+  </div>
+
+  <!-- ── HISTORY ──────────────────────────────────────────────────── -->
+  <div class="history-card">
+    <h2>Recent broadcasts</h2>
+    <div id="historyContent">
+      <p class="history-empty">Loading…</p>
+    </div>
+  </div>
+</main>
+
+<!-- Preview modal -->
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="modalTitle">Preview</span>
+      <button class="modal-close" id="modalClose">Close ✕</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="modalFrame" title="Email preview"></iframe>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { currentSession, signOut } from '../auth.js';
+
+  const ADMIN_ALLOWLIST = new Set(['clan@ocomain.org']);
+  let accessToken = null;
+  let operatorEmail = null;
+
+  // Auth gate
+  const gateLoading = document.getElementById('gateLoading');
+  const gateDenied  = document.getElementById('gateDenied');
+  const adminBody   = document.getElementById('adminBody');
+  const authGate    = document.getElementById('authGate');
+
+  async function verifyAccess() {
+    const session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent(window.location.pathname);
+      return;
+    }
+    operatorEmail = (session.user.email || '').toLowerCase().trim();
+    if (!ADMIN_ALLOWLIST.has(operatorEmail)) {
+      gateLoading.style.display = 'none';
+      gateDenied.style.display = 'block';
+      return;
+    }
+    accessToken = session.access_token;
+    authGate.style.display = 'none';
+    adminBody.style.display = 'block';
+    loadHistory();
+  }
+
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    await signOut();
+    window.location.href = '/members/login.html';
+  });
+
+  // Schedule mode toggle
+  document.querySelectorAll('input[name="schedule"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('laterFields').style.display = r.value === 'later' && r.checked ? 'block' : 'none';
+    });
+  });
+
+  // Compose state
+  const previewedVariants = new Set(); // 'immediate' | 'delayed'
+
+  function refreshScheduleButton() {
+    const ready = previewedVariants.has('immediate') && previewedVariants.has('delayed');
+    document.getElementById('btnSchedule').disabled = !ready;
+  }
+
+  function markPreviewed(variant) {
+    previewedVariants.add(variant);
+    if (variant === 'immediate') {
+      const t = document.getElementById('tickSteward');
+      t.classList.add('done'); t.textContent = '✓';
+    } else {
+      const t = document.getElementById('tickMember');
+      t.classList.add('done'); t.textContent = '✓';
+    }
+    refreshScheduleButton();
+  }
+
+  function readForm() {
+    const senderVoice = document.getElementById('senderVoice').value;
+    const subject     = document.getElementById('subject').value.trim();
+    const bodyMd      = document.getElementById('bodyMd').value;
+    const ctaLabel    = document.getElementById('ctaLabel').value.trim() || null;
+    const ctaUrl      = document.getElementById('ctaUrl').value.trim() || null;
+    return { sender_voice: senderVoice, subject, body_md: bodyMd, cta_label: ctaLabel, cta_url: ctaUrl };
+  }
+
+  function validateForm(form) {
+    if (!form.subject) return 'Subject required.';
+    if (!form.body_md) return 'Body required.';
+    if ((form.cta_label && !form.cta_url) || (form.cta_url && !form.cta_label)) {
+      return 'CTA label and URL must both be set or both blank.';
+    }
+    return null;
+  }
+
+  // Compose-form mutations bust the preview-was-viewed flags so admins
+  // can't approve one version then quietly send another.
+  ['senderVoice','subject','bodyMd','ctaLabel','ctaUrl'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      previewedVariants.clear();
+      document.getElementById('tickSteward').classList.remove('done');
+      document.getElementById('tickSteward').textContent = '·';
+      document.getElementById('tickMember').classList.remove('done');
+      document.getElementById('tickMember').textContent = '·';
+      refreshScheduleButton();
+    });
+  });
+
+  // Preview action
+  async function preview(variant) {
+    const form = readForm();
+    const err = validateForm(form);
+    if (err) { setStatus('status-error', err); return; }
+    setStatus('', '');
+    try {
+      const res = await fetch('/.netlify/functions/admin-broadcast-actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+        body: JSON.stringify({ action: 'preview', variant, ...form }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setStatus('status-error', '<strong>Preview failed.</strong> ' + escapeHtml(data.error || res.status)); return; }
+      openPreviewModal(`Preview · ${variant === 'immediate' ? 'Steward / Life Member' : 'Other members (delayed)'}`, data.html);
+      markPreviewed(variant);
+    } catch (e) {
+      setStatus('status-error', '<strong>Preview error.</strong> ' + escapeHtml(e.message));
+    }
+  }
+  document.getElementById('btnPreviewSteward').addEventListener('click', () => preview('immediate'));
+  document.getElementById('btnPreviewMember').addEventListener('click', () => preview('delayed'));
+
+  // Test send action
+  document.getElementById('btnTestSend').addEventListener('click', async () => {
+    const form = readForm();
+    const err = validateForm(form);
+    if (err) { setStatus('status-error', err); return; }
+    const variant = previewedVariants.has('immediate') && !previewedVariants.has('delayed') ? 'immediate'
+                  : !previewedVariants.has('immediate') && previewedVariants.has('delayed') ? 'delayed'
+                  : confirm('Send the Steward/Privilege variant?\n\nOK = Steward variant (immediate footer)\nCancel = Member variant (delayed footer / upsell)')
+                    ? 'immediate' : 'delayed';
+    setStatus('status-warn', 'Sending test to <code>' + escapeHtml(operatorEmail) + '</code>…');
+    try {
+      const res = await fetch('/.netlify/functions/admin-broadcast-actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+        body: JSON.stringify({ action: 'test_send', variant, ...form }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatus('status-success', '<strong>Test sent</strong> to <code>' + escapeHtml(operatorEmail) + '</code> (' + escapeHtml(variant) + ' variant).');
+      } else {
+        setStatus('status-error', '<strong>Test send failed.</strong> ' + escapeHtml(data.error || res.status) + (data.detail ? ' — <em>' + escapeHtml(data.detail) + '</em>' : ''));
+      }
+    } catch (e) {
+      setStatus('status-error', '<strong>Test send error.</strong> ' + escapeHtml(e.message));
+    }
+  });
+
+  // Schedule action
+  document.getElementById('btnSchedule').addEventListener('click', async () => {
+    const form = readForm();
+    const err = validateForm(form);
+    if (err) { setStatus('status-error', err); return; }
+
+    // Decide start_at
+    const mode = document.querySelector('input[name="schedule"]:checked').value;
+    let startAt;
+    if (mode === 'now') {
+      // 30 seconds in the future so the cron picks it up next run cleanly.
+      startAt = new Date(Date.now() + 30_000).toISOString();
+    } else {
+      const v = document.getElementById('scheduleAt').value;
+      if (!v) { setStatus('status-error', 'Pick a date and time for the scheduled send.'); return; }
+      const d = new Date(v);
+      if (Number.isNaN(d.getTime())) { setStatus('status-error', 'Schedule time unparseable.'); return; }
+      if (d.getTime() < Date.now() - 60_000) { setStatus('status-error', 'Schedule time must be in the future.'); return; }
+      startAt = d.toISOString();
+    }
+
+    const summaryText = (mode === 'now')
+      ? 'Send now (Stewards + Life immediately; other members in 24h)'
+      : 'Schedule for ' + new Date(startAt).toLocaleString() + ' (other members 24h later)';
+    if (!confirm('Schedule this broadcast?\n\n' + summaryText + '\n\nThis cannot be edited once scheduled. You can cancel before its start time if needed.')) return;
+
+    document.getElementById('btnSchedule').disabled = true;
+    document.getElementById('btnSchedule').textContent = 'Scheduling…';
+    setStatus('', '');
+    try {
+      const res = await fetch('/.netlify/functions/admin-broadcast-create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+        body: JSON.stringify({ ...form, start_at: startAt }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatus('status-success',
+          '<strong>Broadcast scheduled.</strong> ' + data.immediate_count + ' Stewards/Life immediately, ' + data.delayed_count + ' other members 24h later. The cron will pick it up within 15 minutes.');
+        // Clear compose form
+        document.getElementById('subject').value = '';
+        document.getElementById('bodyMd').value = '';
+        document.getElementById('ctaLabel').value = '';
+        document.getElementById('ctaUrl').value = '';
+        previewedVariants.clear();
+        document.getElementById('tickSteward').classList.remove('done');
+        document.getElementById('tickSteward').textContent = '·';
+        document.getElementById('tickMember').classList.remove('done');
+        document.getElementById('tickMember').textContent = '·';
+        loadHistory();
+      } else {
+        setStatus('status-error', '<strong>Could not schedule.</strong> ' + escapeHtml(data.error || res.status) + (data.detail ? ' — <em>' + escapeHtml(data.detail) + '</em>' : ''));
+      }
+    } catch (e) {
+      setStatus('status-error', '<strong>Schedule error.</strong> ' + escapeHtml(e.message));
+    } finally {
+      document.getElementById('btnSchedule').disabled = false;
+      document.getElementById('btnSchedule').textContent = 'Schedule broadcast';
+      refreshScheduleButton();
+    }
+  });
+
+  // ── History ────────────────────────────────────────────────────────
+  async function loadHistory() {
+    const content = document.getElementById('historyContent');
+    content.innerHTML = '<p class="history-empty">Loading…</p>';
+    try {
+      const res = await fetch('/.netlify/functions/admin-broadcast-actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+        body: JSON.stringify({ action: 'list' }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        content.innerHTML = '<p class="history-empty">Failed to load: ' + escapeHtml(data.error || res.status) + '</p>';
+        return;
+      }
+      const broadcasts = data.broadcasts || [];
+      if (broadcasts.length === 0) {
+        content.innerHTML = '<p class="history-empty">No broadcasts yet. Compose your first letter above.</p>';
+        return;
+      }
+      const rows = broadcasts.map(b => {
+        const created = new Date(b.created_at).toLocaleString();
+        const startAt = new Date(b.start_at).toLocaleString();
+        const totalSends = (b.immediate_count || 0) + (b.delayed_count || 0);
+        const sent = b.sent_count || 0;
+        const failed = b.failed_count || 0;
+        const pillClass = 'pill-' + (b.status || 'scheduled');
+        const senderLabel = ({maria:'Maria',antoin:'Antóin',jessica:'Jessica',herald:'Herald',fergus:'Fergus',linda:'Linda'})[b.sender_voice] || b.sender_voice;
+        const actions = [];
+        if (b.status === 'scheduled') actions.push('<button class="row-action" data-action="cancel" data-id="' + escapeHtml(b.id) + '">Cancel</button>');
+        if (failed > 0) actions.push('<button class="row-action" data-action="retry" data-id="' + escapeHtml(b.id) + '">Retry ' + failed + '</button>');
+        return `
+          <tr>
+            <td style="white-space:nowrap"><span class="status-pill ${pillClass}">${escapeHtml(b.status)}</span></td>
+            <td><strong>${escapeHtml(senderLabel)}</strong><br><span style="font-size:12px;color:var(--ink-faint,#7a7060)">${escapeHtml(b.subject)}</span></td>
+            <td style="white-space:nowrap;font-size:13px"><span style="color:var(--ink-faint,#7a7060)">Created</span> ${escapeHtml(created)}<br><span style="color:var(--ink-faint,#7a7060)">Start</span> ${escapeHtml(startAt)}</td>
+            <td style="white-space:nowrap;font-size:13px">${sent}/${totalSends} sent${failed ? ' · <span style="color:var(--burgundy)">' + failed + ' failed</span>' : ''}</td>
+            <td style="white-space:nowrap;text-align:right">${actions.join('')}</td>
+          </tr>
+        `;
+      }).join('');
+      content.innerHTML = `
+        <table class="history-table">
+          <thead>
+            <tr><th>Status</th><th>Sender / Subject</th><th>Schedule</th><th>Progress</th><th></th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+      // Wire action buttons
+      content.querySelectorAll('button.row-action').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const action = btn.getAttribute('data-action');
+          const id = btn.getAttribute('data-id');
+          const verb = action === 'cancel' ? 'Cancel this broadcast?' : 'Re-queue failed sends for this broadcast?';
+          if (!confirm(verb)) return;
+          btn.disabled = true; btn.textContent = '…';
+          try {
+            const res = await fetch('/.netlify/functions/admin-broadcast-actions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+              body: JSON.stringify({ action, broadcast_id: id }),
+            });
+            const data = await res.json();
+            if (res.ok && data.ok) loadHistory();
+            else { alert('Failed: ' + (data.error || res.status)); btn.disabled = false; }
+          } catch (e) { alert('Error: ' + e.message); btn.disabled = false; }
+        });
+      });
+    } catch (e) {
+      content.innerHTML = '<p class="history-empty">Error: ' + escapeHtml(e.message) + '</p>';
+    }
+  }
+
+  // ── Preview modal ──────────────────────────────────────────────────
+  function openPreviewModal(title, html) {
+    document.getElementById('modalTitle').textContent = title;
+    const frame = document.getElementById('modalFrame');
+    // Write the HTML into the iframe srcdoc so external assets (images,
+    // links) resolve against ocomain.org as they would in a mail client.
+    frame.srcdoc = html;
+    document.getElementById('modalBack').classList.add('show');
+  }
+  document.getElementById('modalClose').addEventListener('click', () => {
+    document.getElementById('modalBack').classList.remove('show');
+  });
+  document.getElementById('modalBack').addEventListener('click', e => {
+    if (e.target.id === 'modalBack') document.getElementById('modalBack').classList.remove('show');
+  });
+
+  // ── Status helpers ─────────────────────────────────────────────────
+  const composeStatus = document.getElementById('composeStatus');
+  function setStatus(kind, html) {
+    composeStatus.className = 'status-line' + (kind ? ' show ' + kind : '');
+    composeStatus.innerHTML = html;
+  }
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  verifyAccess();
+</script>
+
+</body>
+</html>
