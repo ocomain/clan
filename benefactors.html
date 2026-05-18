@@ -64,12 +64,27 @@
     .ben-level-recognition{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.65);line-height:1.7;font-style:italic;padding-top:18px;border-top:1px solid rgba(184,151,90,.18);margin-top:6px}
     .ben-level-recognition strong{color:var(--gold-pale);font-weight:500;font-style:normal}
 
-    /* ── BEQUEATHAL ── */
-    .ben-bequest-section{background:var(--ink-mid);padding:80px 0;border-bottom:1px solid var(--border)}
+    /* ── BY BEQUEATHAL — prominent mid-page section for the
+         combinable immediate+estate option. Visually distinct from
+         the three-levels grid (different background, different
+         border treatment) so it reads as a fourth option of a
+         different kind, not a fourth tier. ── */
+    .ben-bequest-mode-section{background:var(--ink);padding:70px 0;border-top:1px solid rgba(184,151,90,.18);border-bottom:1px solid var(--border)}
+    .ben-bequest-mode-inner{max-width:780px;margin:0 auto}
+    .ben-bequest-mode-card{background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.22);border-left:3px solid rgba(184,151,90,.5);padding:44px 48px;position:relative}
+    .ben-bequest-mode-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;opacity:.85}
+    .ben-bequest-mode-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.2vw,36px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:22px;font-style:italic}
+    .ben-bequest-mode-body{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.8}
+    .ben-bequest-mode-body p{margin-bottom:14px}
+    .ben-bequest-mode-body p:last-child{margin-bottom:0}
+    .ben-bequest-mode-body strong{color:var(--gold-pale);font-weight:500}
+
+    /* ── BEQUEATHAL — pure estate-only, the smaller quiet section ── */
+    .ben-bequest-section{background:var(--ink-mid);padding:64px 0;border-bottom:1px solid var(--border)}
     .ben-bequest-inner{max-width:640px;margin:0 auto;text-align:center}
     .ben-bequest-eyebrow{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.85}
-    .ben-bequest-title{font-family:'EB Garamond',serif;font-size:clamp(24px,2.8vw,32px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:22px;font-style:italic}
-    .ben-bequest-body{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.72);line-height:1.85;font-style:italic}
+    .ben-bequest-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.6vw,28px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:18px;font-style:italic}
+    .ben-bequest-body{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.7);line-height:1.85;font-style:italic}
 
     /* ── CLOSING ── */
     .ben-closing-section{background:var(--ink);padding:80px 0}
@@ -88,6 +103,8 @@
       .ben-level-head{flex-direction:column;gap:14px}
       .ben-level-amount{text-align:left}
       .ben-level-cadence{text-align:left}
+      .ben-bequest-mode-card{padding:32px 24px}
+    }
     }
   </style>
 </head>
@@ -221,14 +238,38 @@
   </div>
 </section>
 
-<!-- BEQUEATHAL — quiet, no tier, no price, no button. Just a name
-     to write to and a register to be remembered in. -->
+<!-- BY BEQUEATHAL — the combinable immediate+estate option. Sits
+     mid-page, after the three levels, as a genuinely distinct fourth
+     option (different visual treatment from the three-level cards
+     so it doesn't read as a fourth tier). For patrons who want
+     recognition now but cash settlement later, or who wish to
+     combine an immediate Benefaction with a bequeathal. -->
+<section class="ben-bequest-mode-section">
+  <div class="si">
+    <div class="ben-bequest-mode-inner">
+      <div class="ben-bequest-mode-card">
+        <div class="ben-bequest-mode-eyebrow">Or, by bequeathal</div>
+        <div class="ben-bequest-mode-title">Benefaction by bequeathal — recognised now, settled in time.</div>
+        <div class="ben-bequest-mode-body">
+          <p>A Benefactor may commit to any of the three standings by bequeathal — the contribution agreed in writing now, settled from the patron's estate in the fullness of time. The patron's standing as a Benefactor is recognised <strong>from the date of the agreement, not the date of settlement</strong>. The clan's recognition arrives in the patron's lifetime; the work it funds is the work the clan shall do in the year of their final settlement, named in their honour.</p>
+          <p>A patron may also <strong>combine an immediate Benefaction with a bequeathal</strong> — making an act of patronage today, and committing to a further act from their estate. Many do. The terms are agreed privately with the Office of the Chancellor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- A FINAL SETTLEMENT — pure estate-only, smaller and quieter. For
+     patrons who wish to be remembered in the clan without any
+     present-day act of Benefaction. The above 'by bequeathal'
+     section covers Benefaction-via-estate; this section covers
+     remembrance-via-estate. Two distinct postures. -->
 <section class="ben-bequest-section">
   <div class="si">
     <div class="ben-bequest-inner">
       <div class="ben-bequest-eyebrow">A final settlement</div>
-      <div class="ben-bequest-title">To remember the clan in your estate.</div>
-      <p class="ben-bequest-body">In the older Gaelic tradition, the kin remembered the household in their final settlement. Members and friends of the clan who wish to remember Clan Ó Comáin in their estate are invited to write privately to the Office of the Chancellor. Such matters are handled discreetly, in accordance with your wishes, and at your own pace.</p>
+      <div class="ben-bequest-title">To remember the clan in your estate, without prior act.</div>
+      <p class="ben-bequest-body">Some friends of the clan, particularly those undertaking their own estate planning, wish simply to be remembered in their final settlement — without making any present-day act of Benefaction. Such gifts are received with the same care. Write privately to the Office of the Chancellor; matters are handled discreetly, in accordance with your wishes, at your own pace.</p>
     </div>
   </div>
 </section>
