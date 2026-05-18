@@ -383,14 +383,15 @@ function ctaButtonHtml(label, url) {
 function privilegeFooterHtml() {
   return `
 <div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0">Steward's Privilege — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
+  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0">Stewards' Privilege — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
 </div>`;
 }
 
 function upsellFooterHtml() {
   return `
-<div style="margin:32px -40px -8px;padding:22px 40px 24px;background:rgba(184,151,90,.10);border-top:1px solid rgba(184,151,90,.35);border-bottom:1px solid rgba(184,151,90,.35)">
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#5C4A3A;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Steward's Privilege, the inside track. Upgrading to Steward is an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but patronage carried forward in your name. Life Membership, available during the 2026 founding period only, is a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#6B4A1A;text-decoration:underline">clan@ocomain.org</a>.</p>
+<div style="margin:32px -40px 0;padding:26px 40px 28px;background:rgba(184,151,90,.12);border-top:2px solid #B8975A;border-bottom:1px solid rgba(184,151,90,.35)">
+  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#8C6A1A;margin:0 0 12px">Stewards' Privilege</p>
+  <p style="font-family:'Georgia',serif;font-size:14px;color:#2C2010;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Stewards' Privilege, the inside track. Upgrading to Steward is an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but patronage carried forward in your name. Life Membership, available during the 2026 founding period only, is a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#6B4A1A;font-weight:600;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
 
@@ -429,17 +430,21 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
   </div>
 
   <!-- Body -->
-  <div style="padding:24px 40px 8px">
+  <div style="padding:24px 40px 28px">
     ${bodyHtml}
   </div>
 
-  <!-- Footer — quiet, single line of motto + house name. Subject
-       line in the inbox carries the heading; the email itself
-       reads as a letter, not a newsletter. -->
-  <div style="padding:8px 40px 36px;text-align:center">
-    <div style="height:1px;background:rgba(184,151,90,.35);margin:0 auto 14px;max-width:120px"></div>
-    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#8C7A4A;margin:0 0 4px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:'Georgia',serif;font-size:10px;color:#A88B57;margin:0;letter-spacing:0.08em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+  <!-- Legal / copyright footer — dark green band with motto + house
+       name + Terms + Privacy. Sits beneath everything (including the
+       Stewards' Privilege block when present on the delayed-batch
+       variant) so the reader's eye reads three distinct layers:
+         1. cream letter content
+         2. (delayed batch only) Stewards' Privilege block — content
+         3. dark legal footer — boilerplate
+       Matches the dark legal footer pattern from lifecycle emails. -->
+  <div style="background:#0C1A0C;padding:22px 40px;text-align:center">
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:'Georgia',serif;font-size:11px;color:#A88B57;margin:0;letter-spacing:0.06em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
   </div>
 </div>
 </body>
