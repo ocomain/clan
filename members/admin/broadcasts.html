@@ -210,10 +210,23 @@ In clan and kindred,</textarea>
     <div class="btn-row" style="margin-top:30px;padding-top:18px;border-top:1px solid var(--rule)">
       <button class="btn-ghost" id="btnPreviewSteward"><span class="preview-tick" id="tickSteward">·</span> Preview as Steward</button>
       <button class="btn-ghost" id="btnPreviewMember"><span class="preview-tick" id="tickMember">·</span> Preview as Member</button>
-      <button class="btn-ghost" id="btnTestSend">Send test to me</button>
       <button class="btn-primary" id="btnSchedule" disabled style="margin-left:auto">Schedule broadcast</button>
     </div>
     <p class="form-help">Both previews must be opened at least once before Schedule unlocks.</p>
+
+    <!-- Test-send row — sits separately because the recipient field
+         needs space and the action is fundamentally different from
+         the preview / schedule actions above. -->
+    <div style="margin-top:18px;padding:14px 16px;background:rgba(184,151,90,.06);border:1px solid var(--rule);border-radius:1px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span style="font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint,#7a7060);white-space:nowrap">Send test to</span>
+      <input id="testRecipient" type="email" class="form-input" placeholder="" style="flex:1;min-width:200px;max-width:340px;font-size:15px;padding:8px 10px">
+      <select id="testVariant" class="form-select" style="width:auto;font-size:14px;padding:8px 10px">
+        <option value="immediate">Steward variant</option>
+        <option value="delayed">Member variant</option>
+      </select>
+      <button class="btn-ghost" id="btnTestSend" style="white-space:nowrap">Send test</button>
+    </div>
+    <p class="form-help">Defaults to your admin address. Use any email to see how the From-line renders to a recipient who doesn't already have the sender in their address book — useful for checking Gmail/Outlook/Apple Mail differences.</p>
 
     <div class="status-line" id="composeStatus"></div>
   </div>
@@ -268,6 +281,11 @@ In clan and kindred,</textarea>
     accessToken = session.access_token;
     authGate.style.display = 'none';
     adminBody.style.display = 'block';
+    // Pre-fill the test recipient with the admin's own email — they
+    // can edit it before clicking Send test if they want a different
+    // address.
+    document.getElementById('testRecipient').value = operatorEmail;
+    document.getElementById('testRecipient').setAttribute('placeholder', operatorEmail);
     loadHistory();
   }
 
@@ -362,20 +380,21 @@ In clan and kindred,</textarea>
     const form = readForm();
     const err = validateForm(form);
     if (err) { setStatus('status-error', err); return; }
-    const variant = previewedVariants.has('immediate') && !previewedVariants.has('delayed') ? 'immediate'
-                  : !previewedVariants.has('immediate') && previewedVariants.has('delayed') ? 'delayed'
-                  : confirm('Send the Steward/Privilege variant?\n\nOK = Steward variant (immediate footer)\nCancel = Member variant (delayed footer / upsell)')
-                    ? 'immediate' : 'delayed';
-    setStatus('status-warn', 'Sending test to <code>' + escapeHtml(operatorEmail) + '</code>…');
+    const variant = document.getElementById('testVariant').value;
+    const to = document.getElementById('testRecipient').value.trim() || operatorEmail;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+      setStatus('status-error', '<strong>Invalid recipient.</strong> Email looks malformed.'); return;
+    }
+    setStatus('status-warn', 'Sending test to <code>' + escapeHtml(to) + '</code>…');
     try {
       const res = await fetch('/.netlify/functions/admin-broadcast-actions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
-        body: JSON.stringify({ action: 'test_send', variant, ...form }),
+        body: JSON.stringify({ action: 'test_send', variant, to, ...form }),
       });
       const data = await res.json();
       if (res.ok && data.ok) {
-        setStatus('status-success', '<strong>Test sent</strong> to <code>' + escapeHtml(operatorEmail) + '</code> (' + escapeHtml(variant) + ' variant).');
+        setStatus('status-success', '<strong>Test sent</strong> to <code>' + escapeHtml(data.sent_to || to) + '</code> (' + escapeHtml(variant) + ' variant).');
       } else {
         setStatus('status-error', '<strong>Test send failed.</strong> ' + escapeHtml(data.error || res.status) + (data.detail ? ' — <em>' + escapeHtml(data.detail) + '</em>' : ''));
       }

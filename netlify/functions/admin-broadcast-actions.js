@@ -98,16 +98,22 @@ async function actionPreview(body, operatorEmail) {
 }
 
 async function actionTestSend(body, operatorEmail) {
-  // Send a draft broadcast to the admin's own email so they can
-  // see exactly what arrives before committing to a full broadcast.
-  // Always uses the IMMEDIATE (Steward/Privilege) footer plus a
-  // banner indicating this is a test send.
+  // Send a draft broadcast to a test recipient so the admin can see
+  // exactly what arrives before committing to a full broadcast.
+  //
+  // Recipient defaults to the operator's own email (the address they
+  // signed in with), but an optional `to` parameter lets them send
+  // to any other inbox — useful for previewing how the email renders
+  // in Gmail vs Outlook vs Apple Mail, or for checking how the From-
+  // line appears to a recipient who doesn't have the sender already
+  // in their address book.
   const sender_voice = String(body.sender_voice || '').trim();
   const subject      = String(body.subject || '').trim();
   const body_md      = String(body.body_md || '').trim();
   const cta_label    = body.cta_label ? String(body.cta_label).trim() : null;
   const cta_url      = body.cta_url   ? String(body.cta_url).trim() : null;
   const variant      = String(body.variant || 'immediate');
+  const toRaw        = body.to ? String(body.to).trim().toLowerCase() : null;
 
   if (!sender_voice || !subject || !body_md) {
     return jsonResponse(400, { error: 'sender_voice, subject, body_md required' });
@@ -116,11 +122,18 @@ async function actionTestSend(body, operatorEmail) {
     return jsonResponse(500, { error: 'RESEND_API_KEY not configured' });
   }
 
+  // Validate the recipient address. If admin didn't supply one, fall
+  // back to the operator's signed-in email.
+  const to = toRaw || operatorEmail;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+    return jsonResponse(400, { error: 'Invalid recipient email', received: to });
+  }
+
   let payload;
   try {
     payload = renderBroadcast({
       broadcast: { sender_voice, subject, body_md, cta_label, cta_url },
-      member: { name: operatorEmail.split('@')[0] || 'friend', email: operatorEmail },
+      member: { name: to.split('@')[0] || 'friend', email: to },
       isImmediateBatch: variant === 'immediate',
     });
   } catch (err) {
@@ -141,7 +154,7 @@ async function actionTestSend(body, operatorEmail) {
       },
       body: JSON.stringify({
         from,
-        to: operatorEmail,
+        to,
         reply_to: payload.replyTo,
         subject: `[TEST] ${payload.subject}`,
         html,
@@ -151,7 +164,7 @@ async function actionTestSend(body, operatorEmail) {
       const errText = await res.text().catch(() => '');
       return jsonResponse(502, { error: `Resend ${res.status}`, detail: errText.slice(0, 300) });
     }
-    return jsonResponse(200, { ok: true, sent_to: operatorEmail, variant });
+    return jsonResponse(200, { ok: true, sent_to: to, variant });
   } catch (err) {
     return jsonResponse(502, { error: 'Send failed', detail: err.message });
   }
