@@ -203,12 +203,12 @@ function renderMarkdown(md, member) {
   for (const item of merged) {
     if (item && typeof item === 'object' && item.kind === 'portrait') {
       out.push(`
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 26px;width:100%">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="portrait-block" style="margin:0 0 26px;width:100%">
   <tr>
-    <td style="vertical-align:top;padding-right:22px;width:112px">
+    <td class="portrait-photo" valign="top" align="left" style="vertical-align:top;padding-right:22px;width:112px">
       <img src="${item.src}" width="96" height="96" alt="${escapeHtml(item.alt)}" style="display:block;width:96px;height:96px;border-radius:50%;object-fit:cover">
     </td>
-    <td style="vertical-align:top">
+    <td class="portrait-text" valign="top" style="vertical-align:top">
       <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.7;margin:0">${item.paragraphHtml}</p>
     </td>
   </tr>
@@ -454,7 +454,31 @@ function upsellFooterHtml() {
 function wrapInChrome({ eyebrow, heading, bodyHtml }) {
   return `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    /* Mobile portrait stack — at <520px viewport, the 96px portrait
+       photo + paragraph bio crowds the text into 1-2 words per line.
+       Stack the photo above the bio instead. Apple Mail, Gmail
+       iOS/Android, and Outlook mobile all honour this query.
+       Outlook Desktop ignores it (no @media support) and stays on
+       the desktop two-column layout — fine because it's a desktop
+       client running on a 1000px+ window.
+       Selectors use !important because email clients aggressively
+       inline default styles and we need to override the inline
+       width:112px on the photo cell. */
+    @media screen and (max-width:520px){
+      .portrait-block .portrait-photo,
+      .portrait-block .portrait-text{
+        display:block !important;
+        width:100% !important;
+        padding-right:0 !important;
+      }
+      .portrait-block .portrait-photo{padding-bottom:14px !important}
+    }
+  </style>
+</head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
 
