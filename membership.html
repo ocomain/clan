@@ -168,6 +168,128 @@
       .founder-callout-grid > div > p{font-size:15px!important;line-height:1.7!important}
     }
 
+    /* ── MOBILE TIER TAB SWITCHER ───────────────────────────────────
+       Hidden on desktop where the 3-column grid does the job.
+       On mobile, the three tiers stack would be very long (3 × ~14
+       perks + 3 CTAs = a lot of scroll). Tabs let the reader pick
+       one tier at a time, with all three CTAs always one tap away.
+
+       Designed for an older demographic: tap targets are 60px+ tall,
+       18-20px text, no swipe gesture required. Active tab is visually
+       obvious (gold underline + ink colour). Featured tab carries the
+       'Most popular' badge so the recommended choice is visible
+       before the reader picks. Guardian loads active by default. */
+    .tier-tabs{display:none}
+    @media(max-width:900px){
+      .tier-tabs{
+        display:grid;
+        grid-template-columns:1fr 1.2fr 1fr;
+        gap:0;
+        background:var(--cream);
+        border:1px solid var(--border);
+        border-bottom:none;
+        margin-bottom:0;
+      }
+      .tier-tab{
+        position:relative;
+        background:transparent;
+        border:none;
+        border-right:1px solid var(--border);
+        padding:18px 6px 14px;
+        cursor:pointer;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-end;
+        gap:4px;
+        min-height:78px;
+        font-family:'Jost',sans-serif;
+        transition:background-color .15s;
+        -webkit-tap-highlight-color:transparent;
+      }
+      .tier-tab:last-child{border-right:none}
+      .tier-tab:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+      .tier-tab-name{
+        font-size:14px;
+        font-weight:600;
+        letter-spacing:.1em;
+        text-transform:uppercase;
+        color:var(--ink-muted);
+        line-height:1.2;
+      }
+      .tier-tab-price{
+        font-family:'EB Garamond',serif;
+        font-size:20px;
+        font-weight:400;
+        color:var(--ink-muted);
+        line-height:1;
+      }
+      .tier-tab-badge{
+        position:absolute;
+        top:6px;
+        left:50%;
+        transform:translateX(-50%);
+        background:var(--gold);
+        color:var(--ink);
+        font-size:9px;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        padding:2px 8px;
+        line-height:1.2;
+        white-space:nowrap;
+      }
+      .tier-tab-featured{
+        padding-top:24px;
+      }
+      /* Active tab — bold ink colours + thick gold underline */
+      .tier-tab[aria-selected="true"]{
+        background:var(--white);
+      }
+      .tier-tab[aria-selected="true"] .tier-tab-name{
+        color:var(--ink);
+      }
+      .tier-tab[aria-selected="true"] .tier-tab-price{
+        color:var(--gold-deep);
+        font-size:22px;
+        font-weight:500;
+      }
+      .tier-tab[aria-selected="true"]::after{
+        content:'';
+        position:absolute;
+        left:8%;
+        right:8%;
+        bottom:0;
+        height:3px;
+        background:var(--gold);
+      }
+      /* Price spans inside tabs: the global .individual-price /
+         .family-price rules use display:block which would stack the
+         price below the cadence inside the tab pill. Override here
+         so they remain inline within the tab. */
+      .tier-tab-price .individual-price,
+      .tier-tab-price .family-price{display:none}
+      .tier-tab-price .individual-price{display:inline}
+      body.family-mode .tier-tab-price .individual-price{display:none}
+      body.family-mode .tier-tab-price .family-price{display:inline}
+      /* Tier cards on mobile: only show the active one. Active state
+         is driven by a class on .tiers-grid set by JS. Default
+         (no class yet) shows Guardian. */
+      .tiers-grid .tier{display:none}
+      .tiers-grid[data-active="clan"] .tier[data-tier="clan"],
+      .tiers-grid[data-active="guardian"] .tier[data-tier="guardian"],
+      .tiers-grid[data-active="steward"] .tier[data-tier="steward"],
+      .tiers-grid:not([data-active]) .tier[data-tier="guardian"]{
+        display:block;
+      }
+      /* Active tier on mobile has no border-bottom (the section ends
+         it); featured tier doesn't need its negative-margin trick
+         when standing alone. */
+      .tiers-grid .tier{border-bottom:none}
+      .tiers-grid .tier.featured{margin:0;border-width:0}
+    }
+
+
     /* ── FAMILY PRICES (hidden by default, shown in family mode) ── */
     .family-price{display:none}
     .individual-price{display:block}
@@ -402,10 +524,31 @@
     </div>
 
     <!-- THREE TIERS -->
+    <!-- Mobile tab switcher (≤900px) — gives older users a clear tap
+         target instead of a swipe, keeps all three buy buttons one
+         tap away rather than off-screen behind a carousel. Tabs are
+         hidden on desktop where the 3-column grid already shows all
+         tiers side-by-side. -->
+    <div class="tier-tabs" role="tablist" aria-label="Membership tiers">
+      <button type="button" class="tier-tab" role="tab" data-tier="clan" aria-selected="false">
+        <span class="tier-tab-name">Clan Member</span>
+        <span class="tier-tab-price"><span class="individual-price">€49</span><span class="family-price">€79</span></span>
+      </button>
+      <button type="button" class="tier-tab tier-tab-featured" role="tab" data-tier="guardian" aria-selected="true">
+        <span class="tier-tab-badge">Most popular</span>
+        <span class="tier-tab-name">Guardian</span>
+        <span class="tier-tab-price"><span class="individual-price">€150</span><span class="family-price">€220</span></span>
+      </button>
+      <button type="button" class="tier-tab" role="tab" data-tier="steward" aria-selected="false">
+        <span class="tier-tab-name">Steward</span>
+        <span class="tier-tab-price"><span class="individual-price">€350</span><span class="family-price">€480</span></span>
+      </button>
+    </div>
+
     <div class="tiers-grid">
 
       <!-- CLAN MEMBER -->
-      <div class="tier">
+      <div class="tier" data-tier="clan">
         <div class="tier-name">Clan Member</div>
         <div class="tier-price individual-price">€49</div>
         <div class="tier-price family-price">€79</div>
@@ -430,7 +573,7 @@
       </div>
 
       <!-- GUARDIAN -->
-      <div class="tier featured">
+      <div class="tier featured" data-tier="guardian">
         <div class="tier-badge">Most popular</div>
         <div class="tier-name">Guardian of the Clan</div>
         <div class="tier-price individual-price">€150</div>
@@ -456,7 +599,7 @@
       </div>
 
       <!-- PATRON -->
-      <div class="tier">
+      <div class="tier" data-tier="steward">
         <div class="tier-name">Steward of the Clan</div>
         <div class="tier-price individual-price">€350</div>
         <div class="tier-price family-price">€480</div>
@@ -713,6 +856,29 @@ function setMode(mode) {
     document.getElementById('btnFam').classList.remove('active');
   }
 }
+
+/* ── MOBILE TIER TABS ──────────────────────────────────────────
+   On mobile (≤900px), the CSS hides all .tier cards except the
+   one whose data-tier matches .tiers-grid[data-active=…]. With no
+   data-active attribute, Guardian shows by default (CSS rule).
+   On desktop the tabs are display:none and all three tiers stay
+   visible in the 3-column grid regardless of data-active — the
+   active state only matters on mobile.
+   Active tab pre-selected on load is Guardian (set in the markup
+   aria-selected=true). Clicking a tab moves the aria-selected
+   flag and sets data-active on the grid. */
+(function(){
+  var tabs = document.querySelectorAll('.tier-tab');
+  var grid = document.querySelector('.tiers-grid');
+  if (!tabs.length || !grid) return;
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var tier = tab.getAttribute('data-tier');
+      tabs.forEach(function(t){ t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      grid.setAttribute('data-active', tier);
+    });
+  });
+})();
 </script>
 
 <!-- Invitation attribution token (added 2026-05-01, cookie added 2026-05-02)
