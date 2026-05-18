@@ -508,10 +508,15 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
          1. cream letter content
          2. (delayed batch only) Stewards' Privilege block — content
          3. dark legal footer — boilerplate
-       Matches the dark legal footer pattern from lifecycle emails. -->
-  <div style="background:#0C1A0C;padding:22px 40px;text-align:center">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:'Georgia',serif;font-size:11px;color:#A88B57;margin:0;letter-spacing:0.06em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+       Matches the dark legal footer pattern from lifecycle emails.
+       bgcolor= attribute is a belt-and-braces measure for mail
+       clients that strip the inline background style (Outlook iOS
+       has been known to). The font-size on the legal line is 12px
+       (was 11px) — the previous size was getting clipped on iPhone
+       SE / small screens with system font scaling. -->
+  <div class="legal-footer" bgcolor="#0C1A0C" style="background:#0C1A0C;background-color:#0C1A0C;padding:22px 24px;text-align:center">
+    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 8px;line-height:1.4">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:'Georgia',serif;font-size:12px;color:#A88B57;margin:0;line-height:1.6">Tigh Uí Chomáin · House of Ó Comáin<br><a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> &nbsp;·&nbsp; <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
   </div>
 </div>
 </body>
