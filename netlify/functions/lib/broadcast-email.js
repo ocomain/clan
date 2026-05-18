@@ -424,9 +424,9 @@ function ctaButtonHtml(label, url) {
 
 function privilegeFooterHtml() {
   return `
-<div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0 0 10px">Stewards' Privilege — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0">If you wish to be counted among the great benefactors of the revival — by a contribution in life, or by a bequest in your will — see the <a href="https://www.ocomain.org/benefactors" style="color:#8C7A4A;text-decoration:underline">Benefactors page</a>, or write to <a href="mailto:clan@ocomain.org" style="color:#8C7A4A;text-decoration:underline">clan@ocomain.org</a>.</p>
+<div style="margin:28px 0 0;padding:18px 0 0;border-top:1px solid rgba(184,151,90,.25)">
+  <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.65;margin:0 0 14px"><strong style="color:#8C6A1A">Stewards' Privilege</strong> — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
+  <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.65;margin:0">If you wish to be counted among the great benefactors of the revival — by a contribution in life, or by a bequest in your will — see the <a href="https://www.ocomain.org/benefactors" style="color:#8C6A1A;font-weight:600;text-decoration:underline">Benefactors page</a>, or write to <a href="mailto:clan@ocomain.org" style="color:#8C6A1A;font-weight:600;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
 
