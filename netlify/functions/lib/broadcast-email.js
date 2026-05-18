@@ -383,14 +383,14 @@ function ctaButtonHtml(label, url) {
 function privilegeFooterHtml() {
   return `
 <div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0">Stewards' Privilege — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
+  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0">Steward's Privilege — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
 </div>`;
 }
 
 function upsellFooterHtml() {
   return `
-<div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Stewards' Privilege, the inside track. Becoming a Steward is an act of cultural stewardship: an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but a commitment carried forward in your name. Life Founders, available during the 2026 founding period only, make a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#8C7A4A;text-decoration:underline">clan@ocomain.org</a>.</p>
+<div style="margin:32px -40px -8px;padding:22px 40px 24px;background:rgba(184,151,90,.10);border-top:1px solid rgba(184,151,90,.35);border-bottom:1px solid rgba(184,151,90,.35)">
+  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#5C4A3A;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Steward's Privilege, the inside track. Upgrading to Steward is an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but patronage carried forward in your name. Life Membership, available during the 2026 founding period only, is a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#6B4A1A;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
 
@@ -417,7 +417,7 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
   <!-- Letterhead — cream background, coat of arms + 'Ó COMÁIN' -->
   <div style="padding:44px 40px 0;text-align:center">
     <img src="${SITE}/coat_of_arms.png" width="88" alt="Ó Comáin" style="display:block;margin:0 auto 10px;height:auto">
-    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.32em;color:#8C7A4A;margin:0 0 22px;text-align:center">Ó COMÁIN</p>
+    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.32em;color:#8C7A4A;margin:0 0 22px;text-align:center;text-indent:0.32em">Ó COMÁIN</p>
     <div style="height:1px;background:rgba(184,151,90,.45);margin:0 auto 0;max-width:120px"></div>
   </div>
 
