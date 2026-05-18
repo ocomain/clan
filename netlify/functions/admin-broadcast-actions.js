@@ -86,9 +86,13 @@ async function actionPreview(body, operatorEmail) {
   }
 
   try {
+    // For the preview, render with a generic capitalised name. The
+    // real send will use each recipient's actual member row (with
+    // title-aware addressing — 'Cara Antoin' etc.) but the preview
+    // is for the *typical* recipient who has no title.
     const out = renderBroadcast({
       broadcast: { sender_voice, subject, body_md, cta_label, cta_url },
-      member: { name: operatorEmail.split('@')[0] || 'friend', email: operatorEmail },
+      member: { name: 'David', email: operatorEmail },
       isImmediateBatch: variant === 'immediate',
     });
     return jsonResponse(200, out);
@@ -129,11 +133,37 @@ async function actionTestSend(body, operatorEmail) {
     return jsonResponse(400, { error: 'Invalid recipient email', received: to });
   }
 
+  // Faithful preview: if the test recipient is an actual member, load
+  // their real row so the test render uses their real name, their
+  // real awarded titles, etc. This is the difference between seeing
+  // 'Dear antoin' (synthesised local-part fallback) and 'Dear Cara
+  // Antoin' (what Antoin will actually see when the broadcast lands).
+  let memberRow = null;
+  try {
+    const cid = await clanId();
+    const { data } = await supa()
+      .from('members')
+      .select('id, email, name, sponsor_titles_awarded')
+      .eq('clan_id', cid)
+      .ilike('email', to)
+      .maybeSingle();
+    if (data) memberRow = data;
+  } catch {
+    // Non-fatal — fall back to synthesised row.
+  }
+  const member = memberRow || {
+    // Synthesised row for non-member test recipients. Capitalise the
+    // local-part of the email so the rendered greeting reads as a
+    // proper name rather than lowercase ('Dear David' not 'Dear david').
+    name: (to.split('@')[0] || 'friend').replace(/^[a-z]/, c => c.toUpperCase()),
+    email: to,
+  };
+
   let payload;
   try {
     payload = renderBroadcast({
       broadcast: { sender_voice, subject, body_md, cta_label, cta_url },
-      member: { name: to.split('@')[0] || 'friend', email: to },
+      member,
       isImmediateBatch: variant === 'immediate',
     });
   } catch (err) {

@@ -69,14 +69,56 @@ function escapeHtml(s) {
 }
 
 // ─── ADDRESS FORM ───────────────────────────────────────────────────────
-// Best effort first-name extraction. Used in "Dear X," opener if the
-// markdown body contains the literal token {first_name}.
-function firstNameOf(member) {
+// Best-effort address form for the "Dear X," opener if the markdown
+// body contains the literal {first_name} token.
+//
+// Three cases, mirroring the lifecycle email pattern:
+//   1. Member has a title of dignity awarded (Cara / Taoiseach / etc):
+//        → 'Cara Antoin'
+//      Uses sponsor-service's highestAwardedTitle + formatAddressForm.
+//   2. No title, name present:
+//        → 'Antoin' (capitalised even if DB row is lowercase, e.g.
+//                    test sends where the synthesised name is the
+//                    email local-part)
+//   3. No name at all:
+//        → 'friend'
+//
+// The token name {first_name} is a bit of a misnomer now since case 1
+// returns 'Cara Antoin' (two words) rather than a bare first name, but
+// it's the same token DDW already used in the admin default body and
+// changing it would silently break templates already composed.
+const { highestAwardedTitle, formatAddressForm } = require('./sponsor-service');
+
+function capitaliseFirst(s) {
+  if (!s) return s;
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function addressFormOf(member) {
   if (!member || !member.name) return 'friend';
   const trimmed = String(member.name).trim();
   if (!trimmed) return 'friend';
+
+  // Try the title-aware form first. formatAddressForm returns
+  // 'Title Firstname' if a title is awarded, or just 'Firstname'
+  // (with the DB's original case) if not.
+  const title = highestAwardedTitle(member.sponsor_titles_awarded);
+  const titled = formatAddressForm(member, title);
+
+  if (titled) {
+    // If a title was awarded, the title is already capitalised
+    // ('Cara' etc.); we still want to ensure the first name is
+    // capitalised in case the DB row is lowercase.
+    if (title?.irish) {
+      const parts = titled.split(/\s+/);
+      // parts[0] = title ('Cara'), parts[1+] = first name
+      return [parts[0], ...parts.slice(1).map(capitaliseFirst)].join(' ');
+    }
+    return capitaliseFirst(titled);
+  }
+  // Fallback: bare first name from the trimmed string.
   const parts = trimmed.split(/\s+/);
-  return parts[0] || 'friend';
+  return parts[0] ? capitaliseFirst(parts[0]) : 'friend';
 }
 
 // ─── MINI MARKDOWN PARSER ───────────────────────────────────────────────
@@ -97,7 +139,7 @@ function renderMarkdown(md, member) {
   if (!md) return '';
 
   // 1. Token substitution
-  const firstName = firstNameOf(member);
+  const firstName = addressFormOf(member);
   let src = String(md).replace(/\{first_name\}/g, firstName);
 
   // 2. Escape HTML

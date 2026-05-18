@@ -136,7 +136,7 @@ async function processQueuedSends() {
     .select(`
       id, broadcast_id, member_id, is_immediate_batch,
       broadcasts!inner(id, sender_voice, subject, body_md, cta_label, cta_url, status),
-      members!inner(id, email, name)
+      members!inner(id, email, name, sponsor_titles_awarded)
     `)
     .eq('status', 'queued')
     .lte('release_at', nowIso)
@@ -187,7 +187,7 @@ async function processQueuedSends() {
     try {
       payload = renderBroadcast({
         broadcast,
-        member: { email: member.email, name: member.name },
+        member: { email: member.email, name: member.name, sponsor_titles_awarded: member.sponsor_titles_awarded },
         isImmediateBatch: row.is_immediate_batch,
       });
     } catch (err) {
