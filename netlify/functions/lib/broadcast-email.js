@@ -161,10 +161,10 @@ function renderMarkdown(md, member) {
   for (const item of merged) {
     if (item && typeof item === 'object' && item.kind === 'portrait') {
       out.push(`
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px;width:100%">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 26px;width:100%">
   <tr>
-    <td style="vertical-align:top;padding-right:18px;width:80px">
-      <img src="${item.src}" width="64" height="64" alt="${escapeHtml(item.alt)}" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover">
+    <td style="vertical-align:top;padding-right:22px;width:112px">
+      <img src="${item.src}" width="96" height="96" alt="${escapeHtml(item.alt)}" style="display:block;width:96px;height:96px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:top">
       <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.7;margin:0">${item.paragraphHtml}</p>
@@ -390,14 +390,23 @@ function privilegeFooterHtml() {
 function upsellFooterHtml() {
   return `
 <div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
-  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Stewards' Privilege, the inside track. Stewards make an annual contribution of €350 (€480 family); the one-time contribution of a Life Founder, available during the 2026 founding period only, is €750 (€1,100 family). To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#8C7A4A;text-decoration:underline">clan@ocomain.org</a>.</p>
+  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Stewards' Privilege, the inside track. Becoming a Steward is an act of cultural stewardship: an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but a commitment carried forward in your name. Life Founders, available during the 2026 founding period only, make a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#8C7A4A;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
 
-// ─── CHROME WRAPPER ─────────────────────────────────────────────────────
-// Same visual identity as lifecycle emails (post-signup-email.js
-// wrapInChrome). Kept independent so changes here don't ripple
-// across the lifecycle programme.
+// ─── CHROME WRAPPER — cream letterhead ─────────────────────────────────
+// Broadcasts use a different chrome from lifecycle emails. The
+// lifecycle programme uses a dark-green header with gold heraldry
+// (post-signup-email.js wrapInChrome). Broadcasts are personal
+// letters from named Council members, and read better as printed
+// letterhead on cream paper: coat of arms centred, gold "Ó COMÁIN"
+// beneath, thin gold rule, body. No big inbox heading — the email's
+// subject line is the heading; the body opens with the eyebrow
+// ("A letter from the Chancellor") as a small italic label above
+// the salutation.
+//
+// Footer is also stripped down — a single line of motto + thin gold
+// rule + tiny footer line — so the letter is the visual focus.
 function wrapInChrome({ eyebrow, heading, bodyHtml }) {
   return `<!DOCTYPE html>
 <html>
@@ -405,20 +414,32 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
 
-  <div style="background:#0C1A0C;padding:38px 40px 30px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="${SITE}/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto">
-    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
-    <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">${escapeHtml(eyebrow)}</p>
-    <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0;line-height:1.18">${escapeHtml(heading)}</h1>
+  <!-- Letterhead — cream background, coat of arms + 'Ó COMÁIN' -->
+  <div style="padding:44px 40px 0;text-align:center">
+    <img src="${SITE}/coat_of_arms.png" width="88" alt="Ó Comáin" style="display:block;margin:0 auto 10px;height:auto">
+    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.32em;color:#8C7A4A;margin:0 0 22px;text-align:center">Ó COMÁIN</p>
+    <div style="height:1px;background:rgba(184,151,90,.45);margin:0 auto 0;max-width:120px"></div>
   </div>
 
-  <div style="padding:36px 40px">
+  <!-- Eyebrow above the body — replaces what used to sit inside the
+       dark header band. Italic, small, gold — reads as a label on
+       a letter, not a banner. -->
+  <div style="padding:26px 40px 0;text-align:center">
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#8C7A4A;letter-spacing:0.08em;margin:0">${escapeHtml(eyebrow)}</p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:24px 40px 8px">
     ${bodyHtml}
   </div>
 
-  <div style="background:#0C1A0C;padding:22px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#C8A875;margin:0 0 6px">Caithfidh an stair a bheith i réim — History must prevail</p>
-    <p style="font-family:'Georgia',serif;font-size:11px;color:#A88B57;margin:0;letter-spacing:0.06em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
+  <!-- Footer — quiet, single line of motto + house name. Subject
+       line in the inbox carries the heading; the email itself
+       reads as a letter, not a newsletter. -->
+  <div style="padding:8px 40px 36px;text-align:center">
+    <div style="height:1px;background:rgba(184,151,90,.35);margin:0 auto 14px;max-width:120px"></div>
+    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#8C7A4A;margin:0 0 4px">Caithfidh an stair a bheith i réim — History must prevail</p>
+    <p style="font-family:'Georgia',serif;font-size:10px;color:#A88B57;margin:0;letter-spacing:0.08em">Tigh Uí Chomáin · House of Ó Comáin · <a href="https://www.ocomain.org/terms.html" style="color:#A88B57;text-decoration:underline">Terms</a> · <a href="https://www.ocomain.org/privacy.html" style="color:#A88B57;text-decoration:underline">Privacy</a></p>
   </div>
 </div>
 </body>
