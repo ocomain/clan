@@ -107,6 +107,112 @@
     /* ── FINAL CTA ── */
     .gift-cta-section{background:var(--cream);padding:80px 0;border-top:1px solid var(--border);text-align:center}
 
+    /* ── MOBILE GIFT-TIER TAB SWITCHER ──────────────────────────────
+       Mirrors the membership-page tab pattern, adapted for the gift
+       page's dark (ink-mid) background. Hidden on desktop where the
+       3-column grid does the job. Mobile gets a tap-targets-only UX —
+       no swipe gesture required, all three CTAs always one tap away. */
+    .gift-tier-tabs{display:none}
+    @media(max-width:900px){
+      .gift-tier-tabs{
+        display:grid;
+        grid-template-columns:1fr 1.2fr 1fr;
+        gap:0;
+        background:rgba(0,0,0,.25);
+        border:1px solid rgba(184,151,90,.25);
+        border-bottom:none;
+        margin-top:32px;
+      }
+      .gift-tier-tab{
+        position:relative;
+        background:transparent;
+        border:none;
+        border-right:1px solid rgba(184,151,90,.18);
+        padding:18px 6px 14px;
+        cursor:pointer;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-end;
+        gap:4px;
+        min-height:78px;
+        font-family:'Jost',sans-serif;
+        transition:background-color .15s;
+        -webkit-tap-highlight-color:transparent;
+      }
+      .gift-tier-tab:last-child{border-right:none}
+      .gift-tier-tab:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+      .gift-tier-tab-name{
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.1em;
+        text-transform:uppercase;
+        color:rgba(184,151,90,.55);
+        line-height:1.2;
+      }
+      .gift-tier-tab-price{
+        font-family:'EB Garamond',serif;
+        font-size:20px;
+        font-weight:400;
+        color:rgba(215,235,215,.5);
+        line-height:1;
+      }
+      .gift-tier-tab-badge{
+        position:absolute;
+        top:6px;
+        left:50%;
+        transform:translateX(-50%);
+        background:var(--gold);
+        color:var(--ink);
+        font-size:9px;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        padding:2px 8px;
+        line-height:1.2;
+        white-space:nowrap;
+      }
+      .gift-tier-tab-featured{padding-top:24px}
+      /* Active tab — bright gold name + pale price + bottom gold underline */
+      .gift-tier-tab[aria-selected="true"]{background:rgba(184,151,90,.08)}
+      .gift-tier-tab[aria-selected="true"] .gift-tier-tab-name{color:var(--gold)}
+      .gift-tier-tab[aria-selected="true"] .gift-tier-tab-price{
+        color:var(--gold-pale);
+        font-size:22px;
+        font-weight:500;
+      }
+      .gift-tier-tab[aria-selected="true"]::after{
+        content:'';
+        position:absolute;
+        left:8%;
+        right:8%;
+        bottom:0;
+        height:3px;
+        background:var(--gold);
+      }
+      /* Price spans inside tabs: the global .ind-only / .fam-only
+         rules use display:block which would stack the price below
+         the cadence inside the tab pill. Override here so they
+         remain inline within the tab. */
+      .gift-tier-tab-price .ind-only,
+      .gift-tier-tab-price .fam-only{display:none}
+      .gift-tier-tab-price .ind-only{display:inline}
+      body.fam-mode .gift-tier-tab-price .ind-only{display:none}
+      body.fam-mode .gift-tier-tab-price .fam-only{display:inline}
+      /* Gift cards on mobile: only show the active one. Active state
+         is driven by a data-active attribute on .gift-grid set by JS.
+         With no data-active attribute, Guardian shows by default. */
+      .gift-grid .gift-card{display:none}
+      .gift-grid[data-active="clan"] .gift-card[data-tier="clan"],
+      .gift-grid[data-active="guardian"] .gift-card[data-tier="guardian"],
+      .gift-grid[data-active="life"] .gift-card[data-tier="life"],
+      .gift-grid:not([data-active]) .gift-card[data-tier="guardian"]{
+        display:block;
+      }
+      /* Hide the in-card 'Most gifted' badge on mobile — already on tab */
+      .gift-badge{display:none}
+    }
+
     @media(max-width:900px){
       .steps,.gift-grid,.cert-grid{grid-template-columns:1fr}
       .step{border-right:none;border-bottom:1px solid var(--border)}
@@ -300,10 +406,26 @@
 
     </div>
 
+<div class="gift-tier-tabs" role="tablist" aria-label="Gift tiers">
+      <button type="button" class="gift-tier-tab" role="tab" data-tier="clan" aria-selected="false">
+        <span class="gift-tier-tab-name">Clan Member</span>
+        <span class="gift-tier-tab-price"><span class="ind-only">€49</span><span class="fam-only">€79</span></span>
+      </button>
+      <button type="button" class="gift-tier-tab gift-tier-tab-featured" role="tab" data-tier="guardian" aria-selected="true">
+        <span class="gift-tier-tab-badge">Most gifted</span>
+        <span class="gift-tier-tab-name">Guardian</span>
+        <span class="gift-tier-tab-price"><span class="ind-only">€150</span><span class="fam-only">€220</span></span>
+      </button>
+      <button type="button" class="gift-tier-tab" role="tab" data-tier="life" aria-selected="false">
+        <span class="gift-tier-tab-name">Life Founder</span>
+        <span class="gift-tier-tab-price"><span class="ind-only">€750</span><span class="fam-only">€1,100</span></span>
+      </button>
+    </div>
+
 <div class="gift-grid">
 
       <!-- CLAN MEMBER -->
-      <div class="gift-card">
+      <div class="gift-card" data-tier="clan">
         <div class="gift-tier-name">Clan Member</div>
         <div class="gift-price ind-only">€49</div>
         <div class="gift-price fam-only">€79</div>
@@ -326,7 +448,7 @@
       </div>
 
       <!-- GUARDIAN -->
-      <div class="gift-card featured">
+      <div class="gift-card featured" data-tier="guardian">
         <div class="gift-badge">Most gifted</div>
         <div class="gift-tier-name">Guardian of the Clan</div>
         <div class="gift-price ind-only">€150</div>
@@ -350,7 +472,7 @@
       </div>
 
       <!-- LIFE MEMBER -->
-      <div class="gift-card">
+      <div class="gift-card" data-tier="life">
         <div class="gift-tier-name">Life Founder</div>
         <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#E07474;text-align:center;margin:4px 0 14px">Available during the 2026 founding period only</p>
         <div class="gift-price ind-only">€750</div>
@@ -520,6 +642,23 @@ function gSetMode(mode){
     document.getElementById('gBtnFam').classList.remove('active');
   }
 }
+
+/* MOBILE GIFT-TIER TABS — same pattern as the membership page.
+   Tabs are display:none on desktop; the 3-column grid handles
+   layout there. Active state on click sets data-active on the
+   grid, which the CSS uses to swap which card is visible. */
+(function(){
+  var tabs = document.querySelectorAll('.gift-tier-tab');
+  var grid = document.querySelector('.gift-grid');
+  if (!tabs.length || !grid) return;
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      var tier = tab.getAttribute('data-tier');
+      tabs.forEach(function(t){ t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      grid.setAttribute('data-active', tier);
+    });
+  });
+})();
 </script>
 <!-- Members-area handoff (2026-05-01, v2) — when a logged-in
      member arrives at /gift.html from /members/ via the 'Gift a
