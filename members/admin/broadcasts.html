@@ -147,21 +147,33 @@
           <option value="antoin">Antóin Commane — Tánaiste</option>
           <option value="jessica">Jessica-Lily Commane — Keeper of the Seat</option>
           <option value="herald">The Herald</option>
-          <option value="fergus">Fergus Kinfauns — Chief</option>
+          <option value="fergus">Fergus Commane — Chief</option>
           <option value="linda">Linda Commane Cryan — Private Secretary</option>
         </select>
         <p class="form-help">From: drives the From-address, eyebrow, and signature block.</p>
       </div>
       <div>
         <label class="form-label" for="subject">Subject</label>
-        <input id="subject" class="form-input" type="text" maxlength="200" placeholder="A letter from the Chancellor…">
+        <input id="subject" class="form-input" type="text" maxlength="200" value="Two new appointments to the Privy Council">
         <p class="form-help">Shown in the inbox preview and as the email heading.</p>
       </div>
     </div>
 
     <div class="form-row">
       <label class="form-label" for="bodyMd">Body <span style="color:var(--ink-faint,#7a7060);text-transform:none;letter-spacing:.04em;font-size:11px;font-weight:400">(markdown · {first_name} substitutes the member's first name)</span></label>
-      <textarea id="bodyMd" class="form-textarea" maxlength="20000" placeholder="Dear {first_name},&#10;&#10;Maria Kinfauns writing. I write today with news of two new appointments…&#10;&#10;**The Ollamh** — Clan Health Advisor — is now held by Michael O Doherty…&#10;&#10;Full biographies are on the [Council page](https://www.ocomain.org/privy-council.html)."></textarea>
+      <textarea id="bodyMd" class="form-textarea" maxlength="20000">Dear {first_name},
+
+Maria Kinfauns writing. I write today with news of two new appointments to the Privy Council.
+
+**The Ollamh** — Clan Health Advisor — is now held by Michael O Doherty, a Doonbeg native and bestselling author who has practised bio-energy therapy for nearly thirty years from his clinic in Ennis. Michael's Clare roots place him in the country of the medieval Ó hÍceadha, the hereditary physicians of Thomond from whom this office descends.
+
+**The Gaelic Officer** — Master of Ceremonies and the clan's advisor on Gaelic traditions and the Irish language — is now held by Oisín Ó Ruairc. Oisín was educated entirely through Irish at a Gaelscoil where every subject was taught in the native tongue.
+
+Both have already taken up their posts. Full biographies are on the [Council page](https://www.ocomain.org/privy-council.html).
+
+There is more news to share in the coming weeks. For now, please join me in welcoming Michael and Oisín to their seats.
+
+In clan and kindred.</textarea>
       <p class="form-help">Markdown: **bold**, *italic*, [link text](url), &gt; quote, blank line separates paragraphs, lines starting "- " become a bulleted list. Raw HTML is escaped — paste safely. The signature and footer are added automatically.</p>
     </div>
 

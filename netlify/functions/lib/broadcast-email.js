@@ -228,8 +228,8 @@ const VOICES = {
   // Fergus and Linda available but rarely used; included so admin
   // dropdown can offer them if the need arises.
   fergus: {
-    label: 'Fergus Kinfauns — Chief',
-    fromName: 'Fergus Kinfauns',
+    label: 'Fergus Commane — Chief',
+    fromName: 'Fergus Commane',
     fromEmail: 'chief@ocomain.org',
     replyTo: 'clan@ocomain.org',
     eyebrow: 'A word from the Chief',
