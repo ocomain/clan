@@ -106,8 +106,75 @@ function renderMarkdown(md, member) {
   // 3. Split into blocks on blank lines
   const blocks = src.split(/\n\s*\n/);
 
+  // Pre-pass: pair an image-only block with the next paragraph block
+  // to produce a two-column portrait+text layout. The markdown source
+  // is:
+  //
+  //   ![Alt text](image.jpg)
+  //
+  //   Paragraph that pairs with the image…
+  //
+  // Renders as a 64px round portrait on the left, paragraph on the
+  // right, in a single email-safe table. If the image-only block has
+  // no following paragraph, it falls back to a centred figure.
+  const IMG_RE = /^!\[([^\]]*)\]\(([^)]+)\)$/;
+  const merged = [];
+  for (let i = 0; i < blocks.length; i++) {
+    const t = (blocks[i] || '').trim();
+    if (!t) continue;
+    const m = t.match(IMG_RE);
+    if (m) {
+      const url = m[2].trim();
+      const alt = m[1] || '';
+      // Only allow http/https URLs for image src (no file paths, no
+      // data: URLs, no javascript:). Internal images can be referenced
+      // by relative path; we prefix with SITE.
+      let src;
+      if (/^https?:/i.test(url)) {
+        src = url;
+      } else if (/^[\w.\-/]+\.(jpg|jpeg|png|gif|webp)$/i.test(url)) {
+        // bare filename — assume it's on the site
+        src = `${SITE}/${url.replace(/^\//, '')}`;
+      } else {
+        // Unsupported — skip image, retain the next block as plain.
+        if (i + 1 < blocks.length) merged.push(blocks[i + 1]);
+        i++;
+        continue;
+      }
+      const nextBlock = (i + 1 < blocks.length) ? blocks[i + 1] : null;
+      const paragraphHtml = nextBlock
+        ? nextBlock.split(/\n/).map(renderInline).join('<br>')
+        : '';
+      merged.push({
+        kind: 'portrait',
+        src,
+        alt,
+        paragraphHtml,
+      });
+      if (nextBlock) i++; // consume the next block as paired
+      continue;
+    }
+    merged.push(t);
+  }
+
   const out = [];
-  for (const rawBlock of blocks) {
+  for (const item of merged) {
+    if (item && typeof item === 'object' && item.kind === 'portrait') {
+      out.push(`
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px;width:100%">
+  <tr>
+    <td style="vertical-align:top;padding-right:18px;width:80px">
+      <img src="${item.src}" width="64" height="64" alt="${escapeHtml(item.alt)}" style="display:block;width:64px;height:64px;border-radius:50%;object-fit:cover">
+    </td>
+    <td style="vertical-align:top">
+      <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.7;margin:0">${item.paragraphHtml}</p>
+    </td>
+  </tr>
+</table>`);
+      continue;
+    }
+
+    const rawBlock = item;
     const block = rawBlock.trim();
     if (!block) continue;
 
@@ -176,7 +243,7 @@ const VOICES = {
     replyTo: 'maria@ocomain.org',
     eyebrow: 'A letter from the Chancellor',
     signature: () => signatureBlock({
-      avatar: 'maria_kinfauns.jpg',
+      avatar: 'maria_kinfauns_bubble.jpg',
       name: 'Maria Kinfauns',
       role: 'Chancellor of Clan Ó Comáin',
       irish: 'Seansailéir',
@@ -298,44 +365,32 @@ function ctaButtonHtml(label, url) {
 </div>`;
 }
 
-// ─── FOOTERS — TWO VARIANTS ─────────────────────────────────────────────
+// ─── FOOTNOTES — TWO VARIANTS ──────────────────────────────────────────
 //
-// Immediate (Steward + Life Member): short privilege ack, no upsell —
-// they're already at the top tier(s). Tone is "you're in the inner
-// circle; here's why you got this first."
+// Both footers are deliberately quiet — a single thin rule, italic
+// serif, ~12px type. Footnote register so they don't compete with
+// the body of the Council letter above them.
 //
-// Delayed (everyone else): ladder upsell from Steward to Life Member.
-// Stewardship + legacy framing per Council direction (DDW, May 2026).
-// Single CTA writes to clan@ocomain.org so the office can triage —
-// more dignified than a direct checkout flow for this tier.
+// Immediate (Steward + Life Member): one-line privilege ack, no
+// upsell — they're already at the top tier(s).
+//
+// Delayed (everyone else): three short sentences ending in an
+// inline mailto link to the office. No "upgrade" language. No
+// styled CTA button — the link is a plain anchor in the running
+// prose. Per DDW: "should this whole section read more as a
+// footnote if going at the end of each email?" Yes.
 
 function privilegeFooterHtml() {
   return `
-<div style="margin:32px 0 0;padding:18px 22px;border:1px solid rgba(184,151,90,.35);background:rgba(184,151,90,.06);border-radius:2px">
-  <p style="font-family:'Georgia',serif;font-size:13px;font-weight:600;letter-spacing:0.04em;color:#8C7A4A;margin:0 0 4px;text-transform:uppercase">Inside track · Stewards' Privilege</p>
-  <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#3C2A1A;line-height:1.55;margin:0">This letter reaches Stewards and Life Members first. The kindred at large will receive it 24 hours from now.</p>
+<div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
+  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.55;margin:0">Stewards' Privilege — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
 </div>`;
 }
 
 function upsellFooterHtml() {
-  const url = 'mailto:clan@ocomain.org?subject=' + encodeURIComponent('Upgrade of Membership');
   return `
-<div style="margin:36px 0 0;padding:24px 22px 20px;border-top:2px solid #B8975A;background:rgba(184,151,90,.04)">
-  <p style="font-family:'Georgia',serif;font-size:15px;font-weight:700;color:#0C1A0C;margin:0 0 10px;letter-spacing:0.02em">An act of cultural stewardship.</p>
-
-  <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#3C2A1A;line-height:1.65;margin:0 0 16px">Stewards and Life Members received this letter 24 hours ago — part of Stewards' Privilege, the inside track. The path beyond Guardian is open to those who wish their support of the clan to carry forward as a legacy:</p>
-
-  <p style="font-family:'Georgia',serif;font-size:14px;color:#0C1A0C;line-height:1.55;margin:0 0 8px"><strong>Steward of the Clan</strong> &middot; <span style="color:#8C7A4A">€350 / year &middot; €480 family</span></p>
-  <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#5C4A3A;line-height:1.6;margin:0 0 16px">An annual contribution to the clan's heritage and cultural revival — not a fee for benefits, but a commitment carried forward in your name.</p>
-
-  <p style="font-family:'Georgia',serif;font-size:14px;color:#0C1A0C;line-height:1.55;margin:0 0 8px"><strong>Life Membership</strong> &middot; <span style="color:#8C7A4A">€750 &middot; €1,100 family</span> &mdash; <span style="font-size:12px;color:#A47A4A">available during the 2026 founding period only</span></p>
-  <p style="font-family:'Georgia',serif;font-size:13px;font-style:italic;color:#5C4A3A;line-height:1.6;margin:0 0 18px">A single contribution. No renewal. For life. Your name lodged permanently in the clan's documentary record.</p>
-
-  <p style="font-family:'Georgia',serif;font-size:13px;color:#3C2A1A;line-height:1.65;margin:0 0 14px">To be counted among the great benefactors of the clan's revival, write to the Office of the Private Secretary.</p>
-
-  <div style="text-align:left;margin:0">
-    <a href="${url}" style="display:inline-block;background:#B8975A;color:#0C1A0C !important;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none !important;padding:12px 22px;border-radius:1px">Write to the Office &rarr;</a>
-  </div>
+<div style="margin:28px 0 0;padding:14px 0 0;border-top:1px solid rgba(184,151,90,.25)">
+  <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#6C5A4A;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Stewards' Privilege, the inside track. Stewards make an annual contribution of €350 (€480 family); the one-time contribution of a Life Founder, available during the 2026 founding period only, is €750 (€1,100 family). To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#8C7A4A;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
 
