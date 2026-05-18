@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!--
+  BENEFACTORS PAGE — DRAFT
+
+  Status: unlinked from public navigation, noindex meta. Surface
+  integrations (payment-complete page card + members area card) are
+  NOT yet wired. The page exists at /benefactors.html for review
+  only.
+
+  Architecture (per DDW thread, May 2026):
+    - Parallel track to membership, not a higher tier
+    - Three levels: €5k / €15k / €35k
+    - Irish names lead (Tíolacthóir / Tíolacthóir Mór / Coimirceoir an Tí)
+    - One-time act per year, not subscription — fresh patronage each
+      year is the deliberate design choice
+    - First cohort handled by hand: prospect writes to Linda, she
+      invoices, the money lands by bank transfer for €15k+, Stripe
+      may be used at €5k level. No Stripe integration yet.
+    - Quiet bequeathal line at foot — private channel, no tier
+-->
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Benefactors — Clan Ó Comáin</title>
+  <meta name="description" content="For those who wish to fund the work of the revival. Clan Ó Comáin Benefactor levels — supporting the conservation of Killone Abbey, the pedigree research, and the festivals at Newhall.">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    /* ── HERO ── */
+    .ben-hero{position:relative;min-height:54vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:80px 0}
+    .ben-hero-bg{position:absolute;inset:0;background:url('killone_abbey_lake.png') center/cover no-repeat;opacity:.12;filter:saturate(.5)}
+    .ben-hero-content{max-width:780px;position:relative;z-index:2}
+    .ben-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
+    .ben-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,5.4vw,64px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:24px}
+    .ben-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,22px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:640px;margin-bottom:18px}
+
+    /* ── THE WORK ── */
+    .ben-work-section{background:var(--ink-mid);padding:80px 0;border-bottom:1px solid var(--border)}
+    .ben-work-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:18px}
+    .ben-work-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.6vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.15;text-align:center;margin-bottom:36px;max-width:680px;margin-left:auto;margin-right:auto}
+    .ben-work-body{font-family:'EB Garamond',serif;font-size:clamp(17px,1.6vw,19px);color:var(--ink-soft);line-height:1.8;max-width:680px;margin:0 auto}
+    .ben-work-body p{margin-bottom:18px}
+
+    /* ── THREE LEVELS ── */
+    .ben-levels-section{background:var(--ink);padding:90px 0;border-bottom:1px solid var(--border)}
+    .ben-levels-intro{text-align:center;max-width:680px;margin:0 auto 60px}
+    .ben-levels-intro .ben-eyebrow{color:var(--gold)}
+    .ben-levels-intro h2{font-family:'EB Garamond',serif;font-size:clamp(28px,3.6vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:18px}
+    .ben-levels-intro p{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.72);line-height:1.75}
+    .ben-levels{display:grid;grid-template-columns:1fr;gap:32px;max-width:880px;margin:0 auto}
+    .ben-level{background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.22);border-left:3px solid var(--gold);padding:40px 44px;position:relative}
+    .ben-level-head{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;flex-wrap:wrap;margin-bottom:22px}
+    .ben-level-name-ga{font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,34px);font-weight:400;color:var(--gold-pale);line-height:1.15;font-style:italic;margin-bottom:4px}
+    .ben-level-name-en{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.85}
+    .ben-level-amount{font-family:'EB Garamond',serif;font-size:clamp(30px,3.4vw,40px);font-weight:400;color:var(--gold-pale);line-height:1;text-align:right;white-space:nowrap}
+    .ben-level-cadence{font-family:'Jost',sans-serif;font-size:10px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.55);text-align:right;margin-top:6px}
+    .ben-level-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin-bottom:16px}
+    .ben-level-body p{margin-bottom:14px}
+    .ben-level-body p:last-child{margin-bottom:0}
+    .ben-level-recognition{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.65);line-height:1.7;font-style:italic;padding-top:18px;border-top:1px solid rgba(184,151,90,.18);margin-top:6px}
+    .ben-level-recognition strong{color:var(--gold-pale);font-weight:500;font-style:normal}
+
+    /* ── BEQUEATHAL ── */
+    .ben-bequest-section{background:var(--ink-mid);padding:80px 0;border-bottom:1px solid var(--border)}
+    .ben-bequest-inner{max-width:640px;margin:0 auto;text-align:center}
+    .ben-bequest-eyebrow{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.85}
+    .ben-bequest-title{font-family:'EB Garamond',serif;font-size:clamp(24px,2.8vw,32px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:22px;font-style:italic}
+    .ben-bequest-body{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.72);line-height:1.85;font-style:italic}
+
+    /* ── CLOSING ── */
+    .ben-closing-section{background:var(--ink);padding:80px 0}
+    .ben-closing-inner{max-width:600px;margin:0 auto;text-align:center}
+    .ben-closing-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .ben-closing-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.4vw,38px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:18px}
+    .ben-closing-body{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.75;margin-bottom:32px;font-style:italic}
+    .ben-closing-contact{font-family:'EB Garamond',serif;font-size:19px;color:var(--gold-pale);line-height:1.7}
+    .ben-closing-contact a{color:var(--gold);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(184,151,90,.4)}
+    .ben-closing-contact a:hover{text-decoration-color:var(--gold)}
+
+    /* ── MOBILE ── */
+    @media (max-width:720px){
+      .ben-hero{padding:60px 0;min-height:auto}
+      .ben-level{padding:32px 24px}
+      .ben-level-head{flex-direction:column;gap:14px}
+      .ben-level-amount{text-align:left}
+      .ben-level-cadence{text-align:left}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV — mirrors gift.html/membership.html for consistency -->
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="membership.html" class="nav-link">Membership</a>
+      <a href="join.html" class="nav-link">Why Join</a>
+      <a href="clan-stories.html" class="nav-link">Stories</a>
+      <a href="/members/" class="nav-link">Members</a>
+    </div>
+    <a href="membership.html" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="membership.html" class="nav-mobile-link">Membership</a>
+  <a href="gift.html" class="nav-mobile-link">Gift a membership</a>
+  <a href="clan-stories.html" class="nav-mobile-link">Stories</a>
+  <a href="/members/" class="nav-mobile-link">Members</a>
+</div>
+<script>function toggleMenu(){document.getElementById('mobile-menu').classList.toggle('open')}</script>
+
+<!-- HERO — restrained. No urgency, no scarcity, no CTA. Patronage
+     responds badly to pressure. -->
+<section class="ben-hero">
+  <div class="ben-hero-bg"></div>
+  <div class="si">
+    <div class="ben-hero-content">
+      <div class="ben-eyebrow">Benefactors of Clan Ó Comáin</div>
+      <h1 class="ben-hero-title">For those who wish to fund the work.</h1>
+      <p class="ben-hero-sub">Membership joins you to the kindred. Benefaction underwrites the work the kindred does — the conservation of ancient sites, the pedigree research, the festivals, the slow rebuilding of a Gaelic house that was nearly lost.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE WORK — concrete, named. Patrons need to see what they would
+     be funding before they can imagine the gift. -->
+<section class="ben-work-section">
+  <div class="si">
+    <div class="ben-work-eyebrow">The work</div>
+    <h2 class="ben-work-title">The revival is held up by particular work in particular places.</h2>
+    <div class="ben-work-body">
+      <p>Clan Ó Comáin holds responsibility for some of the oldest continuously remembered sites in Munster and Connacht. The work is concrete: the conservation of Killone Abbey — a twelfth-century Augustinian priory at Newhall — and of Cahercommane, the stone ringfort that bears the clan's name. The scholarly work of recovering the clan pedigree from the Book of Lecan and the medieval annals, and the building of a permanent archive at Newhall in which that work can rest.</p>
+      <p>Alongside this, the genetic record — the Y-DNA project that has placed the clan's deep ancestry in the Bronze Age — and the festivals at Newhall that bring the diaspora home. Each year the Office of the Clan publishes what has been funded and what has been done.</p>
+      <p>Benefactors choose what their contribution funds. The Office writes to each in the autumn with the year's planned work; the Benefactor names the piece of work to be associated with their patronage. A Benefactor of the conservation at Killone is recorded as such; a Benefactor of the pedigree research, as such.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THREE LEVELS — Tíolacthóir / Tíolacthóir Mór / Coimirceoir an Tí
+     Each card: Irish name (primary), English name (secondary),
+     amount, what it funds, what the Office offers in return. -->
+<section class="ben-levels-section">
+  <div class="si">
+
+    <div class="ben-levels-intro">
+      <div class="ben-eyebrow">The three standings</div>
+      <h2>Benefactor, Great Benefactor, Protector of the House.</h2>
+      <p>Each contribution is a single act, made once, in a given year — not a subscription. A Benefactor may renew their patronage in a future year if they wish; the Office writes to each Benefactor in the autumn to invite a fresh act of patronage for the year ahead.</p>
+    </div>
+
+    <div class="ben-levels">
+
+      <!-- TÍOLACTHÓIR · €5,000 -->
+      <div class="ben-level">
+        <div class="ben-level-head">
+          <div>
+            <div class="ben-level-name-ga">Tíolacthóir</div>
+            <div class="ben-level-name-en">Benefactor of the Clan</div>
+          </div>
+          <div>
+            <div class="ben-level-amount">€5,000</div>
+            <div class="ben-level-cadence">one act · one year</div>
+          </div>
+        </div>
+        <div class="ben-level-body">
+          <p>The Benefactor of the Clan underwrites a named piece of work for the year — the digitisation of a manuscript, a conservation survey at Cahercommane or Killone, a year's research grant, the printing of a clan publication. The Office and the Benefactor agree the piece of work together.</p>
+        </div>
+        <div class="ben-level-recognition">
+          <strong>Recognition.</strong> Named (with consent) in the year's published report as Benefactor of the named work. A personal letter of thanks from the Chief, written by hand, on clan headed stationery.
+        </div>
+      </div>
+
+      <!-- TÍOLACTHÓIR MÓR · €15,000 -->
+      <div class="ben-level">
+        <div class="ben-level-head">
+          <div>
+            <div class="ben-level-name-ga">Tíolacthóir Mór</div>
+            <div class="ben-level-name-en">Great Benefactor of the Clan</div>
+          </div>
+          <div>
+            <div class="ben-level-amount">€15,000</div>
+            <div class="ben-level-cadence">one act · one year</div>
+          </div>
+        </div>
+        <div class="ben-level-body">
+          <p>The Great Benefactor underwrites a year of a stewardship — the archive at Newhall, the pedigree research programme, the conservation works at one of the named sites, the summer festival. Named permanently against the work that was funded.</p>
+        </div>
+        <div class="ben-level-recognition">
+          <strong>Recognition.</strong> Named permanently against the funded stewardship in the clan archive at Newhall. An annual letter from the Chief. An invitation to visit Newhall as a guest of the clan when the year's work is shown.
+        </div>
+      </div>
+
+      <!-- COIMIRCEOIR AN TÍ · €35,000 -->
+      <div class="ben-level">
+        <div class="ben-level-head">
+          <div>
+            <div class="ben-level-name-ga">Coimirceoir an Tí</div>
+            <div class="ben-level-name-en">Protector of the House</div>
+          </div>
+          <div>
+            <div class="ben-level-amount">€35,000</div>
+            <div class="ben-level-cadence">one act · legacy standing</div>
+          </div>
+        </div>
+        <div class="ben-level-body">
+          <p>In the older Brehon tradition, a Coimirceoir was a noble who took a kindred under formal protection — a relationship between two houses, the elder underwriting the work of the younger. The standing is rare by design: a Protector of the House at Clan Ó Comáin underwrites the revival at a scale that supports the whole arc of a year's work, not a single piece of it.</p>
+          <p>The Protector and the Chief together set the priorities for what the year's work shall be.</p>
+        </div>
+        <div class="ben-level-recognition">
+          <strong>Recognition.</strong> Named permanently in the Coimirceoirí Register at Newhall — a record kept in perpetuity, alongside the clan's own pedigree. An annual private conversation with the Chief. A standing welcome at Newhall. The Office holds these relationships personally; there are no more than a small number in any year.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- BEQUEATHAL — quiet, no tier, no price, no button. Just a name
+     to write to and a register to be remembered in. -->
+<section class="ben-bequest-section">
+  <div class="si">
+    <div class="ben-bequest-inner">
+      <div class="ben-bequest-eyebrow">A final settlement</div>
+      <div class="ben-bequest-title">To remember the clan in your estate.</div>
+      <p class="ben-bequest-body">In the older Gaelic tradition, the kin remembered the household in their final settlement. Members and friends of the clan who wish to remember Clan Ó Comáin in their estate are invited to write privately to the Office of the Private Secretary. Such matters are handled discreetly, in accordance with your wishes, and at your own pace.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING — a name to write to, no button. Anyone considering
+     patronage at this level needs a conversation, not a checkout. -->
+<section class="ben-closing-section">
+  <div class="si">
+    <div class="ben-closing-inner">
+      <div class="ben-closing-eyebrow">To begin</div>
+      <h2 class="ben-closing-title">A conversation, not a transaction.</h2>
+      <p class="ben-closing-body">Patronage at these levels begins with a letter. The Office of the Private Secretary handles each conversation personally — agreeing what the contribution shall fund, the form of recognition, and the manner of payment.</p>
+      <p class="ben-closing-contact">Write to <a href="mailto:clan@ocomain.org">clan@ocomain.org</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+        <p class="footer-motto-en">History must prevail</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="membership.html">Membership</a></li>
+          <li><a href="gift.html">Gift a membership</a></li>
+          <li><a href="join.html">Why Join</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="/members/">Members' Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Membership</div>
+        <ul class="footer-links">
+          <li><a href="membership.html">All tiers</a></li>
+          <li><a href="gift.html">Gift a membership</a></li>
+          <li style="margin-top:8px"><a href="membership.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Tigh Uí Chomáin · House of Ó Comáin · All rights reserved · <a href="/terms.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Terms</a> · <a href="/privacy.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Privacy</a> · <a href="/refund.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Refund</a> · <a href="/about.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">About</a></div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
