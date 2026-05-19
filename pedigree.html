@@ -789,10 +789,9 @@ function toggleMenu(){
     if(e.key==='Escape')closeOverlay();
   });
   // Highlight current section in sidebar AND mobile overlay on scroll.
-  // Uses getBoundingClientRect() which gives viewport-relative position
-  // directly — robust regardless of offsetParent chain, fixed positioning,
-  // CSS transforms etc. The active section is the one whose top is
-  // closest to (but not past) 40% of the viewport.
+  // Deferred until DOMContentLoaded so chapter sections (which sit below
+  // this script in the document) are present in the DOM when queried.
+  function initHighlight(){
   var sections=Array.prototype.slice.call(document.querySelectorAll('#foreword,#endorsements,section.chapter[id]'));
   var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
   var overlayLinks=overlay.querySelectorAll('.co-list a');
@@ -861,6 +860,12 @@ function toggleMenu(){
     },{passive:true});
     // Initial call after a tick to ensure layout has settled
     setTimeout(updateActive,50);
+  }
+  } // end initHighlight
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initHighlight);
+  }else{
+    initHighlight();
   }
   // When mobile overlay opens, scroll its active link into view
   fab.addEventListener('click',function(){
