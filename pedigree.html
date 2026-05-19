@@ -594,7 +594,7 @@ function toggleMenu(){
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
   border-left:2px solid var(--gold);
-  padding:18px 16px 18px 18px;
+  padding:18px 13px 18px 18px;
   font-family:'EB Garamond',serif;
   box-shadow:0 1px 4px rgba(0,0,0,.04);
   border-radius:2px;
@@ -765,14 +765,27 @@ function toggleMenu(){
   var overlay=document.getElementById('chapterOverlay');
   if(!sidebar||!fab||!overlay)return;
   var closeBtn=overlay.querySelector('.co-close');
-  // Show sidebar/FAB once user has scrolled past the page hero (~600px)
-  var SHOW_AFTER=600;
+  // Show sidebar/FAB only after the reader has scrolled past the
+  // Scholarly Endorsements section. Per DDW: the reader should
+  // pass the Foreword and Endorsements (the trust-building opening
+  // beats) before the chapter nav appears as a reading aid — not
+  // a header element competing with the hero. We measure the
+  // bottom of #endorsements at runtime rather than hard-coding a
+  // pixel value, so the threshold stays accurate even if the
+  // upper-page layout changes.
+  function thresholdY(){
+    var end=document.getElementById('endorsements');
+    if(!end)return 600; // fallback if the anchor is removed
+    var r=end.getBoundingClientRect();
+    return r.bottom + window.scrollY - 80; // 80px = small lead-in
+  }
   function onScroll(){
-    var scrolled=window.scrollY>SHOW_AFTER;
+    var scrolled=window.scrollY>thresholdY();
     sidebar.classList.toggle('visible',scrolled);
     fab.classList.toggle('visible',scrolled);
   }
   window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll,{passive:true});
   onScroll();
   // FAB toggles overlay
   fab.addEventListener('click',function(){
