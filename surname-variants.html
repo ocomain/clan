@@ -253,8 +253,8 @@ function toggleMenu(){
   display:none;
   position:fixed;
   top:140px;
-  right:24px;
-  width:220px;
+  right:12px;
+  width:190px;
   max-height:calc(100vh - 180px);
   overflow-y:auto;
   z-index:50;
@@ -262,7 +262,7 @@ function toggleMenu(){
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px);
   border-left:2px solid var(--gold);
-  padding:18px 16px 18px 18px;
+  padding:14px 12px 14px 14px;
   font-family:'EB Garamond',serif;
   box-shadow:0 1px 4px rgba(0,0,0,.04);
   border-radius:2px;
@@ -276,11 +276,11 @@ function toggleMenu(){
 .cs-list li{margin:0;padding:0}
 .cs-list a{
   display:flex;
-  gap:8px;
+  gap:6px;
   align-items:baseline;
-  padding:7px 0;
-  font-size:13.5px;
-  line-height:1.35;
+  padding:5px 0;
+  font-size:12.5px;
+  line-height:1.3;
   color:var(--ink-mid);
   text-decoration:none;
   transition:color .2s;
@@ -306,6 +306,21 @@ function toggleMenu(){
 .cs-label{flex:1 1 auto}
 @media(min-width:1180px){
   #chapterSidebar.visible{display:block}
+  /* When the chapter sidebar is showing, give content sections
+     some right-margin breathing room so the page text never slides
+     under the sidebar. Sidebar zone = 12px (right offset) + 190px
+     (width) + 2px (border) = ~204px reserved. We pad .si by 230px
+     with a 26px buffer. body.has-sidebar is toggled by JS based on
+     the sidebar's .visible class.
+
+     IMPORTANT: only target .si inside <section> elements. The nav,
+     gift strip, and mobile-actions bar each have a .si container
+     inside a <div> parent — we mustn't push those, or the gift
+     strip's flex layout breaks. */
+  body.has-sidebar > section > .si{
+    padding-right:230px;
+    transition:padding-right .3s;
+  }
 }
 @media(max-width:1179px){
   #chapterSidebar{display:none !important}
@@ -420,6 +435,11 @@ function toggleMenu(){
     var scrolled=window.scrollY>SHOW_AFTER;
     sidebar.classList.toggle('visible',scrolled);
     fab.classList.toggle('visible',scrolled);
+    // Mirror the sidebar visibility to a body class so CSS can give
+    // body content right-padding to clear the sidebar zone. CSS rule
+    // is gated on @media(min-width:1180px) so this has no effect on
+    // mobile where the sidebar is hidden and the FAB takes over.
+    document.body.classList.toggle('has-sidebar',scrolled);
   }
   window.addEventListener('scroll',onScroll,{passive:true});
   onScroll();
