@@ -33,12 +33,26 @@ async function actionList() {
   const cid = await clanId();
   const { data, error } = await supa()
     .from('broadcasts')
-    .select('id, created_by, created_at, sender_voice, subject, start_at, status, immediate_count, delayed_count, sent_count, failed_count')
+    .select('id, created_by, created_at, sender_voice, subject, start_at, status, immediate_count, delayed_count, sent_count, failed_count, rendered_html_immediate, rendered_html_delayed')
     .eq('clan_id', cid)
     .order('created_at', { ascending: false })
     .limit(50);
   if (error) return jsonResponse(500, { error: 'List failed', detail: error.message });
-  return jsonResponse(200, { broadcasts: data || [] });
+  // Convert HTML columns to size-cheap booleans before returning —
+  // we only need to know whether they're present so the UI can
+  // enable/disable the View buttons. Sending the full HTML payload
+  // for every row in the list would be ~50 × 70KB and the admin
+  // doesn't need it until they actually click View.
+  const broadcasts = (data || []).map(b => ({
+    id: b.id, created_by: b.created_by, created_at: b.created_at,
+    sender_voice: b.sender_voice, subject: b.subject, start_at: b.start_at,
+    status: b.status,
+    immediate_count: b.immediate_count, delayed_count: b.delayed_count,
+    sent_count: b.sent_count, failed_count: b.failed_count,
+    has_immediate_html: !!b.rendered_html_immediate,
+    has_delayed_html: !!b.rendered_html_delayed,
+  }));
+  return jsonResponse(200, { broadcasts });
 }
 
 async function actionDetail(body) {
@@ -258,6 +272,40 @@ async function actionVoices() {
   return jsonResponse(200, { voices: senderVoices() });
 }
 
+async function actionFetchHtml(body) {
+  // Return the captured rendered HTML for a sent broadcast.
+  // Used by the admin history list 'View Steward' / 'View Member'
+  // buttons. The HTML is whatever was rendered for the first
+  // successful send of that variant — see migration 032.
+  const id = String(body.broadcast_id || '').trim();
+  const variant = String(body.variant || 'immediate');
+  if (!id) return jsonResponse(400, { error: 'broadcast_id required' });
+  if (!['immediate','delayed'].includes(variant)) {
+    return jsonResponse(400, { error: 'variant must be immediate or delayed' });
+  }
+  const column = variant === 'immediate' ? 'rendered_html_immediate' : 'rendered_html_delayed';
+  const { data, error } = await supa()
+    .from('broadcasts')
+    .select(`${column}, subject, sender_voice, status`)
+    .eq('id', id)
+    .maybeSingle();
+  if (error) return jsonResponse(500, { error: 'Fetch failed', detail: error.message });
+  if (!data) return jsonResponse(404, { error: 'Broadcast not found' });
+  const html = data[column];
+  if (!html) {
+    return jsonResponse(404, {
+      error: 'No HTML captured',
+      detail: 'No member has yet been sent the ' + variant + ' variant of this broadcast, or this broadcast pre-dates the capture feature.'
+    });
+  }
+  return jsonResponse(200, {
+    html,
+    subject: data.subject,
+    sender_voice: data.sender_voice,
+    variant,
+  });
+}
+
 // ─── HANDLER ───────────────────────────────────────────────────────────
 
 exports.handler = async (event) => {
@@ -288,6 +336,7 @@ exports.handler = async (event) => {
     case 'cancel':     return actionCancel(body, operatorEmail);
     case 'retry':      return actionRetry(body, operatorEmail);
     case 'voices':     return actionVoices();
+    case 'fetch_html': return actionFetchHtml(body);
     default: return jsonResponse(400, { error: 'Unknown action', received: action });
   }
 };

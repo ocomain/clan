@@ -214,6 +214,24 @@ async function processQueuedSends() {
         .update({ status: 'sent', sent_at: new Date().toISOString(), error_message: null })
         .eq('id', row.id);
       sent++;
+
+      // Capture the rendered HTML once per variant per broadcast.
+      // Conditional UPDATE — only writes if the column is still NULL,
+      // so the very first send of each variant captures the HTML and
+      // subsequent sends skip. Cheap (one UPDATE that mostly no-ops).
+      // We swallow errors here — capture failure shouldn't taint
+      // the send itself.
+      const column = row.is_immediate_batch
+        ? 'rendered_html_immediate'
+        : 'rendered_html_delayed';
+      try {
+        await sb.from('broadcasts')
+          .update({ [column]: payload.html })
+          .eq('id', broadcast.id)
+          .is(column, null);
+      } catch (capErr) {
+        console.error(`[broadcast-sweep] HTML capture failed for ${broadcast.id} (${column}):`, capErr.message);
+      }
     } else {
       await sb.from('member_broadcast_sends')
         .update({ status: 'failed', error_message: result.error })

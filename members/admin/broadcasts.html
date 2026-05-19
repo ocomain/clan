@@ -494,6 +494,17 @@ In clan and kindred,</textarea>
         const pillClass = 'pill-' + (b.status || 'scheduled');
         const senderLabel = ({maria:'Maria',antoin:'Antóin',jessica:'Jessica',herald:'Herald',fergus:'Fergus',linda:'Linda'})[b.sender_voice] || b.sender_voice;
         const actions = [];
+        // View buttons — one per variant. Only enabled if the
+        // captured HTML exists (i.e. at least one member of that
+        // variant has been successfully sent). Broadcasts predating
+        // this feature show both buttons disabled.
+        const viewSteward = b.has_immediate_html
+          ? '<button class="row-action" data-action="view_steward" data-id="' + escapeHtml(b.id) + '" title="See the Steward / Life variant as sent">View Steward</button>'
+          : '<button class="row-action" disabled style="opacity:.4;cursor:not-allowed" title="No captured HTML — either no Steward has been sent yet, or this broadcast pre-dates the capture feature.">View Steward</button>';
+        const viewMember = b.has_delayed_html
+          ? '<button class="row-action" data-action="view_member" data-id="' + escapeHtml(b.id) + '" title="See the Member variant as sent">View Member</button>'
+          : '<button class="row-action" disabled style="opacity:.4;cursor:not-allowed" title="No captured HTML — either no Member has been sent yet, or this broadcast pre-dates the capture feature.">View Member</button>';
+        actions.push(viewSteward, viewMember);
         if (b.status === 'scheduled') actions.push('<button class="row-action" data-action="cancel" data-id="' + escapeHtml(b.id) + '">Cancel</button>');
         if (failed > 0) actions.push('<button class="row-action" data-action="retry" data-id="' + escapeHtml(b.id) + '">Retry ' + failed + '</button>');
         return `
@@ -514,11 +525,44 @@ In clan and kindred,</textarea>
           <tbody>${rows}</tbody>
         </table>
       `;
-      // Wire action buttons
-      content.querySelectorAll('button.row-action').forEach(btn => {
+      // Wire action buttons. View actions are read-only (no confirm,
+      // no state mutation); cancel/retry are mutations and need
+      // confirm + a re-fetch on success.
+      content.querySelectorAll('button.row-action[data-action]').forEach(btn => {
         btn.addEventListener('click', async () => {
           const action = btn.getAttribute('data-action');
           const id = btn.getAttribute('data-id');
+
+          // View actions — fetch the captured HTML and open the
+          // existing preview modal. No mutation, no confirm.
+          if (action === 'view_steward' || action === 'view_member') {
+            const variant = action === 'view_steward' ? 'immediate' : 'delayed';
+            const labelVariant = variant === 'immediate' ? 'Steward / Life Member' : 'Member (delayed)';
+            btn.disabled = true;
+            const origText = btn.textContent;
+            btn.textContent = '…';
+            try {
+              const res = await fetch('/.netlify/functions/admin-broadcast-actions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+                body: JSON.stringify({ action: 'fetch_html', broadcast_id: id, variant }),
+              });
+              const data = await res.json();
+              if (res.ok && data.html) {
+                openPreviewModal('Sent · ' + labelVariant, data.html);
+              } else {
+                alert('Could not load: ' + (data.error || res.status) + (data.detail ? '\n\n' + data.detail : ''));
+              }
+            } catch (e) {
+              alert('Error: ' + e.message);
+            } finally {
+              btn.disabled = false;
+              btn.textContent = origText;
+            }
+            return;
+          }
+
+          // Mutation actions: cancel, retry.
           const verb = action === 'cancel' ? 'Cancel this broadcast?' : 'Re-queue failed sends for this broadcast?';
           if (!confirm(verb)) return;
           btn.disabled = true; btn.textContent = '…';

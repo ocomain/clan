@@ -1,0 +1,41 @@
+-- Migration 032: Captured rendered HTML on broadcasts
+--
+-- Adds two TEXT columns to public.broadcasts so the admin can later
+-- view exactly what was sent — one column per variant:
+--
+--   rendered_html_immediate   the Steward / Life Member variant
+--                             (privilege footer, no upsell panel)
+--
+--   rendered_html_delayed     the everyone-else variant
+--                             (sand-tone Stewards' Privilege panel
+--                              with the upsell ladder + footnote)
+--
+-- ─── CAPTURE STRATEGY ──────────────────────────────────────────────────
+-- Capture happens in daily-broadcast-sweep.js at send time:
+--   1. After renderBroadcast succeeds for a member
+--   2. Conditional UPDATE: write rendered_html_<variant> WHERE the
+--      column IS NULL. So the very first successful send of each
+--      variant writes the HTML; subsequent sends of the same variant
+--      skip the write (the column is already populated).
+--
+-- This means the captured HTML is faithfully what one specific member
+-- (whoever happened to be processed first) received. Personalisation
+-- tokens like {first_name} are resolved against that member's row —
+-- so the captured HTML will say 'Dear Cara Antoin' if Antoin's send
+-- happened first, or 'Dear David' if David's did. For the admin's
+-- 'what did this letter look like' use-case that's fine: the
+-- structure, copy, and visual treatment are what matters.
+--
+-- ─── STORAGE COST ──────────────────────────────────────────────────────
+-- Each rendered HTML is ~25-35 KB. Two per broadcast = max ~70 KB
+-- per broadcast row, regardless of recipient count. For a year of
+-- weekly broadcasts that's ~3.5 MB total — negligible.
+--
+-- ─── BACKFILL ──────────────────────────────────────────────────────────
+-- Forward-only by design (DDW approved). Existing broadcasts will
+-- have both columns NULL; the admin UI shows their View buttons
+-- disabled with an explanatory tooltip.
+
+alter table public.broadcasts
+  add column if not exists rendered_html_immediate text,
+  add column if not exists rendered_html_delayed   text;
