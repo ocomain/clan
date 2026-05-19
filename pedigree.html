@@ -585,18 +585,21 @@ function toggleMenu(){
   display:none;
   position:fixed;
   top:140px;
-  right:24px;
-  width:220px;
+  right:8px;
+  width:200px;
   max-height:calc(100vh - 180px);
   overflow-y:auto;
   z-index:50;
-  background:rgba(245,242,234,0.92);
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  /* Solid cream background — no transparency. On narrower
+     desktops the sidebar sits close to the right edge of body
+     content. Solid background makes the sidebar read as a
+     deliberate tucked-aside column rather than an overlay
+     floating on top of the page. */
+  background:#F5F2EA;
   border-left:2px solid var(--gold);
   padding:18px 13px 18px 18px;
   font-family:'EB Garamond',serif;
-  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  box-shadow:-2px 0 6px rgba(0,0,0,.04);
   border-radius:2px;
   transition:opacity .3s;
   scrollbar-width:thin;
