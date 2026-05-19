@@ -205,11 +205,16 @@ function toggleMenu(){
 <aside id="chapterSidebar" aria-label="Chapter navigation">
   <div class="cs-inner">
     <ol class="cs-list">
-      <li><a href="#variants" data-ch="variants"><span class="cs-num">—</span><span class="cs-label">All variants</span></a></li>
-      <li><a href="#etymology" data-ch="etymology"><span class="cs-num">—</span><span class="cs-label">Etymology</span></a></li>
-      <li><a href="#hurley-comyn" data-ch="hurley-comyn"><span class="cs-num">—</span><span class="cs-label">Hurley &amp; Comyn</span></a></li>
-      <li><a href="#transformation" data-ch="transformation"><span class="cs-num">—</span><span class="cs-label">Transformation</span></a></li>
-      <li><a href="#landscape" data-ch="landscape"><span class="cs-num">—</span><span class="cs-label">In the landscape</span></a></li>
+      <li><a href="#variants" data-ch="variants"><span class="cs-num">—</span><span class="cs-label">The variants register</span></a></li>
+      <li><a href="#spellings" data-ch="spellings"><span class="cs-num">—</span><span class="cs-label">Original Irish spellings</span></a></li>
+      <li><a href="#maclysaght" data-ch="maclysaght"><span class="cs-num">—</span><span class="cs-label">MacLysaght on the origin</span></a></li>
+      <li><a href="#woulfe" data-ch="woulfe"><span class="cs-num">—</span><span class="cs-label">The Woulfe <em>cam</em> etymology</span></a></li>
+      <li><a href="#hurley" data-ch="hurley"><span class="cs-num">—</span><span class="cs-label">Hurley — mistranslation</span></a></li>
+      <li><a href="#munster" data-ch="munster"><span class="cs-num">—</span><span class="cs-label">Munster origin &amp; Comyn</span></a></li>
+      <li><a href="#norman" data-ch="norman"><span class="cs-num">—</span><span class="cs-label">Norman influence</span></a></li>
+      <li><a href="#penal" data-ch="penal"><span class="cs-num">—</span><span class="cs-label">British rule &amp; Penal Laws</span></a></li>
+      <li><a href="#emigration" data-ch="emigration"><span class="cs-num">—</span><span class="cs-label">Emigration</span></a></li>
+      <li><a href="#landscape" data-ch="landscape"><span class="cs-num">—</span><span class="cs-label">The name in the landscape</span></a></li>
     </ol>
   </div>
 </aside>
@@ -226,11 +231,16 @@ function toggleMenu(){
       <button class="co-close" aria-label="Close chapter list" type="button">×</button>
     </div>
     <ol class="co-list">
-      <li><a href="#variants" data-ch="variants"><span class="co-num">—</span> All variants</a></li>
-      <li><a href="#etymology" data-ch="etymology"><span class="co-num">—</span> Etymology</a></li>
-      <li><a href="#hurley-comyn" data-ch="hurley-comyn"><span class="co-num">—</span> Hurley &amp; Comyn</a></li>
-      <li><a href="#transformation" data-ch="transformation"><span class="co-num">—</span> Transformation</a></li>
-      <li><a href="#landscape" data-ch="landscape"><span class="co-num">—</span> In the landscape</a></li>
+      <li><a href="#variants" data-ch="variants"><span class="co-num">—</span> The variants register</a></li>
+      <li><a href="#spellings" data-ch="spellings"><span class="co-num">—</span> Original Irish spellings</a></li>
+      <li><a href="#maclysaght" data-ch="maclysaght"><span class="co-num">—</span> MacLysaght on the origin</a></li>
+      <li><a href="#woulfe" data-ch="woulfe"><span class="co-num">—</span> The Woulfe <em>cam</em> etymology</a></li>
+      <li><a href="#hurley" data-ch="hurley"><span class="co-num">—</span> Hurley — mistranslation</a></li>
+      <li><a href="#munster" data-ch="munster"><span class="co-num">—</span> Munster origin &amp; Comyn</a></li>
+      <li><a href="#norman" data-ch="norman"><span class="co-num">—</span> Norman influence</a></li>
+      <li><a href="#penal" data-ch="penal"><span class="co-num">—</span> British rule &amp; Penal Laws</a></li>
+      <li><a href="#emigration" data-ch="emigration"><span class="co-num">—</span> Emigration</a></li>
+      <li><a href="#landscape" data-ch="landscape"><span class="co-num">—</span> The name in the landscape</a></li>
     </ol>
   </div>
 </div>
@@ -436,7 +446,7 @@ function toggleMenu(){
   // wrapper divs/sections, not on a single shared class — so the
   // selector enumerates them by ID.
   function initHighlight(){
-    var ids=['variants','etymology','hurley-comyn','transformation','landscape'];
+    var ids=['variants','spellings','maclysaght','woulfe','hurley','munster','norman','penal','emigration','landscape'];
     var sections=ids.map(function(id){return document.getElementById(id);}).filter(Boolean);
     var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
     var overlayLinks=overlay.querySelectorAll('.co-list a');
@@ -578,7 +588,7 @@ function toggleMenu(){
           <div class="vn">Kimmons</div><div class="vn"></div><div class="vn"></div>
         </div>
       </div>
-      <div id="etymology" style="scroll-margin-top:80px">
+      <div id="spellings" style="scroll-margin-top:80px">
         <div style="background:var(--cream-mid);border:1px solid var(--border);border-top:2px solid var(--gold);padding:36px;margin-bottom:24px">
           <div class="eyebrow">The Gaelic forms</div>
           <h3 style="font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:14px">Original Irish spellings</h3>
@@ -590,7 +600,7 @@ function toggleMenu(){
       </div>
     </div>
 
-    <div style="background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:36px 40px;margin-top:36px;margin-bottom:0">
+    <div id="maclysaght" style="background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:36px 40px;margin-top:36px;margin-bottom:0;scroll-margin-top:80px">
       <div class="eyebrow">Primary scholarship · 1972</div>
       <h3 style="font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:14px">MacLysaght's <em>Irish Families</em> on the origin of the name</h3>
       <p class="body-text" style="margin-bottom:14px">In <em>Irish Families: Their Names, Arms and Origins</em> (Irish Academic Press, revised edition 1972, p.103), Edward MacLysaght — the first Chief Herald of Ireland and the foundational authority on Irish family names — set out the geographic and ecclesiastical origins of Ó Comáin in unusually full terms:</p>
@@ -598,7 +608,7 @@ function toggleMenu(){
       <p class="body-text" style="margin-bottom:0">Three points are worth drawing out. First, MacLysaght establishes a Gaelic ecclesiastical foundation for the family — the Ó Coimín line as <em>erenaghs</em> (hereditary stewards of church lands) of the church of St Cuimín Fada, with the parish of Kilcummin on Killala Bay carrying their name. Second, he identifies <strong>Munster Ó Comáin as the source of the majority of present-day Cumminses</strong> — a population statement that anchors the modern Cummins / Commane / Commons surnames to a Gaelic origin in the south-west, where this clan is centred. Third — writing thirteen years before <em>The Surnames of Ireland</em> — he had already characterised the Hurley anglicisation as a <em>mistranslation</em>. His position was consistent across two decades of scholarship.</p>
     </div>
 
-    <div style="background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:36px 40px;margin-top:36px;margin-bottom:0">
+    <div id="woulfe" style="background:var(--white);border:1px solid var(--border);border-top:3px solid var(--gold);padding:36px 40px;margin-top:36px;margin-bottom:0;scroll-margin-top:80px">
       <div class="eyebrow">On the <em>cam</em> reading</div>
       <h3 style="font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:14px">The Woulfe <em>cam</em> etymology — manuscript and authority both against it</h3>
       <p class="body-text" style="margin-bottom:14px">Online sources frequently cite Patrick Woulfe's 1923 etymology — that the name derives from Irish <em>cam</em> (crooked, bent) — and many commercial heraldry sites continue to repeat it. This reading was already explicitly rejected by Edward MacLysaght, the first Chief Herald of Ireland, who treated Woulfe's etymology in <em>The Surnames of Ireland</em> (Irish Academic Press, 1985, pp.52–53) in a single sentence:</p>
@@ -614,13 +624,13 @@ function toggleMenu(){
     <!-- Etymology — flowing scholarly reading section -->
     <div style="max-width:760px;margin:48px auto 0">
 
-      <div id="hurley-comyn" style="text-align:center;margin-bottom:48px;scroll-margin-top:80px">
+      <div style="text-align:center;margin-bottom:48px">
         <div class="eyebrow" style="margin-bottom:8px">Etymology and the rejection of <em>cam</em></div>
         <div class="gold-rule" style="margin:0 auto;width:80px"></div>
       </div>
 
       <!-- Subsection 1: Hurley mistranslation -->
-      <article style="margin-bottom:56px">
+      <article id="hurley" style="margin-bottom:56px;scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:6px">A special case</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">Hurley — a mistranslation rejected by MacLysaght</h3>
         <p class="body-text" style="margin-bottom:14px">The practice of recording Ó Comáin families as "Hurley" in parish and civil records predates any scholarly explanation — it appears in early 19th century records, with families emigrating to Liverpool and beyond already carrying the "Hurley" surname as a result of how priests had recorded the name. Patrick Woulfe (1923) later attempted to explain this by claiming the name derived from <em>cam</em> (crooked), implying a link to <em>camán</em> (a hurling stick) — but this was a rationalisation after the fact, and for some families the name Hurley had already stuck across generations.</p>
@@ -633,7 +643,7 @@ function toggleMenu(){
       <div style="text-align:center;margin:0 0 48px"><div style="width:48px;height:1px;background:var(--gold);margin:0 auto;opacity:.5"></div></div>
 
       <!-- Subsection 2: Commane Munster form -->
-      <article style="margin-bottom:56px">
+      <article id="munster" style="margin-bottom:56px;scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:6px">MacLysaght confirms</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">Munster origin — and <em>Comyn</em> as the Clare anglicisation</h3>
         <p class="body-text" style="margin-bottom:14px">MacLysaght's full entry in <em>The Surnames of Ireland</em> (Irish Academic Press, 1985, pp.52–53) for Commane / Commons:</p>
@@ -655,7 +665,7 @@ function toggleMenu(){
 
 
 
-<section id="transformation" style="background:var(--cream-mid);padding:80px 0;scroll-margin-top:80px">
+<section style="background:var(--cream-mid);padding:80px 0">
   <div class="si" style="max-width:820px">
     <div class="eyebrow">Why so many variants?</div>
     <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">The transformation of a Gaelic name</h2>
@@ -665,7 +675,7 @@ function toggleMenu(){
     <div style="max-width:760px;margin:48px auto 0">
 
       <!-- Subsection 1: Norman influence (13th century) -->
-      <article style="margin-bottom:56px">
+      <article id="norman" style="margin-bottom:56px;scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:6px">13th century</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">Norman influence</h3>
         <p class="body-text" style="margin-bottom:14px">After the 12th-century Anglo-Norman invasion, the Norman name <strong>Comyn</strong> (originally de Comines, from Flanders) became established in Ireland — most notably with John Comyn, first Anglo-Norman Archbishop of Dublin (1182–1213). For Gaelic families bearing a name like Ó Comáin, the phonetic similarity opened a strategic choice. Under Dalcassian and later Anglo-Norman rule in Clare, a dispossessed Gaelic family could find business, legal and social advantage in being known as <strong>Comyn</strong> in English-speaking contexts — a recognised armigerous Norman name — while retaining the Gaelic form privately. Over centuries this produced the centuries of confusion between two entirely separate underlying families: a Norman Comyn line of Flemish origin, and a Gaelic Ó Comáin line operating under the same anglicised spelling.</p>
@@ -687,7 +697,7 @@ function toggleMenu(){
       </div>
 
       <div style="text-align:center;margin:0 0 48px"><div style="width:48px;height:1px;background:var(--gold);margin:0 auto;opacity:.5"></div></div>
-      <article style="margin-bottom:56px">
+      <article id="penal" style="margin-bottom:56px;scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:6px">17th–18th century</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">British rule and the Penal Laws</h3>
         <p class="body-text">English administrators and census officials often altered Irish names, either intentionally or due to phonetic misunderstandings. The Penal Laws created sustained pressure on Catholic Gaelic families to anglicise — to access education, hold property, enter the professions, or simply to be left in peace by the authorities. Many families anglicised differently in different parishes, producing the regional variations that survive in records today: <em>Commane</em> in one parish register, <em>Cummins</em> in another, <em>Comyn</em> in a third — all from the same underlying Gaelic line.</p>
@@ -696,7 +706,7 @@ function toggleMenu(){
       <div style="text-align:center;margin:0 0 48px"><div style="width:48px;height:1px;background:var(--gold);margin:0 auto;opacity:.5"></div></div>
 
       <!-- Subsection 3: Emigration & the diaspora (19th–20th century) -->
-      <article style="margin-bottom:56px">
+      <article id="emigration" style="margin-bottom:56px;scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:6px">19th–20th century</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">Emigration and the diaspora</h3>
         <p class="body-text" style="margin-bottom:18px">As Ó Comáin descendants emigrated — to England, Scotland and Wales, and to America, Canada and Australia during and after the Great Famine of the 1840s, with Hurley-recorded families notably among those reaching Liverpool — names were further modified to fit English-language conventions. Port officials, census enumerators and employers often recorded the name as they heard it, creating new local variants that took root in each destination country.</p>
