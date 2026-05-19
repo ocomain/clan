@@ -530,7 +530,7 @@ function toggleMenu(){
 <!-- Desktop sticky chapter sidebar (right-hand column) -->
 <aside id="chapterSidebar" aria-label="Chapter navigation">
   <div class="cs-inner">
-    <div class="cs-title">Contents</div>
+    <div class="cs-title">Pedigree</div>
     <ol class="cs-list">
       <li><a href="#foreword" data-ch="foreword"><span class="cs-num">—</span><span class="cs-label">Foreword</span></a></li>
       <li><a href="#endorsements" data-ch="endorsements"><span class="cs-num">—</span><span class="cs-label">Scholarly Endorsements</span></a></li>
@@ -558,7 +558,7 @@ function toggleMenu(){
 <div id="chapterOverlay" role="dialog" aria-modal="true" aria-label="Chapter list">
   <div class="co-inner">
     <div class="co-head">
-      <div class="co-title">Contents</div>
+      <div class="co-title">Pedigree</div>
       <button class="co-close" aria-label="Close chapter list" type="button">×</button>
     </div>
     <ol class="co-list">
@@ -788,11 +788,14 @@ function toggleMenu(){
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape')closeOverlay();
   });
-  // Highlight current section in sidebar AND mobile overlay on scroll
-  var sections=document.querySelectorAll('#foreword,#endorsements,section.chapter[id]');
+  // Highlight current section in sidebar AND mobile overlay on scroll.
+  // Uses scroll-position-based detection (more reliable for long chapters
+  // than IntersectionObserver entry/exit events, which can miss when
+  // the user is deep inside a chapter taller than the viewport).
+  var sections=Array.prototype.slice.call(document.querySelectorAll('#foreword,#endorsements,section.chapter[id]'));
   var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
   var overlayLinks=overlay.querySelectorAll('.co-list a');
-  if('IntersectionObserver' in window&&sections.length){
+  if(sections.length){
     var byIdSidebar={};
     var byIdOverlay={};
     sidebarLinks.forEach(function(l){
@@ -803,19 +806,39 @@ function toggleMenu(){
       var id=l.getAttribute('data-ch');
       if(id)byIdOverlay[id]=l;
     });
-    var obs=new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(entry.isIntersecting&&entry.intersectionRatio>=0.2){
-          sidebarLinks.forEach(function(l){l.classList.remove('active');});
-          overlayLinks.forEach(function(l){l.classList.remove('active');});
-          var sb=byIdSidebar[entry.target.id];
-          if(sb)sb.classList.add('active');
-          var ov=byIdOverlay[entry.target.id];
-          if(ov)ov.classList.add('active');
+    var currentId=null;
+    function updateActive(){
+      // Find the section whose top is closest to (but above) viewport top + offset.
+      // Offset accounts for the sticky nav bars at the top of the page.
+      var probe=window.scrollY+200;
+      var active=sections[0];
+      for(var i=0;i<sections.length;i++){
+        if(sections[i].offsetTop<=probe){
+          active=sections[i];
+        }else{
+          break;
         }
-      });
-    },{rootMargin:'-30% 0px -50% 0px',threshold:[0.2]});
-    sections.forEach(function(c){obs.observe(c);});
+      }
+      if(active.id===currentId)return;
+      currentId=active.id;
+      sidebarLinks.forEach(function(l){l.classList.remove('active');});
+      overlayLinks.forEach(function(l){l.classList.remove('active');});
+      var sb=byIdSidebar[active.id];
+      if(sb)sb.classList.add('active');
+      var ov=byIdOverlay[active.id];
+      if(ov)ov.classList.add('active');
+    }
+    var ticking=false;
+    window.addEventListener('scroll',function(){
+      if(!ticking){
+        window.requestAnimationFrame(function(){
+          updateActive();
+          ticking=false;
+        });
+        ticking=true;
+      }
+    },{passive:true});
+    updateActive();
   }
 })();
 </script>
@@ -823,7 +846,7 @@ function toggleMenu(){
 <section style="padding:60px 0 0">
   <div class="si">
     <div class="toc">
-      <div class="toc-title">Contents</div>
+      <div class="toc-title">Pedigree</div>
       <ol>
         <li><a href="#origins">I. Ancient origins — 4,000 years in Ireland</a></li>
         <li><a href="#royal">II. The royal pedigree — Kings of Uí Maine</a></li>
