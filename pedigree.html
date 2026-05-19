@@ -694,7 +694,8 @@ function toggleMenu(){
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   overflow-y:auto;
-  padding:24px 20px 60px;
+  padding:24px 20px 120px;
+  -webkit-overflow-scrolling:touch;
 }
 #chapterOverlay.open{display:block}
 .co-inner{max-width:520px;margin:0 auto}
@@ -789,9 +790,8 @@ function toggleMenu(){
     if(e.key==='Escape')closeOverlay();
   });
   // Highlight current section in sidebar AND mobile overlay on scroll.
-  // Uses scroll-position-based detection (more reliable for long chapters
-  // than IntersectionObserver entry/exit events, which can miss when
-  // the user is deep inside a chapter taller than the viewport).
+  // Uses viewport-relative probe (scrollY + 40% of viewport) so it works
+  // correctly even at the bottom of the page where scrollY is capped.
   var sections=Array.prototype.slice.call(document.querySelectorAll('#foreword,#endorsements,section.chapter[id]'));
   var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
   var overlayLinks=overlay.querySelectorAll('.co-list a');
@@ -807,13 +807,22 @@ function toggleMenu(){
       if(id)byIdOverlay[id]=l;
     });
     var currentId=null;
+    function getAbsoluteTop(el){
+      var top=0;
+      var node=el;
+      while(node){
+        top+=node.offsetTop;
+        node=node.offsetParent;
+      }
+      return top;
+    }
     function updateActive(){
-      // Find the section whose top is closest to (but above) viewport top + offset.
-      // Offset accounts for the sticky nav bars at the top of the page.
-      var probe=window.scrollY+200;
+      // Probe at 40% down the viewport — works at page bottom (where
+      // scrollY is capped) because we add viewport height regardless.
+      var probe=window.scrollY+window.innerHeight*0.4;
       var active=sections[0];
       for(var i=0;i<sections.length;i++){
-        if(sections[i].offsetTop<=probe){
+        if(getAbsoluteTop(sections[i])<=probe){
           active=sections[i];
         }else{
           break;
@@ -824,7 +833,15 @@ function toggleMenu(){
       sidebarLinks.forEach(function(l){l.classList.remove('active');});
       overlayLinks.forEach(function(l){l.classList.remove('active');});
       var sb=byIdSidebar[active.id];
-      if(sb)sb.classList.add('active');
+      if(sb){
+        sb.classList.add('active');
+        // Auto-scroll sidebar so active link stays in view
+        var sbRect=sb.getBoundingClientRect();
+        var sidebarRect=sidebar.getBoundingClientRect();
+        if(sbRect.top<sidebarRect.top||sbRect.bottom>sidebarRect.bottom){
+          sb.scrollIntoView({block:'nearest',behavior:'smooth'});
+        }
+      }
       var ov=byIdOverlay[active.id];
       if(ov)ov.classList.add('active');
     }
@@ -840,6 +857,15 @@ function toggleMenu(){
     },{passive:true});
     updateActive();
   }
+  // When mobile overlay opens, scroll its active link into view
+  fab.addEventListener('click',function(){
+    setTimeout(function(){
+      var activeOverlayLink=overlay.querySelector('.co-list a.active');
+      if(activeOverlayLink){
+        activeOverlayLink.scrollIntoView({block:'center',behavior:'auto'});
+      }
+    },50);
+  });
 })();
 </script>
 
