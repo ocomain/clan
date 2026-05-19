@@ -6,7 +6,7 @@
 // Composed in markdown in the admin UI at /members/admin/broadcasts.html.
 // Rendered here to HTML, wrapped in the standard Ó Comáin email chrome,
 // signed by the sender, and tail-spliced with one of two footer
-// variants — Stewards' Privilege (immediate batch) or Cultural
+// variants — Steward's Privilege (immediate batch) or Cultural
 // Stewardship upsell (delayed batch, 24h later).
 //
 // ─── PUBLIC API ────────────────────────────────────────────────────────
@@ -425,7 +425,7 @@ function ctaButtonHtml(label, url) {
 function privilegeFooterHtml() {
   return `
 <div style="margin:28px 0 0;padding:18px 0 0;border-top:1px solid rgba(184,151,90,.25)">
-  <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.65;margin:0 0 14px"><strong style="color:#8C6A1A">Stewards' Privilege</strong> — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
+  <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.65;margin:0 0 14px"><strong style="color:#8C6A1A">Steward's Privilege</strong> — the inside track. This letter reaches Stewards and Life Members 24 hours before the kindred at large.</p>
   <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.65;margin:0">If you wish to be counted among the great benefactors of the revival — by a contribution in life, or by a bequest in your will — see the <a href="https://www.ocomain.org/benefactors" style="color:#8C6A1A;font-weight:600;text-decoration:underline">Benefactors page</a>, or write to <a href="mailto:clan@ocomain.org" style="color:#8C6A1A;font-weight:600;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
@@ -433,8 +433,8 @@ function privilegeFooterHtml() {
 function upsellFooterHtml() {
   return `
 <div style="margin:32px -40px 0;padding:26px 40px 28px;background:rgba(184,151,90,.12);border-top:2px solid #B8975A;border-bottom:1px solid rgba(184,151,90,.35)">
-  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#8C6A1A;margin:0 0 12px">Stewards' Privilege</p>
-  <p style="font-family:'Georgia',serif;font-size:14px;color:#2C2010;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Stewards' Privilege, the inside track. Upgrading to Steward is an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but patronage carried forward in your name. Life Membership, available during the 2026 founding period only, is a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#6B4A1A;font-weight:600;text-decoration:underline">clan@ocomain.org</a>.</p>
+  <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#8C6A1A;margin:0 0 12px">Steward's Privilege</p>
+  <p style="font-family:'Georgia',serif;font-size:14px;color:#2C2010;line-height:1.65;margin:0">Stewards and Life Members received this letter 24 hours ago — Steward's Privilege, the inside track. Upgrading to Steward is an annual contribution of €350 (€480 family) to the clan's heritage and cultural revival — not a fee for benefits, but patronage carried forward in your name. Life Membership, available during the 2026 founding period only, is a single contribution of €750 (€1,100 family) — for life, no renewal, your name engraved on the Clan Roll of Honour at Newhall House. To be counted among the great benefactors of the revival, write to <a href="mailto:clan@ocomain.org" style="color:#6B4A1A;font-weight:600;text-decoration:underline">clan@ocomain.org</a>.</p>
 </div>`;
 }
 
@@ -503,10 +503,10 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
 
   <!-- Legal / copyright footer — dark green band with motto + house
        name + Terms + Privacy. Sits beneath everything (including the
-       Stewards' Privilege block when present on the delayed-batch
+       Steward's Privilege block when present on the delayed-batch
        variant) so the reader's eye reads three distinct layers:
          1. cream letter content
-         2. (delayed batch only) Stewards' Privilege block — content
+         2. (delayed batch only) Steward's Privilege block — content
          3. dark legal footer — boilerplate
        Matches the dark legal footer pattern from lifecycle emails.
        bgcolor= attribute is a belt-and-braces measure for mail
