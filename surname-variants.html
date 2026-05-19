@@ -131,6 +131,97 @@
   #giftStrip{display:none}
   #mobileActions{display:block}
 }
+
+/* ── FLOATING CHAPTER BAR ────────────────────────────────────────────
+   Position: fixed band beneath the gift strip on desktop. On mobile
+   the gift strip is hidden, so the chapter bar sits directly under
+   the nav. Hidden by default (opacity:0 + pointer-events:none) and
+   fades in when JS adds .visible after the reader scrolls past the
+   hero. Z-index 96 — below gift strip (97) and main nav (100).
+
+   The bar uses a cream background that matches the page; thin gold
+   rule beneath; pills in the gold register. Active pill has a gold
+   fill so the reader's eye finds 'where am I' at a glance.
+
+   Mobile: pills are scrollable horizontally rather than wrapping.
+   That keeps the bar to one line and feels native — the same
+   pattern as iOS Settings sub-tabs. */
+#chapterBar{
+  position:fixed;
+  top:108px; /* nav 58 + giftStrip 50 = 108 */
+  left:0;right:0;
+  z-index:96;
+  background:#F8F4EC;
+  border-bottom:1px solid rgba(184,151,90,.35);
+  padding:10px 0 11px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-12px);
+  transition:opacity .35s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.4,0,.2,1);
+}
+#chapterBar.visible{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+.chapter-bar-inner{
+  max-width:1120px;
+  margin:0 auto;
+  padding:0 24px;
+  display:flex;
+  gap:6px;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.chapter-bar-inner::-webkit-scrollbar{display:none}
+#chapterBar a{
+  display:inline-block;
+  font-family:'Jost',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#7a6035;
+  text-decoration:none!important;
+  padding:8px 14px;
+  border-radius:2px;
+  white-space:nowrap;
+  transition:background-color .15s,color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+#chapterBar a:hover{color:#0C1A0C;background:rgba(184,151,90,.10)}
+#chapterBar a.active{
+  background:#B8975A;
+  color:#0C1A0C;
+  font-weight:600;
+}
+@media(max-width:768px){
+  /* Mobile: gift strip is hidden, mobile-actions bar (Join + Gift
+     CTAs, ~95px tall when visible) takes the position right under
+     the nav. Chapter bar slots in below that. When mobile-actions
+     is *not* visible (top of page), the chapter bar is also hidden
+     (it shares the .visible threshold), so we don't need to handle
+     a no-mobileActions state — they appear together at scrollY>500. */
+  #chapterBar{top:151px;padding:8px 0 9px;position:fixed}
+  /* Right-edge fade tells the eye 'scroll for more' since we
+     hid the scrollbar above. Mobile only — desktop fits all 5
+     pills without scrolling. */
+  #chapterBar::after{
+    content:'';
+    position:absolute;
+    top:0;right:0;bottom:0;
+    width:32px;
+    background:linear-gradient(to right,rgba(248,244,236,0),#F8F4EC);
+    pointer-events:none;
+  }
+  .chapter-bar-inner{justify-content:flex-start;padding:0 24px 0 16px;gap:4px}
+  #chapterBar a{font-size:10px;padding:7px 11px;letter-spacing:.1em}
+}
 </style>
 
 <!-- Desktop gift strip -->
@@ -154,6 +245,109 @@
     if(window.scrollY>500){s.classList.add('visible');m.classList.add('visible');}
     else{s.classList.remove('visible');m.classList.remove('visible');}
   },{passive:true});
+})();</script>
+
+<!-- FLOATING CHAPTER BAR — appears after the reader scrolls past the
+     hero. Five labels matching the page's natural beats:
+       1. All variants  — the register itself
+       2. Etymology     — Gaelic forms / MacLysaght / Woulfe
+       3. Hurley & Comyn — the two big mistranslations
+       4. Transformation — Norman / British / Emigration
+       5. In the landscape — place-names that preserved the name
+
+     Sticky band, fades in on scroll. On desktop it sits below the
+     nav (and below the giftStrip when that's visible) — z-index 96
+     so the giftStrip (97) and main nav (100) sit above it.
+     On mobile: scrollable horizontal pill row, anchored just below
+     the nav since giftStrip is hidden on mobile.
+
+     Scroll-spy: rAF-throttled scroll handler finds the section
+     whose top is closest to (but past) the viewport top, marks
+     its pill as active. No external dependencies. -->
+<div id="chapterBar" aria-label="Page sections">
+  <div class="chapter-bar-inner">
+    <a href="#variants" data-target="variants">All variants</a>
+    <a href="#etymology" data-target="etymology">Etymology</a>
+    <a href="#hurley-comyn" data-target="hurley-comyn">Hurley &amp; Comyn</a>
+    <a href="#transformation" data-target="transformation">Transformation</a>
+    <a href="#landscape" data-target="landscape">In the landscape</a>
+  </div>
+</div>
+
+<script>(function(){
+  var bar = document.getElementById('chapterBar');
+  if(!bar) return;
+  var links = bar.querySelectorAll('a[data-target]');
+  var sections = [];
+  links.forEach(function(a){
+    var el = document.getElementById(a.getAttribute('data-target'));
+    if(el) sections.push({ id: a.getAttribute('data-target'), el: el, link: a });
+  });
+
+  // Show the bar after scrolling past the hero. Threshold mirrors
+  // the giftStrip's 500px so the two appear together.
+  // Smooth scroll the document on click so the jump isn't jarring.
+  links.forEach(function(a){
+    a.addEventListener('click', function(e){
+      // Allow modifier-click (open in new tab) to work normally.
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      var id = a.getAttribute('data-target');
+      var el = document.getElementById(id);
+      if(!el) return;
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Update the URL without jumping (history-only)
+      if (history && history.replaceState) history.replaceState(null, '', '#' + id);
+    });
+  });
+
+  // rAF-throttled scroll handler. Cheap — runs maybe 60fps but only
+  // updates DOM when active section actually changes.
+  var ticking = false;
+  var activeId = null;
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+
+      // Toggle bar visibility (matches giftStrip behaviour).
+      if(window.scrollY > 500) bar.classList.add('visible');
+      else bar.classList.remove('visible');
+
+      // Find the section whose top is closest to a third of the
+      // viewport down. That feels right: the active section is the
+      // one the reader is actually reading, not the one just below
+      // the chapter bar.
+      var anchorY = window.innerHeight / 3;
+      var best = null;
+      var bestDelta = Infinity;
+      for (var i = 0; i < sections.length; i++) {
+        var rect = sections[i].el.getBoundingClientRect();
+        // Prefer sections whose top is at or above the anchor line.
+        // If a section's top is below the anchor (i.e. above the
+        // viewport line but not far enough), skip — we want the one
+        // we've already scrolled into.
+        if (rect.top - anchorY <= 0) {
+          var delta = anchorY - rect.top;
+          if (delta < bestDelta) {
+            bestDelta = delta;
+            best = sections[i];
+          }
+        }
+      }
+      var newActiveId = best ? best.id : null;
+      if (newActiveId !== activeId) {
+        activeId = newActiveId;
+        links.forEach(function(a){
+          if (a.getAttribute('data-target') === activeId) a.classList.add('active');
+          else a.classList.remove('active');
+        });
+      }
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // run once on load to set initial active state
 })();</script>
 
 <div class="nav-mobile-menu" id="mobile-menu">
@@ -205,7 +399,7 @@ function toggleMenu(){
   </div>
 </section>
 
-<section style="padding:80px 0">
+<section id="variants" style="padding:80px 0;scroll-margin-top:80px">
   <div class="si">
     <div class="eyebrow">Is your name here?</div>
         <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">All known variants of the name Ó Comáin / O'Comain</h2>
@@ -240,7 +434,7 @@ function toggleMenu(){
           <div class="vn">Kimmons</div><div class="vn"></div><div class="vn"></div>
         </div>
       </div>
-      <div>
+      <div id="etymology" style="scroll-margin-top:80px">
         <div style="background:var(--cream-mid);border:1px solid var(--border);border-top:2px solid var(--gold);padding:36px;margin-bottom:24px">
           <div class="eyebrow">The Gaelic forms</div>
           <h3 style="font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:14px">Original Irish spellings</h3>
@@ -276,7 +470,7 @@ function toggleMenu(){
     <!-- Etymology — flowing scholarly reading section -->
     <div style="max-width:760px;margin:48px auto 0">
 
-      <div style="text-align:center;margin-bottom:48px">
+      <div id="hurley-comyn" style="text-align:center;margin-bottom:48px;scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:8px">Etymology and the rejection of <em>cam</em></div>
         <div class="gold-rule" style="margin:0 auto;width:80px"></div>
       </div>
@@ -317,7 +511,7 @@ function toggleMenu(){
 
 
 
-<section style="background:var(--cream-mid);padding:80px 0">
+<section id="transformation" style="background:var(--cream-mid);padding:80px 0;scroll-margin-top:80px">
   <div class="si" style="max-width:820px">
     <div class="eyebrow">Why so many variants?</div>
     <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">The transformation of a Gaelic name</h2>
@@ -377,7 +571,7 @@ function toggleMenu(){
       <div style="text-align:center;margin:0 0 48px"><div style="width:48px;height:1px;background:var(--gold);margin:0 auto;opacity:.5"></div></div>
 
       <!-- Subsection 4: Place names preserved -->
-      <article>
+      <article id="landscape" style="scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:6px">What survived</div>
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">The name in the landscape</h3>
         <p class="body-text">Despite centuries of anglicisation in the documentary record, the name survived in the Irish landscape itself — preserved in the place-names that the Gaelic-speaking population continued to use. Most significantly: <strong>Cahercommane</strong> (<em>Cathair Commáin</em> — "Fort of Commán") in the Burren, <strong>Tullycommon</strong> (<em>Tulach Commáin</em> — "Mound of Commán") in Clare, and <strong>Na Comáin</strong> townland in the Iveragh barony of Kerry. The land remembered what the parish registers had recorded under different spellings.</p>
