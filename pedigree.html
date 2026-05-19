@@ -422,7 +422,7 @@ function toggleMenu(){
   </div>
 </div>
 
-<section style="padding:56px 0 0">
+<section id="foreword" style="padding:56px 0 0">
   <div class="si">
     <div style="max-width:780px;margin:0 auto">
       <p style="font-family:'EB Garamond',serif;font-size:21px;line-height:1.55;color:var(--ink);margin-bottom:22px">Clan Ó Comáin is one of the older Gaelic kindreds of early medieval Ireland — a sept whose documented royal pedigree, preserved in the medieval Irish genealogical manuscripts of both Munster and Connacht, is now corroborated by an unbroken Y-DNA male line in Ireland stretching back over four thousand years.</p>
@@ -435,7 +435,7 @@ function toggleMenu(){
   </div>
 </section>
 
-<section style="padding:48px 0 0">
+<section id="endorsements" style="padding:48px 0 0">
   <div class="si">
     <div style="max-width:880px;margin:0 auto">
       <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px;font-weight:500;text-align:center">Scholarly Endorsements</div>
@@ -532,6 +532,8 @@ function toggleMenu(){
   <div class="cs-inner">
     <div class="cs-title">Contents</div>
     <ol class="cs-list">
+      <li><a href="#foreword" data-ch="foreword"><span class="cs-num">—</span><span class="cs-label">Foreword</span></a></li>
+      <li><a href="#endorsements" data-ch="endorsements"><span class="cs-num">—</span><span class="cs-label">Scholarly Endorsements</span></a></li>
       <li><a href="#origins" data-ch="origins"><span class="cs-num">I.</span><span class="cs-label">Ancient origins</span></a></li>
       <li><a href="#royal" data-ch="royal"><span class="cs-num">II.</span><span class="cs-label">Kings of Uí Maine</span></a></li>
       <li><a href="#munster" data-ch="munster"><span class="cs-num">III.</span><span class="cs-label">Kings of Déisi Muman</span></a></li>
@@ -560,18 +562,20 @@ function toggleMenu(){
       <button class="co-close" aria-label="Close chapter list" type="button">×</button>
     </div>
     <ol class="co-list">
-      <li><a href="#origins"><span class="co-num">I.</span> Ancient origins — 4,000 years in Ireland</a></li>
-      <li><a href="#royal"><span class="co-num">II.</span> The royal pedigree — Kings of Uí Maine</a></li>
-      <li><a href="#munster"><span class="co-num">III.</span> Kings of Déisi Muman</a></li>
-      <li><a href="#saints"><span class="co-num">IV.</span> Saints and scholars</a></li>
-      <li><a href="#chiefdom"><span class="co-num">V.</span> The Chiefdom of Tulach Commáin</a></li>
-      <li><a href="#cahercommaun"><span class="co-num">VI.</span> Cahercommane — the ancestral capital</a></li>
-      <li><a href="#fall"><span class="co-num">VII.</span> The fall of a chieftain line</a></li>
-      <li><a href="#endures"><span class="co-num">VIII.</span> The name endures</a></li>
-      <li><a href="#modern"><span class="co-num">IX.</span> The modern record</a></li>
-      <li><a href="#dna"><span class="co-num">X.</span> DNA — 4,000 years confirmed</a></li>
-      <li><a href="#revival"><span class="co-num">XI.</span> The clan revival</a></li>
-      <li><a href="#conclusion"><span class="co-num">XII.</span> In conclusion</a></li>
+      <li><a href="#foreword" data-ch="foreword"><span class="co-num">—</span> Foreword</a></li>
+      <li><a href="#endorsements" data-ch="endorsements"><span class="co-num">—</span> Scholarly Endorsements</a></li>
+      <li><a href="#origins" data-ch="origins"><span class="co-num">I.</span> Ancient origins — 4,000 years in Ireland</a></li>
+      <li><a href="#royal" data-ch="royal"><span class="co-num">II.</span> The royal pedigree — Kings of Uí Maine</a></li>
+      <li><a href="#munster" data-ch="munster"><span class="co-num">III.</span> Kings of Déisi Muman</a></li>
+      <li><a href="#saints" data-ch="saints"><span class="co-num">IV.</span> Saints and scholars</a></li>
+      <li><a href="#chiefdom" data-ch="chiefdom"><span class="co-num">V.</span> The Chiefdom of Tulach Commáin</a></li>
+      <li><a href="#cahercommaun" data-ch="cahercommaun"><span class="co-num">VI.</span> Cahercommane — the ancestral capital</a></li>
+      <li><a href="#fall" data-ch="fall"><span class="co-num">VII.</span> The fall of a chieftain line</a></li>
+      <li><a href="#endures" data-ch="endures"><span class="co-num">VIII.</span> The name endures</a></li>
+      <li><a href="#modern" data-ch="modern"><span class="co-num">IX.</span> The modern record</a></li>
+      <li><a href="#dna" data-ch="dna"><span class="co-num">X.</span> DNA — 4,000 years confirmed</a></li>
+      <li><a href="#revival" data-ch="revival"><span class="co-num">XI.</span> The clan revival</a></li>
+      <li><a href="#conclusion" data-ch="conclusion"><span class="co-num">XII.</span> In conclusion</a></li>
     </ol>
   </div>
 </div>
@@ -737,6 +741,8 @@ function toggleMenu(){
   text-decoration:none;
 }
 .co-list a:hover,.co-list a:focus{color:var(--gold)}
+.co-list a.active{color:var(--gold);font-weight:600}
+.co-list a.active .co-num{color:var(--cream)}
 .co-num{
   display:inline-block;
   font-family:'Jost',sans-serif;
@@ -782,25 +788,34 @@ function toggleMenu(){
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape')closeOverlay();
   });
-  // Highlight current chapter in sidebar on scroll
-  var chapters=document.querySelectorAll('section.chapter[id]');
-  var links=sidebar.querySelectorAll('.cs-list a');
-  if('IntersectionObserver' in window&&chapters.length){
-    var byId={};
-    links.forEach(function(l){
+  // Highlight current section in sidebar AND mobile overlay on scroll
+  var sections=document.querySelectorAll('#foreword,#endorsements,section.chapter[id]');
+  var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
+  var overlayLinks=overlay.querySelectorAll('.co-list a');
+  if('IntersectionObserver' in window&&sections.length){
+    var byIdSidebar={};
+    var byIdOverlay={};
+    sidebarLinks.forEach(function(l){
       var id=l.getAttribute('data-ch');
-      if(id)byId[id]=l;
+      if(id)byIdSidebar[id]=l;
+    });
+    overlayLinks.forEach(function(l){
+      var id=l.getAttribute('data-ch');
+      if(id)byIdOverlay[id]=l;
     });
     var obs=new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if(entry.isIntersecting&&entry.intersectionRatio>=0.2){
-          links.forEach(function(l){l.classList.remove('active');});
-          var link=byId[entry.target.id];
-          if(link)link.classList.add('active');
+          sidebarLinks.forEach(function(l){l.classList.remove('active');});
+          overlayLinks.forEach(function(l){l.classList.remove('active');});
+          var sb=byIdSidebar[entry.target.id];
+          if(sb)sb.classList.add('active');
+          var ov=byIdOverlay[entry.target.id];
+          if(ov)ov.classList.add('active');
         }
       });
     },{rootMargin:'-30% 0px -50% 0px',threshold:[0.2]});
-    chapters.forEach(function(c){obs.observe(c);});
+    sections.forEach(function(c){obs.observe(c);});
   }
 })();
 </script>
