@@ -530,9 +530,8 @@ function toggleMenu(){
 <!-- Desktop sticky chapter sidebar (right-hand column) -->
 <aside id="chapterSidebar" aria-label="Chapter navigation">
   <div class="cs-inner">
-    <div class="cs-title">Pedigree</div>
     <ol class="cs-list">
-      <li><a href="#foreword" data-ch="foreword"><span class="cs-num">—</span><span class="cs-label">Foreword</span></a></li>
+      <li><a href="#foreword" data-ch="foreword"><span class="cs-num">—</span><span class="cs-label">Pedigree Foreword</span></a></li>
       <li><a href="#endorsements" data-ch="endorsements"><span class="cs-num">—</span><span class="cs-label">Scholarly Endorsements</span></a></li>
       <li><a href="#origins" data-ch="origins"><span class="cs-num">I.</span><span class="cs-label">Ancient origins</span></a></li>
       <li><a href="#royal" data-ch="royal"><span class="cs-num">II.</span><span class="cs-label">Kings of Uí Maine</span></a></li>
@@ -558,11 +557,11 @@ function toggleMenu(){
 <div id="chapterOverlay" role="dialog" aria-modal="true" aria-label="Chapter list">
   <div class="co-inner">
     <div class="co-head">
-      <div class="co-title">Pedigree</div>
+      <div></div>
       <button class="co-close" aria-label="Close chapter list" type="button">×</button>
     </div>
     <ol class="co-list">
-      <li><a href="#foreword" data-ch="foreword"><span class="co-num">—</span> Foreword</a></li>
+      <li><a href="#foreword" data-ch="foreword"><span class="co-num">—</span> Pedigree Foreword</a></li>
       <li><a href="#endorsements" data-ch="endorsements"><span class="co-num">—</span> Scholarly Endorsements</a></li>
       <li><a href="#origins" data-ch="origins"><span class="co-num">I.</span> Ancient origins — 4,000 years in Ireland</a></li>
       <li><a href="#royal" data-ch="royal"><span class="co-num">II.</span> The royal pedigree — Kings of Uí Maine</a></li>
@@ -790,8 +789,10 @@ function toggleMenu(){
     if(e.key==='Escape')closeOverlay();
   });
   // Highlight current section in sidebar AND mobile overlay on scroll.
-  // Uses viewport-relative probe (scrollY + 40% of viewport) so it works
-  // correctly even at the bottom of the page where scrollY is capped.
+  // Uses getBoundingClientRect() which gives viewport-relative position
+  // directly — robust regardless of offsetParent chain, fixed positioning,
+  // CSS transforms etc. The active section is the one whose top is
+  // closest to (but not past) 40% of the viewport.
   var sections=Array.prototype.slice.call(document.querySelectorAll('#foreword,#endorsements,section.chapter[id]'));
   var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
   var overlayLinks=overlay.querySelectorAll('.co-list a');
@@ -807,26 +808,26 @@ function toggleMenu(){
       if(id)byIdOverlay[id]=l;
     });
     var currentId=null;
-    function getAbsoluteTop(el){
-      var top=0;
-      var node=el;
-      while(node){
-        top+=node.offsetTop;
-        node=node.offsetParent;
-      }
-      return top;
-    }
     function updateActive(){
-      // Probe at 40% down the viewport — works at page bottom (where
-      // scrollY is capped) because we add viewport height regardless.
-      var probe=window.scrollY+window.innerHeight*0.4;
+      // Trigger line at 40% of viewport from top.
+      var triggerY=window.innerHeight*0.4;
+      // Find the section whose top is the largest still <= triggerY.
+      // Equivalent to: the last section whose top has scrolled past triggerY.
       var active=sections[0];
       for(var i=0;i<sections.length;i++){
-        if(getAbsoluteTop(sections[i])<=probe){
+        var rect=sections[i].getBoundingClientRect();
+        if(rect.top<=triggerY){
           active=sections[i];
         }else{
           break;
         }
+      }
+      // Special case: at the very bottom of the page, force-highlight the
+      // last section (its top may not have reached triggerY but the user
+      // is clearly reading it).
+      var atBottom=(window.innerHeight+window.scrollY)>=document.documentElement.scrollHeight-2;
+      if(atBottom){
+        active=sections[sections.length-1];
       }
       if(active.id===currentId)return;
       currentId=active.id;
@@ -835,11 +836,14 @@ function toggleMenu(){
       var sb=byIdSidebar[active.id];
       if(sb){
         sb.classList.add('active');
-        // Auto-scroll sidebar so active link stays in view
+        // Auto-scroll sidebar (only the sidebar, not the page) so active
+        // link stays visible if list overflows.
         var sbRect=sb.getBoundingClientRect();
         var sidebarRect=sidebar.getBoundingClientRect();
-        if(sbRect.top<sidebarRect.top||sbRect.bottom>sidebarRect.bottom){
-          sb.scrollIntoView({block:'nearest',behavior:'smooth'});
+        if(sbRect.top<sidebarRect.top){
+          sidebar.scrollTop+=sbRect.top-sidebarRect.top-8;
+        }else if(sbRect.bottom>sidebarRect.bottom){
+          sidebar.scrollTop+=sbRect.bottom-sidebarRect.bottom+8;
         }
       }
       var ov=byIdOverlay[active.id];
@@ -855,7 +859,8 @@ function toggleMenu(){
         ticking=true;
       }
     },{passive:true});
-    updateActive();
+    // Initial call after a tick to ensure layout has settled
+    setTimeout(updateActive,50);
   }
   // When mobile overlay opens, scroll its active link into view
   fab.addEventListener('click',function(){
@@ -872,7 +877,6 @@ function toggleMenu(){
 <section style="padding:60px 0 0">
   <div class="si">
     <div class="toc">
-      <div class="toc-title">Pedigree</div>
       <ol>
         <li><a href="#origins">I. Ancient origins — 4,000 years in Ireland</a></li>
         <li><a href="#royal">II. The royal pedigree — Kings of Uí Maine</a></li>
