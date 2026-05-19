@@ -180,26 +180,67 @@ sup a:hover{text-decoration:underline}
   .endorsement-quote{flex:1 1 100%}
 }
 .endorsements-strip{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:stretch;transition:padding .35s ease}
-.endorsement-card{flex:1 1 260px;max-width:380px;background:rgba(15,31,15,.04);border-left:3px solid var(--gold);padding:26px 22px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:flex .35s ease, max-width .35s ease, background .35s ease}
+.endorsement-card{flex:1 1 260px;max-width:380px;background:rgba(15,31,15,.04);border-left:3px solid var(--gold);padding:26px 22px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:flex .35s ease, max-width .35s ease, background .35s ease, padding .35s ease}
 @media(min-width:601px){
   .endorsements-strip:has(.endorsement-card-expandable.open){
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    -webkit-overflow-scrolling:touch;
-    justify-content:flex-start;
-    padding:4px 0 12px;
-    scrollbar-width:none;
+    display:grid;
+    grid-template-columns:1.6fr 1fr;
+    grid-template-rows:auto auto;
+    gap:14px 20px;
+    flex-wrap:initial;
+    max-width:980px;
+    margin:0 auto;
   }
-  .endorsements-strip:has(.endorsement-card-expandable.open)::-webkit-scrollbar{display:none}
   .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card{
-    flex:0 0 auto;
-    max-width:380px;
-    scroll-snap-align:start;
+    flex:initial;
+    max-width:none;
+    grid-column:2;
+    padding:18px 18px 16px;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card .endorsement-card-photo{
+    width:64px;
+    height:64px;
+    margin-bottom:10px;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card .endorsement-card-quote{
+    font-size:14px;
+    line-height:1.5;
+    margin:0 0 10px;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card .endorsement-card-name{
+    font-size:13px;
+    margin-top:8px;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card .endorsement-card-creds{
+    display:none;
   }
   .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card:has(.endorsement-card-expandable.open){
-    flex:0 0 560px;
-    max-width:560px;
+    grid-column:1;
+    grid-row:1 / span 2;
+    padding:26px 28px 24px;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card:has(.endorsement-card-expandable.open) .endorsement-card-photo{
+    width:90px;
+    height:90px;
+    margin-bottom:16px;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card:has(.endorsement-card-expandable.open) .endorsement-card-quote{
+    font-size:17px;
+    line-height:1.55;
+    -webkit-line-clamp:initial;
+    display:block;
+    overflow:visible;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card:has(.endorsement-card-expandable.open) .endorsement-card-name{
+    font-size:15px;
+    margin-top:16px;
+  }
+  .endorsements-strip:has(.endorsement-card-expandable.open) .endorsement-card:has(.endorsement-card-expandable.open) .endorsement-card-creds{
+    display:block;
   }
 }
 .endorsement-card-photo{width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);padding:3px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0;margin-bottom:16px}
@@ -261,20 +302,6 @@ sup a:hover{text-decoration:underline}
 }
 @media(min-width:601px){
   .swipe-affordance{display:none}
-  section:has(.endorsement-card-expandable.open) .swipe-affordance{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    margin-top:14px;
-  }
-  section:has(.endorsement-card-expandable.open) .swipe-hint{
-    font-family:'EB Garamond',serif;
-    font-size:14px;
-    color:var(--ink-muted);
-    font-style:italic;
-    letter-spacing:.02em;
-  }
 }
 .endorsement-card-expandable{
   cursor:pointer;
@@ -456,6 +483,17 @@ function toggleMenu(){
     },{root:strip,threshold:0.5});
     cards.forEach(function(c){observer.observe(c);});
   }
+  // Preview-click-to-collapse: when Nugent's card is open and the user
+  // clicks one of the other two cards, collapse the open card and
+  // return the strip to the default 3-up layout.
+  cards.forEach(function(c){
+    if(c.querySelector('.endorsement-card-expandable'))return;
+    c.addEventListener('click',function(){
+      var openCard=strip.querySelector('.endorsement-card-expandable.open');
+      if(openCard)openCard.classList.remove('open');
+    });
+    c.style.cursor='pointer';
+  });
 })();
 </script>
 
