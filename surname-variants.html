@@ -209,6 +209,7 @@ function toggleMenu(){
       <li><a href="#spellings" data-ch="spellings"><span class="cs-num">—</span><span class="cs-label">Original Irish spellings</span></a></li>
       <li><a href="#maclysaght" data-ch="maclysaght"><span class="cs-num">—</span><span class="cs-label">MacLysaght on the origin</span></a></li>
       <li><a href="#woulfe" data-ch="woulfe"><span class="cs-num">—</span><span class="cs-label">The Woulfe <em>cam</em> etymology</span></a></li>
+      <li><a href="#royal-saintly" data-ch="royal-saintly"><span class="cs-num">—</span><span class="cs-label">A royal &amp; saintly surname</span></a></li>
       <li><a href="#hurley" data-ch="hurley"><span class="cs-num">—</span><span class="cs-label">Hurley — mistranslation</span></a></li>
       <li><a href="#munster" data-ch="munster"><span class="cs-num">—</span><span class="cs-label">Munster origin &amp; Comyn</span></a></li>
       <li><a href="#norman" data-ch="norman"><span class="cs-num">—</span><span class="cs-label">Norman influence</span></a></li>
@@ -235,6 +236,7 @@ function toggleMenu(){
       <li><a href="#spellings" data-ch="spellings"><span class="co-num">—</span> Original Irish spellings</a></li>
       <li><a href="#maclysaght" data-ch="maclysaght"><span class="co-num">—</span> MacLysaght on the origin</a></li>
       <li><a href="#woulfe" data-ch="woulfe"><span class="co-num">—</span> The Woulfe <em>cam</em> etymology</a></li>
+      <li><a href="#royal-saintly" data-ch="royal-saintly"><span class="co-num">—</span> A royal &amp; saintly surname</a></li>
       <li><a href="#hurley" data-ch="hurley"><span class="co-num">—</span> Hurley — mistranslation</a></li>
       <li><a href="#munster" data-ch="munster"><span class="co-num">—</span> Munster origin &amp; Comyn</a></li>
       <li><a href="#norman" data-ch="norman"><span class="co-num">—</span> Norman influence</a></li>
@@ -446,7 +448,7 @@ function toggleMenu(){
   // wrapper divs/sections, not on a single shared class — so the
   // selector enumerates them by ID.
   function initHighlight(){
-    var ids=['variants','spellings','maclysaght','woulfe','hurley','munster','norman','penal','emigration','landscape'];
+    var ids=['variants','spellings','maclysaght','woulfe','royal-saintly','hurley','munster','norman','penal','emigration','landscape'];
     var sections=ids.map(function(id){return document.getElementById(id);}).filter(Boolean);
     var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
     var overlayLinks=overlay.querySelectorAll('.co-list a');
@@ -619,9 +621,9 @@ function toggleMenu(){
       <p class="body-text" style="margin-bottom:14px">Beyond etymology, the distribution of the personal name reinforces the same reading. <strong>Comán</strong> appears in royal pedigrees across all four provinces of Ireland — the Déisi Muman of the Cobthach line, the Uí Fidgente / Uí Cormaic of Munster, the Dál Gealla among the Offaly tribes, the Uí Maine of Connacht through Coman mac Bréanainn Dall, the Leinster Lagin under the Cathaír Már descent through Dáire Barrach, the parallel Cathaír Már line through Eochaidh Timín and Conall mac Nath Í, the Dál Meisin Corb of Chluain Tarbh, the Ulaid placement through Ír, the northern Uí Néill descent through Niall of the Nine Hostages and Flann Léana, and the Oriel placement through Colla Fo Chrí in the Airgialla. Alongside this, the saint Commán of Roscommon and his successor line carried the same name into the ecclesiastical record.</p>
       <p class="body-text" style="margin-bottom:14px">Whether the surname <strong>Ó Comáin</strong> descends from a single chiefly line or crystallised in parallel across multiple chiefly families is an open scholarly question — but on either reading, the name appearing across <strong>ten royal lineages</strong>, and as the name borne by saints, is positively inconsistent with a "crooked" or "bent" trait nickname. The Woulfe <em>cam</em> reading is not just rejected by MacLysaght; the manuscripts themselves cannot accommodate it.</p>
 
-      <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(184,151,90,.3)">
+      <div id="royal-saintly" style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(184,151,90,.3);scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:8px">What this tells us</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.25">A surname of the chiefly families</h3>
+        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.25">A surname of royal, saintly and noble lineages</h3>
         <p class="body-text" style="margin-bottom:0">Surnames in medieval Ireland did not form uniformly across the population. The common people received surnames largely based on physical traits, occupation or locality — their deeper lineages had not been recorded and were not available to draw on. Only the chiefly and royal families had the institutional means — preserved genealogies — to anchor a hereditary surname on a named royal ancestor of direct descent. <strong style="font-weight:600;color:var(--ink)">By common estimate, only around 10% of Irish surnames today preserve this kind of dynastic anchoring back to a royal pedigree</strong> — and Ó Comáin, with the personal name documented across ten royal lineages and the modern surname rare and geographically concentrated, sits firmly within that minority. Had the surname formed across the wider kindreds, it would be a far commoner Irish surname today; instead it crystallised specifically in the chiefly families honouring a princely ancestor of direct descent. <strong style="font-weight:600;color:var(--ink)">Modern bearers of Ó Comáin and its variants almost certainly descend from a chiefly line within one of those royal kindreds.</strong></p>
       </div>
     </div>
@@ -740,6 +742,7 @@ function toggleMenu(){
         <h3 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;color:var(--ink);margin-bottom:18px;line-height:1.25">The name in the landscape</h3>
         <p class="body-text" style="margin-bottom:16px">Despite centuries of anglicisation in the documentary record, the name survived in the Irish landscape itself — preserved in the place-names that the Gaelic-speaking population continued to use. Most significantly: <strong>Cahercommane</strong> (<em>Cathair Commáin</em> — "Fort of Commán") in the Burren, <strong>Tullycommon</strong> (<em>Tulach Commáin</em> — "Mound of Commán") in Clare, <strong>Na Comáin</strong> townland in the Iveragh barony of Kerry, and <strong>Ballycommane</strong> (<em>Baile Uí Chomáin</em> — "Townland of Ó Comáin") in the Civil Parish of Durrus, West Cork. The land remembered what the parish registers had recorded under different spellings.</p>
         <p class="body-text">Ballycommane is a particularly clear demonstration of the pattern the <a href="#hurley" style="color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.4)">Hurley discussion above</a> set out. The Gaelic name on the land is unambiguous — <em>Baile Uí Chomáin</em>, the townland of Ó Comáin. By the time of the <strong>1901 census</strong>, the most common surname recorded in the townland was <strong>Hurley</strong>. The landscape kept the original; the documentary record gave the residents the pseudo-translation. Same Gaelic ground, different anglicised name.</p>
+        <p class="body-text" style="margin-top:18px;padding-top:18px;border-top:1px solid rgba(184,151,90,.2);font-size:14px">See each of these place-names in context, with the wider Munster geography of the sept, on the <a href="heartlands.html#kerry-cork" style="color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.4)">Heartlands page &rarr;</a></p>
       </article>
 
     </div>
