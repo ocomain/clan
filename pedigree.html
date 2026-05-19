@@ -238,6 +238,18 @@ sup a:hover{text-decoration:underline}
     transform:scale(1.3);
   }
 }
+.endorsement-card-expandable{
+  cursor:pointer;
+  margin:0;
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  transition:opacity .2s;
+  -webkit-tap-highlight-color:rgba(184,151,90,.1);
+}
+.endorsement-card-expandable:hover .endorsement-card-expand-cue,
+.endorsement-card-expandable:focus .endorsement-card-expand-cue{color:var(--ink)}
+.endorsement-card-expandable .endorsement-card-quote{margin-bottom:0}
 .endorsement-card-full{
   display:none;
   font-family:'EB Garamond',serif;
@@ -250,23 +262,25 @@ sup a:hover{text-decoration:underline}
   border-top:1px solid rgba(0,0,0,.08);
   text-align:left;
 }
-.endorsement-card-full.open{display:block}
-.endorsement-card-expand{
-  background:none;
-  border:none;
+.endorsement-card-expandable.open .endorsement-card-quote{display:none}
+.endorsement-card-expandable.open .endorsement-card-full{display:block}
+.endorsement-card-expand-cue{
   font-family:'Jost',sans-serif;
   font-size:11px;
   letter-spacing:.1em;
   text-transform:uppercase;
   color:var(--gold-deep);
-  cursor:pointer;
-  padding:6px 0 0;
-  margin:6px 0 0;
+  padding:10px 0 0;
+  margin:8px 0 0;
   font-weight:600;
+  text-align:center;
+  transition:color .2s;
 }
-.endorsement-card-expand:hover{color:var(--ink)}
-.endorsement-card-expand .arrow{display:inline-block;transition:transform .2s;margin-left:4px}
-.endorsement-card-expand.open .arrow{transform:rotate(180deg)}
+.endorsement-card-expand-cue .arrow{display:inline-block;transition:transform .2s;margin-left:4px}
+.endorsement-card-expandable.open .endorsement-card-expand-cue .arrow{transform:rotate(180deg)}
+.endorsement-card-expandable.open .endorsement-card-expand-cue .label::before{content:"Tap to collapse";}
+.endorsement-card-expandable.open .endorsement-card-expand-cue .label{font-size:0}
+.endorsement-card-expandable.open .endorsement-card-expand-cue .label::before{font-size:11px;letter-spacing:.1em}
 </style>
 
 <!-- Desktop gift strip -->
@@ -343,11 +357,13 @@ function toggleMenu(){
           <div class="endorsement-card-photo">
             <img src="nugent.jpg" alt="Rev Dr Patrick Nugent, historical geographer and foremost authority on the Gaelic clans of Clare">
           </div>
-          <p class="endorsement-card-quote">"I completely support further research and exploration of the genesis of Clann Uí Chomáin, given their connection to Cathair Uí Chomáin... I support the hypothesis that Uí Chomáin was a major clan at this time but declined to minor clan status with the migration of the Dál gCais."</p>
-          <button class="endorsement-card-expand" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open');this.querySelector('.label').textContent=this.classList.contains('open')?'Show less':'Read full endorsement';" type="button"><span class="label">Read full endorsement</span><span class="arrow">▾</span></button>
-          <div class="endorsement-card-full">"I completely support further research and exploration of the genesis of Clann Uí Chomáin, given their connection to Cathair Uí Chomáin — a spectacular land cliff-top trivallate ring fort on the northern boundary of the parish of Killinaboy, which overlooks the parish of Carron in the Burren. This trivallate ring fort is one of the very few forts to have a personal name element. Archaeological research on this site suggests an eighth-century origin which coincides with a period of hierarchisation within the prevailing clan-based society which saw a minority of the c. 8,000 univallate ringforts becoming trivallate. While univallate forts were the settlements of a family group of modest means (a lesser/minor clan), trivallate forts were the settlements of an extended hierarchical family group of significant means (a major clan). At this time the clan system consisted of major clans who controlled a <em>mór thuath</em>, minor clans who controlled a <em>tuath</em>, hereditary service clans, and erenagh clans who were allied to a major clan. The archaeologists Blair Gibson and Harold Mytum have dated the emergence of ringforts to the fourth century AD. Mytum sees the emergence of Christianity in Ireland as shaping this societal change to some extent. The clan-based society alternated between periods of relative egalitarianism and periods of distinct hierarchy. The eighth and ninth centuries are the latter. I support the hypothesis that Clann Uí Chomáin was a major clan at this time but declined to minor clan status with the migration of the Dál gCais into south-east and central Co Clare at this time. Research of Clann Uí Chomáin would greatly augment current hypotheses on clan-based society."</div>
+          <div class="endorsement-card-expandable" onclick="this.classList.toggle('open');" role="button" tabindex="0" aria-expanded="false">
+            <p class="endorsement-card-quote">"I completely support further research and exploration of the genesis of Clann Uí Chomáin, given their connection to Cathair Uí Chomáin — a spectacular cliff-top trivallate ring fort... I support the hypothesis that Uí Chomáin was a major clan at this time but declined to minor clan status with the migration of the Dál gCais into south-east and central Co Clare at this time."</p>
+            <div class="endorsement-card-full">"I completely support further research and exploration of the genesis of Clann Uí Chomáin, given their connection to Cathair Uí Chomáin — a spectacular cliff-top trivallate ring fort on the northern boundary of the parish of Killinaboy, which overlooks the parish of Carron in the Burren. This trivallate ring fort is one of the very few forts to have a personal name element. Archaeological research on this site suggests an eighth-century origin which coincides with a period of hierarchisation within the prevailing clan-based society which saw a minority of the c. 8,000 univallate ringforts becoming trivallate. While univallate forts were the settlements of a family group of modest means (a lesser/minor clan), trivallate forts were the settlements of an extended hierarchical family group of significant means (a major clan). At this time the clan system consisted of major clans who controlled a <em>mór thuath</em>, minor clans who controlled a <em>tuath</em>, hereditary service clans, and erenagh clans who were allied to a major clan. The archaeologists Blair Gibson and Harold Mytum have dated the emergence of ringforts to the fourth century AD. Mytum sees the emergence of Christianity in Ireland as shaping this societal change to some extent. The clan-based society alternated between periods of relative egalitarianism and periods of distinct hierarchy. The eighth and ninth centuries are the latter. I support the hypothesis that Clann Uí Chomáin was a major clan at this time but declined to minor clan status with the migration of the Dál gCais into south-east and central Co Clare at this time. Research of Clann Uí Chomáin would greatly augment current hypotheses on clan-based society."</div>
+            <div class="endorsement-card-expand-cue"><span class="label">Tap to read full endorsement</span> <span class="arrow">▾</span></div>
+          </div>
           <div class="endorsement-card-name">Rev Dr Patrick Nugent, PhD</div>
-          <div class="endorsement-card-creds">The foremost living authority on Gaelic clans of Clare; PhD on the Gaelic clans of Clare; author of <em>The Gaelic Clans of Co Clare and their Territories, 1100–1700 A.D.</em>; historical geographer; formerly lecturer at the Institute of Irish Studies, University of Liverpool; now a priest</div>
+          <div class="endorsement-card-creds">The foremost living authority on Gaelic clans of Clare; PhD on Gaelic clans of Clare; author of <em>The Gaelic Clans of Co Clare and their Territories, 1100–1700 A.D.</em>; Historical Geographer; formerly lecturer at the Institute of Irish Studies, University of Liverpool; now a priest</div>
         </div>
         <div class="endorsement-card">
           <div class="endorsement-card-photo">
