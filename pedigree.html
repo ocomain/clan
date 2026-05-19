@@ -742,7 +742,9 @@ function toggleMenu(){
   text-decoration:none;
 }
 .co-list a,.co-list a:visited{color:var(--cream);text-decoration:none}
-.co-list a:hover,.co-list a:focus{color:var(--gold)}
+@media(hover:hover){
+  .co-list a:hover,.co-list a:focus{color:var(--gold)}
+}
 .co-list a.active,.co-list a.active:visited{color:var(--gold);font-weight:600}
 .co-list a.active .co-num{color:var(--cream)}
 .co-num{
