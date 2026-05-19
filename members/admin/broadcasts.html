@@ -488,11 +488,26 @@ In clan and kindred,</textarea>
       const rows = broadcasts.map(b => {
         const created = new Date(b.created_at).toLocaleString();
         const startAt = new Date(b.start_at).toLocaleString();
-        const totalSends = (b.immediate_count || 0) + (b.delayed_count || 0);
-        const sent = b.sent_count || 0;
+        const immediateTotal = b.immediate_count || 0;
+        const delayedTotal = b.delayed_count || 0;
         const failed = b.failed_count || 0;
         const pillClass = 'pill-' + (b.status || 'scheduled');
         const senderLabel = ({maria:'Maria',antoin:'Antóin',jessica:'Jessica',herald:'Herald',fergus:'Fergus',linda:'Linda'})[b.sender_voice] || b.sender_voice;
+
+        // Progress display: show the two batches separately so the
+        // 'Steward/Life immediate' wave and 'Member delayed' wave are
+        // clearly distinguished. We don't have per-variant sent counts
+        // in the list payload (sent_count is total), so we infer
+        // sensibly: if the broadcast is 'sent' status, both batches
+        // are done; if 'sending', whichever variant has captured HTML
+        // is done; if 'scheduled', neither is done.
+        const immediateLine = (b.has_immediate_html || b.status === 'sent')
+          ? `<span style="color:#244c24">${immediateTotal}/${immediateTotal} sent</span>`
+          : `<span style="color:var(--ink-faint,#7a7060)">0/${immediateTotal} queued</span>`;
+        const delayedLine = (b.has_delayed_html || b.status === 'sent')
+          ? `<span style="color:#244c24">${delayedTotal}/${delayedTotal} sent</span>`
+          : `<span style="color:var(--ink-faint,#7a7060)">0/${delayedTotal} queued</span>`;
+
         const actions = [];
         // View buttons — one per variant. Only enabled if the
         // captured HTML exists (i.e. at least one member of that
@@ -512,7 +527,11 @@ In clan and kindred,</textarea>
             <td style="white-space:nowrap"><span class="status-pill ${pillClass}">${escapeHtml(b.status)}</span></td>
             <td><strong>${escapeHtml(senderLabel)}</strong><br><span style="font-size:12px;color:var(--ink-faint,#7a7060)">${escapeHtml(b.subject)}</span></td>
             <td style="white-space:nowrap;font-size:13px"><span style="color:var(--ink-faint,#7a7060)">Created</span> ${escapeHtml(created)}<br><span style="color:var(--ink-faint,#7a7060)">Start</span> ${escapeHtml(startAt)}</td>
-            <td style="white-space:nowrap;font-size:13px">${sent}/${totalSends} sent${failed ? ' · <span style="color:var(--burgundy)">' + failed + ' failed</span>' : ''}</td>
+            <td style="white-space:nowrap;font-size:13px;line-height:1.55">
+              <span style="color:var(--ink-faint,#7a7060)">Steward/Life</span> ${immediateLine}<br>
+              <span style="color:var(--ink-faint,#7a7060)">Member +24h</span> ${delayedLine}
+              ${failed ? '<br><span style="color:var(--burgundy)">' + failed + ' failed</span>' : ''}
+            </td>
             <td style="white-space:nowrap;text-align:right">${actions.join('')}</td>
           </tr>
         `;
