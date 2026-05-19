@@ -518,6 +518,293 @@ function toggleMenu(){
 })();
 </script>
 
+<section style="padding:48px 0 0">
+  <div class="si">
+    <div style="max-width:580px;margin:0 auto;text-align:center">
+      <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:16px;line-height:1.5;color:var(--ink-mid);margin-bottom:10px">Continue to the Pedigree — twelve chapters, a 30-minute read of the documentary, archaeological and genetic evidence.</div>
+      <div style="font-family:'Jost',sans-serif;font-size:24px;color:var(--gold-deep);margin-top:6px" aria-hidden="true">↓</div>
+    </div>
+  </div>
+</section>
+
+<!-- Desktop sticky chapter sidebar (right-hand column) -->
+<aside id="chapterSidebar" aria-label="Chapter navigation">
+  <div class="cs-inner">
+    <div class="cs-title">Contents</div>
+    <ol class="cs-list">
+      <li><a href="#origins" data-ch="origins"><span class="cs-num">I.</span><span class="cs-label">Ancient origins</span></a></li>
+      <li><a href="#royal" data-ch="royal"><span class="cs-num">II.</span><span class="cs-label">Kings of Uí Maine</span></a></li>
+      <li><a href="#munster" data-ch="munster"><span class="cs-num">III.</span><span class="cs-label">Kings of Déisi Muman</span></a></li>
+      <li><a href="#saints" data-ch="saints"><span class="cs-num">IV.</span><span class="cs-label">Saints and scholars</span></a></li>
+      <li><a href="#chiefdom" data-ch="chiefdom"><span class="cs-num">V.</span><span class="cs-label">Chiefdom of Tulach Commáin</span></a></li>
+      <li><a href="#cahercommaun" data-ch="cahercommaun"><span class="cs-num">VI.</span><span class="cs-label">Cahercommane</span></a></li>
+      <li><a href="#fall" data-ch="fall"><span class="cs-num">VII.</span><span class="cs-label">Fall of a chieftain line</span></a></li>
+      <li><a href="#endures" data-ch="endures"><span class="cs-num">VIII.</span><span class="cs-label">The name endures</span></a></li>
+      <li><a href="#modern" data-ch="modern"><span class="cs-num">IX.</span><span class="cs-label">The modern record</span></a></li>
+      <li><a href="#dna" data-ch="dna"><span class="cs-num">X.</span><span class="cs-label">DNA evidence</span></a></li>
+      <li><a href="#revival" data-ch="revival"><span class="cs-num">XI.</span><span class="cs-label">The clan revival</span></a></li>
+      <li><a href="#conclusion" data-ch="conclusion"><span class="cs-num">XII.</span><span class="cs-label">In conclusion</span></a></li>
+    </ol>
+  </div>
+</aside>
+
+<!-- Mobile floating chapter button + full-screen overlay -->
+<button id="chapterFab" aria-label="Open chapter list" type="button">
+  <span class="fab-icon" aria-hidden="true">☰</span>
+  <span class="fab-label">Chapters</span>
+</button>
+<div id="chapterOverlay" role="dialog" aria-modal="true" aria-label="Chapter list">
+  <div class="co-inner">
+    <div class="co-head">
+      <div class="co-title">Contents</div>
+      <button class="co-close" aria-label="Close chapter list" type="button">×</button>
+    </div>
+    <ol class="co-list">
+      <li><a href="#origins"><span class="co-num">I.</span> Ancient origins — 4,000 years in Ireland</a></li>
+      <li><a href="#royal"><span class="co-num">II.</span> The royal pedigree — Kings of Uí Maine</a></li>
+      <li><a href="#munster"><span class="co-num">III.</span> Kings of Déisi Muman</a></li>
+      <li><a href="#saints"><span class="co-num">IV.</span> Saints and scholars</a></li>
+      <li><a href="#chiefdom"><span class="co-num">V.</span> The Chiefdom of Tulach Commáin</a></li>
+      <li><a href="#cahercommaun"><span class="co-num">VI.</span> Cahercommane — the ancestral capital</a></li>
+      <li><a href="#fall"><span class="co-num">VII.</span> The fall of a chieftain line</a></li>
+      <li><a href="#endures"><span class="co-num">VIII.</span> The name endures</a></li>
+      <li><a href="#modern"><span class="co-num">IX.</span> The modern record</a></li>
+      <li><a href="#dna"><span class="co-num">X.</span> DNA — 4,000 years confirmed</a></li>
+      <li><a href="#revival"><span class="co-num">XI.</span> The clan revival</a></li>
+      <li><a href="#conclusion"><span class="co-num">XII.</span> In conclusion</a></li>
+    </ol>
+  </div>
+</div>
+
+<style>
+/* ===== Desktop sticky sidebar ===== */
+#chapterSidebar{
+  display:none;
+  position:fixed;
+  top:140px;
+  right:24px;
+  width:220px;
+  max-height:calc(100vh - 180px);
+  overflow-y:auto;
+  z-index:50;
+  background:rgba(245,242,234,0.92);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border-left:2px solid var(--gold);
+  padding:18px 16px 18px 18px;
+  font-family:'EB Garamond',serif;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  border-radius:2px;
+  transition:opacity .3s;
+  scrollbar-width:thin;
+}
+#chapterSidebar.visible{display:block}
+#chapterSidebar::-webkit-scrollbar{width:4px}
+#chapterSidebar::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:2px}
+.cs-title{
+  font-family:'Jost',sans-serif;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(0,0,0,.06);
+}
+.cs-list{list-style:none;margin:0;padding:0;counter-reset:none}
+.cs-list li{margin:0;padding:0}
+.cs-list a{
+  display:flex;
+  gap:8px;
+  align-items:baseline;
+  padding:7px 0;
+  font-size:13.5px;
+  line-height:1.35;
+  color:var(--ink-mid);
+  text-decoration:none;
+  transition:color .2s;
+  border-left:2px solid transparent;
+  padding-left:8px;
+  margin-left:-8px;
+}
+.cs-list a:hover{color:var(--ink)}
+.cs-list a.active{
+  color:var(--ink);
+  font-weight:600;
+  border-left-color:var(--gold);
+}
+.cs-num{
+  flex:0 0 auto;
+  font-size:11px;
+  color:var(--gold);
+  font-variant-numeric:tabular-nums;
+  font-weight:600;
+  min-width:24px;
+}
+.cs-label{flex:1 1 auto}
+@media(min-width:1180px){
+  #chapterSidebar.visible{display:block}
+}
+@media(max-width:1179px){
+  #chapterSidebar{display:none !important}
+}
+
+/* ===== Mobile floating chapter button ===== */
+#chapterFab{
+  display:none;
+  position:fixed;
+  bottom:110px;
+  right:18px;
+  z-index:60;
+  background:var(--ink);
+  color:var(--cream);
+  border:2px solid var(--gold);
+  border-radius:30px;
+  padding:11px 18px 11px 14px;
+  font-family:'Jost',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);
+  align-items:center;
+  gap:8px;
+  transition:opacity .3s, transform .2s;
+}
+#chapterFab.visible{display:inline-flex}
+#chapterFab:active{transform:scale(0.97)}
+#chapterFab .fab-icon{font-size:14px;line-height:1}
+@media(min-width:1180px){
+  #chapterFab{display:none !important}
+}
+
+/* ===== Mobile overlay ===== */
+#chapterOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:rgba(15,31,15,.96);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  overflow-y:auto;
+  padding:24px 20px 60px;
+}
+#chapterOverlay.open{display:block}
+.co-inner{max-width:520px;margin:0 auto}
+.co-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-bottom:18px;
+  margin-bottom:18px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+.co-title{
+  font-family:'Jost',sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.co-close{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.25);
+  color:var(--cream);
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.co-list{list-style:none;margin:0;padding:0}
+.co-list li{border-bottom:1px solid rgba(255,255,255,.08)}
+.co-list li:last-child{border-bottom:none}
+.co-list a{
+  display:block;
+  padding:16px 0;
+  font-family:'EB Garamond',serif;
+  font-size:17px;
+  line-height:1.4;
+  color:var(--cream);
+  text-decoration:none;
+}
+.co-list a:hover,.co-list a:focus{color:var(--gold)}
+.co-num{
+  display:inline-block;
+  font-family:'Jost',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  color:var(--gold);
+  margin-right:10px;
+  min-width:32px;
+}
+</style>
+
+<script>
+(function(){
+  var sidebar=document.getElementById('chapterSidebar');
+  var fab=document.getElementById('chapterFab');
+  var overlay=document.getElementById('chapterOverlay');
+  if(!sidebar||!fab||!overlay)return;
+  var closeBtn=overlay.querySelector('.co-close');
+  // Show sidebar/FAB once user has scrolled past the page hero (~600px)
+  var SHOW_AFTER=600;
+  function onScroll(){
+    var scrolled=window.scrollY>SHOW_AFTER;
+    sidebar.classList.toggle('visible',scrolled);
+    fab.classList.toggle('visible',scrolled);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  // FAB toggles overlay
+  fab.addEventListener('click',function(){
+    overlay.classList.add('open');
+    document.body.style.overflow='hidden';
+  });
+  function closeOverlay(){
+    overlay.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  closeBtn.addEventListener('click',closeOverlay);
+  // Close overlay on any chapter link tap
+  overlay.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',closeOverlay);
+  });
+  // Close on escape
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')closeOverlay();
+  });
+  // Highlight current chapter in sidebar on scroll
+  var chapters=document.querySelectorAll('section.chapter[id]');
+  var links=sidebar.querySelectorAll('.cs-list a');
+  if('IntersectionObserver' in window&&chapters.length){
+    var byId={};
+    links.forEach(function(l){
+      var id=l.getAttribute('data-ch');
+      if(id)byId[id]=l;
+    });
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting&&entry.intersectionRatio>=0.2){
+          links.forEach(function(l){l.classList.remove('active');});
+          var link=byId[entry.target.id];
+          if(link)link.classList.add('active');
+        }
+      });
+    },{rootMargin:'-30% 0px -50% 0px',threshold:[0.2]});
+    chapters.forEach(function(c){obs.observe(c);});
+  }
+})();
+</script>
+
 <section style="padding:60px 0 0">
   <div class="si">
     <div class="toc">
