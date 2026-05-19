@@ -304,25 +304,18 @@ function toggleMenu(){
   min-width:24px;
 }
 .cs-label{flex:1 1 auto}
-@media(min-width:1180px){
+@media(min-width:1480px){
+  /* Sidebar only appears once the viewport is wide enough to leave
+     genuine empty space outside the .si content column (1120px max
+     centred). At 1480px viewport with 1120px content, each side has
+     180px of empty margin — enough to hold the 190px sidebar tucked
+     to right:12px without ever overlapping the content. On narrower
+     desktops (1180-1479px) the FAB takes over, same as mobile, so
+     content layout NEVER shifts as the reader scrolls. */
   #chapterSidebar.visible{display:block}
-  /* When the chapter sidebar is showing, give content sections
-     some right-margin breathing room so the page text never slides
-     under the sidebar. Sidebar zone = 12px (right offset) + 190px
-     (width) + 2px (border) = ~204px reserved. We pad .si by 230px
-     with a 26px buffer. body.has-sidebar is toggled by JS based on
-     the sidebar's .visible class.
-
-     IMPORTANT: only target .si inside <section> elements. The nav,
-     gift strip, and mobile-actions bar each have a .si container
-     inside a <div> parent — we mustn't push those, or the gift
-     strip's flex layout breaks. */
-  body.has-sidebar > section > .si{
-    padding-right:230px;
-    transition:padding-right .3s;
-  }
+  #chapterFab{display:none !important}
 }
-@media(max-width:1179px){
+@media(max-width:1479px){
   #chapterSidebar{display:none !important}
 }
 
@@ -352,9 +345,10 @@ function toggleMenu(){
 #chapterFab.visible{display:inline-flex}
 #chapterFab:active{transform:scale(0.97)}
 #chapterFab .fab-icon{font-size:14px;line-height:1}
-@media(min-width:1180px){
-  #chapterFab{display:none !important}
-}
+/* FAB now hides only at ≥1480px — at narrower desktop widths
+   (1180-1479px) the sidebar would overlap content, so the FAB
+   takes over instead. The `#chapterFab{display:none !important}`
+   inside the ≥1480px media query block above handles desktop. */
 
 /* ===== Mobile overlay ===== */
 #chapterOverlay{
@@ -435,11 +429,6 @@ function toggleMenu(){
     var scrolled=window.scrollY>SHOW_AFTER;
     sidebar.classList.toggle('visible',scrolled);
     fab.classList.toggle('visible',scrolled);
-    // Mirror the sidebar visibility to a body class so CSS can give
-    // body content right-padding to clear the sidebar zone. CSS rule
-    // is gated on @media(min-width:1180px) so this has no effect on
-    // mobile where the sidebar is hidden and the FAB takes over.
-    document.body.classList.toggle('has-sidebar',scrolled);
   }
   window.addEventListener('scroll',onScroll,{passive:true});
   onScroll();
@@ -643,7 +632,7 @@ function toggleMenu(){
 
       <div id="royal-saintly" style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(184,151,90,.3);scroll-margin-top:80px">
         <div class="eyebrow" style="margin-bottom:8px">What this tells us</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.25">A surname of royal, saintly and noble lineages</h3>
+        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.25">A surname origin of royal, saintly and noble lineages</h3>
         <p class="body-text" style="margin-bottom:0">Surnames in medieval Ireland did not form uniformly across the population. The common people received surnames largely based on physical traits, occupation or locality — their deeper lineages had not been recorded and were not available to draw on. Only the chiefly and royal families had the institutional means — preserved genealogies — to anchor a hereditary surname on a named royal ancestor of direct descent. <strong style="font-weight:600;color:var(--ink)">By common estimate, only around 10% of Irish surnames today preserve this kind of dynastic anchoring back to a royal pedigree</strong> — and Ó Comáin, with the personal name documented across ten royal lineages and the modern surname rare and geographically concentrated, sits firmly within that minority. Had the surname formed across the wider kindreds, it would be a far commoner Irish surname today; instead it crystallised specifically in the chiefly families honouring a princely ancestor of direct descent. <strong style="font-weight:600;color:var(--ink)">Modern bearers of Ó Comáin and its variants almost certainly descend from a chiefly line within one of those royal kindreds.</strong></p>
       </div>
     </div>
