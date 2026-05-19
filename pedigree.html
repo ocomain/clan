@@ -632,7 +632,8 @@ function toggleMenu(){
   margin-left:-8px;
 }
 .cs-list a:hover{color:var(--ink)}
-.cs-list a.active{
+.cs-list a:visited{color:var(--ink-mid)}
+.cs-list a.active,.cs-list a.active:visited{
   color:var(--ink);
   font-weight:600;
   border-left-color:var(--gold);
@@ -740,8 +741,9 @@ function toggleMenu(){
   color:var(--cream);
   text-decoration:none;
 }
+.co-list a,.co-list a:visited{color:var(--cream);text-decoration:none}
 .co-list a:hover,.co-list a:focus{color:var(--gold)}
-.co-list a.active{color:var(--gold);font-weight:600}
+.co-list a.active,.co-list a.active:visited{color:var(--gold);font-weight:600}
 .co-list a.active .co-num{color:var(--cream)}
 .co-num{
   display:inline-block;
