@@ -110,6 +110,76 @@
 </head>
 <body>
 
+<!-- PASSWORD GATE — Benefactors page is not ready for general public.
+     This is not real security: the password is in client-side JS and
+     trivially bypassable by anyone who views source. The threat model
+     is 'casual visitor stumbles in', not 'adversarial scraper'. The
+     page already has noindex,nofollow and is unlinked. The gate adds
+     a 'should you be here' check for the warm-introduction-only
+     audience. Replace password by editing the BEN_PW constant below.
+     Session lasts until tab closes (sessionStorage). -->
+<style>
+  #ben-gate{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+  #ben-gate.hidden{display:none}
+  #ben-gate-card{max-width:420px;width:100%;background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:42px 36px;text-align:center}
+  #ben-gate-crest{display:block;width:46px;height:46px;margin:0 auto 22px;opacity:.85}
+  #ben-gate-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  #ben-gate-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:10px;font-style:italic}
+  #ben-gate-sub{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.7);line-height:1.65;margin-bottom:26px;font-style:italic}
+  #ben-gate-input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(184,151,90,.4);font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale);padding:10px 4px;text-align:center;letter-spacing:.04em;outline:none;margin-bottom:18px}
+  #ben-gate-input:focus{border-bottom-color:var(--gold)}
+  #ben-gate-input::placeholder{color:rgba(184,151,90,.45);font-style:italic}
+  #ben-gate-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:background .15s}
+  #ben-gate-btn:hover{background:var(--gold-pale)}
+  #ben-gate-err{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:#E07474;margin-top:14px;min-height:18px}
+  body.ben-locked > *:not(#ben-gate):not(script){display:none !important}
+</style>
+<div id="ben-gate">
+  <div id="ben-gate-card">
+    <img src="coat_of_arms.png" alt="" id="ben-gate-crest">
+    <div id="ben-gate-eyebrow">Benefactors</div>
+    <div id="ben-gate-title">By introduction only</div>
+    <div id="ben-gate-sub">This page is in preparation and not yet open to the public. If you have been given a passphrase by the Office of the Chancellor, you may enter it below.</div>
+    <input type="password" id="ben-gate-input" placeholder="Passphrase" autocomplete="off" autofocus>
+    <button id="ben-gate-btn" type="button">Enter</button>
+    <div id="ben-gate-err"></div>
+  </div>
+</div>
+<script>
+  (function(){
+    var BEN_PW = 'coimirceoir';  // Change here when you want to rotate
+    var SESSION_KEY = 'ben_unlocked_v1';
+    var gate = document.getElementById('ben-gate');
+    var input = document.getElementById('ben-gate-input');
+    var btn = document.getElementById('ben-gate-btn');
+    var err = document.getElementById('ben-gate-err');
+
+    function unlock(){
+      try{ sessionStorage.setItem(SESSION_KEY, '1'); }catch(e){}
+      document.body.classList.remove('ben-locked');
+      gate.classList.add('hidden');
+    }
+    function lock(){
+      document.body.classList.add('ben-locked');
+    }
+    function tryUnlock(){
+      var v = (input.value || '').trim().toLowerCase();
+      if(v === BEN_PW){ unlock(); }
+      else { err.textContent = 'Not recognised. Please try again.'; input.value = ''; input.focus(); }
+    }
+
+    // Check session first
+    try{
+      if(sessionStorage.getItem(SESSION_KEY) === '1'){ unlock(); return; }
+    }catch(e){}
+
+    // Otherwise lock and wire the gate
+    lock();
+    btn.addEventListener('click', tryUnlock);
+    input.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ tryUnlock(); } });
+  })();
+</script>
+
 <!-- NAV — mirrors gift.html/membership.html for consistency -->
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
