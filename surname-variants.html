@@ -253,40 +253,43 @@ function toggleMenu(){
   display:none;
   position:fixed;
   top:140px;
-  right:12px;
-  width:190px;
+  right:8px;
+  width:145px;
   max-height:calc(100vh - 180px);
   overflow-y:auto;
   z-index:50;
-  background:rgba(245,242,234,0.92);
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  /* Solid cream background — no transparency. On narrower
+     desktops the sidebar sits in margin that's tight, occasionally
+     overlapping the right edge of content. Solid background makes
+     the sidebar read as a deliberate tucked-aside column rather
+     than a semi-transparent overlay. */
+  background:#F5F2EA;
   border-left:2px solid var(--gold);
-  padding:14px 12px 14px 14px;
+  padding:12px 10px 12px 12px;
   font-family:'EB Garamond',serif;
-  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  box-shadow:-2px 0 6px rgba(0,0,0,.04);
   border-radius:2px;
   transition:opacity .3s;
   scrollbar-width:thin;
 }
 #chapterSidebar.visible{display:block}
-#chapterSidebar::-webkit-scrollbar{width:4px}
+#chapterSidebar::-webkit-scrollbar{width:3px}
 #chapterSidebar::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:2px}
 .cs-list{list-style:none;margin:0;padding:0;counter-reset:none}
 .cs-list li{margin:0;padding:0}
 .cs-list a{
   display:flex;
-  gap:6px;
+  gap:5px;
   align-items:baseline;
-  padding:5px 0;
-  font-size:12.5px;
-  line-height:1.3;
+  padding:4px 0;
+  font-size:11.5px;
+  line-height:1.25;
   color:var(--ink-mid);
   text-decoration:none;
   transition:color .2s;
   border-left:2px solid transparent;
-  padding-left:8px;
-  margin-left:-8px;
+  padding-left:6px;
+  margin-left:-6px;
 }
 .cs-list a:hover{color:var(--ink)}
 .cs-list a:visited{color:var(--ink-mid)}
@@ -297,25 +300,26 @@ function toggleMenu(){
 }
 .cs-num{
   flex:0 0 auto;
-  font-size:11px;
+  font-size:10px;
   color:var(--gold);
   font-variant-numeric:tabular-nums;
   font-weight:600;
-  min-width:24px;
+  min-width:14px;
 }
 .cs-label{flex:1 1 auto}
-@media(min-width:1480px){
-  /* Sidebar only appears once the viewport is wide enough to leave
-     genuine empty space outside the .si content column (1120px max
-     centred). At 1480px viewport with 1120px content, each side has
-     180px of empty margin — enough to hold the 190px sidebar tucked
-     to right:12px without ever overlapping the content. On narrower
-     desktops (1180-1479px) the FAB takes over, same as mobile, so
-     content layout NEVER shifts as the reader scrolls. */
+@media(min-width:1180px){
+  /* Sidebar shows on every desktop. At narrower desktop widths
+     (1180-1479px) the .si content max-width 1120px means very
+     little empty margin (e.g. 30px each side at 1180px viewport)
+     — the sidebar tucked at right:8px will sit on the right edge
+     of content. Solid (non-transparent) sidebar background makes
+     it read as a deliberate tucked-aside column rather than an
+     overlay. Content itself stays at its natural width — never
+     shifts when sidebar appears. */
   #chapterSidebar.visible{display:block}
   #chapterFab{display:none !important}
 }
-@media(max-width:1479px){
+@media(max-width:1179px){
   #chapterSidebar{display:none !important}
 }
 
