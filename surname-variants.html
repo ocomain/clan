@@ -132,96 +132,8 @@
   #mobileActions{display:block}
 }
 
-/* ── FLOATING CHAPTER BAR ────────────────────────────────────────────
-   Position: fixed band beneath the gift strip on desktop. On mobile
-   the gift strip is hidden, so the chapter bar sits directly under
-   the nav. Hidden by default (opacity:0 + pointer-events:none) and
-   fades in when JS adds .visible after the reader scrolls past the
-   hero. Z-index 96 — below gift strip (97) and main nav (100).
-
-   The bar uses a cream background that matches the page; thin gold
-   rule beneath; pills in the gold register. Active pill has a gold
-   fill so the reader's eye finds 'where am I' at a glance.
-
-   Mobile: pills are scrollable horizontally rather than wrapping.
-   That keeps the bar to one line and feels native — the same
-   pattern as iOS Settings sub-tabs. */
-#chapterBar{
-  position:fixed;
-  top:108px; /* nav 58 + giftStrip 50 = 108 */
-  left:0;right:0;
-  z-index:96;
-  background:#F8F4EC;
-  border-bottom:1px solid rgba(184,151,90,.35);
-  padding:10px 0 11px;
-  box-shadow:0 3px 12px rgba(0,0,0,.08);
-  opacity:0;
-  pointer-events:none;
-  transform:translateY(-12px);
-  transition:opacity .35s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.4,0,.2,1);
-}
-#chapterBar.visible{
-  opacity:1;
-  pointer-events:auto;
-  transform:translateY(0);
-}
-.chapter-bar-inner{
-  max-width:1120px;
-  margin:0 auto;
-  padding:0 24px;
-  display:flex;
-  gap:6px;
-  align-items:center;
-  justify-content:center;
-  flex-wrap:nowrap;
-  overflow-x:auto;
-  scrollbar-width:none;
-  -ms-overflow-style:none;
-}
-.chapter-bar-inner::-webkit-scrollbar{display:none}
-#chapterBar a{
-  display:inline-block;
-  font-family:'Jost',sans-serif;
-  font-size:11px;
-  font-weight:500;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:#7a6035;
-  text-decoration:none!important;
-  padding:8px 14px;
-  border-radius:2px;
-  white-space:nowrap;
-  transition:background-color .15s,color .15s;
-  -webkit-tap-highlight-color:transparent;
-}
-#chapterBar a:hover{color:#0C1A0C;background:rgba(184,151,90,.10)}
-#chapterBar a.active{
-  background:#B8975A;
-  color:#0C1A0C;
-  font-weight:600;
-}
-@media(max-width:768px){
-  /* Mobile: gift strip is hidden, mobile-actions bar (Join + Gift
-     CTAs, ~95px tall when visible) takes the position right under
-     the nav. Chapter bar slots in below that. When mobile-actions
-     is *not* visible (top of page), the chapter bar is also hidden
-     (it shares the .visible threshold), so we don't need to handle
-     a no-mobileActions state — they appear together at scrollY>500. */
-  #chapterBar{top:151px;padding:8px 0 9px;position:fixed}
-  /* Right-edge fade tells the eye 'scroll for more' since we
-     hid the scrollbar above. Mobile only — desktop fits all 5
-     pills without scrolling. */
-  #chapterBar::after{
-    content:'';
-    position:absolute;
-    top:0;right:0;bottom:0;
-    width:32px;
-    background:linear-gradient(to right,rgba(248,244,236,0),#F8F4EC);
-    pointer-events:none;
-  }
-  .chapter-bar-inner{justify-content:flex-start;padding:0 24px 0 16px;gap:4px}
-  #chapterBar a{font-size:10px;padding:7px 11px;letter-spacing:.1em}
-}
+/* (chapter navigation styles live in the dedicated sidebar/FAB
+   block further down the page, ported from pedigree.html) */
 </style>
 
 <!-- Desktop gift strip -->
@@ -247,109 +159,6 @@
   },{passive:true});
 })();</script>
 
-<!-- FLOATING CHAPTER BAR — appears after the reader scrolls past the
-     hero. Five labels matching the page's natural beats:
-       1. All variants  — the register itself
-       2. Etymology     — Gaelic forms / MacLysaght / Woulfe
-       3. Hurley & Comyn — the two big mistranslations
-       4. Transformation — Norman / British / Emigration
-       5. In the landscape — place-names that preserved the name
-
-     Sticky band, fades in on scroll. On desktop it sits below the
-     nav (and below the giftStrip when that's visible) — z-index 96
-     so the giftStrip (97) and main nav (100) sit above it.
-     On mobile: scrollable horizontal pill row, anchored just below
-     the nav since giftStrip is hidden on mobile.
-
-     Scroll-spy: rAF-throttled scroll handler finds the section
-     whose top is closest to (but past) the viewport top, marks
-     its pill as active. No external dependencies. -->
-<div id="chapterBar" aria-label="Page sections">
-  <div class="chapter-bar-inner">
-    <a href="#variants" data-target="variants">All variants</a>
-    <a href="#etymology" data-target="etymology">Etymology</a>
-    <a href="#hurley-comyn" data-target="hurley-comyn">Hurley &amp; Comyn</a>
-    <a href="#transformation" data-target="transformation">Transformation</a>
-    <a href="#landscape" data-target="landscape">In the landscape</a>
-  </div>
-</div>
-
-<script>(function(){
-  var bar = document.getElementById('chapterBar');
-  if(!bar) return;
-  var links = bar.querySelectorAll('a[data-target]');
-  var sections = [];
-  links.forEach(function(a){
-    var el = document.getElementById(a.getAttribute('data-target'));
-    if(el) sections.push({ id: a.getAttribute('data-target'), el: el, link: a });
-  });
-
-  // Show the bar after scrolling past the hero. Threshold mirrors
-  // the giftStrip's 500px so the two appear together.
-  // Smooth scroll the document on click so the jump isn't jarring.
-  links.forEach(function(a){
-    a.addEventListener('click', function(e){
-      // Allow modifier-click (open in new tab) to work normally.
-      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-      var id = a.getAttribute('data-target');
-      var el = document.getElementById(id);
-      if(!el) return;
-      e.preventDefault();
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Update the URL without jumping (history-only)
-      if (history && history.replaceState) history.replaceState(null, '', '#' + id);
-    });
-  });
-
-  // rAF-throttled scroll handler. Cheap — runs maybe 60fps but only
-  // updates DOM when active section actually changes.
-  var ticking = false;
-  var activeId = null;
-  function onScroll(){
-    if(ticking) return;
-    ticking = true;
-    requestAnimationFrame(function(){
-      ticking = false;
-
-      // Toggle bar visibility (matches giftStrip behaviour).
-      if(window.scrollY > 500) bar.classList.add('visible');
-      else bar.classList.remove('visible');
-
-      // Find the section whose top is closest to a third of the
-      // viewport down. That feels right: the active section is the
-      // one the reader is actually reading, not the one just below
-      // the chapter bar.
-      var anchorY = window.innerHeight / 3;
-      var best = null;
-      var bestDelta = Infinity;
-      for (var i = 0; i < sections.length; i++) {
-        var rect = sections[i].el.getBoundingClientRect();
-        // Prefer sections whose top is at or above the anchor line.
-        // If a section's top is below the anchor (i.e. above the
-        // viewport line but not far enough), skip — we want the one
-        // we've already scrolled into.
-        if (rect.top - anchorY <= 0) {
-          var delta = anchorY - rect.top;
-          if (delta < bestDelta) {
-            bestDelta = delta;
-            best = sections[i];
-          }
-        }
-      }
-      var newActiveId = best ? best.id : null;
-      if (newActiveId !== activeId) {
-        activeId = newActiveId;
-        links.forEach(function(a){
-          if (a.getAttribute('data-target') === activeId) a.classList.add('active');
-          else a.classList.remove('active');
-        });
-      }
-    });
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll(); // run once on load to set initial active state
-})();</script>
-
 <div class="nav-mobile-menu" id="mobile-menu">
   <a href="surname-variants.html" class="nav-mobile-link active">Variants</a>
   <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
@@ -369,6 +178,341 @@ function toggleMenu(){
   menu.classList.toggle("open");
   btn.classList.toggle("open");
 }
+</script>
+
+<!-- ── CHAPTER NAVIGATION (ported from pedigree.html) ─────────────────
+     Desktop: sticky sidebar pinned to the right margin, fades in
+              after ~600px of scroll.
+     Mobile:  floating "☰ Chapters" button bottom-right, opening a
+              full-screen overlay with the same chapter list.
+     Both surfaces share active-section highlighting driven by
+     scroll-spy that picks the section whose top has scrolled past
+     40% of the viewport down. Auto-scrolls the sidebar so the
+     active link stays visible if the list overflows.
+
+     Anchor IDs (already present in the page body):
+       #variants       — the register itself
+       #etymology      — Gaelic forms / MacLysaght / Woulfe
+       #hurley-comyn   — the two mistranslations
+       #transformation — Norman / British / Emigration
+       #landscape      — place-names that preserved the name
+
+     No chapter numbering — Variants doesn't use Roman numerals like
+     the Pedigree long-read. The 'cs-num' / 'co-num' slots carry an
+     em-dash so the two-column grid in the sidebar stays stable. -->
+
+<!-- Desktop sticky chapter sidebar (right-hand column) -->
+<aside id="chapterSidebar" aria-label="Chapter navigation">
+  <div class="cs-inner">
+    <ol class="cs-list">
+      <li><a href="#variants" data-ch="variants"><span class="cs-num">—</span><span class="cs-label">All variants</span></a></li>
+      <li><a href="#etymology" data-ch="etymology"><span class="cs-num">—</span><span class="cs-label">Etymology</span></a></li>
+      <li><a href="#hurley-comyn" data-ch="hurley-comyn"><span class="cs-num">—</span><span class="cs-label">Hurley &amp; Comyn</span></a></li>
+      <li><a href="#transformation" data-ch="transformation"><span class="cs-num">—</span><span class="cs-label">Transformation</span></a></li>
+      <li><a href="#landscape" data-ch="landscape"><span class="cs-num">—</span><span class="cs-label">In the landscape</span></a></li>
+    </ol>
+  </div>
+</aside>
+
+<!-- Mobile floating chapter button + full-screen overlay -->
+<button id="chapterFab" aria-label="Open chapter list" type="button">
+  <span class="fab-icon" aria-hidden="true">☰</span>
+  <span class="fab-label">Chapters</span>
+</button>
+<div id="chapterOverlay" role="dialog" aria-modal="true" aria-label="Chapter list">
+  <div class="co-inner">
+    <div class="co-head">
+      <div></div>
+      <button class="co-close" aria-label="Close chapter list" type="button">×</button>
+    </div>
+    <ol class="co-list">
+      <li><a href="#variants" data-ch="variants"><span class="co-num">—</span> All variants</a></li>
+      <li><a href="#etymology" data-ch="etymology"><span class="co-num">—</span> Etymology</a></li>
+      <li><a href="#hurley-comyn" data-ch="hurley-comyn"><span class="co-num">—</span> Hurley &amp; Comyn</a></li>
+      <li><a href="#transformation" data-ch="transformation"><span class="co-num">—</span> Transformation</a></li>
+      <li><a href="#landscape" data-ch="landscape"><span class="co-num">—</span> In the landscape</a></li>
+    </ol>
+  </div>
+</div>
+
+<style>
+/* ===== Desktop sticky sidebar ===== */
+#chapterSidebar{
+  display:none;
+  position:fixed;
+  top:140px;
+  right:24px;
+  width:220px;
+  max-height:calc(100vh - 180px);
+  overflow-y:auto;
+  z-index:50;
+  background:rgba(245,242,234,0.92);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border-left:2px solid var(--gold);
+  padding:18px 16px 18px 18px;
+  font-family:'EB Garamond',serif;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  border-radius:2px;
+  transition:opacity .3s;
+  scrollbar-width:thin;
+}
+#chapterSidebar.visible{display:block}
+#chapterSidebar::-webkit-scrollbar{width:4px}
+#chapterSidebar::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:2px}
+.cs-list{list-style:none;margin:0;padding:0;counter-reset:none}
+.cs-list li{margin:0;padding:0}
+.cs-list a{
+  display:flex;
+  gap:8px;
+  align-items:baseline;
+  padding:7px 0;
+  font-size:13.5px;
+  line-height:1.35;
+  color:var(--ink-mid);
+  text-decoration:none;
+  transition:color .2s;
+  border-left:2px solid transparent;
+  padding-left:8px;
+  margin-left:-8px;
+}
+.cs-list a:hover{color:var(--ink)}
+.cs-list a:visited{color:var(--ink-mid)}
+.cs-list a.active,.cs-list a.active:visited{
+  color:var(--ink);
+  font-weight:600;
+  border-left-color:var(--gold);
+}
+.cs-num{
+  flex:0 0 auto;
+  font-size:11px;
+  color:var(--gold);
+  font-variant-numeric:tabular-nums;
+  font-weight:600;
+  min-width:24px;
+}
+.cs-label{flex:1 1 auto}
+@media(min-width:1180px){
+  #chapterSidebar.visible{display:block}
+}
+@media(max-width:1179px){
+  #chapterSidebar{display:none !important}
+}
+
+/* ===== Mobile floating chapter button ===== */
+#chapterFab{
+  display:none;
+  position:fixed;
+  bottom:110px;
+  right:18px;
+  z-index:60;
+  background:var(--ink);
+  color:var(--cream);
+  border:2px solid var(--gold);
+  border-radius:30px;
+  padding:11px 18px 11px 14px;
+  font-family:'Jost',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 3px 12px rgba(0,0,0,.18);
+  align-items:center;
+  gap:8px;
+  transition:opacity .3s, transform .2s;
+}
+#chapterFab.visible{display:inline-flex}
+#chapterFab:active{transform:scale(0.97)}
+#chapterFab .fab-icon{font-size:14px;line-height:1}
+@media(min-width:1180px){
+  #chapterFab{display:none !important}
+}
+
+/* ===== Mobile overlay ===== */
+#chapterOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:200;
+  background:rgba(15,31,15,.96);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  overflow-y:auto;
+  padding:24px 20px 120px;
+  -webkit-overflow-scrolling:touch;
+}
+#chapterOverlay.open{display:block}
+.co-inner{max-width:520px;margin:0 auto}
+.co-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-bottom:18px;
+  margin-bottom:18px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+.co-close{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.25);
+  color:var(--cream);
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.co-list{list-style:none;margin:0;padding:0}
+.co-list li{border-bottom:1px solid rgba(255,255,255,.08)}
+.co-list li:last-child{border-bottom:none}
+.co-list a{
+  display:block;
+  padding:16px 0;
+  font-family:'EB Garamond',serif;
+  font-size:17px;
+  line-height:1.4;
+  color:var(--cream);
+  text-decoration:none;
+}
+.co-list a,.co-list a:visited{color:var(--cream);text-decoration:none}
+@media(hover:hover){
+  .co-list a:hover,.co-list a:focus{color:var(--gold)}
+}
+.co-list a.active,.co-list a.active:visited{color:var(--gold);font-weight:600}
+.co-list a.active .co-num{color:var(--cream)}
+.co-num{
+  display:inline-block;
+  font-family:'Jost',sans-serif;
+  font-size:13px;
+  font-weight:600;
+  color:var(--gold);
+  margin-right:10px;
+  min-width:32px;
+}
+</style>
+
+<script>
+(function(){
+  var sidebar=document.getElementById('chapterSidebar');
+  var fab=document.getElementById('chapterFab');
+  var overlay=document.getElementById('chapterOverlay');
+  if(!sidebar||!fab||!overlay)return;
+  var closeBtn=overlay.querySelector('.co-close');
+  // Show sidebar/FAB once user has scrolled past the page hero (~600px)
+  var SHOW_AFTER=600;
+  function onScroll(){
+    var scrolled=window.scrollY>SHOW_AFTER;
+    sidebar.classList.toggle('visible',scrolled);
+    fab.classList.toggle('visible',scrolled);
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  // FAB toggles overlay
+  fab.addEventListener('click',function(){
+    overlay.classList.add('open');
+    document.body.style.overflow='hidden';
+  });
+  function closeOverlay(){
+    overlay.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  closeBtn.addEventListener('click',closeOverlay);
+  // Close overlay on any chapter link tap
+  overlay.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',closeOverlay);
+  });
+  // Close on escape
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')closeOverlay();
+  });
+  // Highlight current section in sidebar AND mobile overlay on scroll.
+  // Deferred until DOMContentLoaded so the target sections (which sit
+  // below this script in the document) are present in the DOM when
+  // queried. The 5 Variants anchors are inserted via id="…" on
+  // wrapper divs/sections, not on a single shared class — so the
+  // selector enumerates them by ID.
+  function initHighlight(){
+    var ids=['variants','etymology','hurley-comyn','transformation','landscape'];
+    var sections=ids.map(function(id){return document.getElementById(id);}).filter(Boolean);
+    var sidebarLinks=sidebar.querySelectorAll('.cs-list a');
+    var overlayLinks=overlay.querySelectorAll('.co-list a');
+    if(!sections.length)return;
+
+    var byIdSidebar={};
+    var byIdOverlay={};
+    sidebarLinks.forEach(function(l){
+      var id=l.getAttribute('data-ch');
+      if(id)byIdSidebar[id]=l;
+    });
+    overlayLinks.forEach(function(l){
+      var id=l.getAttribute('data-ch');
+      if(id)byIdOverlay[id]=l;
+    });
+    var currentId=null;
+    function updateActive(){
+      // Trigger line at 40% of viewport from top.
+      var triggerY=window.innerHeight*0.4;
+      // Find the section whose top is the largest still <= triggerY.
+      // Equivalent to: the last section whose top has scrolled past triggerY.
+      var active=sections[0];
+      for(var i=0;i<sections.length;i++){
+        var rect=sections[i].getBoundingClientRect();
+        if(rect.top<=triggerY){
+          active=sections[i];
+        }else{
+          break;
+        }
+      }
+      // Special case: at the very bottom of the page, force-highlight the
+      // last section (its top may not have reached triggerY but the user
+      // is clearly reading it).
+      var atBottom=(window.innerHeight+window.scrollY)>=document.documentElement.scrollHeight-2;
+      if(atBottom){
+        active=sections[sections.length-1];
+      }
+      if(active.id===currentId)return;
+      currentId=active.id;
+      sidebarLinks.forEach(function(l){l.classList.remove('active');});
+      overlayLinks.forEach(function(l){l.classList.remove('active');});
+      var sb=byIdSidebar[active.id];
+      if(sb){
+        sb.classList.add('active');
+        // Auto-scroll sidebar (only the sidebar, not the page) so active
+        // link stays visible if list overflows.
+        var sbRect=sb.getBoundingClientRect();
+        var sidebarRect=sidebar.getBoundingClientRect();
+        if(sbRect.top<sidebarRect.top){
+          sidebar.scrollTop+=sbRect.top-sidebarRect.top-8;
+        }else if(sbRect.bottom>sidebarRect.bottom){
+          sidebar.scrollTop+=sbRect.bottom-sidebarRect.bottom+8;
+        }
+      }
+      var ov=byIdOverlay[active.id];
+      if(ov)ov.classList.add('active');
+    }
+    var ticking=false;
+    window.addEventListener('scroll',function(){
+      if(!ticking){
+        window.requestAnimationFrame(function(){
+          updateActive();
+          ticking=false;
+        });
+        ticking=true;
+      }
+    },{passive:true});
+    // Initial call after a tick to ensure layout has settled
+    setTimeout(updateActive,50);
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initHighlight);
+  }else{
+    initHighlight();
+  }
+})();
 </script>
 
 <div class="page-hero" style="background:var(--ink);padding:72px 0 56px;text-align:center;border-bottom:2px solid var(--gold)">
