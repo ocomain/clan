@@ -768,22 +768,23 @@ function toggleMenu(){
   var overlay=document.getElementById('chapterOverlay');
   if(!sidebar||!fab||!overlay)return;
   var closeBtn=overlay.querySelector('.co-close');
-  // Show sidebar/FAB only after the reader has scrolled past the
-  // Scholarly Endorsements section. Per DDW: the reader should
-  // pass the Foreword and Endorsements (the trust-building opening
-  // beats) before the chapter nav appears as a reading aid — not
-  // a header element competing with the hero. We measure the
-  // bottom of #endorsements at runtime rather than hard-coding a
-  // pixel value, so the threshold stays accurate even if the
-  // upper-page layout changes.
-  function thresholdY(){
+  // Show sidebar/FAB once the Scholarly Endorsements section becomes
+  // visible — i.e. its top has entered the upper portion of the
+  // viewport. The reader sees 'Scholarly Endorsements' heading with
+  // the sidebar already in view, giving them the chapter map as
+  // they read the endorsements themselves. The 0.7 multiplier means
+  // we trigger when the endorsements top has risen to within 70% of
+  // the viewport height — i.e. is in the upper-middle band, clearly
+  // a 'reader is engaging with this section' position rather than
+  // 'just appeared from the bottom'.
+  function isPastTrigger(){
     var end=document.getElementById('endorsements');
-    if(!end)return 600; // fallback if the anchor is removed
+    if(!end)return window.scrollY>600; // fallback if anchor is missing
     var r=end.getBoundingClientRect();
-    return r.bottom + window.scrollY - 80; // 80px = small lead-in
+    return r.top < window.innerHeight * 0.7;
   }
   function onScroll(){
-    var scrolled=window.scrollY>thresholdY();
+    var scrolled=isPastTrigger();
     sidebar.classList.toggle('visible',scrolled);
     fab.classList.toggle('visible',scrolled);
   }
