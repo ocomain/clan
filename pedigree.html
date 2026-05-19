@@ -749,13 +749,16 @@ function toggleMenu(){
   .co-list a:hover,.co-list a:focus{color:var(--gold)}
 }
 .co-list a.active,.co-list a.active:visited{color:var(--gold);font-weight:600}
-.co-list a.active .co-num{color:var(--cream)}
+/* Number inherits the link's current colour — cream by default,
+   gold when the row is active. The whole row reads as a single
+   weighted unit rather than splitting visually at the gold number
+   column. */
 .co-num{
   display:inline-block;
   font-family:'Jost',sans-serif;
   font-size:13px;
   font-weight:600;
-  color:var(--gold);
+  color:inherit;
   margin-right:10px;
   min-width:32px;
 }
