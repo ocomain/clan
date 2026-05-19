@@ -122,7 +122,7 @@
   #ben-gate{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
   #ben-gate.hidden{display:none}
   #ben-gate-card{max-width:420px;width:100%;background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:42px 36px;text-align:center}
-  #ben-gate-crest{display:block;width:46px;height:46px;margin:0 auto 22px;opacity:.85}
+  #ben-gate-crest{display:block;width:42px;height:auto;margin:0 auto 22px;opacity:.85}
   #ben-gate-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
   #ben-gate-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:10px;font-style:italic}
   #ben-gate-sub{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.7);line-height:1.65;margin-bottom:26px;font-style:italic}
@@ -139,7 +139,7 @@
     <img src="coat_of_arms.png" alt="" id="ben-gate-crest">
     <div id="ben-gate-eyebrow">Benefactors</div>
     <div id="ben-gate-title">By introduction only</div>
-    <div id="ben-gate-sub">This page is in preparation and not yet open to the public. If you have been given a passphrase by the Office of the Chancellor, you may enter it below — or write to <a href="mailto:clan@ocomain.org" style="color:var(--gold);text-decoration:underline;text-decoration-color:rgba(184,151,90,.4);text-underline-offset:2px">clan@ocomain.org</a> to enquire.</div>
+    <div id="ben-gate-sub">If you have been given a passphrase by the Office of the Chancellor, you may enter it below — or write to <a href="mailto:clan@ocomain.org" style="color:var(--gold);text-decoration:underline;text-decoration-color:rgba(184,151,90,.4);text-underline-offset:2px">clan@ocomain.org</a> to enquire.</div>
     <input type="password" id="ben-gate-input" placeholder="Passphrase" autocomplete="off" autofocus>
     <button id="ben-gate-btn" type="button">Enter</button>
     <div id="ben-gate-err"></div>
@@ -147,7 +147,7 @@
 </div>
 <script>
   (function(){
-    var BEN_PW = 'clan@ocomain.org';  // Change here when you want to rotate
+    var BEN_PW = 'clan';  // Change here when you want to rotate
     var SESSION_KEY = 'ben_unlocked_v1';
     var gate = document.getElementById('ben-gate');
     var input = document.getElementById('ben-gate-input');
