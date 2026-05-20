@@ -466,6 +466,17 @@ function buildMemberWelcomeHtml({ firstName, tierDisplayName, benefits, signInUr
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">On behalf of Fergus Kinfauns, The Commane — Chief of Ó Comáin — and the assembled derbhfine of Clan Ó Comáin, it is my honour to welcome you as a <strong>${escapeHtml(tierDisplayName)}</strong> of one of Ireland's oldest and most thoroughly documented Gaelic lineages.</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">Your name is now entered in the Register of Clan Ó Comáin Members, held at Newhall House, County Clare, Ireland.</p>
 
+    <!-- Deliverability + sender-pattern primer. Adding clan@ to contacts
+         is a real Gmail/Outlook signal that lifts future household mail
+         out of spam folders. The 'several offices' framing also pre-
+         empts the related problem: when a new sender from chief@,
+         herald@, antoin@, etc. writes for the first time, recipients'
+         mail filters may flag the unfamiliar sender. Naming the
+         household pattern here makes those later sends expected. -->
+    <div style="background:#F8F0DC;border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 28px">
+      <p style="font-family:'Georgia',serif;font-size:14.5px;color:#3C2A1A;line-height:1.7;margin:0">A small practical note before anything else — please add <a href="mailto:clan@ocomain.org" style="color:#8C6A1A;font-weight:600">clan@ocomain.org</a> to your address book. Correspondence from the household will reach you over the coming weeks from several offices at <em>ocomain.org</em> — the Chief himself, the Herald, and this office among them — and your mail provider treats senders in your contacts with the courtesy they deserve.</p>
+    </div>
+
     ${certBlock}
 
     <!-- Divider -->
