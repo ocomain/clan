@@ -49,6 +49,18 @@ a{color:inherit;text-decoration:none}
 
 /* NAV */
 .nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(184,151,90,.15)}
+/* Chrome mobile has long-standing quirks with position:sticky on
+   the page-level header — when the browser's URL bar collapses
+   during scroll, the sticky element can lose its layout/height
+   while the page content reflows, leaving the user without the
+   brand header visible. Safari handles this case differently and
+   it works correctly there. The fix: use position:fixed on mobile
+   (universal behaviour) with a body padding-top spacer to keep
+   content from sliding under the fixed nav. */
+@media(max-width:768px){
+  .nav{position:fixed;left:0;right:0}
+  body{padding-top:58px}
+}
 .nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none}
 .nav-brand em{font-style:italic}
 .nav-links{display:flex;gap:24px}
