@@ -484,8 +484,36 @@
            '<a class="lf-pop-link-2" href="/members/">Already a member? Sign in →</a>';
   }
 
+  // ── Auth-aware fetch ───────────────────────────────────────────────
+  // The public map is open to anyone, but if the visitor happens to be
+  // signed in (same origin → same localStorage), pass their bearer token
+  // so gathering-list returns the full venue specifics instead of the
+  // gated public response. Reading localStorage directly is lighter than
+  // loading supabase-js just to call getSession() — the storage key is
+  // stable for supabase-js v2 and matches what /members/auth.js writes.
+  //
+  // Expired tokens get rejected server-side and we get the gated response
+  // anyway, so no client-side expiry check is needed; the worst case is
+  // a logged-in-but-stale visitor sees public copy until they refresh
+  // through the members area.
+  function getAccessTokenIfAny() {
+    try {
+      var raw = localStorage.getItem('sb-nlrlxoplpjamttwbmgtx-auth-token');
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      return (obj && obj.access_token) || null;
+    } catch (_) { return null; }
+  }
+
+  function listFetch(url) {
+    var headers = { 'Accept': 'application/json' };
+    var tok = getAccessTokenIfAny();
+    if (tok) headers['Authorization'] = 'Bearer ' + tok;
+    return fetch(url, { headers: headers });
+  }
+
   // Fetch + render
-  fetch('/api/gathering-list?year=' + year, { headers: { 'Accept': 'application/json' } })
+  listFetch('/api/gathering-list?year=' + year)
     .then(function(res){
       if (!res.ok) throw new Error('list ' + res.status);
       return res.json();
