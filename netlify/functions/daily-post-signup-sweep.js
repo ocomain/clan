@@ -20,7 +20,8 @@
 //   post_signup_email_3_sent_at, _9_sent_at, _21_sent_at,
 //   _35_sent_at + _35_skipped, _60_sent_at, _90_sent_at,
 //   _180_sent_at, _240_sent_at, _300_sent_at,
-//   _330_sent_at + _330_skipped
+//   _330_sent_at + _330_skipped,
+//   _366_sent_at
 // Once stamped, the email never re-sends for that member. Partial
 // indexes (migrations 022 + 025) keep per-email "still pending"
 // queries bounded.
@@ -63,6 +64,7 @@ const {
   sendJessicaGathering,
   sendPaddyRoyalHouseAndSaint,
   sendLindaRenewal,
+  sendLindaStandingMember,
 } = require('./lib/post-signup-email');
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -177,6 +179,7 @@ const SENDER_READY = {
   e8_jess:    true,
   e9_paddy:   true,
   e10_linda:  true,
+  e366_linda: true,
 };
 
 // Returns the [earliest, latest) ISO range for "members who became
@@ -205,6 +208,7 @@ exports.handler = async () => {
       e3: 0, e9: 0, e21: 0, e35_sent: 0, e35_skipped: 0,
       e60: 0, e90: 0, e180: 0, e240: 0, e300: 0,
       e330_sent: 0, e330_skipped: 0,
+      e366: 0,
       gated: 0, failed: 0,
     };
 
@@ -664,6 +668,43 @@ exports.handler = async () => {
     } else {
       stats.gated += 1;
       console.log('post-signup-sweep: e330 (Linda renewal) gated');
+    }
+
+    // ── EMAIL 11 — Linda, Standing Member transition (+366) ─────────
+    // Applies to EVERY active member regardless of tier. Life
+    // members also become Standing Members at year and a day — the
+    // transition is a function of time-on-the-Register, not
+    // subscription status. No skip flag for this bucket.
+    if (SENDER_READY.e366_linda) {
+      const { earliest, latest } = bucketRange(now, 366);
+      const { data: targets, error } = await supa()
+        .from('members').select('id, email, name, tier, sponsor_titles_awarded, created_at')
+        .eq('clan_id', clan_id).eq('status', 'active')
+        .is('post_signup_email_366_sent_at', null)
+        .gte('created_at', earliest).lt('created_at', latest).limit(PER_BUCKET_LIMIT);
+      if (error) console.error('post-signup-sweep: e366 query failed:', error.message);
+      else {
+        for (const m of targets || []) {
+          try {
+            const claimed = await claimEmailSlot(m.id, 'post_signup_email_366_sent_at');
+            if (!claimed) continue;
+            const ok = await sendLindaStandingMember(m);
+            if (ok) {
+              await logEvent({ clan_id, member_id: m.id, event_type: 'post_signup_email_sent', payload: { email: 'e366', tier: m.tier, transition: 'observer_to_standing' } });
+              stats.e366 += 1;
+            } else {
+              await releaseEmailSlot(m.id, 'post_signup_email_366_sent_at');
+              stats.failed += 1;
+            }
+          } catch (err) {
+            console.error('post-signup-sweep: e366 send failed for', m.email, err.message);
+            stats.failed += 1;
+          }
+        }
+      }
+    } else {
+      stats.gated += 1;
+      console.log('post-signup-sweep: e366 (Linda standing member) gated');
     }
 
     console.log('post-signup-sweep complete:', JSON.stringify(stats));
