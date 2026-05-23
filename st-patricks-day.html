@@ -88,6 +88,18 @@
     /* ── MAP ─────────────────────────────────────────────────────── */
     .lf-map-section{background:var(--ink);padding:32px 0 70px}
     .lf-map-wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+
+    /* Member-only shortcut banner — sits above the map, only visible
+       when a Supabase session is detected client-side. */
+    .lf-member-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 24px;margin-bottom:18px;background:rgba(184,151,90,.1);border:1px solid rgba(184,151,90,.35);border-left:3px solid var(--gold);border-radius:1px;flex-wrap:wrap}
+    .lf-member-banner-text{font-family:'EB Garamond',serif;font-size:16px;color:var(--gold-pale);line-height:1.55;flex:1;min-width:240px}
+    .lf-member-banner-text strong{color:var(--gold-pale);font-weight:500;font-style:italic}
+    .lf-member-banner-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;text-decoration:none;border-radius:1px;flex-shrink:0;transition:background .15s}
+    .lf-member-banner-cta:hover{background:var(--gold-pale)}
+    @media (max-width:560px){
+      .lf-member-banner{padding:16px 18px}
+      .lf-member-banner-cta{width:100%;text-align:center;box-sizing:border-box}
+    }
     .lf-map{width:100%;height:560px;border:1px solid var(--gold-border);background:var(--ink-mid);position:relative}
     .lf-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-family:'EB Garamond',serif;font-style:italic;font-size:17px;background:var(--ink-mid);z-index:401;opacity:.85}
     .lf-map-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,31,15,.72);z-index:402;padding:24px}
@@ -273,6 +285,18 @@
 <!-- MAP -->
 <section class="lf-map-section">
   <div class="lf-map-wrap">
+    <!-- Member shortcut banner — rendered hidden, JS unhides it when
+         a Supabase session is detected in localStorage. The members
+         host page contains the same map with inline RSVP, no popup
+         conversion CTAs in the way, so signed-in members are better
+         served there even though the public map will also show them
+         venue specifics now that the bearer is being passed. -->
+    <div id="lf-member-banner" class="lf-member-banner" style="display:none">
+      <div class="lf-member-banner-text">
+        <strong>You're signed in.</strong> The members' map lets you RSVP in one tap and shows pins you're already attending.
+      </div>
+      <a href="/members/host-gathering.html" class="lf-member-banner-cta">Open the members' map →</a>
+    </div>
     <div class="lf-map" id="lf-map">
       <div class="lf-map-loading" id="lf-map-loading">Loading the gathering map…</div>
       <div class="lf-map-empty" id="lf-map-empty">
@@ -503,6 +527,15 @@
       var obj = JSON.parse(raw);
       return (obj && obj.access_token) || null;
     } catch (_) { return null; }
+  }
+
+  // Reveal the members shortcut banner if a session is in localStorage.
+  // The token might be expired (server will reject and we'll fall back
+  // to gated copy), but a stale token still means this person was
+  // recently a member — the banner is still useful prompt.
+  if (getAccessTokenIfAny()) {
+    var bannerEl = document.getElementById('lf-member-banner');
+    if (bannerEl) bannerEl.style.display = '';
   }
 
   function listFetch(url) {
