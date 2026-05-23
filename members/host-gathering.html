@@ -138,6 +138,40 @@
     .hg-year-switcher a{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px;margin:0 8px}
     .hg-year-switcher a:hover{color:var(--gold)}
     .hg-year-switcher a.active{color:var(--ink);font-weight:500;text-decoration:none}
+
+    /* Network map card */
+    .hg-network-card{padding:24px 24px 28px}
+    .hg-network-stats{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);margin:0 0 16px;line-height:1.55;font-style:italic}
+    .hg-network-stats strong{color:var(--ink);font-weight:500;font-style:normal}
+    .hg-network-map{width:100%;height:440px;border:1px solid var(--gold-border);background:var(--cream-mid)}
+    .hg-network-empty{margin-top:14px;font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-muted);text-align:center;padding:14px}
+    @media (max-width:560px){.hg-network-map{height:360px}}
+
+    /* Map popup style — light variant for the members area (page bg is cream) */
+    .hg-network-map .leaflet-popup-content-wrapper{background:#FFFFFF;color:#0F1F0F;border:1px solid #B8975A;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+    .hg-network-map .leaflet-popup-tip{background:#FFFFFF;border:1px solid #B8975A}
+    .hg-network-map .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:240px;max-width:300px}
+    .hg-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8B6F32;margin-bottom:6px}
+    .hg-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#0F1F0F;margin:0 0 5px;font-weight:500}
+    .hg-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:#5A7A5A;font-style:italic;margin-bottom:11px}
+    .hg-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#8B6F32;margin-bottom:11px}
+    .hg-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:#2E4A2E;margin-bottom:11px}
+    .hg-pop-host-name{color:#0F1F0F;font-style:italic}
+    .hg-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:#5A7A5A;font-style:italic;margin-bottom:13px;padding-left:9px;border-left:2px solid #E4D5A8}
+    .hg-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#8B6F32;margin-bottom:11px}
+    .hg-pop-badge{display:inline-block;background:rgba(184,151,90,.16);color:#8B6F32;font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;margin-bottom:10px}
+    .hg-pop-badge-own{background:rgba(46,74,46,.12);color:#2E4A2E}
+    .hg-pop-cta{display:inline-block;background:#B8975A;color:#0F1F0F;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;padding:10px 18px;margin-top:8px;border-radius:1px}
+    .hg-pop-cta:hover{background:#D4B483}
+    .hg-pop-cta-ghost{background:transparent;color:#8B6F32;border:1px solid rgba(184,151,90,.4)}
+    .hg-pop-cta-ghost:hover{background:rgba(184,151,90,.08);color:#0F1F0F}
+
+    /* RSVP card (inline, populated when user clicks a pin) */
+    .hg-rsvp-existing{background:rgba(46,74,46,.07);border-left:3px solid var(--ink-soft);padding:14px 16px;margin:14px 0 18px;font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);line-height:1.6}
+    .hg-rsvp-existing strong{color:var(--ink);font-weight:600}
+
+    /* Upgrade-to-host card (Clan Member tier soft callout) */
+    .hg-upgrade-card{background:rgba(184,151,90,.05);border-top:3px solid var(--gold)}
   </style>
 </head>
 <body>
@@ -171,14 +205,6 @@
   <div id="hg-not-active" class="hg-state" style="display:none">
     <div class="hg-state-msg">Hosting a gathering requires an active membership. <a href="/members/" style="color:var(--gold-deep);text-decoration:underline">View your membership</a> or <a href="mailto:clan@ocomain.org" style="color:var(--gold-deep);text-decoration:underline">write to the Office</a>.</div>
   </div>
-  <div id="hg-not-tier-eligible" class="hg-state" style="display:none">
-    <div class="hg-state-msg"><strong style="color:var(--ink)">Hosting is a Guardian-tier-or-above benefit.</strong></div>
-    <div class="hg-state-msg" style="margin-top:14px">Every member can <strong>attend</strong> a gathering and RSVP to any pin on the map — that's open to all tiers. Hosting your own pin, with the host responsibilities that come with it (booking a back room, replying to RSVPs, welcoming arrivals), is reserved for Guardian, Steward and Life members.</div>
-    <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <a href="/st-patricks-day.html" class="hg-btn hg-btn-ghost">View the map</a>
-      <a href="/members/" class="hg-btn">Upgrade your tier</a>
-    </div>
-  </div>
 
   <div id="hg-content" style="display:none">
 
@@ -186,7 +212,75 @@
 
     <div id="hg-toast" class="hg-toast"></div>
 
-    <!-- Existing pin card (if any) -->
+    <!-- ── NETWORK MAP — visible to all active members ────────────── -->
+    <div class="hg-card hg-network-card">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title">Where the kindred are gathering</h2>
+        <span class="hg-card-year" id="hg-network-year">2027</span>
+      </div>
+      <div id="hg-network-stats" class="hg-network-stats"></div>
+      <div id="hg-network-map" class="hg-network-map"></div>
+      <div id="hg-network-empty" class="hg-network-empty" style="display:none">
+        No gatherings have been pinned yet for this St Patrick's Day. Be the first.
+      </div>
+    </div>
+
+    <!-- ── RSVP CARD — populated when user clicks a pin on the map ─ -->
+    <div id="hg-rsvp-card" class="hg-card" style="display:none">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title" id="hg-rsvp-title">RSVP to this gathering</h2>
+      </div>
+      <div class="hg-card-body">
+        <div class="hg-pin-display" id="hg-rsvp-pin-display"></div>
+        <div id="hg-rsvp-existing" style="display:none" class="hg-rsvp-existing">
+          <strong>You're attending</strong> — <span id="hg-rsvp-existing-guests"></span> · You'll receive an email reminder closer to the date.
+        </div>
+        <div id="hg-rsvp-form-wrap">
+          <div class="hg-row-2">
+            <div class="hg-field">
+              <label class="hg-label" for="hg-rsvp-guests">How many of you?</label>
+              <select class="hg-input" id="hg-rsvp-guests">
+                <option value="1">Just me</option>
+                <option value="2">2 people</option>
+                <option value="3">3 people</option>
+                <option value="4">4 people</option>
+                <option value="5">5 people</option>
+                <option value="6">6 people</option>
+                <option value="7">7 people</option>
+                <option value="8">8 people</option>
+                <option value="9">9 people</option>
+                <option value="10">10 people</option>
+              </select>
+            </div>
+          </div>
+          <div class="hg-field">
+            <label class="hg-label" for="hg-rsvp-note">A note for the host <span style="text-transform:none;letter-spacing:0;color:var(--ink-muted);font-weight:400">(optional, 200 characters)</span></label>
+            <textarea class="hg-textarea" id="hg-rsvp-note" maxlength="200" placeholder="Anything the host should know — dietary needs, when you'll arrive, who you're bringing…"></textarea>
+          </div>
+        </div>
+        <div class="hg-actions">
+          <button class="hg-btn" type="button" id="hg-rsvp-submit-btn">Confirm RSVP</button>
+          <button class="hg-btn hg-btn-danger" type="button" id="hg-rsvp-remove-btn" style="display:none">Cancel my RSVP</button>
+          <button class="hg-btn hg-btn-ghost" type="button" id="hg-rsvp-close-btn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── UPGRADE TO HOST callout — Clan Member tier only ──────── -->
+    <div id="hg-upgrade-to-host" class="hg-card hg-upgrade-card" style="display:none">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title">Want to host your own gathering?</h2>
+      </div>
+      <div class="hg-card-body">
+        <p>You can RSVP and attend any gathering on the map — that's open to all tiers. Hosting your own pin (booking a back room, replying to RSVPs, welcoming arrivals) is reserved for <strong>Guardian, Steward and Life</strong> members.</p>
+        <div class="hg-actions">
+          <a href="/members/" class="hg-btn">Upgrade your tier</a>
+          <a href="mailto:clan@ocomain.org?subject=Upgrading%20to%20Guardian" class="hg-btn hg-btn-ghost">Write to the Office</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Existing pin card (Guardian+ only) -->
     <div id="hg-existing" class="hg-card" style="display:none">
       <div class="hg-card-head">
         <h2 class="hg-card-title">Your gathering</h2>
@@ -202,7 +296,7 @@
       </div>
     </div>
 
-    <!-- Incoming RSVPs (if any) -->
+    <!-- Incoming RSVPs to your pin (Guardian+ with a pin) -->
     <div id="hg-rsvps" class="hg-card" style="display:none">
       <div class="hg-card-head">
         <h2 class="hg-card-title">RSVPs to your gathering</h2>
@@ -210,7 +304,15 @@
       <div id="hg-rsvps-list"></div>
     </div>
 
-    <!-- Host form -->
+    <!-- Your RSVPs to other gatherings (everyone) -->
+    <div id="hg-my-rsvps" class="hg-card" style="display:none">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title">You're attending</h2>
+      </div>
+      <div id="hg-my-rsvps-list"></div>
+    </div>
+
+    <!-- Host form (Guardian+ only) -->
     <div id="hg-form-card" class="hg-card" style="display:none">
       <div class="hg-card-head">
         <h2 class="hg-card-title" id="hg-form-title">Set up your gathering</h2>
@@ -298,19 +400,33 @@
   const errorEl   = $('hg-error');
   const errorMsg  = $('hg-error-msg');
   const notActiveEl = $('hg-not-active');
-  const notTierEligibleEl = $('hg-not-tier-eligible');
   const contentEl = $('hg-content');
   const existingCard = $('hg-existing');
   const formCard  = $('hg-form-card');
   const rsvpsCard = $('hg-rsvps');
+  const myRsvpsCard = $('hg-my-rsvps');
+  const upgradeCard = $('hg-upgrade-to-host');
+  const rsvpCard  = $('hg-rsvp-card');
   const toastEl   = $('hg-toast');
   const yearSwitcher = $('hg-year-switcher');
+  const networkMapEl = $('hg-network-map');
+  const networkStatsEl = $('hg-network-stats');
+  const networkEmptyEl = $('hg-network-empty');
 
   let memberProfile = null;
   let currentGathering = null;
   let session = null;
   let miniMap = null;
   let miniMarker = null;
+  let networkMap = null;
+  let networkPins = [];               // [{ gathering, marker }]
+  let myRsvpsByGatheringId = {};      // { gatheringId: { guest_count, note, id } }
+  let activeRsvpGatheringId = null;   // the pin currently open in the RSVP card
+
+  // Tier eligibility — mirrors server-side check.
+  function canHost() {
+    return memberProfile && memberProfile.tier && !memberProfile.tier.startsWith('clan-');
+  }
 
   function showToast(msg, kind) {
     toastEl.textContent = msg;
@@ -349,20 +465,21 @@
       notActiveEl.style.display = 'block';
       return;
     }
-    // Tier gate — mirrors server-side check in gathering-host-upsert.js.
-    // Clan Member tier (clan-ind, clan-fam) can attend & RSVP but not host.
-    // Guardian, Steward and Life can host.
-    if (memberProfile.tier && memberProfile.tier.startsWith('clan-')) {
-      loadingEl.style.display = 'none';
-      notTierEligibleEl.style.display = 'block';
-      return;
-    }
 
-    await loadGatheringForYear();
+    // All active members see the page — the host form is conditionally
+    // shown for Guardian+; Clan Member tier sees a softer "upgrade to
+    // host" callout instead. Map and RSVP are open to all tiers.
+    await Promise.all([loadGatheringForYear(), loadNetworkMap()]);
     renderYearSwitcher();
+
+    if (!canHost()) {
+      upgradeCard.style.display = 'block';
+    }
 
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
+    // After content unhide, give Leaflet a beat to measure
+    setTimeout(() => networkMap && networkMap.invalidateSize(), 50);
   })();
 
   function renderYearSwitcher() {
@@ -385,8 +502,11 @@
       if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
 
       currentGathering = data.gathering;
+      myRsvpsByGatheringId = {};
+      (data.rsvps || []).forEach(r => { myRsvpsByGatheringId[r.gathering_id] = r; });
       renderExistingOrForm();
       renderRsvps(data.gathering ? data.gathering.id : null);
+      renderMyRsvpsList(data.rsvps || []);
     } catch (e) {
       showError(e.message || 'Could not load your gathering.');
     }
@@ -404,9 +524,18 @@
   function renderExistingOrForm() {
     document.getElementById('hg-existing-year').textContent = YEAR;
     document.getElementById('hg-form-year').textContent = YEAR;
+    document.getElementById('hg-network-year').textContent = YEAR;
+
+    // Form + existing-pin card are Guardian+ surfaces. Clan Member tier
+    // gets the upgrade callout (rendered in boot()) instead.
+    if (!canHost()) {
+      existingCard.style.display = 'none';
+      formCard.style.display = 'none';
+      rsvpsCard.style.display = 'none';
+      return;
+    }
 
     if (currentGathering && currentGathering.status === 'published') {
-      // Display the existing pin
       const g = currentGathering;
       const hostName = g.host_display_name || memberProfile.name || '';
       $('hg-pin-display').innerHTML = `
@@ -643,19 +772,273 @@
     setTimeout(() => miniMap && miniMap.invalidateSize(), 50);
   }
 
-  // ── RSVPs render ───────────────────────────────────────────────────
+  // ── Incoming RSVPs to YOUR gathering ──────────────────────────────
   async function renderRsvps(gatheringId) {
-    if (!gatheringId) {
+    if (!gatheringId || !canHost()) {
       rsvpsCard.style.display = 'none';
       return;
     }
-    // We don't yet have a dedicated endpoint for "list RSVPs to my
-    // gathering" — for v1 we render a placeholder that tells the
-    // host RSVPs are emailed to them as they come in. v2 wires up
-    // a real list endpoint and shows the names here.
+    // v1: placeholder — we don't yet have a dedicated "list RSVPs to
+    // my gathering" endpoint. Each RSVP is emailed to the host in
+    // real time (see gathering-rsvp.js notifyHost). v2 wires up a
+    // real list endpoint and renders the names here.
     $('hg-rsvps-list').innerHTML =
       '<div class="hg-rsvp-empty">When kindred RSVP digitally, you\'ll receive an email with their name and guest count. A live list will appear here in a future update.</div>';
     rsvpsCard.style.display = 'block';
+  }
+
+  // ── Network map (all pins) ────────────────────────────────────────
+  // Loads via the public gathering-list endpoint — same data the
+  // /st-patricks-day page renders. We layer member-only affordances
+  // on top: clicking a pin opens an inline RSVP card below the map.
+  async function loadNetworkMap() {
+    try {
+      const res = await fetch('/api/gathering-list?year=' + YEAR, { headers: { 'Accept': 'application/json' } });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+      renderNetworkMap(data.gatherings || [], data.stats || { gatherings: 0, countries: 0, cities: 0 });
+    } catch (e) {
+      console.error('loadNetworkMap failed:', e);
+      networkStatsEl.textContent = 'Could not load the map just now. Please refresh shortly.';
+    }
+  }
+
+  // Gold heraldic pin SVG — matches the public map.
+  const pinIcon = L.divIcon({
+    className: 'hg-network-pin',
+    html: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">' +
+          '<path d="M14 0 C6 0 0 6 0 14 c0 10 14 22 14 22 s14 -12 14 -22 c0 -8 -6 -14 -14 -14 z" fill="#B8975A" stroke="#0F1F0F" stroke-width="1.5"/>' +
+          '<circle cx="14" cy="14" r="5" fill="#0F1F0F"/></svg>',
+    iconSize: [28, 36], iconAnchor: [14, 36], popupAnchor: [0, -32],
+  });
+
+  function renderNetworkMap(gatherings, stats) {
+    networkStatsEl.innerHTML = stats.gatherings > 0
+      ? `<strong>${stats.gatherings}</strong> ${stats.gatherings === 1 ? 'gathering' : 'gatherings'} across <strong>${stats.countries}</strong> ${stats.countries === 1 ? 'country' : 'countries'} for 17 March ${YEAR}. Click a pin to RSVP.`
+      : `No pins yet for 17 March ${YEAR}.`;
+
+    if (!networkMap) {
+      networkMap = L.map(networkMapEl, {
+        center: [44, -25], zoom: 2,
+        scrollWheelZoom: false, worldCopyJump: true,
+      });
+      networkMap.attributionControl.setPrefix('');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(networkMap);
+    }
+
+    // Wipe existing markers
+    networkPins.forEach(p => networkMap.removeLayer(p.marker));
+    networkPins = [];
+
+    if (gatherings.length === 0) {
+      networkEmptyEl.style.display = 'block';
+      networkMap.setView([44, -25], 2);
+      return;
+    }
+    networkEmptyEl.style.display = 'none';
+
+    const bounds = [];
+    gatherings.forEach(g => {
+      const marker = L.marker([g.venue_lat, g.venue_lng], { icon: pinIcon }).addTo(networkMap);
+      marker.bindPopup(popupHtmlFor(g), { maxWidth: 320 });
+      marker.on('popupopen', () => attachPopupHandlers(g));
+      networkPins.push({ gathering: g, marker });
+      bounds.push([g.venue_lat, g.venue_lng]);
+    });
+
+    if (bounds.length === 1) networkMap.setView(bounds[0], 6);
+    else networkMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+  }
+
+  function popupHtmlFor(g) {
+    const isOwn  = currentGathering && currentGathering.id === g.id;
+    const myRsvp = myRsvpsByGatheringId[g.id];
+    const attending = (g.total_attending && g.total_attending > 0)
+      ? `<div class="hg-pop-attending">${g.total_attending} ${g.total_attending === 1 ? 'person' : 'people'} attending</div>`
+      : '';
+    const msg = g.message ? `<div class="hg-pop-msg">${esc(g.message)}</div>` : '';
+    const hostBit = g.host_display_name
+      ? `<div class="hg-pop-host">Hosted by <span class="hg-pop-host-name">${esc(g.host_display_name)}</span></div>` : '';
+
+    let badge = '';
+    let cta = '';
+    if (isOwn) {
+      badge = `<div class="hg-pop-badge hg-pop-badge-own">Hosted by you</div>`;
+      cta = `<button class="hg-pop-cta hg-pop-cta-ghost" data-pop-action="scroll-to-edit">Edit your pin ↓</button>`;
+    } else if (myRsvp) {
+      const n = myRsvp.guest_count;
+      badge = `<div class="hg-pop-badge">You're attending · ${n === 1 ? 'just you' : n + ' people'}</div>`;
+      cta = `<button class="hg-pop-cta" data-pop-action="open-rsvp" data-gid="${esc(g.id)}">Update RSVP</button>`;
+    } else {
+      cta = `<button class="hg-pop-cta" data-pop-action="open-rsvp" data-gid="${esc(g.id)}">I'll be there →</button>`;
+    }
+
+    return `<div class="hg-pop-eyebrow">St Patrick's Day</div>
+      <h3 class="hg-pop-title">${esc(g.venue_name)}</h3>
+      <div class="hg-pop-city">${esc(g.venue_city)}, ${esc(g.venue_country)}</div>
+      <div class="hg-pop-when">${esc(fmtTime(g.starts_local_time))} · 17 March ${YEAR}</div>
+      ${hostBit}${msg}${attending}${badge}${cta}`;
+  }
+
+  function attachPopupHandlers(g) {
+    // Leaflet renders the popup HTML synchronously, so by the time
+    // popupopen fires, the buttons are in the DOM. There's only one
+    // popup open at a time, so a document.querySelector is fine.
+    const btn = document.querySelector('.leaflet-popup-content [data-pop-action]');
+    if (!btn) return;
+    const action = btn.getAttribute('data-pop-action');
+    if (action === 'open-rsvp') {
+      btn.addEventListener('click', () => {
+        const gid = btn.getAttribute('data-gid');
+        openRsvpCard(gid);
+        networkMap.closePopup();
+      });
+    } else if (action === 'scroll-to-edit') {
+      btn.addEventListener('click', () => {
+        existingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        networkMap.closePopup();
+      });
+    }
+  }
+
+  // ── RSVP card (inline, populated when a pin is clicked) ───────────
+  function openRsvpCard(gatheringId) {
+    const pin = networkPins.find(p => p.gathering.id === gatheringId);
+    if (!pin) return;
+    const g = pin.gathering;
+    activeRsvpGatheringId = gatheringId;
+
+    $('hg-rsvp-title').textContent = 'RSVP — ' + g.venue_name;
+    $('hg-rsvp-pin-display').innerHTML = `
+      <div class="pin-venue">${esc(g.venue_name)}</div>
+      <div>${esc(g.venue_address)}</div>
+      <div class="pin-meta">${esc(g.venue_city)}, ${esc(g.venue_country)} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
+      ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${esc(g.host_display_name)}</strong></div>` : ''}
+      ${g.message ? `<div class="pin-msg">"${esc(g.message)}"</div>` : ''}
+    `;
+
+    const existing = myRsvpsByGatheringId[gatheringId];
+    if (existing) {
+      $('hg-rsvp-guests').value = String(existing.guest_count);
+      $('hg-rsvp-note').value = existing.note || '';
+      $('hg-rsvp-existing').style.display = 'block';
+      $('hg-rsvp-existing-guests').textContent = existing.guest_count === 1 ? 'just you' : existing.guest_count + ' people';
+      $('hg-rsvp-submit-btn').textContent = 'Update RSVP';
+      $('hg-rsvp-remove-btn').style.display = 'inline-block';
+    } else {
+      $('hg-rsvp-guests').value = '1';
+      $('hg-rsvp-note').value = '';
+      $('hg-rsvp-existing').style.display = 'none';
+      $('hg-rsvp-submit-btn').textContent = 'Confirm RSVP';
+      $('hg-rsvp-remove-btn').style.display = 'none';
+    }
+
+    rsvpCard.style.display = 'block';
+    rsvpCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  $('hg-rsvp-close-btn').addEventListener('click', () => {
+    rsvpCard.style.display = 'none';
+    activeRsvpGatheringId = null;
+  });
+
+  $('hg-rsvp-submit-btn').addEventListener('click', async () => {
+    if (!activeRsvpGatheringId) return;
+    const guestCount = parseInt($('hg-rsvp-guests').value, 10) || 1;
+    const note = $('hg-rsvp-note').value.trim();
+    const btn = $('hg-rsvp-submit-btn');
+    btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Saving…';
+    try {
+      const res = await fetch('/api/gathering-rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ gatheringId: activeRsvpGatheringId, action: 'set', guestCount, note }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'RSVP failed');
+      myRsvpsByGatheringId[activeRsvpGatheringId] = { gathering_id: activeRsvpGatheringId, guest_count: guestCount, note: note || null };
+      // Update the pin's cached counts so the map popup is fresh next open
+      const pin = networkPins.find(p => p.gathering.id === activeRsvpGatheringId);
+      if (pin) {
+        pin.gathering.rsvp_count = data.gathering_rsvp_count;
+        pin.gathering.total_attending = data.gathering_total_attending;
+        pin.marker.setPopupContent(popupHtmlFor(pin.gathering));
+      }
+      showToast('RSVP confirmed. The host has been notified by email.', 'ok');
+      rsvpCard.style.display = 'none';
+      await refreshMyRsvpsList();
+    } catch (e) {
+      showToast(e.message || 'Could not save RSVP — please try again.', 'err');
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  });
+
+  $('hg-rsvp-remove-btn').addEventListener('click', async () => {
+    if (!activeRsvpGatheringId) return;
+    if (!confirm('Remove your RSVP? The host will be notified.')) return;
+    const btn = $('hg-rsvp-remove-btn');
+    btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Removing…';
+    try {
+      const res = await fetch('/api/gathering-rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ gatheringId: activeRsvpGatheringId, action: 'remove' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Remove failed');
+      delete myRsvpsByGatheringId[activeRsvpGatheringId];
+      const pin = networkPins.find(p => p.gathering.id === activeRsvpGatheringId);
+      if (pin) {
+        pin.gathering.rsvp_count = data.gathering_rsvp_count;
+        pin.gathering.total_attending = data.gathering_total_attending;
+        pin.marker.setPopupContent(popupHtmlFor(pin.gathering));
+      }
+      showToast('RSVP removed.', 'ok');
+      rsvpCard.style.display = 'none';
+      await refreshMyRsvpsList();
+    } catch (e) {
+      showToast(e.message || 'Could not remove RSVP — please try again.', 'err');
+    } finally {
+      btn.disabled = false; btn.textContent = orig;
+    }
+  });
+
+  // ── "You're attending" list of pins the member has RSVP'd to ──────
+  async function refreshMyRsvpsList() {
+    // gathering-host-mine returns both the member's own pin + their
+    // RSVPs to other published pins for the year. Already called from
+    // loadGatheringForYear; this helper just re-renders the list.
+    try {
+      const res = await fetch('/api/gathering-host-mine?year=' + YEAR, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) return;
+      myRsvpsByGatheringId = {};
+      (data.rsvps || []).forEach(r => { myRsvpsByGatheringId[r.gathering_id] = r; });
+      renderMyRsvpsList(data.rsvps || []);
+    } catch (e) { console.warn('refreshMyRsvpsList failed (non-fatal):', e); }
+  }
+
+  function renderMyRsvpsList(rsvps) {
+    if (!rsvps || rsvps.length === 0) {
+      myRsvpsCard.style.display = 'none';
+      return;
+    }
+    $('hg-my-rsvps-list').innerHTML = rsvps.map(r => {
+      const g = r.gathering;
+      const n = r.guest_count;
+      return `<div class="hg-rsvp">
+        <span class="rsvp-who">${esc(g.venue_name)}</span>, ${esc(g.venue_city)}
+        <span class="rsvp-count">${n === 1 ? 'just you' : n + ' people'}</span>
+        ${r.note ? `<div class="rsvp-note">"${esc(r.note)}"</div>` : ''}
+      </div>`;
+    }).join('');
+    myRsvpsCard.style.display = 'block';
   }
 
   function esc(s) {
