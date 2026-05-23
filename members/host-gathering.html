@@ -529,8 +529,23 @@
 
     loadingEl.style.display = 'none';
     contentEl.style.display = 'block';
-    // After content unhide, give Leaflet a beat to measure
-    setTimeout(() => networkMap && networkMap.invalidateSize(), 50);
+    // After content unhide, give Leaflet a beat to measure, then
+    // re-fit the bounds. The original fitBounds inside renderNetworkMap
+    // ran while contentEl was still display:none, so the container had
+    // zero dimensions and the zoom got computed wrong (manifested as a
+    // map zoomed too tight on the midpoint between pins, with no pins
+    // visible in the viewport). invalidateSize fixes the size but does
+    // not auto-refit, so we have to do it explicitly here.
+    setTimeout(() => {
+      if (!networkMap) return;
+      networkMap.invalidateSize();
+      if (networkPins.length === 1) {
+        networkMap.setView([networkPins[0].gathering.venue_lat, networkPins[0].gathering.venue_lng], 6);
+      } else if (networkPins.length > 1) {
+        const bounds = networkPins.map(p => [p.gathering.venue_lat, p.gathering.venue_lng]);
+        networkMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+      }
+    }, 50);
   })();
 
   function renderYearSwitcher() {

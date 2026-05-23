@@ -107,6 +107,28 @@
     .lf-map-section{background:var(--ink);padding:32px 0 70px}
     .lf-map-wrap{max-width:1120px;margin:0 auto;padding:0 16px}
 
+    /* Map + sidebar layout — flex row on desktop, stacked on mobile.
+       Map takes the remaining width; sidebar is fixed at 280px so it
+       reads as a parallel "all gatherings" column without competing
+       with the map for breathing room. */
+    .lf-map-row{display:flex;gap:18px;align-items:stretch}
+    .lf-map-row > .lf-map{flex:1;min-width:0}
+    .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:580px;overflow:hidden}
+    .lf-sidebar-title{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
+    .lf-sidebar-list{flex:1;overflow-y:auto;padding:6px 0}
+    .lf-sidebar-item{display:block;width:100%;background:transparent;border:none;border-left:3px solid transparent;text-align:left;padding:14px 20px;cursor:pointer;font-family:'EB Garamond',serif;color:var(--gold-pale);transition:background .12s,border-color .12s}
+    .lf-sidebar-item:hover{background:rgba(184,151,90,.08);border-left-color:var(--gold)}
+    .lf-sidebar-item.active{background:rgba(184,151,90,.13);border-left-color:var(--gold)}
+    .lf-sidebar-item-city{font-family:'EB Garamond',serif;font-size:17px;font-weight:500;color:var(--gold-pale);margin-bottom:2px;line-height:1.25}
+    .lf-sidebar-item-region{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:rgba(215,235,215,.6);margin-bottom:6px}
+    .lf-sidebar-item-meta{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.1em;color:var(--gold);text-transform:uppercase}
+    .lf-sidebar-item-host{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(215,235,215,.65);margin-top:4px}
+    @media (max-width:760px){
+      .lf-map-row{flex-direction:column}
+      .lf-sidebar{width:auto;max-height:none;border-left:1px solid rgba(184,151,90,.25);border-top:3px solid var(--gold)}
+      .lf-sidebar-list{max-height:320px}
+    }
+
     /* Member-only shortcut banner — sits above the map, only visible
        when a Supabase session is detected client-side. */
     .lf-member-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 24px;margin-bottom:18px;background:rgba(184,151,90,.1);border:1px solid rgba(184,151,90,.35);border-left:3px solid var(--gold);border-radius:1px;flex-wrap:wrap}
@@ -257,15 +279,24 @@
       </div>
       <a href="/members/host-gathering.html" class="lf-member-banner-cta">Open the members' map →</a>
     </div>
-    <div class="lf-map" id="lf-map">
-      <div class="lf-map-loading" id="lf-map-loading">Loading the gathering map…</div>
-      <div class="lf-map-empty" id="lf-map-empty">
-        <div class="lf-map-empty-card">
-          <div class="lf-map-empty-title">The map is empty — for now.</div>
-          <div class="lf-map-empty-body">No gatherings have been pinned yet for this St Patrick's Day. If you are a member, you can host the first one — pick a pub in your town, post your pin, and let the kindred find you.</div>
-          <a href="/members/host-gathering.html" class="lf-map-empty-cta">Host the first →</a>
+    <div class="lf-map-row">
+      <div class="lf-map" id="lf-map">
+        <div class="lf-map-loading" id="lf-map-loading">Loading the gathering map…</div>
+        <div class="lf-map-empty" id="lf-map-empty">
+          <div class="lf-map-empty-card">
+            <div class="lf-map-empty-title">The map is empty — for now.</div>
+            <div class="lf-map-empty-body">No gatherings have been pinned yet for this St Patrick's Day. If you are a member, you can host the first one — pick a pub in your town, post your pin, and let the kindred find you.</div>
+            <a href="/members/host-gathering.html" class="lf-map-empty-cta">Host the first →</a>
+          </div>
         </div>
       </div>
+      <!-- Sidebar list of all gatherings — clickable, navigates the
+           map and opens the clicked pin's popup. Hidden until the
+           map has data; collapses below the map on narrow viewports. -->
+      <aside class="lf-sidebar" id="lf-sidebar" style="display:none">
+        <div class="lf-sidebar-title">All gatherings</div>
+        <div class="lf-sidebar-list" id="lf-sidebar-list"></div>
+      </aside>
     </div>
   </div>
 </section>
@@ -413,6 +444,84 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // Region label for the sidebar — matches the GB subdivision used by
+  // the server-side stats (gathering-list.js countryKey). Kept in
+  // sync by sharing the same lat/lng bounds.
+  function regionLabel(g) {
+    if (g.venue_country !== 'GB') return g.venue_country;
+    var lat = Number(g.venue_lat), lng = Number(g.venue_lng);
+    if (lat >= 54.0 && lat <= 55.3 && lng >= -8.2 && lng <= -5.4) return 'Northern Ireland';
+    if (lat >= 54.6) return 'Scotland';
+    if (lng <= -2.6 && lat <= 53.5) return 'Wales';
+    return 'England';
+  }
+
+  function renderSidebar(gatherings, markers, map) {
+    var sidebar = document.getElementById('lf-sidebar');
+    var list    = document.getElementById('lf-sidebar-list');
+    if (!sidebar || !list) return;
+    if (!gatherings || gatherings.length === 0) {
+      sidebar.style.display = 'none';
+      return;
+    }
+    // Sort: by city A→Z within each country. Keeps the list stable as
+    // the dataset grows; readers scan by place rather than by recency.
+    var sorted = gatherings.slice().sort(function(a, b){
+      var ra = regionLabel(a), rb = regionLabel(b);
+      if (ra !== rb) return ra.localeCompare(rb);
+      return (a.venue_city || '').localeCompare(b.venue_city || '');
+    });
+
+    list.innerHTML = sorted.map(function(g, i){
+      var hostBit = g.host_display_name
+        ? '<div class="lf-sidebar-item-host">Hosted by ' + escHtml(g.host_display_name.split(' ')[0]) + '</div>'
+        : '';
+      return '<button type="button" class="lf-sidebar-item" data-gid="' + escHtml(g.id) + '">' +
+               '<div class="lf-sidebar-item-city">' + escHtml(g.venue_city) + '</div>' +
+               '<div class="lf-sidebar-item-region">' + escHtml(regionLabel(g)) + '</div>' +
+               '<div class="lf-sidebar-item-meta">' + escHtml(fmtTime(g.starts_local_time)) + ' · 17 March</div>' +
+               hostBit +
+             '</button>';
+    }).join('');
+    sidebar.style.display = '';
+
+    // Wire each row — click centers the map on the matching pin and
+    // opens its popup. Other popups close automatically (autoClose).
+    Array.prototype.forEach.call(list.querySelectorAll('.lf-sidebar-item'), function(btn){
+      btn.addEventListener('click', function(){
+        var gid = btn.getAttribute('data-gid');
+        for (var i = 0; i < gatherings.length; i++) {
+          if (gatherings[i].id === gid) {
+            var ll = [gatherings[i].venue_lat, gatherings[i].venue_lng];
+            // setView before openPopup so the popup auto-pan has a
+            // settled viewport to work against; openPopup itself will
+            // refine the pan if anything's still clipped.
+            map.setView(ll, Math.max(map.getZoom(), 6));
+            markers[i].openPopup();
+            return;
+          }
+        }
+      });
+    });
+
+    // Sync the 'active' visual state with whichever pin's popup is
+    // currently open. Listening to popupopen on the map catches every
+    // open path — pin click, sidebar click, programmatic.
+    map.on('popupopen', function(e){
+      var openedLL = e.popup.getLatLng();
+      Array.prototype.forEach.call(list.querySelectorAll('.lf-sidebar-item'), function(btn, idx){
+        var g = sorted[idx];
+        var match = g && (Math.abs(g.venue_lat - openedLL.lat) < 1e-6) && (Math.abs(g.venue_lng - openedLL.lng) < 1e-6);
+        btn.classList.toggle('active', !!match);
+      });
+    });
+    map.on('popupclose', function(){
+      Array.prototype.forEach.call(list.querySelectorAll('.lf-sidebar-item'), function(btn){
+        btn.classList.remove('active');
+      });
+    });
+  }
+
   function popupHtml(g) {
     var attendingLine = '';
     if (g.total_attending && g.total_attending > 0) {
@@ -533,16 +642,14 @@
       var markers = [];
       gatherings.forEach(function(g){
         var m = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(map);
-        // autoClose:false + closeOnClick:false so multiple popups can
-        // be visible simultaneously when we auto-open them below.
-        // autoPan: true (Leaflet default but explicit here) makes
-        // Leaflet shift the map when openPopup runs so the popup
-        // stays fully on-screen; the padding values give enough
-        // headroom for our taller popup with avatar + multiple CTAs.
+        // autoClose:true + closeOnClick:true (Leaflet defaults, explicit
+        // here so future-me doesn't second-guess). Opening one popup
+        // closes any other — so a user clicking through the sidebar
+        // list never sees overlapping popups stacking up.
         m.bindPopup(popupHtml(g), {
           maxWidth: 320,
-          autoClose: false,
-          closeOnClick: false,
+          autoClose: true,
+          closeOnClick: true,
           autoPan: true,
           autoPanPaddingTopLeft: L.point(20, 80),
           autoPanPaddingBottomRight: L.point(20, 20),
@@ -557,33 +664,25 @@
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
       }
 
-      // Auto-open popups when the map is sparse enough that they won't
-      // overlap into chaos. The pin-as-avatar already telegraphs "click
-      // me", but having at least the first pin sitting open removes the
-      // last bit of guesswork for first-time visitors. Threshold tuned
-      // for Year One; once we have 6+ pins the heuristic naturally
-      // disables itself and users discover the interaction via the
-      // avatar pins instead.
-      //
-      // Delay until the map has finished its fitBounds/setView animation,
-      // otherwise the auto-pan padding can't compute against a settled
-      // viewport and the popup ends up clipped above the map (which is
-      // exactly the bug the screenshot showed).
-      // Auto-open the popup only when there is a SINGLE pin on the
-      // map — with two or more pins the popups overlap (especially
-      // when pins are geographically close, e.g. Perth + London).
-      // Avatar pins are visually inviting enough on their own that
-      // users will click them; we don't need to force-open to draw
-      // attention past the first pin.
-      if (markers.length === 1) {
+      // Stash for sidebar wiring (defined below renderSidebar)
+      window.__lfMarkers = markers;
+      window.__lfMap = map;
+      window.__lfGatherings = gatherings;
+      renderSidebar(gatherings, markers, map);
+
+      // Auto-open the FIRST pin on load. Only one popup is ever open at
+      // a time (autoClose default), so this is just a friendly "here's
+      // a pin to see" gesture — the user can click any other pin or
+      // sidebar entry to switch. Delay until fitBounds/setView settles
+      // so auto-pan padding can compute against a stable viewport.
+      if (markers.length >= 1) {
         map.once('moveend', function(){
-          markers.forEach(function(m){ m.openPopup(); });
+          markers[0].openPopup();
         });
-        // Belt-and-braces: if the map is already in place (no movement
-        // needed) the moveend never fires. Fallback after a tick.
+        // Fallback if no movement was needed (initial view already matched).
         setTimeout(function(){
           if (!markers[0].getPopup() || !markers[0].getPopup().isOpen()) {
-            markers.forEach(function(m){ m.openPopup(); });
+            markers[0].openPopup();
           }
         }, 350);
       }
