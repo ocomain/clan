@@ -499,7 +499,7 @@
 
       currentGathering = data.gathering;
       $('hg-cancel-edit-btn').style.display = 'none';
-      showToast(data.isNew ? 'Your pin is on the map. Cousins can now find you.' : 'Your gathering has been updated.', 'ok');
+      showToast(data.isNew ? 'Your pin is on the map. The kindred can now find you.' : 'Your gathering has been updated.', 'ok');
       renderExistingOrForm();
       renderRsvps(data.gathering ? data.gathering.id : null);
     } catch (e) {

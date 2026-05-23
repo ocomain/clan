@@ -318,11 +318,22 @@
 
 <script>
 (function(){
-  // Year resolution — URL param wins, then current calendar year.
+  // Year resolution — URL param wins; otherwise default to the NEXT
+  // St Patrick's Day cycle. Between 18 March (year N) and 17 March
+  // (year N+1) the map should default to year N+1, since the upcoming
+  // cycle is the one people care about. Same logic as the host form.
+  function defaultYear() {
+    var now = new Date();
+    var y = now.getUTCFullYear();
+    var m = now.getUTCMonth(); // 0=Jan
+    var d = now.getUTCDate();
+    if (m > 2 || (m === 2 && d > 17)) return y + 1;
+    return y;
+  }
   var params = new URLSearchParams(window.location.search);
   var year = parseInt(params.get('year'), 10);
   if (!Number.isInteger(year) || year < 2026 || year > 2099) {
-    year = new Date().getUTCFullYear();
+    year = defaultYear();
   }
   document.getElementById('lf-year-eyebrow').textContent = year;
   document.getElementById('lf-stat-year').textContent = year;
