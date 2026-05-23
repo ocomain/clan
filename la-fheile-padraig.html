@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<!--
+  LÁ FHÉILE PÁDRAIG — ST PATRICK'S DAY GATHERING MAP
+  ───────────────────────────────────────────────────
+
+  Status: PASSWORD-GATED for internal review. noindex,nofollow, unlinked
+  from public navigation. The page exists at /la-fheile-padraig.html for
+  Fergus/DDW review only.
+
+  Architecture (per the May 2026 O'Dubhda-inspired thread):
+
+    - Public-facing read-only map page (this file).
+    - Pins seeded by member action via /members/host-gathering.html.
+    - RSVPs handled in the members' area (not on this page).
+    - Walk-in is open to anyone; digital RSVP is for active members
+      so the host can see real headcount.
+    - Hosting requires an active membership at any tier (Clan Member
+      upward). The full production package — printed invites, the
+      Chief's video greeting, heraldic menu cards — is a separate
+      Steward+ benefit handled by the Office, not represented in
+      this map.
+
+  Map tech:
+    - Leaflet + OpenStreetMap tiles (no API key needed)
+    - Pins loaded from /api/gathering-list
+    - Empty-state copy when zero pins (the "be the first" pull)
+
+  Launch gates before going public (remove BEN_PW + add to nav):
+    1. Chief's commitment to record annual video confirmed
+    2. Seeding mechanism in place (gifted-membership outreach)
+    3. At least a dozen confirmed gatherings in the database
+       so the public page doesn't look discouragingly empty
+
+  Year switching: the page reads ?year= from the URL, defaults to the
+  current calendar year. After 17 March it will keep showing the
+  current year's pins until 1 January when the default rolls forward.
+  Past years stay browseable via ?year=2027 etc.
+-->
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Lá Fhéile Pádraig — Clan Ó Comáin</title>
+  <meta name="description" content="A map of where Ó Comáin cousins are gathering this St Patrick's Day — pub by pub, city by city, across the diaspora. Find a cousin near you and join them.">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+
+  <!-- Leaflet 1.9.4 — pinned. CSS first so the map loads correctly. -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+  <style>
+    /* ── HERO ─────────────────────────────────────────────────────── */
+    .lf-hero{position:relative;min-height:46vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:70px 0}
+    .lf-hero-bg{position:absolute;inset:0;background:url('coat_of_arms.png') center/240px no-repeat;opacity:.05;filter:saturate(.4)}
+    .lf-hero-content{max-width:780px;position:relative;z-index:2}
+    .lf-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.92}
+    .lf-hero-title{font-family:'EB Garamond',serif;font-size:clamp(40px,5.8vw,72px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:18px;font-style:italic}
+    .lf-hero-when{font-family:'Jost',sans-serif;font-size:14px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);margin-bottom:24px;opacity:.85}
+    .lf-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,22px);font-style:italic;color:rgba(160,210,160,.82);line-height:1.7;max-width:680px}
+
+    /* ── STATS STRIP ──────────────────────────────────────────────── */
+    .lf-stats{background:var(--ink-mid);padding:48px 0;border-bottom:1px solid var(--border);text-align:center}
+    .lf-stats-grid{display:flex;justify-content:center;gap:clamp(40px,8vw,80px);max-width:720px;margin:0 auto;flex-wrap:wrap}
+    .lf-stat{display:flex;flex-direction:column;align-items:center}
+    .lf-stat-num{font-family:'EB Garamond',serif;font-size:clamp(40px,5vw,56px);font-weight:400;color:var(--gold-pale);line-height:1;margin-bottom:8px}
+    .lf-stat-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.85}
+
+    /* ── INVITATION COPY ─────────────────────────────────────────── */
+    .lf-invite{background:var(--ink);padding:64px 0 32px;border-bottom:1px solid var(--border)}
+    .lf-invite-inner{max-width:680px;margin:0 auto;text-align:center}
+    .lf-invite-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.4vw,36px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:22px;font-style:italic}
+    .lf-invite-body{font-family:'EB Garamond',serif;font-size:clamp(16px,1.8vw,18.5px);color:rgba(215,235,215,.82);line-height:1.85}
+    .lf-invite-body p{margin-bottom:16px}
+    .lf-invite-body p:last-child{margin-bottom:0}
+
+    /* ── MAP ─────────────────────────────────────────────────────── */
+    .lf-map-section{background:var(--ink);padding:32px 0 70px}
+    .lf-map-wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+    .lf-map{width:100%;height:560px;border:1px solid var(--gold-border);background:var(--ink-mid);position:relative}
+    .lf-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-family:'EB Garamond',serif;font-style:italic;font-size:15px;background:var(--ink-mid);z-index:401;opacity:.85}
+    .lf-map-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,31,15,.72);z-index:402;padding:24px}
+    .lf-map-empty.show{display:flex}
+    .lf-map-empty-card{max-width:440px;text-align:center;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:36px 32px}
+    .lf-map-empty-title{font-family:'EB Garamond',serif;font-size:22px;color:var(--gold-pale);line-height:1.25;margin-bottom:12px;font-style:italic}
+    .lf-map-empty-body{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.78);line-height:1.7;margin-bottom:22px}
+    .lf-map-empty-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:12px 26px;text-decoration:none}
+    .lf-map-empty-cta:hover{background:var(--gold-pale)}
+
+    /* Map popup style — overrides default Leaflet rounded white */
+    .leaflet-popup-content-wrapper{background:#0F1F0F;color:#F5ECD8;border:1px solid #B8975A;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+    .leaflet-popup-tip{background:#0F1F0F;border:1px solid #B8975A}
+    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:14px;line-height:1.55;min-width:200px;max-width:280px}
+    .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:6px;opacity:.85}
+    .lf-pop-title{font-family:'EB Garamond',serif;font-size:17px;color:#F5ECD8;margin:0 0 4px;font-weight:500}
+    .lf-pop-city{font-family:'EB Garamond',serif;font-size:13.5px;color:rgba(215,235,215,.7);font-style:italic;margin-bottom:10px}
+    .lf-pop-when{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.06em;color:#D4B483;margin-bottom:10px}
+    .lf-pop-host{font-family:'EB Garamond',serif;font-size:13.5px;color:rgba(215,235,215,.85);margin-bottom:10px}
+    .lf-pop-host-name{color:#F5ECD8;font-style:italic}
+    .lf-pop-msg{font-family:'EB Garamond',serif;font-size:13px;color:rgba(215,235,215,.7);font-style:italic;margin-bottom:12px;padding-left:8px;border-left:2px solid rgba(184,151,90,.4)}
+    .lf-pop-attending{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:10px}
+    .lf-pop-link{display:inline-block;color:#B8975A;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-top:1px solid rgba(184,151,90,.25);padding-top:10px;margin-top:4px}
+    .lf-pop-link:hover{color:#F5ECD8}
+
+    /* ── HOST CTA SECTION ─────────────────────────────────────────── */
+    .lf-host{background:var(--ink-mid);padding:80px 0;border-top:1px solid var(--border)}
+    .lf-host-inner{max-width:680px;margin:0 auto;text-align:center}
+    .lf-host-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .lf-host-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.6vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.18;margin-bottom:22px;font-style:italic}
+    .lf-host-body{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.78);line-height:1.8;margin-bottom:32px}
+    .lf-host-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+    .lf-host-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 30px;text-decoration:none;transition:background .15s}
+    .lf-host-cta:hover{background:var(--gold-pale)}
+    .lf-host-cta-ghost{background:transparent;color:var(--gold-light);border:1px solid var(--gold-strong);padding:13px 29px}
+    .lf-host-cta-ghost:hover{border-color:var(--gold);color:var(--ink);background:var(--gold)}
+
+    /* ── MOBILE ──────────────────────────────────────────────────── */
+    @media (max-width:720px){
+      .lf-hero{padding:50px 0;min-height:auto}
+      .lf-stats{padding:36px 0}
+      .lf-stats-grid{gap:32px}
+      .lf-map{height:440px}
+      .lf-host{padding:60px 0}
+    }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE — same pattern as /benefactors.html. This is not real
+     security; the page is also noindex,nofollow and unlinked from nav.
+     The gate keeps casual stumblers out during the seeding/review
+     window. Remove when launch decision is made (Chief video
+     committed + ≥12 seeded gatherings). -->
+<style>
+  #lf-gate{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+  #lf-gate.hidden{display:none}
+  #lf-gate-card{max-width:420px;width:100%;background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:42px 36px;text-align:center}
+  #lf-gate-crest{display:block;width:42px;height:auto;margin:0 auto 22px;opacity:.85}
+  #lf-gate-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  #lf-gate-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:10px;font-style:italic}
+  #lf-gate-sub{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.7);line-height:1.65;margin-bottom:26px;font-style:italic}
+  #lf-gate-input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(184,151,90,.4);font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale);padding:10px 4px;text-align:center;letter-spacing:.04em;outline:none;margin-bottom:18px}
+  #lf-gate-input:focus{border-bottom-color:var(--gold)}
+  #lf-gate-input::placeholder{color:rgba(184,151,90,.45);font-style:italic}
+  #lf-gate-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;padding:14px 24px;cursor:pointer}
+  #lf-gate-btn:hover{background:var(--gold-pale)}
+  #lf-gate-err{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:#E07474;margin-top:14px;min-height:18px}
+  body.lf-locked > *:not(#lf-gate):not(script):not(style):not(link){display:none !important}
+</style>
+<div id="lf-gate">
+  <div id="lf-gate-card">
+    <img src="/coat_of_arms.png" alt="" id="lf-gate-crest">
+    <div id="lf-gate-eyebrow">Lá Fhéile Pádraig</div>
+    <div id="lf-gate-title">In preparation</div>
+    <div id="lf-gate-sub">The gathering map is being readied for its first cycle. If you have a passphrase from the Office, you may enter it below.</div>
+    <input type="password" id="lf-gate-input" placeholder="Passphrase" autocomplete="off" autofocus>
+    <button id="lf-gate-btn" type="button">Enter</button>
+    <div id="lf-gate-err"></div>
+  </div>
+</div>
+<script>
+  (function(){
+    var LF_PW = 'clan';
+    var SESSION_KEY = 'lf_unlocked_v1';
+    var gate = document.getElementById('lf-gate');
+    var input = document.getElementById('lf-gate-input');
+    var btn = document.getElementById('lf-gate-btn');
+    var err = document.getElementById('lf-gate-err');
+    function unlock(){
+      try{ sessionStorage.setItem(SESSION_KEY, '1'); }catch(e){}
+      document.body.classList.remove('lf-locked');
+      gate.classList.add('hidden');
+    }
+    function lock(){ document.body.classList.add('lf-locked'); }
+    function tryUnlock(){
+      var v = (input.value || '').trim().toLowerCase();
+      if(v === LF_PW){ unlock(); }
+      else { err.textContent = 'Not recognised. Please try again.'; input.value = ''; input.focus(); }
+    }
+    try{ if(sessionStorage.getItem(SESSION_KEY) === '1'){ unlock(); return; } }catch(e){}
+    lock();
+    btn.addEventListener('click', tryUnlock);
+    input.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ tryUnlock(); } });
+  })();
+</script>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="/coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="/membership.html" class="nav-link">Membership</a>
+      <a href="/join.html" class="nav-link">Why Join</a>
+      <a href="/clan-stories.html" class="nav-link">Stories</a>
+      <a href="/members/" class="nav-link">Members</a>
+    </div>
+    <a href="/membership.html" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="/membership.html" class="nav-mobile-link">Membership</a>
+  <a href="/gift.html" class="nav-mobile-link">Gift a membership</a>
+  <a href="/clan-stories.html" class="nav-mobile-link">Stories</a>
+  <a href="/members/" class="nav-mobile-link">Members</a>
+</div>
+<script>function toggleMenu(){document.getElementById('mobile-menu').classList.toggle('open')}</script>
+
+<!-- HERO -->
+<section class="lf-hero">
+  <div class="lf-hero-bg"></div>
+  <div class="si">
+    <div class="lf-hero-content">
+      <div class="lf-eyebrow">Lá Fhéile Pádraig · <span id="lf-year-eyebrow">2027</span></div>
+      <h1 class="lf-hero-title">The clan gathers.</h1>
+      <div class="lf-hero-when">17 March · St Patrick's Day</div>
+      <p class="lf-hero-sub">A map of where Ó Comáin cousins are raising a glass this St Patrick's Day — from Ennis to Boston, from Newhall to Newcastle. Find a cousin near you and join them at the pub.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP — populated after fetch -->
+<section class="lf-stats">
+  <div class="si">
+    <div class="lf-stats-grid">
+      <div class="lf-stat"><div class="lf-stat-num" id="lf-stat-gatherings">—</div><div class="lf-stat-label">Gatherings posted</div></div>
+      <div class="lf-stat"><div class="lf-stat-num" id="lf-stat-countries">—</div><div class="lf-stat-label">Countries</div></div>
+      <div class="lf-stat"><div class="lf-stat-num" id="lf-stat-year">2027</div><div class="lf-stat-label">This year</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INVITATION COPY -->
+<section class="lf-invite">
+  <div class="si">
+    <div class="lf-invite-inner">
+      <h2 class="lf-invite-title">An old day, kept across the diaspora.</h2>
+      <div class="lf-invite-body">
+        <p>Wherever the name went after the dispossession — to America, to Britain, to Australia, to Canada — Patrick's Day was the day the name remembered itself. Sixteen centuries on, the family still threads through the diaspora, and every March 17th, in pubs from Ennis to Toronto, cousins lift a glass to the long memory of the clan.</p>
+        <p>This map is how we find each other.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="lf-map-section">
+  <div class="lf-map-wrap">
+    <div class="lf-map" id="lf-map">
+      <div class="lf-map-loading" id="lf-map-loading">Loading the gathering map…</div>
+      <div class="lf-map-empty" id="lf-map-empty">
+        <div class="lf-map-empty-card">
+          <div class="lf-map-empty-title">The map is empty — for now.</div>
+          <div class="lf-map-empty-body">No gatherings have been pinned yet for this St Patrick's Day. If you are a member, you can host the first one — pick a pub in your town, post your pin, and let cousins find you.</div>
+          <a href="/members/host-gathering.html" class="lf-map-empty-cta">Host the first →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOST CTA -->
+<section class="lf-host">
+  <div class="si">
+    <div class="lf-host-inner">
+      <div class="lf-host-eyebrow">Pin your own pub</div>
+      <h2 class="lf-host-title">Don't see your town on the map?</h2>
+      <p class="lf-host-body">Become the first Ó Comáin to plant a flag there. Pick a pub, pick a time, post your pin — cousins find you, walk-ins welcome, the map updates the moment you submit. Hosting is open to every member of the clan.</p>
+      <div class="lf-host-ctas">
+        <a href="/members/host-gathering.html" class="lf-host-cta">Host a gathering</a>
+        <a href="/membership.html" class="lf-host-cta lf-host-cta-ghost">Join the clan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+        <p class="footer-motto-en">History must prevail</p>
+      </div>
+      <div>
+        <div class="footer-heading">Pages</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/membership.html">Membership</a></li>
+          <li><a href="/gift.html">Gift a membership</a></li>
+          <li><a href="/pedigree.html">Pedigree</a></li>
+          <li><a href="/members/">Members' Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 Tigh Uí Chomáin · All rights reserved</div>
+      <div class="footer-rec">Recognised by Clans of Ireland · Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+(function(){
+  // Year resolution — URL param wins, then current calendar year.
+  var params = new URLSearchParams(window.location.search);
+  var year = parseInt(params.get('year'), 10);
+  if (!Number.isInteger(year) || year < 2026 || year > 2099) {
+    year = new Date().getUTCFullYear();
+  }
+  document.getElementById('lf-year-eyebrow').textContent = year;
+  document.getElementById('lf-stat-year').textContent = year;
+
+  // Default map view — North Atlantic centred so Ireland, UK, US east
+  // coast and Canada are visible together. This is the diaspora's
+  // centre of mass and frames the empty state with the most-likely
+  // first-pin geography.
+  var map = L.map('lf-map', {
+    center: [44, -25],
+    zoom: 3,
+    scrollWheelZoom: false,
+    worldCopyJump: true,
+  });
+  map.attributionControl.setPrefix(''); // drop the Leaflet flag, keep OSM credit
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap contributors',
+  }).addTo(map);
+
+  // Custom pin — gold heraldic dot. Easier to spot against the OSM
+  // colour palette than the default blue marker, and visually
+  // consistent with the rest of the brand.
+  var pinIcon = L.divIcon({
+    className: 'lf-pin',
+    html: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">' +
+          '<path d="M14 0 C6 0 0 6 0 14 c0 10 14 22 14 22 s14 -12 14 -22 c0 -8 -6 -14 -14 -14 z" fill="#B8975A" stroke="#0F1F0F" stroke-width="1.5"/>' +
+          '<circle cx="14" cy="14" r="5" fill="#0F1F0F"/>' +
+          '</svg>',
+    iconSize: [28, 36],
+    iconAnchor: [14, 36],
+    popupAnchor: [0, -32],
+  });
+
+  var loadingEl = document.getElementById('lf-map-loading');
+  var emptyEl   = document.getElementById('lf-map-empty');
+
+  function fmtTime(hhmm) {
+    if (!hhmm || !/^\d{1,2}:\d{2}$/.test(hhmm)) return hhmm || '';
+    var parts = hhmm.split(':');
+    var h = parseInt(parts[0], 10);
+    var m = parts[1];
+    var am = h < 12;
+    var h12 = ((h % 12) === 0) ? 12 : (h % 12);
+    return h12 + (m === '00' ? '' : ':' + m) + (am ? ' am' : ' pm');
+  }
+
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function popupHtml(g) {
+    var attendingLine = '';
+    if (g.total_attending && g.total_attending > 0) {
+      var n = g.total_attending;
+      attendingLine = '<div class="lf-pop-attending">' + n + ' ' + (n === 1 ? 'person' : 'people') + ' attending</div>';
+    }
+    var msg = g.message ? '<div class="lf-pop-msg">' + escHtml(g.message) + '</div>' : '';
+    var hostBit = g.host_display_name
+      ? '<div class="lf-pop-host">Hosted by <span class="lf-pop-host-name">' + escHtml(g.host_display_name) + '</span></div>'
+      : '';
+    return '<div class="lf-pop-eyebrow">St Patrick\'s Day</div>' +
+           '<h3 class="lf-pop-title">' + escHtml(g.venue_name) + '</h3>' +
+           '<div class="lf-pop-city">' + escHtml(g.venue_city) + ', ' + escHtml(g.venue_country) + '</div>' +
+           '<div class="lf-pop-when">' + fmtTime(g.starts_local_time) + ' · 17 March</div>' +
+           hostBit +
+           msg +
+           attendingLine +
+           '<a class="lf-pop-link" href="/members/">Sign in to RSVP →</a>';
+  }
+
+  // Fetch + render
+  fetch('/api/gathering-list?year=' + year, { headers: { 'Accept': 'application/json' } })
+    .then(function(res){
+      if (!res.ok) throw new Error('list ' + res.status);
+      return res.json();
+    })
+    .then(function(payload){
+      var gatherings = (payload && payload.gatherings) || [];
+      var stats = (payload && payload.stats) || { gatherings: 0, countries: 0 };
+
+      document.getElementById('lf-stat-gatherings').textContent = stats.gatherings;
+      document.getElementById('lf-stat-countries').textContent  = stats.countries;
+
+      loadingEl.style.display = 'none';
+
+      if (gatherings.length === 0) {
+        emptyEl.classList.add('show');
+        return;
+      }
+
+      var bounds = [];
+      gatherings.forEach(function(g){
+        var m = L.marker([g.venue_lat, g.venue_lng], { icon: pinIcon }).addTo(map);
+        m.bindPopup(popupHtml(g), { maxWidth: 320 });
+        bounds.push([g.venue_lat, g.venue_lng]);
+      });
+      if (bounds.length === 1) {
+        // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
+        map.setView(bounds[0], 6);
+      } else {
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+      }
+    })
+    .catch(function(err){
+      console.error('gathering-list fetch failed:', err);
+      loadingEl.textContent = 'Could not load the map just now. Please refresh shortly.';
+    });
+})();
+</script>
+
+</body>
+</html>

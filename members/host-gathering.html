@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<!--
+  /members/host-gathering.html
+  ───────────────────────────────────────────────────────────────
+  Member-side host UI for the St Patrick's Day gathering map.
+  Mirrors the /la-fheile-padraig page structure but member-private
+  (noindex, requires signed-in active membership).
+
+  Flow:
+    1. Page loads → checks Supabase session → calls /api/member-info
+    2. If member is active, calls /api/gathering-host-mine?year=YYYY
+       to load any existing pin
+    3. Renders either:
+         (a) "you have a pin" card with details + edit/cancel buttons
+         (b) "set up your pin" form
+    4. Form uses Nominatim (OpenStreetMap) for pub-finder. Results
+       fill venue fields + lat/lng. Submit posts to /api/gathering-host-upsert
+    5. RSVPs to the member's gathering are listed below
+
+  Year selection: defaults to the current year, switches to next
+  year automatically from 1 January through 17 March, then the
+  current year for the rest of the year. (Hosts setting up early
+  for 2027 in November 2026 want the form to default to 2027.)
+-->
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host a Gathering — Lá Fhéile Pádraig — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+  <style>
+    body{background:var(--cream);min-height:100vh}
+
+    /* Top header — matches members/index.html */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.75);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+
+    /* Main */
+    .hg-main{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+    .hg-welcome{text-align:center;margin-bottom:36px}
+    .hg-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .hg-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,40px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:10px}
+    .hg-title em{color:var(--gold);font-style:italic}
+    .hg-sub{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-soft);max-width:540px;margin:0 auto;line-height:1.7}
+
+    /* Loading / error states */
+    .hg-state{max-width:560px;margin:60px auto;text-align:center;padding:32px;background:var(--white);border:1px solid var(--gold-border)}
+    .hg-state-msg{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.7;margin-bottom:18px}
+
+    /* Card */
+    .hg-card{background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:32px 36px;margin-bottom:24px;box-shadow:0 4px 16px rgba(12,26,12,.04)}
+    .hg-card-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+    .hg-card-title{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);margin:0;font-weight:500}
+    .hg-card-year{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+    .hg-card-body{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.7}
+    .hg-card-body strong{color:var(--ink);font-weight:500}
+
+    /* Existing pin display */
+    .hg-pin-display{background:var(--cream-mid);border-left:3px solid var(--gold);padding:18px 22px;margin:18px 0;font-family:'EB Garamond',serif;font-size:15px;line-height:1.65;color:var(--ink-soft)}
+    .hg-pin-display .pin-venue{font-family:'EB Garamond',serif;font-size:19px;color:var(--ink);font-weight:500;margin-bottom:6px}
+    .hg-pin-display .pin-meta{font-size:13.5px;color:var(--ink-muted);margin-top:8px}
+    .hg-pin-display .pin-msg{font-style:italic;margin-top:10px;padding-left:10px;border-left:2px solid var(--gold-border)}
+
+    /* Form fields */
+    .hg-field{margin-bottom:20px}
+    .hg-label{display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px}
+    .hg-input,.hg-select,.hg-textarea{width:100%;background:var(--cream);border:1px solid var(--gold-border);font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);padding:11px 14px;border-radius:1px;outline:none;box-sizing:border-box}
+    .hg-input:focus,.hg-select:focus,.hg-textarea:focus{border-color:var(--gold);background:var(--white)}
+    .hg-input::placeholder,.hg-textarea::placeholder{color:var(--ink-muted);font-style:italic}
+    .hg-textarea{resize:vertical;min-height:80px;line-height:1.55}
+    .hg-help{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);margin-top:6px;font-style:italic;line-height:1.5}
+    .hg-row-2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    @media (max-width:560px){.hg-row-2{grid-template-columns:1fr}}
+
+    /* Pub picker */
+    .hg-pub-picker{position:relative}
+    .hg-pub-results{position:absolute;top:100%;left:0;right:0;background:var(--white);border:1px solid var(--gold-border);border-top:none;max-height:280px;overflow-y:auto;z-index:50;display:none}
+    .hg-pub-results.show{display:block}
+    .hg-pub-result{padding:12px 14px;border-bottom:1px solid var(--cream-mid);cursor:pointer;font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-soft);line-height:1.5}
+    .hg-pub-result:hover{background:var(--cream-mid);color:var(--ink)}
+    .hg-pub-result:last-child{border-bottom:none}
+    .hg-pub-result .res-name{color:var(--ink);font-weight:500;display:block;margin-bottom:2px}
+    .hg-pub-result .res-addr{font-size:12.5px;color:var(--ink-muted)}
+    .hg-pub-empty{padding:14px;font-style:italic;color:var(--ink-muted);font-family:'EB Garamond',serif;font-size:13.5px;text-align:center}
+
+    /* Selected pub preview */
+    .hg-selected-pub{background:rgba(184,151,90,.08);border:1px solid var(--gold-border);border-left:3px solid var(--gold);padding:14px 16px;margin-top:10px;display:none}
+    .hg-selected-pub.show{display:block}
+    .hg-selected-pub .sel-name{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink);font-weight:500;margin-bottom:3px}
+    .hg-selected-pub .sel-addr{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);line-height:1.5}
+    .hg-selected-pub .sel-coords{font-family:'Jost',sans-serif;font-size:10.5px;color:var(--gold-deep);letter-spacing:.06em;margin-top:6px}
+
+    /* Mini map preview */
+    .hg-mini-map{width:100%;height:200px;margin-top:14px;border:1px solid var(--gold-border);display:none}
+    .hg-mini-map.show{display:block}
+
+    /* Buttons */
+    .hg-actions{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+    .hg-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:13px 26px;text-decoration:none;border:none;cursor:pointer;border-radius:1px;transition:background .15s}
+    .hg-btn:hover{background:var(--gold-light)}
+    .hg-btn:disabled{opacity:.5;cursor:not-allowed}
+    .hg-btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--gold-border)}
+    .hg-btn-ghost:hover{background:var(--cream-mid);color:var(--ink);border-color:var(--gold)}
+    .hg-btn-danger{background:transparent;color:#9C2A2A;border:1px solid rgba(156,42,42,.3)}
+    .hg-btn-danger:hover{background:#9C2A2A;color:var(--white);border-color:#9C2A2A}
+
+    /* Toast */
+    .hg-toast{padding:12px 16px;border-radius:2px;font-family:'EB Garamond',serif;font-size:14.5px;margin-bottom:18px;display:none;line-height:1.55}
+    .hg-toast.show{display:block}
+    .hg-toast.ok{background:rgba(46,74,46,.08);border-left:3px solid var(--ink-soft);color:var(--ink)}
+    .hg-toast.err{background:rgba(156,42,42,.07);border-left:3px solid #9C2A2A;color:#6C1E1E}
+
+    /* RSVPs list */
+    .hg-rsvp{padding:14px 0;border-bottom:1px solid var(--cream-mid);font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);line-height:1.6}
+    .hg-rsvp:last-child{border-bottom:none}
+    .hg-rsvp .rsvp-who{color:var(--ink);font-weight:500}
+    .hg-rsvp .rsvp-count{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-left:10px}
+    .hg-rsvp .rsvp-note{font-style:italic;color:var(--ink-muted);margin-top:4px;padding-left:10px;border-left:2px solid var(--gold-border);font-size:13.5px}
+    .hg-rsvp-empty{font-family:'EB Garamond',serif;font-style:italic;color:var(--ink-muted);font-size:14px;text-align:center;padding:16px}
+
+    /* Year switcher */
+    .hg-year-switcher{text-align:center;margin-bottom:24px;font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted)}
+    .hg-year-switcher a{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px;margin:0 8px}
+    .hg-year-switcher a:hover{color:var(--gold)}
+    .hg-year-switcher a.active{color:var(--ink);font-weight:500;text-decoration:none}
+  </style>
+</head>
+<body>
+
+<div class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+      <a href="/la-fheile-padraig.html">View the map</a>
+    </div>
+  </div>
+</div>
+
+<main class="hg-main">
+
+  <div class="hg-welcome">
+    <div class="hg-eyebrow">Lá Fhéile Pádraig</div>
+    <h1 class="hg-title">Host a <em>gathering</em></h1>
+    <p class="hg-sub">Pick a pub in your town, plant your pin on the map, let cousins find you on St Patrick's Day. Walk-ins welcome from anyone; members can RSVP digitally so you have a real headcount.</p>
+  </div>
+
+  <div id="hg-loading" class="hg-state"><div class="hg-state-msg">Loading…</div></div>
+  <div id="hg-error" class="hg-state" style="display:none">
+    <div class="hg-state-msg" id="hg-error-msg">Something went wrong.</div>
+    <a href="/members/" class="hg-btn hg-btn-ghost">Return to dashboard</a>
+  </div>
+  <div id="hg-not-active" class="hg-state" style="display:none">
+    <div class="hg-state-msg">Hosting a gathering requires an active membership. <a href="/members/" style="color:var(--gold-deep);text-decoration:underline">View your membership</a> or <a href="mailto:clan@ocomain.org" style="color:var(--gold-deep);text-decoration:underline">write to the Office</a>.</div>
+  </div>
+
+  <div id="hg-content" style="display:none">
+
+    <div class="hg-year-switcher" id="hg-year-switcher"></div>
+
+    <div id="hg-toast" class="hg-toast"></div>
+
+    <!-- Existing pin card (if any) -->
+    <div id="hg-existing" class="hg-card" style="display:none">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title">Your gathering</h2>
+        <span class="hg-card-year" id="hg-existing-year">2027</span>
+      </div>
+      <div class="hg-card-body">
+        <p>You're hosting the following gathering. Edit any time before St Patrick's Day, or cancel if your plans change.</p>
+        <div class="hg-pin-display" id="hg-pin-display"></div>
+        <div class="hg-actions">
+          <button class="hg-btn" type="button" id="hg-edit-btn">Edit pin</button>
+          <button class="hg-btn hg-btn-danger" type="button" id="hg-cancel-btn">Cancel gathering</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incoming RSVPs (if any) -->
+    <div id="hg-rsvps" class="hg-card" style="display:none">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title">RSVPs to your gathering</h2>
+      </div>
+      <div id="hg-rsvps-list"></div>
+    </div>
+
+    <!-- Host form -->
+    <div id="hg-form-card" class="hg-card" style="display:none">
+      <div class="hg-card-head">
+        <h2 class="hg-card-title" id="hg-form-title">Set up your gathering</h2>
+        <span class="hg-card-year" id="hg-form-year">2027</span>
+      </div>
+      <div class="hg-card-body">
+
+        <div class="hg-field">
+          <label class="hg-label" for="hg-pub-search">Pub or venue · search</label>
+          <div class="hg-pub-picker">
+            <input type="text" class="hg-input" id="hg-pub-search" placeholder="e.g. The Crow's Nest, Newmarket Ontario" autocomplete="off">
+            <div class="hg-pub-results" id="hg-pub-results"></div>
+          </div>
+          <div class="hg-help">Type the pub name and a city. We'll find it on the map for you (powered by OpenStreetMap).</div>
+          <div class="hg-selected-pub" id="hg-selected-pub">
+            <div class="sel-name" id="hg-sel-name"></div>
+            <div class="sel-addr" id="hg-sel-addr"></div>
+            <div class="sel-coords" id="hg-sel-coords"></div>
+          </div>
+          <div class="hg-mini-map" id="hg-mini-map"></div>
+        </div>
+
+        <div class="hg-row-2">
+          <div class="hg-field">
+            <label class="hg-label" for="hg-time">Start time (local)</label>
+            <input type="text" class="hg-input" id="hg-time" placeholder="19:00" pattern="\d{1,2}:\d{2}">
+            <div class="hg-help">24-hour format, e.g. 19:00 for 7 pm.</div>
+          </div>
+          <div class="hg-field">
+            <label class="hg-label" for="hg-display-name">Host name on map</label>
+            <input type="text" class="hg-input" id="hg-display-name" placeholder="(optional)">
+            <div class="hg-help">Leave blank to use your registered name.</div>
+          </div>
+        </div>
+
+        <div class="hg-field">
+          <label class="hg-label" for="hg-message">Short message <span style="text-transform:none;letter-spacing:0;color:var(--ink-muted);font-weight:400">(optional, 300 characters)</span></label>
+          <textarea class="hg-textarea" id="hg-message" maxlength="300" placeholder="A word of welcome, the booth you'll be in, anything that helps cousins find the right table…"></textarea>
+        </div>
+
+        <!-- Hidden fields populated by the pub picker -->
+        <input type="hidden" id="hg-venue-name">
+        <input type="hidden" id="hg-venue-address">
+        <input type="hidden" id="hg-venue-city">
+        <input type="hidden" id="hg-venue-country">
+        <input type="hidden" id="hg-venue-lat">
+        <input type="hidden" id="hg-venue-lng">
+
+        <div class="hg-actions">
+          <button class="hg-btn" type="button" id="hg-submit-btn">Plant the pin</button>
+          <button class="hg-btn hg-btn-ghost" type="button" id="hg-cancel-edit-btn" style="display:none">Cancel edit</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script type="module">
+  import { currentSession, getMemberProfile, signOut } from './auth.js';
+
+  // ── Year resolution ────────────────────────────────────────────────
+  // Default to next March 17 — between 18 March (year N) and 17 March
+  // (year N+1) the form should default to year N+1, since people
+  // setting up a pin are looking forward to the next cycle.
+  const now = new Date();
+  function defaultYear() {
+    const y = now.getUTCFullYear();
+    const m = now.getUTCMonth(); // 0=Jan
+    const d = now.getUTCDate();
+    if (m > 2 || (m === 2 && d > 17)) return y + 1;
+    return y;
+  }
+  const params = new URLSearchParams(window.location.search);
+  let YEAR = parseInt(params.get('year'), 10);
+  if (!Number.isInteger(YEAR) || YEAR < 2026 || YEAR > 2099) YEAR = defaultYear();
+
+  // ── DOM ────────────────────────────────────────────────────────────
+  const $ = (id) => document.getElementById(id);
+  const loadingEl = $('hg-loading');
+  const errorEl   = $('hg-error');
+  const errorMsg  = $('hg-error-msg');
+  const notActiveEl = $('hg-not-active');
+  const contentEl = $('hg-content');
+  const existingCard = $('hg-existing');
+  const formCard  = $('hg-form-card');
+  const rsvpsCard = $('hg-rsvps');
+  const toastEl   = $('hg-toast');
+  const yearSwitcher = $('hg-year-switcher');
+
+  let memberProfile = null;
+  let currentGathering = null;
+  let session = null;
+  let miniMap = null;
+  let miniMarker = null;
+
+  function showToast(msg, kind) {
+    toastEl.textContent = msg;
+    toastEl.className = 'hg-toast show ' + (kind === 'err' ? 'err' : 'ok');
+    setTimeout(() => { toastEl.classList.remove('show'); }, 6000);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showError(msg) {
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'none';
+    errorMsg.textContent = msg;
+    errorEl.style.display = 'block';
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────────
+  (async function boot(){
+    session = await currentSession();
+    if (!session) {
+      window.location.href = '/members/login.html?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+      return;
+    }
+    try {
+      memberProfile = await getMemberProfile();
+    } catch (e) {
+      showError('Could not load your membership. Please return to the dashboard and try again.');
+      return;
+    }
+    if (!memberProfile || memberProfile.notAMember) {
+      loadingEl.style.display = 'none';
+      notActiveEl.style.display = 'block';
+      return;
+    }
+    if (memberProfile.status && memberProfile.status !== 'active') {
+      loadingEl.style.display = 'none';
+      notActiveEl.style.display = 'block';
+      return;
+    }
+
+    await loadGatheringForYear();
+    renderYearSwitcher();
+
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'block';
+  })();
+
+  function renderYearSwitcher() {
+    const y = defaultYear();
+    const choices = [y, y + 1];
+    yearSwitcher.innerHTML = 'Setting up for: ' + choices.map(c => {
+      const active = c === YEAR;
+      return active
+        ? `<a class="active" href="?year=${c}">${c}</a>`
+        : `<a href="?year=${c}">${c}</a>`;
+    }).join(' · ');
+  }
+
+  async function loadGatheringForYear() {
+    try {
+      const res = await fetch('/api/gathering-host-mine?year=' + YEAR, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+
+      currentGathering = data.gathering;
+      renderExistingOrForm();
+      renderRsvps(data.gathering ? data.gathering.id : null);
+    } catch (e) {
+      showError(e.message || 'Could not load your gathering.');
+    }
+  }
+
+  function fmtTime(hhmm) {
+    if (!hhmm || !/^\d{1,2}:\d{2}$/.test(hhmm)) return hhmm || '';
+    const [h, m] = hhmm.split(':').map(s => s);
+    const hi = parseInt(h, 10);
+    const am = hi < 12;
+    const h12 = ((hi % 12) === 0) ? 12 : (hi % 12);
+    return h12 + (m === '00' ? '' : ':' + m) + (am ? ' am' : ' pm');
+  }
+
+  function renderExistingOrForm() {
+    document.getElementById('hg-existing-year').textContent = YEAR;
+    document.getElementById('hg-form-year').textContent = YEAR;
+
+    if (currentGathering && currentGathering.status === 'published') {
+      // Display the existing pin
+      const g = currentGathering;
+      const hostName = g.host_display_name || memberProfile.name || '';
+      $('hg-pin-display').innerHTML = `
+        <div class="pin-venue">${esc(g.venue_name)}</div>
+        <div>${esc(g.venue_address)}</div>
+        <div class="pin-meta">${esc(g.venue_city)}, ${esc(g.venue_country)} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
+        ${hostName ? `<div class="pin-meta">Listed as: <strong style="color:var(--ink)">${esc(hostName)}</strong></div>` : ''}
+        ${g.message ? `<div class="pin-msg">"${esc(g.message)}"</div>` : ''}
+      `;
+      existingCard.style.display = 'block';
+      formCard.style.display = 'none';
+    } else {
+      existingCard.style.display = 'none';
+      formCard.style.display = 'block';
+      $('hg-form-title').textContent = 'Set up your gathering';
+    }
+  }
+
+  // ── Edit / cancel buttons ──────────────────────────────────────────
+  $('hg-edit-btn').addEventListener('click', () => {
+    if (!currentGathering) return;
+    const g = currentGathering;
+    // Preload form
+    $('hg-venue-name').value    = g.venue_name;
+    $('hg-venue-address').value = g.venue_address;
+    $('hg-venue-city').value    = g.venue_city;
+    $('hg-venue-country').value = g.venue_country;
+    $('hg-venue-lat').value     = g.venue_lat;
+    $('hg-venue-lng').value     = g.venue_lng;
+    $('hg-time').value          = g.starts_local_time;
+    $('hg-display-name').value  = g.host_display_name || '';
+    $('hg-message').value       = g.message || '';
+    $('hg-pub-search').value    = g.venue_name;
+    showSelectedPub(g.venue_name, g.venue_address, g.venue_lat, g.venue_lng);
+    showMiniMap(parseFloat(g.venue_lat), parseFloat(g.venue_lng));
+    $('hg-form-title').textContent = 'Edit your gathering';
+    $('hg-cancel-edit-btn').style.display = 'inline-block';
+    existingCard.style.display = 'none';
+    formCard.style.display = 'block';
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  $('hg-cancel-edit-btn').addEventListener('click', () => {
+    $('hg-cancel-edit-btn').style.display = 'none';
+    renderExistingOrForm();
+  });
+
+  $('hg-cancel-btn').addEventListener('click', async () => {
+    if (!confirm('Cancel your gathering? This removes your pin from the map. You can set up a new one anytime.')) return;
+    try {
+      const res = await fetch('/api/gathering-cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ year: YEAR }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Cancel failed');
+      currentGathering = null;
+      showToast('Your gathering has been cancelled.', 'ok');
+      renderExistingOrForm();
+      renderRsvps(null);
+    } catch (e) {
+      showToast(e.message || 'Could not cancel — please try again.', 'err');
+    }
+  });
+
+  // ── Submit ─────────────────────────────────────────────────────────
+  $('hg-submit-btn').addEventListener('click', async () => {
+    const venueName     = $('hg-venue-name').value.trim();
+    const venueAddress  = $('hg-venue-address').value.trim();
+    const venueCity     = $('hg-venue-city').value.trim();
+    const venueCountry  = ($('hg-venue-country').value || '').trim().toUpperCase();
+    const venueLat      = parseFloat($('hg-venue-lat').value);
+    const venueLng      = parseFloat($('hg-venue-lng').value);
+    const time          = $('hg-time').value.trim();
+    const displayName   = $('hg-display-name').value.trim();
+    const message       = $('hg-message').value.trim();
+
+    if (!venueName || !venueAddress || !Number.isFinite(venueLat) || !Number.isFinite(venueLng)) {
+      showToast('Please pick a pub from the search results so we have its address and coordinates.', 'err');
+      return;
+    }
+    if (!time || !/^\d{1,2}:\d{2}$/.test(time)) {
+      showToast('Please enter a start time in HH:MM format (e.g. 19:00).', 'err');
+      return;
+    }
+
+    const submitBtn = $('hg-submit-btn');
+    submitBtn.disabled = true;
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch('/api/gathering-host-upsert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          year: YEAR,
+          venueName, venueAddress, venueCity, venueCountry, venueLat, venueLng,
+          startsLocalTime: time,
+          hostDisplayName: displayName,
+          message,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Save failed');
+
+      currentGathering = data.gathering;
+      $('hg-cancel-edit-btn').style.display = 'none';
+      showToast(data.isNew ? 'Your pin is on the map. Cousins can now find you.' : 'Your gathering has been updated.', 'ok');
+      renderExistingOrForm();
+      renderRsvps(data.gathering ? data.gathering.id : null);
+    } catch (e) {
+      showToast(e.message || 'Could not save — please try again.', 'err');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+
+  // ── Nominatim pub picker ───────────────────────────────────────────
+  // OpenStreetMap's free geocoder. Usage policy: 1 req/sec, identify
+  // your app via a meaningful Referer (the browser sends our domain
+  // automatically). For a member host-form with small audience, this
+  // is well within reasonable use.
+  const pubSearch  = $('hg-pub-search');
+  const pubResults = $('hg-pub-results');
+  let searchTimer = null;
+  let lastQuery = '';
+
+  pubSearch.addEventListener('input', () => {
+    const q = pubSearch.value.trim();
+    clearTimeout(searchTimer);
+    if (q.length < 3) {
+      pubResults.classList.remove('show');
+      return;
+    }
+    searchTimer = setTimeout(() => {
+      if (q === lastQuery) return;
+      lastQuery = q;
+      runNominatimSearch(q);
+    }, 400);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!pubResults.contains(e.target) && e.target !== pubSearch) {
+      pubResults.classList.remove('show');
+    }
+  });
+
+  async function runNominatimSearch(q) {
+    pubResults.classList.add('show');
+    pubResults.innerHTML = '<div class="hg-pub-empty">Searching…</div>';
+    try {
+      const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=8&q=' + encodeURIComponent(q);
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) throw new Error('search failed');
+      const results = await res.json();
+      if (!Array.isArray(results) || results.length === 0) {
+        pubResults.innerHTML = '<div class="hg-pub-empty">No matches. Try including a city name (e.g. "Crow\'s Nest Newmarket Ontario").</div>';
+        return;
+      }
+      pubResults.innerHTML = results.map((r, i) => {
+        const addr = r.address || {};
+        const venueName = (r.namedetails && r.namedetails.name)
+          || (r.name)
+          || (r.display_name ? r.display_name.split(',')[0] : 'Unnamed location');
+        const city = addr.city || addr.town || addr.village || addr.suburb || addr.county || '';
+        const country = (addr.country_code || '').toUpperCase();
+        return `<div class="hg-pub-result" data-idx="${i}">
+          <span class="res-name">${esc(venueName)}</span>
+          <span class="res-addr">${esc(r.display_name || '')}</span>
+        </div>`;
+      }).join('');
+      // Wire up clicks
+      Array.from(pubResults.querySelectorAll('.hg-pub-result')).forEach(el => {
+        el.addEventListener('click', () => {
+          const idx = parseInt(el.getAttribute('data-idx'), 10);
+          pickPub(results[idx]);
+          pubResults.classList.remove('show');
+        });
+      });
+    } catch (e) {
+      pubResults.innerHTML = '<div class="hg-pub-empty">Search failed. Please try again in a moment.</div>';
+    }
+  }
+
+  function pickPub(r) {
+    const addr = r.address || {};
+    const venueName = (r.namedetails && r.namedetails.name)
+      || (r.name)
+      || (r.display_name ? r.display_name.split(',')[0] : 'Unnamed venue');
+    const city = addr.city || addr.town || addr.village || addr.suburb || addr.county || '';
+    const country = (addr.country_code || '').toUpperCase();
+    const lat = parseFloat(r.lat);
+    const lng = parseFloat(r.lon);
+
+    $('hg-venue-name').value    = venueName;
+    $('hg-venue-address').value = r.display_name || '';
+    $('hg-venue-city').value    = city;
+    $('hg-venue-country').value = country;
+    $('hg-venue-lat').value     = lat;
+    $('hg-venue-lng').value     = lng;
+    $('hg-pub-search').value    = venueName;
+
+    showSelectedPub(venueName, r.display_name, lat, lng);
+    showMiniMap(lat, lng);
+  }
+
+  function showSelectedPub(name, address, lat, lng) {
+    $('hg-sel-name').textContent   = name || '';
+    $('hg-sel-addr').textContent   = address || '';
+    $('hg-sel-coords').textContent = (lat || lat === 0) && (lng || lng === 0)
+      ? `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`
+      : '';
+    $('hg-selected-pub').classList.add('show');
+  }
+
+  function showMiniMap(lat, lng) {
+    const el = $('hg-mini-map');
+    el.classList.add('show');
+    if (!miniMap) {
+      miniMap = L.map('hg-mini-map').setView([lat, lng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(miniMap);
+    } else {
+      miniMap.setView([lat, lng], 15);
+    }
+    if (miniMarker) miniMap.removeLayer(miniMarker);
+    miniMarker = L.marker([lat, lng]).addTo(miniMap);
+    // Invalidate size in case the container just became visible
+    setTimeout(() => miniMap && miniMap.invalidateSize(), 50);
+  }
+
+  // ── RSVPs render ───────────────────────────────────────────────────
+  async function renderRsvps(gatheringId) {
+    if (!gatheringId) {
+      rsvpsCard.style.display = 'none';
+      return;
+    }
+    // We don't yet have a dedicated endpoint for "list RSVPs to my
+    // gathering" — for v1 we render a placeholder that tells the
+    // host RSVPs are emailed to them as they come in. v2 wires up
+    // a real list endpoint and shows the names here.
+    $('hg-rsvps-list').innerHTML =
+      '<div class="hg-rsvp-empty">When cousins RSVP digitally, you\'ll receive an email with their name and guest count. A live list will appear here in a future update.</div>';
+    rsvpsCard.style.display = 'block';
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>
