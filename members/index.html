@@ -32,6 +32,32 @@
     .mwelcome-title em{color:var(--gold);font-style:italic}
     .mwelcome-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);max-width:600px;margin:0 auto;line-height:1.7}
 
+    /* ST PATRICK'S DAY card — top of dashboard from 1 Sep to 31 Mar each
+       year (handled in JS via stPatricksCardHtml). Visual weight matches
+       the mevent card but with a typographic hero (no image) on dark ink
+       green with the gold rule across the top, distinguishing it as a
+       distinct event programme rather than a clone of the Feast card. */
+    .mstp{max-width:720px;margin:0 auto 32px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);border-radius:2px;overflow:hidden;box-shadow:0 6px 24px rgba(12,26,12,.06)}
+    .mstp-hero{background:linear-gradient(180deg, #0F1F0F 0%, #18301B 100%);padding:38px 36px;text-align:center;border-bottom:1px solid rgba(184,151,90,.25)}
+    .mstp-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:#B8975A;margin-bottom:14px;opacity:.95}
+    .mstp-hero-title{font-family:'EB Garamond',serif;font-size:clamp(34px,5vw,46px);font-weight:400;color:#F5ECD8;font-style:italic;line-height:1.05;margin:0 0 8px}
+    .mstp-hero-sub{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.75);font-style:italic;margin:0;line-height:1.5}
+    .mstp-body{padding:30px 36px 32px}
+    .mstp-desc{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.75;margin:0 0 22px}
+    .mstp-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .mstp-cta-primary{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 26px;text-decoration:none;border-radius:1px;transition:background .15s}
+    .mstp-cta-primary:hover{background:var(--gold-light)}
+    .mstp-cta-ghost{display:inline-block;background:transparent;color:var(--ink-soft);border:1px solid var(--gold-border);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:13px 25px;text-decoration:none;border-radius:1px;transition:all .15s}
+    .mstp-cta-ghost:hover{background:var(--cream-mid);border-color:var(--gold);color:var(--ink)}
+    .mstp-upgrade{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin:14px 0 0;line-height:1.55}
+    .mstp-upgrade a{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px}
+    .mstp-upgrade a:hover{color:var(--gold)}
+    @media (max-width:560px){
+      .mstp-hero{padding:30px 22px}
+      .mstp-body{padding:24px 22px 28px}
+      .mstp-cta-primary,.mstp-cta-ghost{width:100%;text-align:center;box-sizing:border-box}
+    }
+
     /* UPCOMING EVENT card — slotted at top of dashboard, below welcome.
        Auto-hides after the event date passes. Single event surface for
        now (Feast of St John, 23 June 2026); will be retired after the
@@ -457,6 +483,57 @@
   const EVENT_SLUG = 'feast-of-st-john-2026';
   const EVENT_TITLE = 'Feast of St John at Killone Abbey';
   const EVENT_WHEN_DISPLAY = 'Tuesday 23 June 2026, 6 pm — Killone Abbey, Newhall Estate, County Clare';
+  // St Patrick's Day card — top of the dashboard from now until ~end of
+  // March each year. Visible to every active member regardless of tier;
+  // the host CTA is conditionally rendered for Guardian+ since the tier
+  // gate is enforced server-side anyway (gathering-host-upsert).
+  // Returns '' outside the visibility window so the slot collapses
+  // cleanly without an empty card.
+  function stPatricksCardHtml(member) {
+    // Show from 1 September of the year before through 31 March of the
+    // gathering year. Outside that window the card stays hidden — by
+    // April the day is over and members won't be thinking about it.
+    const now = new Date();
+    const m   = now.getUTCMonth();   // 0=Jan
+    const y   = now.getUTCFullYear();
+    const inWindow = m >= 8 || m <= 2; // Sep–Dec or Jan–Mar
+    if (!inWindow) return '';
+
+    // Target year: the next 17 March still in the future. If we're in
+    // Jan/Feb/March, that's this year; if we're in Sep/Oct/Nov/Dec,
+    // it's next year.
+    const targetYear = (m >= 8) ? y + 1 : y;
+
+    const tier = (member && member.tier) || '';
+    const canHost = tier && !tier.startsWith('clan-');
+
+    const hostCta = canHost
+      ? `<a href="/members/host-gathering.html?year=${targetYear}" class="mstp-cta-primary">Host a pin · or RSVP →</a>`
+      : `<a href="/members/host-gathering.html?year=${targetYear}" class="mstp-cta-primary">Find a gathering near you →</a>`;
+
+    const upgradeHint = canHost
+      ? ''
+      : `<p class="mstp-upgrade">Hosting your own pin is a Guardian-tier-or-above benefit. <a href="/membership.html#tiers">Upgrade your tier →</a></p>`;
+
+    return `
+      <section class="mstp" id="mstpCard">
+        <div class="mstp-hero">
+          <div class="mstp-hero-eyebrow">St Patrick's Day · 17 March ${targetYear}</div>
+          <div class="mstp-hero-title">Lá Fhéile Pádraig</div>
+          <div class="mstp-hero-sub">The clan gathers, wherever you are.</div>
+        </div>
+        <div class="mstp-body">
+          <p class="mstp-desc">A live map of Ó Comáin pubs across the diaspora — from Soho to Sydney, from Ennis to Newmarket. Click any pin to see the host, the venue, the time. RSVP in one tap. The host knows you're coming, the kindred find each other.</p>
+          <div class="mstp-ctas">
+            ${hostCta}
+            <a href="/st-patricks-day.html" class="mstp-cta-ghost">View public map</a>
+          </div>
+          ${upgradeHint}
+        </div>
+      </section>
+    `;
+  }
+
   function eventCardHtml(member) {
     if (Date.now() > new Date(EVENT_END_ISO).getTime()) return '';
     return `
@@ -645,6 +722,8 @@
         <h1 class="mwelcome-title">Dia dhuit, <em>${escHtml(greetingAddress)}</em></h1>
         <p class="mwelcome-sub">Your place in the Register of Clan Ó Comáin is confirmed. This is where the clan keeps its promises to you.</p>
       </div>
+
+      ${stPatricksCardHtml(member)}
 
       ${eventCardHtml(member)}
 

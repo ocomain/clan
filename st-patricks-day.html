@@ -101,6 +101,14 @@
     /* Map popup style — overrides default Leaflet rounded white */
     .leaflet-popup-content-wrapper{background:#0F1F0F;color:#F5ECD8;border:1px solid #B8975A;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
     .leaflet-popup-tip{background:#0F1F0F;border:1px solid #B8975A}
+
+    /* Avatar pin — replaces the default heraldic teardrop when a host
+       supplies an avatar URL. Reads as "this is a person you can
+       interact with" rather than an anonymous map dot. */
+    .lf-avatar-pin{background:none;border:none}
+    .lf-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(0,0,0,.45);background-color:#1a2a1a}
+    .lf-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+    .lf-avatar-pin:hover .lf-avatar-pin-circle{border-color:#F5ECD8;transition:border-color .15s}
     .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:220px;max-width:300px}
     .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:6px;opacity:.85}
     .lf-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#F5ECD8;margin:0 0 5px;font-weight:500}
@@ -370,10 +378,12 @@
     attribution: '© OpenStreetMap contributors',
   }).addTo(map);
 
-  // Custom pin — gold heraldic dot. Easier to spot against the OSM
-  // colour palette than the default blue marker, and visually
-  // consistent with the rest of the brand.
-  var pinIcon = L.divIcon({
+  // Pin factory — returns an avatar-style icon when the host has an
+  // avatar URL, otherwise the classic gold heraldic teardrop. The
+  // avatar variant makes pins feel obviously interactive (you click
+  // a face, not an anonymous dot), so users don't have to learn the
+  // map's affordances by trial.
+  var fallbackPin = L.divIcon({
     className: 'lf-pin',
     html: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">' +
           '<path d="M14 0 C6 0 0 6 0 14 c0 10 14 22 14 22 s14 -12 14 -22 c0 -8 -6 -14 -14 -14 z" fill="#B8975A" stroke="#0F1F0F" stroke-width="1.5"/>' +
@@ -383,6 +393,22 @@
     iconAnchor: [14, 36],
     popupAnchor: [0, -32],
   });
+
+  function pinIconFor(g) {
+    if (!g.host_avatar_url) return fallbackPin;
+    // Avatar pin — 52px circle with gold ring + small gold pointer
+    // tail below. The image is set as background so it crops cleanly
+    // to the circle without an extra <img> wrapper.
+    return L.divIcon({
+      className: 'lf-avatar-pin',
+      html:
+        '<div class="lf-avatar-pin-circle" style="background-image:url(\'' + g.host_avatar_url.replace(/'/g, "\\'") + '\')"></div>' +
+        '<div class="lf-avatar-pin-tail"></div>',
+      iconSize: [52, 64],
+      iconAnchor: [26, 62],
+      popupAnchor: [0, -56],
+    });
+  }
 
   var loadingEl = document.getElementById('lf-map-loading');
   var emptyEl   = document.getElementById('lf-map-empty');
@@ -460,9 +486,13 @@
       }
 
       var bounds = [];
+      var markers = [];
       gatherings.forEach(function(g){
-        var m = L.marker([g.venue_lat, g.venue_lng], { icon: pinIcon }).addTo(map);
-        m.bindPopup(popupHtml(g), { maxWidth: 320 });
+        var m = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(map);
+        // autoClose:false + closeOnClick:false so multiple popups can
+        // be visible simultaneously when we auto-open them below.
+        m.bindPopup(popupHtml(g), { maxWidth: 320, autoClose: false, closeOnClick: false });
+        markers.push(m);
         bounds.push([g.venue_lat, g.venue_lng]);
       });
       if (bounds.length === 1) {
@@ -470,6 +500,17 @@
         map.setView(bounds[0], 6);
       } else {
         map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+      }
+
+      // Auto-open popups when the map is sparse enough that they won't
+      // overlap into chaos. The pin-as-avatar already telegraphs "click
+      // me", but having at least the first pin sitting open removes the
+      // last bit of guesswork for first-time visitors. Threshold tuned
+      // for Year One; once we have 6+ pins the heuristic naturally
+      // disables itself and users discover the interaction via the
+      // avatar pins instead.
+      if (markers.length <= 5) {
+        markers.forEach(function(m){ m.openPopup(); });
       }
     })
     .catch(function(err){

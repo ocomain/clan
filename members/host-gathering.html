@@ -150,6 +150,12 @@
     /* Map popup style — light variant for the members area (page bg is cream) */
     .hg-network-map .leaflet-popup-content-wrapper{background:#FFFFFF;color:#0F1F0F;border:1px solid #B8975A;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
     .hg-network-map .leaflet-popup-tip{background:#FFFFFF;border:1px solid #B8975A}
+
+    /* Avatar pin — same shape language as the public map, light shadow */
+    .hg-avatar-pin{background:none;border:none}
+    .hg-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(12,26,12,.25);background-color:#F5ECD8}
+    .hg-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(12,26,12,.2))}
+    .hg-avatar-pin:hover .hg-avatar-pin-circle{border-color:#0F1F0F;transition:border-color .15s}
     .hg-network-map .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:240px;max-width:300px}
     .hg-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8B6F32;margin-bottom:6px}
     .hg-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#0F1F0F;margin:0 0 5px;font-weight:500}
@@ -808,14 +814,26 @@
     }
   }
 
-  // Gold heraldic pin SVG — matches the public map.
-  const pinIcon = L.divIcon({
+  // Pin factory — avatar circle when the host has supplied one,
+  // gold heraldic teardrop otherwise. Mirrors the public map.
+  const fallbackPin = L.divIcon({
     className: 'hg-network-pin',
     html: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">' +
           '<path d="M14 0 C6 0 0 6 0 14 c0 10 14 22 14 22 s14 -12 14 -22 c0 -8 -6 -14 -14 -14 z" fill="#B8975A" stroke="#0F1F0F" stroke-width="1.5"/>' +
           '<circle cx="14" cy="14" r="5" fill="#0F1F0F"/></svg>',
     iconSize: [28, 36], iconAnchor: [14, 36], popupAnchor: [0, -32],
   });
+
+  function pinIconFor(g) {
+    if (!g.host_avatar_url) return fallbackPin;
+    return L.divIcon({
+      className: 'hg-avatar-pin',
+      html:
+        `<div class="hg-avatar-pin-circle" style="background-image:url('${g.host_avatar_url.replace(/'/g, "\\'")}')"></div>` +
+        `<div class="hg-avatar-pin-tail"></div>`,
+      iconSize: [52, 64], iconAnchor: [26, 62], popupAnchor: [0, -56],
+    });
+  }
 
   function renderNetworkMap(gatherings, stats) {
     networkStatsEl.innerHTML = stats.gatherings > 0
@@ -847,8 +865,9 @@
 
     const bounds = [];
     gatherings.forEach(g => {
-      const marker = L.marker([g.venue_lat, g.venue_lng], { icon: pinIcon }).addTo(networkMap);
-      marker.bindPopup(popupHtmlFor(g), { maxWidth: 320 });
+      const marker = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(networkMap);
+      // autoClose:false so multiple popups can co-exist when auto-opened
+      marker.bindPopup(popupHtmlFor(g), { maxWidth: 320, autoClose: false, closeOnClick: false });
       marker.on('popupopen', () => attachPopupHandlers(g));
       networkPins.push({ gathering: g, marker });
       bounds.push([g.venue_lat, g.venue_lng]);
@@ -856,6 +875,13 @@
 
     if (bounds.length === 1) networkMap.setView(bounds[0], 6);
     else networkMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+
+    // Auto-open while the map is sparse — same Year One heuristic as
+    // the public page. Avatar pins handle the affordance once we cross
+    // the threshold.
+    if (networkPins.length <= 5) {
+      networkPins.forEach(p => p.marker.openPopup());
+    }
   }
 
   function popupHtmlFor(g) {
