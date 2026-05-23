@@ -2186,6 +2186,21 @@
     loading.style.display = 'none';
     dashboard.style.display = 'block';
 
+    // Hash-anchor handling for SPA-style render. The dashboard's
+    // markup is set above via dashboard.innerHTML, so any #anchor in
+    // the URL was unresolvable when the browser first tried to scroll
+    // (the element didn't exist yet). Now that the markup is in the
+    // DOM, scroll to the target if a hash was supplied. Common path:
+    // /members/#mstpSection from the public map popup's 'Sign in' CTA.
+    if (window.location.hash) {
+      const targetId = window.location.hash.slice(1);
+      // requestAnimationFrame so layout has settled before we measure
+      requestAnimationFrame(() => {
+        const el = document.getElementById(targetId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
     // ── Upcoming event RSVP card (auto-hidden after EVENT_END_ISO) ─────────
     wireUpEventCard(member);
 
