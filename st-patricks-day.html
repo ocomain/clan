@@ -125,6 +125,11 @@
     .lf-sidebar-item-host{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(215,235,215,.65);margin-top:4px}
     @media (max-width:760px){
       .lf-map-row{flex-direction:column}
+      /* In column flex direction, the desktop `flex:1` (= flex:1 1 0%)
+         would have the map take available HEIGHT, collapsing it to 0
+         since .lf-map-row has no fixed height. Reset to flex:none so
+         the map's explicit height (560px, or 440px below 720px) applies. */
+      .lf-map-row > .lf-map{flex:none}
       .lf-sidebar{width:auto;max-height:none;border-left:1px solid rgba(184,151,90,.25);border-top:3px solid var(--gold)}
       .lf-sidebar-list{max-height:320px}
     }
