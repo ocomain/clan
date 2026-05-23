@@ -975,7 +975,9 @@
       // Auto-open popups while map is sparse (Year One). Same delay
       // pattern as the other maps so auto-pan works against a settled
       // viewport.
-      if (networkPins.length <= 5) {
+      // Auto-open only when there's a single pin (see public map for
+      // rationale — popup overlap with 2+ nearby pins).
+      if (networkPins.length === 1) {
         networkMap.once('moveend', () => {
           networkPins.forEach(p => p.marker.openPopup());
         });

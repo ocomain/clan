@@ -565,7 +565,13 @@
       // otherwise the auto-pan padding can't compute against a settled
       // viewport and the popup ends up clipped above the map (which is
       // exactly the bug the screenshot showed).
-      if (markers.length <= 5) {
+      // Auto-open the popup only when there is a SINGLE pin on the
+      // map — with two or more pins the popups overlap (especially
+      // when pins are geographically close, e.g. Perth + London).
+      // Avatar pins are visually inviting enough on their own that
+      // users will click them; we don't need to force-open to draw
+      // attention past the first pin.
+      if (markers.length === 1) {
         map.once('moveend', function(){
           markers.forEach(function(m){ m.openPopup(); });
         });
