@@ -164,7 +164,30 @@ exports.handler = async (event) => {
     });
 
     // ── Aggregate stats for the page header ──────────────────────────
-    const countries = new Set(out.map(g => g.venue_country));
+    // For 'GB' we subdivide into the constituent countries (Scotland,
+    // England, Wales, Northern Ireland) because culturally — and in
+    // the way a Celtic-rooted clan thinks about its diaspora — those
+    // are separate countries even though they share an ISO code. A
+    // lat/lng heuristic is enough for the obvious cases: every major
+    // Scottish city is north of ~54.6°, every Welsh city west of
+    // ~-2.6° below ~53.5°, Northern Ireland in its own corner.
+    function countryKey(g) {
+      if (g.venue_country !== 'GB') return g.venue_country;
+      const lat = Number(g.venue_lat);
+      const lng = Number(g.venue_lng);
+      // Northern Ireland — bounded box covers the six counties
+      if (lat >= 54.0 && lat <= 55.3 && lng >= -8.2 && lng <= -5.4) return 'GB-NIR';
+      // Scotland — anything north of the border (roughly 54.6° at the
+      // Solway, sloping up to ~55.8° at the Tweed; we use 54.6° as a
+      // safe floor since Berwick is the only nuance and it's English)
+      if (lat >= 54.6) return 'GB-SCT';
+      // Wales — west of about -2.6° and below ~53.5° catches the
+      // whole principality without grabbing Bristol or Liverpool
+      if (lng <= -2.6 && lat <= 53.5) return 'GB-WLS';
+      // Everything else in GB is England
+      return 'GB-ENG';
+    }
+    const countries = new Set(out.map(countryKey));
     const cities    = new Set(out.map(g => `${g.venue_city}|${g.venue_country}`));
 
     return {

@@ -1061,18 +1061,20 @@
     const msg = g.message ? `<div class="hg-pop-msg">${esc(g.message)}</div>` : '';
 
     // Host row — avatar + name when both present, simple line otherwise
-    // (an empty avatar circle would look worse than no row at all)
+    // (an empty avatar circle would look worse than no row at all).
+    // First-name-only display: 'Hosted by Linda' reads friendlier
+    // than 'Hosted by Linda Commane Cryan' in the popup chrome.
     let hostBit = '';
     if (g.host_display_name && g.host_avatar_url) {
       hostBit = `<div class="hg-pop-host-row">
         <img class="hg-pop-avatar" src="${esc(g.host_avatar_url)}" alt="" loading="lazy">
         <div class="hg-pop-host-stack">
           <div class="hg-pop-host-label">Hosted by</div>
-          <div class="hg-pop-host-full">${esc(g.host_display_name)}</div>
+          <div class="hg-pop-host-full">${esc(g.host_display_name.split(' ')[0])}</div>
         </div>
       </div>`;
     } else if (g.host_display_name) {
-      hostBit = `<div class="hg-pop-host">Hosted by <span class="hg-pop-host-name">${esc(g.host_display_name)}</span></div>`;
+      hostBit = `<div class="hg-pop-host">Hosted by <span class="hg-pop-host-name">${esc(g.host_display_name.split(' ')[0])}</span></div>`;
     }
 
     let badge = '';
@@ -1128,7 +1130,7 @@
       <div class="pin-venue">${esc(g.venue_name)}</div>
       <div>${esc(g.venue_address)}</div>
       <div class="pin-meta">${esc(g.venue_city)}, ${esc(g.venue_country)} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
-      ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${esc(g.host_display_name)}</strong></div>` : ''}
+      ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${esc(g.host_display_name.split(' ')[0])}</strong></div>` : ''}
       ${g.message ? `<div class="pin-msg">"${esc(g.message)}"</div>` : ''}
     `;
 

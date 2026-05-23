@@ -732,11 +732,11 @@
           <img class="stp-pop-avatar" src="${stpEsc(g.host_avatar_url)}" alt="" loading="lazy">
           <div class="stp-pop-host-stack">
             <div class="stp-pop-host-label">Hosted by</div>
-            <div class="stp-pop-host-full">${stpEsc(g.host_display_name)}</div>
+            <div class="stp-pop-host-full">${stpEsc(g.host_display_name.split(' ')[0])}</div>
           </div>
         </div>`;
       } else if (g.host_display_name) {
-        hostBit = `<div class="stp-pop-host">Hosted by ${stpEsc(g.host_display_name)}</div>`;
+        hostBit = `<div class="stp-pop-host">Hosted by ${stpEsc(g.host_display_name.split(' ')[0])}</div>`;
       }
 
       let badge = '';
@@ -780,7 +780,7 @@
         <div class="pin-venue">${stpEsc(g.venue_name || g.venue_city)}</div>
         ${g.venue_address ? `<div>${stpEsc(g.venue_address)}</div>` : ''}
         <div class="pin-meta">${stpEsc(g.venue_city)}, ${stpEsc(g.venue_country)} · ${stpEsc(stpFmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
-        ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${stpEsc(g.host_display_name)}</strong></div>` : ''}
+        ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${stpEsc(g.host_display_name.split(' ')[0])}</strong></div>` : ''}
         ${g.message ? `<div class="pin-msg">"${stpEsc(g.message)}"</div>` : ''}
       `;
 

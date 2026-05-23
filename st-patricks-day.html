@@ -425,6 +425,10 @@
     // inline line. Falling back avoids an empty avatar circle when a
     // host hasn't supplied a photo, which would look stranger than
     // omitting the row entirely.
+    // Host display: show FIRST NAME only. Members register with their
+    // full name; the popup reads friendlier as 'Hosted by Linda' than
+    // 'Hosted by Linda Commane Cryan'. Single-word display names pass
+    // through unchanged.
     var hostBit = '';
     if (g.host_display_name && g.host_avatar_url) {
       hostBit =
@@ -432,11 +436,11 @@
           '<img class="lf-pop-avatar" src="' + escHtml(g.host_avatar_url) + '" alt="" loading="lazy">' +
           '<div class="lf-pop-host-stack">' +
             '<div class="lf-pop-host-label">Hosted by</div>' +
-            '<div class="lf-pop-host-full">' + escHtml(g.host_display_name) + '</div>' +
+            '<div class="lf-pop-host-full">' + escHtml(g.host_display_name.split(' ')[0]) + '</div>' +
           '</div>' +
         '</div>';
     } else if (g.host_display_name) {
-      hostBit = '<div class="lf-pop-host">Hosted by <span class="lf-pop-host-name">' + escHtml(g.host_display_name) + '</span></div>';
+      hostBit = '<div class="lf-pop-host">Hosted by <span class="lf-pop-host-name">' + escHtml(g.host_display_name.split(' ')[0]) + '</span></div>';
     }
 
     // Title/header: when venue_name is gated (null for non-members),
