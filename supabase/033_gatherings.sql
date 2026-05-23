@@ -45,7 +45,7 @@
 -- The starts_local_time is stored as a text string like "19:00" and
 -- displayed verbatim. Time zone is implicit from venue_country / city.
 -- We intentionally avoid UTC conversion — "7pm at the Crow's Nest in
--- Newmarket" is what the host means, and that's what cousins in
+-- Newmarket" is what the host means, and that's what kindred in
 -- Newmarket should see. A traveller in another time zone reading the
 -- map will understand "19:00" means local pub time, same as any
 -- printed event listing.
