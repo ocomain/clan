@@ -25,11 +25,6 @@
 //   +330  Email 10      LINDA / OFFICE   linda@    renewal mechanics
 //                       — CONDITIONAL: skipped for Life-tier members
 //                       (_330_skipped flag stamped)
-//   +366  Email 11      LINDA / OFFICE   linda@    standing member
-//                       — observer → Standing Member transition.
-//                       Applies to ALL tiers (Life included), since
-//                       voting standing is a function of time-on-the-
-//                       Register, not subscription status.
 //
 // REGISTER PROTOCOL — locked:
 //   - Linda never refers to Fergus by first name. Always "the Chief".
@@ -1005,48 +1000,6 @@ async function sendLindaRenewal(member) {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// EMAIL 11 — Linda, Standing Member transition (+366)
-//
-// The day the threshold is crossed. Email 10 (at +330) foreshadowed
-// this; Email 11 marks it. Applies to EVERY active member regardless
-// of tier — Life members also become Standing Members at year and a
-// day, even though they have no renewal mechanism behind it; the
-// transition is a function of time-on-the-Register, not subscription
-// status.
-//
-// Voice: Linda, formal but warm. Short — this is a marker email,
-// not a treatise. The substantive AGM mechanics (dates, agenda,
-// how voting works) belong in the first AGM announcement when it
-// comes, not in this welcome-to-standing note.
-// ─────────────────────────────────────────────────────────────────────
-function buildEmail11_html(member) {
-  const firstName = addressFormOf(member);
-  const body = `
-${p(`Dear ${escapeHtml(firstName)},`)}
-${p(`A year and a day ago today, your name was entered into the Register of Clan Ó Comáin. From this date forward, you are no longer an Observer of the clan's councils &mdash; <strong>you are a Standing Member</strong>.`)}
-${p(`In practical terms this means a small but real change. When the Chief calls the Annual General Meeting, your voice carries the same weight as any other Standing Member's; when a vote is taken &mdash; on matters of clan policy, of how the household conducts itself, of which projects of the revival to advance &mdash; <strong>your vote is counted</strong>. There is no further step required from you; the change is automatic, conferred by your year and a day of standing.`)}
-${p(`The first Annual General Meeting under the revived clan will be announced in due course, with full notice and the agenda circulated in advance. I will write again when the date is set.`)}
-${p(`In the meantime, my congratulations on your year and a day. The Register is a heavier book for your name being in it.`)}
-${p(`With kind regards,`)}
-${lindaSignatureHtml()}
-`;
-  return wrapInChrome({
-    eyebrow: 'A note from the Office',
-    heading: 'Standing Member of Ó Comáin',
-    bodyHtml: body,
-  });
-}
-
-async function sendLindaStandingMember(member) {
-  return sendEmail({
-    to: member.email,
-    from: FROM_LINDA,
-    subject: 'A year and a day — your standing in Clan Ó Comáin',
-    html: buildEmail11_html(member),
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────
 // PREVIEW INTEGRATION
 // ─────────────────────────────────────────────────────────────────────
 const PREVIEW_BUILDERS = {
@@ -1063,7 +1016,6 @@ const PREVIEW_BUILDERS = {
   '8':  buildEmail8_html,
   '9':  buildEmail9_html,
   '10': buildEmail10_html,
-  '11': buildEmail11_html,
 };
 
 function getPreviewHtml(emailKey, member) {
@@ -1087,7 +1039,6 @@ module.exports = {
   sendJessicaGathering,
   sendPaddyRoyalHouseAndSaint,
   sendLindaRenewal,
-  sendLindaStandingMember,
   // Preview (used by scripts/preview-post-signup-emails.mjs)
   getPreviewHtml,
   PREVIEW_BUILDERS,
