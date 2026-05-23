@@ -121,6 +121,17 @@
   status = 301
   force = true
 
+# St Patrick's Day gathering map — renamed from the Irish slug to the
+# English slug for clarity and SEO (May 2026). The old slug was only
+# ever shared during the password-gated review window, so practically
+# nothing links to it externally, but a permanent 301 covers any
+# review-share URLs we already sent out.
+[[redirects]]
+  from = "/la-fheile-padraig.html"
+  to = "/st-patricks-day.html"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]

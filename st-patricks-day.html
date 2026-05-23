@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <!--
-  LÁ FHÉILE PÁDRAIG — ST PATRICK'S DAY GATHERING MAP
+  ST PATRICK'S DAY GATHERING MAP
   ───────────────────────────────────────────────────
 
   Status: PASSWORD-GATED for internal review. noindex,nofollow, unlinked
-  from public navigation. The page exists at /la-fheile-padraig.html for
-  Fergus/DDW review only.
+  from public navigation. The page exists at /st-patricks-day.html for
+  Fergus/DDW review only. (Originally drafted at /la-fheile-padraig.html;
+  English slug now leads for clarity and SEO. A 301 in netlify.toml
+  redirects the Irish slug → English slug so any links we already
+  shared still work.)
 
   Architecture (per the May 2026 O'Dubhda-inspired thread):
 
@@ -25,16 +28,21 @@
     - Pins loaded from /api/gathering-list
     - Empty-state copy when zero pins (the "be the first" pull)
 
-  Launch gates before going public (remove BEN_PW + add to nav):
+  Launch gates before going public (remove LF_PW + add to nav):
     1. Chief's commitment to record annual video confirmed
     2. Seeding mechanism in place (gifted-membership outreach)
     3. At least a dozen confirmed gatherings in the database
        so the public page doesn't look discouragingly empty
 
   Year switching: the page reads ?year= from the URL, defaults to the
-  current calendar year. After 17 March it will keep showing the
-  current year's pins until 1 January when the default rolls forward.
-  Past years stay browseable via ?year=2027 etc.
+  next St Patrick's Day cycle (year+1 if today is past 17 March, else
+  current year). Past years stay browseable via ?year=2027 etc.
+
+  Lá Fhéile Pádraig stays present as a heritage accent (subtitle in
+  the hero, footer line in host-RSVP emails) — just not as the
+  primary identifier. English-language clarity beats Irish-language
+  authenticity on the surfaces where searchers and casual visitors
+  land.
 -->
 <html lang="en">
 <head>
@@ -42,7 +50,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Lá Fhéile Pádraig — Clan Ó Comáin</title>
+  <title>St Patrick's Day Gathering Map — Clan Ó Comáin</title>
   <meta name="description" content="A map of where the Ó Comáin kindred are gathering this St Patrick's Day — pub by pub, city by city, across the diaspora. Find kindred near you and join them.">
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/shared.css">
@@ -153,7 +161,7 @@
 <div id="lf-gate">
   <div id="lf-gate-card">
     <img src="/coat_of_arms.png" alt="" id="lf-gate-crest">
-    <div id="lf-gate-eyebrow">Lá Fhéile Pádraig</div>
+    <div id="lf-gate-eyebrow">St Patrick's Day Map</div>
     <div id="lf-gate-title">In preparation</div>
     <div id="lf-gate-sub">The gathering map is being readied for its first cycle. If you have a passphrase from the Office, you may enter it below.</div>
     <input type="password" id="lf-gate-input" placeholder="Passphrase" autocomplete="off" autofocus>
@@ -214,9 +222,9 @@
   <div class="lf-hero-bg"></div>
   <div class="si">
     <div class="lf-hero-content">
-      <div class="lf-eyebrow">Lá Fhéile Pádraig · <span id="lf-year-eyebrow">2027</span></div>
+      <div class="lf-eyebrow">St Patrick's Day · <span id="lf-year-eyebrow">2027</span></div>
       <h1 class="lf-hero-title">The clan gathers.</h1>
-      <div class="lf-hero-when">17 March · St Patrick's Day</div>
+      <div class="lf-hero-when">17 March · Lá Fhéile Pádraig</div>
       <p class="lf-hero-sub">A map of where the Ó Comáin kindred are raising a glass this St Patrick's Day — from Ennis to Boston, from Newhall to Newcastle. Find kindred near you and join them at the pub.</p>
     </div>
   </div>

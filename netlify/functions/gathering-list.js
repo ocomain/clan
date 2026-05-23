@@ -3,7 +3,7 @@
 // PUBLIC endpoint. No authentication required. Returns the published
 // gatherings for the requested year, formatted for the map page.
 //
-// This is what feeds the /la-fheile-padraig page. It's deliberately
+// This is what feeds the /st-patricks-day page. It's deliberately
 // public — the whole point of the map is that prospects and casual
 // visitors can see the network and feel the conversion pull ("no
 // O'Comáin in your town yet — be the first"). RSVPs and host actions
