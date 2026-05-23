@@ -334,7 +334,7 @@
         <div class="hg-field">
           <label class="hg-label" for="hg-pub-search">Pub or venue · search</label>
           <div class="hg-pub-picker">
-            <input type="text" class="hg-input" id="hg-pub-search" placeholder="e.g. The Crow's Nest, Newmarket Ontario" autocomplete="off">
+            <input type="text" class="hg-input" id="hg-pub-search" placeholder="e.g. The Black Sheep, Boston MA" autocomplete="off">
             <div class="hg-pub-results" id="hg-pub-results"></div>
           </div>
           <div class="hg-help">Type the pub name and a city. We'll find it on the map for you (powered by OpenStreetMap).</div>
@@ -706,7 +706,7 @@
       if (!res.ok) throw new Error('search failed');
       const results = await res.json();
       if (!Array.isArray(results) || results.length === 0) {
-        pubResults.innerHTML = '<div class="hg-pub-empty">No matches. Try including a city name (e.g. "Crow\'s Nest Newmarket Ontario").</div>';
+        pubResults.innerHTML = '<div class="hg-pub-empty">No matches. Try including a city name (e.g. "Black Sheep Boston").</div>';
         return;
       }
       pubResults.innerHTML = results.map((r, i) => {

@@ -483,26 +483,21 @@
   const EVENT_SLUG = 'feast-of-st-john-2026';
   const EVENT_TITLE = 'Feast of St John at Killone Abbey';
   const EVENT_WHEN_DISPLAY = 'Tuesday 23 June 2026, 6 pm — Killone Abbey, Newhall Estate, County Clare';
-  // St Patrick's Day card — top of the dashboard from now until ~end of
-  // March each year. Visible to every active member regardless of tier;
-  // the host CTA is conditionally rendered for Guardian+ since the tier
-  // gate is enforced server-side anyway (gathering-host-upsert).
-  // Returns '' outside the visibility window so the slot collapses
-  // cleanly without an empty card.
+  // St Patrick's Day card — sits below the "By private welcome" invite
+  // section on the dashboard. Always rendered for active members (no
+  // seasonal auto-hide); the year computed below always points at the
+  // next 17 March still in the future, so the card stays meaningful
+  // year-round rather than going dark for half the year.
   function stPatricksCardHtml(member) {
-    // Show from 1 September of the year before through 31 March of the
-    // gathering year. Outside that window the card stays hidden — by
-    // April the day is over and members won't be thinking about it.
+    // Target year: the next 17 March still in the future. Jan/Feb/early
+    // March → this year. From 18 March onwards through to the end of
+    // December → next year.
     const now = new Date();
-    const m   = now.getUTCMonth();   // 0=Jan
+    const m   = now.getUTCMonth();   // 0 = Jan
+    const d   = now.getUTCDate();
     const y   = now.getUTCFullYear();
-    const inWindow = m >= 8 || m <= 2; // Sep–Dec or Jan–Mar
-    if (!inWindow) return '';
-
-    // Target year: the next 17 March still in the future. If we're in
-    // Jan/Feb/March, that's this year; if we're in Sep/Oct/Nov/Dec,
-    // it's next year.
-    const targetYear = (m >= 8) ? y + 1 : y;
+    const past17March = (m > 2) || (m === 2 && d > 17);
+    const targetYear  = past17March ? y + 1 : y;
 
     const tier = (member && member.tier) || '';
     const canHost = tier && !tier.startsWith('clan-');
@@ -523,7 +518,7 @@
           <div class="mstp-hero-sub">The clan gathers, wherever you are.</div>
         </div>
         <div class="mstp-body">
-          <p class="mstp-desc">A live map of Ó Comáin pubs across the diaspora — from Soho to Sydney, from Ennis to Newmarket. Click any pin to see the host, the venue, the time. RSVP in one tap. The host knows you're coming, the kindred find each other.</p>
+          <p class="mstp-desc">A live map of Ó Comáin pubs across the diaspora. Click any pin to see the host, the venue, the time. RSVP in one tap. The host knows you're coming, the kindred find each other.</p>
           <div class="mstp-ctas">
             ${hostCta}
             <a href="/st-patricks-day.html" class="mstp-cta-ghost">View public map</a>
@@ -722,8 +717,6 @@
         <h1 class="mwelcome-title">Dia dhuit, <em>${escHtml(greetingAddress)}</em></h1>
         <p class="mwelcome-sub">Your place in the Register of Clan Ó Comáin is confirmed. This is where the clan keeps its promises to you.</p>
       </div>
-
-      ${stPatricksCardHtml(member)}
 
       ${eventCardHtml(member)}
 
@@ -1349,6 +1342,8 @@
            .mgift-cta card linking to /gift.html with gold-top
            accent, gift icon, and 'A gift in their name' eyebrow)
            was redundant once the unified card was introduced. -->
+
+      ${stPatricksCardHtml(member)}
 
       <section class="mactions">
         <a class="maction live" style="text-decoration:none;color:inherit" href="/members/library.html">
