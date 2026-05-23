@@ -42,6 +42,55 @@ const MAX_VENUE_ADDRESS = 240;
 const MAX_VENUE_CITY    = 80;
 const MAX_VENUE_URL     = 500;
 
+// Avatar upload constraints. Decoded payload max is enforced server-side
+// even though the client resizes to ~400x400 JPEG (~50-150KB typical) —
+// a hostile client could send anything. 1 MB ceiling after decode gives
+// plenty of headroom for legitimate uploads while bounding worst case.
+const AVATAR_BUCKET = 'gathering-avatars';
+const AVATAR_MAX_DECODED_BYTES = 1024 * 1024;       // 1 MB
+const AVATAR_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+// Upload a data: URL to Supabase Storage and return the public URL.
+// Throws on invalid input or storage error so the caller can decide
+// to bail or fall back.
+async function uploadAvatarFromDataUrl(dataUrl, memberId, year) {
+  // Format: data:<mime>;base64,<payload>
+  const m = /^data:([\w/+.-]+);base64,(.+)$/i.exec(dataUrl);
+  if (!m) throw new Error('Avatar payload not a base64 data URL.');
+  const contentType = m[1].toLowerCase();
+  const base64      = m[2];
+
+  if (!AVATAR_ALLOWED_TYPES.has(contentType)) {
+    throw new Error(`Avatar type ${contentType} not allowed. Use JPEG, PNG, or WebP.`);
+  }
+  const buf = Buffer.from(base64, 'base64');
+  if (buf.length > AVATAR_MAX_DECODED_BYTES) {
+    throw new Error(`Avatar too large (${buf.length} bytes). Max 1 MB after decode.`);
+  }
+
+  // Path scheme: <member_id>/<year>-<timestamp>.<ext>
+  // Per-member folder keeps things organised; timestamp suffix means we
+  // never overwrite, so old URLs (e.g. cached in an old email) stay
+  // valid. Storage is cheap; orphaned files are harmless.
+  const ext = contentType === 'image/png'  ? 'png'
+            : contentType === 'image/webp' ? 'webp'
+            :                                 'jpg';
+  const ts  = Date.now();
+  const path = `${memberId}/${year}-${ts}.${ext}`;
+
+  const client = supa();
+  const { error: upErr } = await client.storage.from(AVATAR_BUCKET).upload(path, buf, {
+    contentType,
+    upsert: false,   // unique path; no overwrite expected
+    cacheControl: '31536000',  // immutable URL; cache for a year
+  });
+  if (upErr) throw new Error(`Storage upload failed: ${upErr.message}`);
+
+  const { data: pub } = client.storage.from(AVATAR_BUCKET).getPublicUrl(path);
+  if (!pub || !pub.publicUrl) throw new Error('Could not derive public URL after upload.');
+  return pub.publicUrl;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
@@ -118,6 +167,16 @@ exports.handler = async (event) => {
   const venueLat = Number(body.venueLat);
   const venueLng = Number(body.venueLng);
 
+  // Avatar — three accepted shapes from the client:
+  //   data:image/...;base64,...  → fresh upload; decode + push to Storage
+  //   https://...                → existing URL; pass through unchanged
+  //   '' (empty) or null/missing → explicit clear; null the column
+  // Errors uploading are non-fatal: we fall back to passing through whatever
+  // was already on the existing row so the form save still succeeds.
+  const avatarInput = (typeof body.avatar === 'string') ? body.avatar : null;
+  // (We resolve the final value after we have a gathering id, since the
+  //  storage key benefits from being scoped by gathering — see below.)
+
   // Field-level validation. Specific messages so the form can surface
   // exactly what's wrong.
   if (!venueName)    return reject(headers, 'Pub name is required.');
@@ -145,18 +204,40 @@ exports.handler = async (event) => {
   // slightly different subject line.
   const { data: existing } = await supa()
     .from('gatherings')
-    .select('id')
+    .select('id, host_avatar_url')
     .eq('clan_id', clan_id)
     .eq('host_member_id', memberRow.id)
     .eq('gathering_date', gatheringDate)
     .maybeSingle();
   const isNew = !existing;
 
+  // ── Resolve avatar URL ─────────────────────────────────────────────
+  // avatarInput from the client tells us what to do:
+  //   - starts with 'data:image/'  → fresh upload; push to Storage
+  //   - other non-empty string     → existing URL; keep as-is
+  //   - empty/missing              → explicit clear
+  let hostAvatarUrl = existing ? (existing.host_avatar_url || null) : null;
+  if (avatarInput === '' || avatarInput === null || avatarInput === undefined) {
+    hostAvatarUrl = null;
+  } else if (typeof avatarInput === 'string' && avatarInput.startsWith('data:image/')) {
+    try {
+      hostAvatarUrl = await uploadAvatarFromDataUrl(avatarInput, memberRow.id, year);
+    } catch (e) {
+      console.warn('avatar upload failed (non-fatal, keeping existing):', e.message);
+      // Keep whatever was on the existing row; the rest of the save proceeds.
+    }
+  } else if (typeof avatarInput === 'string') {
+    // Existing URL passed through unchanged — common path on edit when
+    // the user didn't pick a new file.
+    hostAvatarUrl = avatarInput;
+  }
+
   const row = {
     clan_id,
     host_member_id:    memberRow.id,
     gathering_date:    gatheringDate,
     host_display_name: hostDisplayName,
+    host_avatar_url:   hostAvatarUrl,
     message,
     venue_name:        venueName,
     venue_address:     venueAddress,

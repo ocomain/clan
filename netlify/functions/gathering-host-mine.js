@@ -85,7 +85,7 @@ exports.handler = async (event) => {
       const ids = rsvpRows.map(r => r.gathering_id);
       const { data: targets } = await supa()
         .from('gatherings')
-        .select('id, host_display_name, venue_name, venue_city, venue_country, venue_lat, venue_lng, starts_local_time, gathering_date, status')
+        .select('id, host_display_name, host_avatar_url, venue_name, venue_city, venue_country, venue_lat, venue_lng, starts_local_time, gathering_date, status')
         .in('id', ids)
         .eq('clan_id', clan_id)
         .eq('gathering_date', gatheringDate)

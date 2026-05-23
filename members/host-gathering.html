@@ -183,6 +183,15 @@
 
     /* Upgrade-to-host card (Clan Member tier soft callout) */
     .hg-upgrade-card{background:rgba(184,151,90,.05);border-top:3px solid var(--gold)}
+
+    /* Avatar picker (host form) */
+    .hg-avatar-picker{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:4px}
+    .hg-avatar-preview{width:96px;height:96px;border-radius:50%;border:2px solid var(--gold-border);background:var(--cream-mid);overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+    .hg-avatar-preview.has-image{border-color:var(--gold)}
+    .hg-avatar-preview img{width:100%;height:100%;object-fit:cover;display:block}
+    .hg-avatar-preview-empty{font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);font-style:italic;text-align:center;padding:0 8px;line-height:1.4}
+    .hg-avatar-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .hg-avatar-uploading{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-left:4px}
   </style>
 </head>
 <body>
@@ -357,6 +366,22 @@
             <input type="text" class="hg-input" id="hg-display-name" placeholder="(optional)">
             <div class="hg-help">Leave blank to use your registered name.</div>
           </div>
+        </div>
+
+        <div class="hg-field">
+          <label class="hg-label">Your headshot on the map <span style="text-transform:none;letter-spacing:0;color:var(--ink-muted);font-weight:400">(optional, but recommended)</span></label>
+          <div class="hg-avatar-picker">
+            <div class="hg-avatar-preview" id="hg-avatar-preview">
+              <div class="hg-avatar-preview-empty">No photo yet</div>
+            </div>
+            <div class="hg-avatar-controls">
+              <label for="hg-avatar-file" class="hg-btn hg-btn-ghost" style="cursor:pointer;display:inline-block">Choose photo…</label>
+              <input type="file" id="hg-avatar-file" accept="image/jpeg,image/png,image/webp" style="display:none">
+              <button type="button" class="hg-btn hg-btn-ghost" id="hg-avatar-clear-btn" style="display:none">Remove</button>
+            </div>
+          </div>
+          <div class="hg-help">A face on the pin makes the map immediately legible — the kindred can see who they're meeting before they arrive. Centre-cropped to a square automatically. JPEG, PNG or WebP up to 8 MB.</div>
+          <input type="hidden" id="hg-avatar-data-url">
         </div>
 
         <div class="hg-field">
@@ -580,6 +605,17 @@
     $('hg-display-name').value  = g.host_display_name || '';
     $('hg-message').value       = g.message || '';
     $('hg-pub-search').value    = g.venue_name;
+    // Preload the existing avatar (if any) so editing without picking
+    // a new file preserves what's already on the pin. The hidden field
+    // carries the existing URL through to the API unchanged, where the
+    // server will recognise it as "leave avatar alone".
+    if (g.host_avatar_url) {
+      setAvatarPreview(g.host_avatar_url);
+      avatarDataInput.value = g.host_avatar_url;
+    } else {
+      setAvatarPreview(null);
+      avatarDataInput.value = '';
+    }
     showSelectedPub(g.venue_name, g.venue_address, g.venue_lat, g.venue_lng);
     showMiniMap(parseFloat(g.venue_lat), parseFloat(g.venue_lng));
     $('hg-form-title').textContent = 'Edit your gathering';
@@ -624,6 +660,13 @@
     const time          = $('hg-time').value.trim();
     const displayName   = $('hg-display-name').value.trim();
     const message       = $('hg-message').value.trim();
+    // Avatar handling: hg-avatar-data-url holds either a freshly-uploaded
+    // resized data URL (data:image/...) OR the URL of an existing avatar
+    // when the user is editing. We send three possible values to the API:
+    //   - data: URL  → server will upload to Storage and save the new URL
+    //   - URL string → existing avatar, server leaves it as-is
+    //   - empty      → user explicitly removed the avatar, server clears it
+    const avatarValue = $('hg-avatar-data-url').value;
 
     if (!venueName || !venueAddress || !Number.isFinite(venueLat) || !Number.isFinite(venueLng)) {
       showToast('Please pick a pub from the search results so we have its address and coordinates.', 'err');
@@ -637,7 +680,9 @@
     const submitBtn = $('hg-submit-btn');
     submitBtn.disabled = true;
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Saving…';
+    submitBtn.textContent = avatarValue && avatarValue.startsWith('data:')
+      ? 'Uploading photo + saving…'
+      : 'Saving…';
 
     try {
       const res = await fetch('/api/gathering-host-upsert', {
@@ -649,6 +694,7 @@
           startsLocalTime: time,
           hostDisplayName: displayName,
           message,
+          avatar: avatarValue,  // data: URL, existing URL, or '' for clear
         }),
       });
       const data = await res.json();
@@ -665,6 +711,85 @@
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
     }
+  });
+
+  // ── Avatar picker ──────────────────────────────────────────────────
+  // Files are resized + centre-cropped to 400x400 JPEG client-side
+  // before they hit the wire. Keeps payloads small (50-150KB typical)
+  // and means we don't need an image-processing dependency on the
+  // server. Anything beyond 8MB is rejected pre-resize as a safety
+  // valve against truly enormous originals.
+  const AVATAR_TARGET_SIZE = 400;
+  const AVATAR_MAX_INPUT_BYTES = 8 * 1024 * 1024;
+  const avatarFileInput = $('hg-avatar-file');
+  const avatarPreviewEl = $('hg-avatar-preview');
+  const avatarClearBtn  = $('hg-avatar-clear-btn');
+  const avatarDataInput = $('hg-avatar-data-url');
+
+  function setAvatarPreview(url) {
+    if (url) {
+      avatarPreviewEl.innerHTML = `<img src="${url.replace(/"/g, '&quot;')}" alt="Avatar preview">`;
+      avatarPreviewEl.classList.add('has-image');
+      avatarClearBtn.style.display = 'inline-block';
+    } else {
+      avatarPreviewEl.innerHTML = '<div class="hg-avatar-preview-empty">No photo yet</div>';
+      avatarPreviewEl.classList.remove('has-image');
+      avatarClearBtn.style.display = 'none';
+    }
+  }
+
+  function resizeImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Could not read the file.'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('That file does not look like a valid image.'));
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width  = AVATAR_TARGET_SIZE;
+            canvas.height = AVATAR_TARGET_SIZE;
+            const ctx = canvas.getContext('2d');
+            // Centre-crop to square against the smaller dimension, then
+            // scale to AVATAR_TARGET_SIZE.
+            const sz = Math.min(img.naturalWidth, img.naturalHeight);
+            const sx = (img.naturalWidth  - sz) / 2;
+            const sy = (img.naturalHeight - sz) / 2;
+            ctx.drawImage(img, sx, sy, sz, sz, 0, 0, AVATAR_TARGET_SIZE, AVATAR_TARGET_SIZE);
+            // 0.85 JPEG quality is the sweet spot for portraits — small
+            // file, no visible artefacts at avatar scale.
+            resolve(canvas.toDataURL('image/jpeg', 0.85));
+          } catch (e) { reject(e); }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  avatarFileInput.addEventListener('change', async () => {
+    const file = avatarFileInput.files && avatarFileInput.files[0];
+    if (!file) return;
+    if (file.size > AVATAR_MAX_INPUT_BYTES) {
+      showToast('That image is over 8 MB — please choose a smaller photo or resize it first.', 'err');
+      avatarFileInput.value = '';
+      return;
+    }
+    try {
+      const dataUrl = await resizeImage(file);
+      setAvatarPreview(dataUrl);
+      avatarDataInput.value = dataUrl;
+    } catch (e) {
+      showToast(e.message || 'Could not process the image.', 'err');
+      avatarFileInput.value = '';
+    }
+  });
+
+  avatarClearBtn.addEventListener('click', () => {
+    avatarFileInput.value = '';
+    avatarDataInput.value = '';   // empty = "clear" on submit
+    setAvatarPreview(null);
   });
 
   // ── Nominatim pub picker ───────────────────────────────────────────
