@@ -3,12 +3,9 @@
   ST PATRICK'S DAY GATHERING MAP
   ───────────────────────────────────────────────────
 
-  Status: PASSWORD-GATED for internal review. noindex,nofollow, unlinked
-  from public navigation. The page exists at /st-patricks-day.html for
-  Fergus/DDW review only. (Originally drafted at /la-fheile-padraig.html;
-  English slug now leads for clarity and SEO. A 301 in netlify.toml
-  redirects the Irish slug → English slug so any links we already
-  shared still work.)
+  Status: LIVE. Password gate removed 2026-05-23. Currently still
+  noindex,nofollow (separate decision pending) and not in the public
+  nav; surfaced via the homepage strip and from members surfaces.
 
   Architecture (per the May 2026 O'Dubhda-inspired thread):
 
@@ -17,22 +14,21 @@
     - RSVPs handled in the members' area (not on this page).
     - Walk-in is open to anyone; digital RSVP is for active members
       so the host can see real headcount.
-    - Hosting requires an active membership at any tier (Clan Member
-      upward). The full production package — printed invites, the
-      Chief's video greeting, heraldic menu cards — is a separate
-      Steward+ benefit handled by the Office, not represented in
-      this map.
+    - Hosting requires Guardian membership or above. Attending /
+      RSVPing is open to every member tier.
 
   Map tech:
     - Leaflet + OpenStreetMap tiles (no API key needed)
     - Pins loaded from /api/gathering-list
-    - Empty-state copy when zero pins (the "be the first" pull)
-
-  Launch gates before going public (remove LF_PW + add to nav):
-    1. Chief's commitment to record annual video confirmed
-    2. Seeding mechanism in place (gifted-membership outreach)
-    3. At least a dozen confirmed gatherings in the database
-       so the public page doesn't look discouragingly empty
+    - Venue specifics (pub name / address / URL) gated by membership:
+      anonymous callers get city + country + coordinates only and a
+      "venue revealed on join" reveal line; signed-in members get
+      the full venue. Bearer token read from localStorage on this
+      page so signed-in members see the venue without changing
+      surfaces.
+    - Signed-in visitors also see a small banner above the map
+      pointing them to /members/host-gathering for one-tap RSVP.
+    - Empty-state copy when zero pins (the "be the first" pull).
 
   Year switching: the page reads ?year= from the URL, defaults to the
   next St Patrick's Day cycle (year+1 if today is past 17 March, else
@@ -164,64 +160,6 @@
   </style>
 </head>
 <body>
-
-<!-- PASSWORD GATE — same pattern as /benefactors.html. This is not real
-     security; the page is also noindex,nofollow and unlinked from nav.
-     The gate keeps casual stumblers out during the seeding/review
-     window. Remove when launch decision is made (Chief video
-     committed + ≥12 seeded gatherings). -->
-<style>
-  #lf-gate{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
-  #lf-gate.hidden{display:none}
-  #lf-gate-card{max-width:420px;width:100%;background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:42px 36px;text-align:center}
-  #lf-gate-crest{display:block;width:42px;height:auto;margin:0 auto 22px;opacity:.85}
-  #lf-gate-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
-  #lf-gate-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:10px;font-style:italic}
-  #lf-gate-sub{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.7);line-height:1.65;margin-bottom:26px;font-style:italic}
-  #lf-gate-input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(184,151,90,.4);font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale);padding:10px 4px;text-align:center;letter-spacing:.04em;outline:none;margin-bottom:18px}
-  #lf-gate-input:focus{border-bottom-color:var(--gold)}
-  #lf-gate-input::placeholder{color:rgba(184,151,90,.45);font-style:italic}
-  #lf-gate-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;padding:14px 24px;cursor:pointer}
-  #lf-gate-btn:hover{background:var(--gold-pale)}
-  #lf-gate-err{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:#E07474;margin-top:14px;min-height:18px}
-  body.lf-locked > *:not(#lf-gate):not(script):not(style):not(link){display:none !important}
-</style>
-<div id="lf-gate">
-  <div id="lf-gate-card">
-    <img src="/coat_of_arms.png" alt="" id="lf-gate-crest">
-    <div id="lf-gate-eyebrow">St Patrick's Day Map</div>
-    <div id="lf-gate-title">In preparation</div>
-    <div id="lf-gate-sub">The gathering map is being readied for its first cycle. If you have a passphrase from the Office, you may enter it below.</div>
-    <input type="password" id="lf-gate-input" placeholder="Passphrase" autocomplete="off" autofocus>
-    <button id="lf-gate-btn" type="button">Enter</button>
-    <div id="lf-gate-err"></div>
-  </div>
-</div>
-<script>
-  (function(){
-    var LF_PW = 'clan';
-    var SESSION_KEY = 'lf_unlocked_v1';
-    var gate = document.getElementById('lf-gate');
-    var input = document.getElementById('lf-gate-input');
-    var btn = document.getElementById('lf-gate-btn');
-    var err = document.getElementById('lf-gate-err');
-    function unlock(){
-      try{ sessionStorage.setItem(SESSION_KEY, '1'); }catch(e){}
-      document.body.classList.remove('lf-locked');
-      gate.classList.add('hidden');
-    }
-    function lock(){ document.body.classList.add('lf-locked'); }
-    function tryUnlock(){
-      var v = (input.value || '').trim().toLowerCase();
-      if(v === LF_PW){ unlock(); }
-      else { err.textContent = 'Not recognised. Please try again.'; input.value = ''; input.focus(); }
-    }
-    try{ if(sessionStorage.getItem(SESSION_KEY) === '1'){ unlock(); return; } }catch(e){}
-    lock();
-    btn.addEventListener('click', tryUnlock);
-    input.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ tryUnlock(); } });
-  })();
-</script>
 
 <!-- NAV -->
 <nav class="nav">
