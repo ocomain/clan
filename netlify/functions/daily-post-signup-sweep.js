@@ -340,6 +340,17 @@ exports.handler = async () => {
         .limit(PER_BUCKET_LIMIT);
       if (error) console.error('post-signup-sweep: e21b query failed:', error.message);
       else {
+        // Diagnostic: rows-matched count + titled-vs-untitled breakdown.
+        // Without this we cannot tell from the logs whether '0 sent' means
+        // 'nobody eligible' (Email 3 hasn't gone out yet to anyone in this
+        // age band) vs 'everyone eligible is titled and skipped' vs 'some
+        // eligible, some sending'. The breakdown answers in one line.
+        const rowsCount = (targets || []).length;
+        const titledCount = (targets || []).filter(m => {
+          const t = m.sponsor_titles_awarded || {};
+          return Object.values(t).some(v => v != null);
+        }).length;
+        console.log(`post-signup-sweep: e21b query matched ${rowsCount} rows (${titledCount} titled, ${rowsCount - titledCount} untitled-eligible)`);
         for (const m of targets || []) {
           // Titled-member gate: skip if member has any dignity awarded.
           // sponsor_titles_awarded is a JSONB object keyed by dignity
