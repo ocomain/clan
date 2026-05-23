@@ -204,7 +204,7 @@ async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipien
       <p style="font-family:'Georgia',serif;font-size:15px;font-style:italic;color:#3C2A1A;line-height:1.75;margin:0">A year is enough to learn what Ó Comáin feels like from the inside. What comes next is yours to shape.</p>
     </div>
 
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 24px">If you would like to continue, the door remains open. You are welcome to take up any tier that fits — year by year, or for life. Continuing your membership keeps your name in current standing on the Register, and your founder distinction (carried by your 2026 certificate) alongside it.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 24px">If you would like to continue, the door remains open. You are welcome to take up any tier that fits — year by year, or for life. Continuing your membership keeps your name in current standing on the Register, and your founder distinction (carried by your 2026 certificate) alongside it. A further small thing: from a year and a day on the Register, you also pass from Observer to <strong>Standing Member</strong> of Clan Ó Comáin, with voice and vote at the Annual General Meeting.</p>
 
     <div style="text-align:center;margin:0 0 28px">
       <a href="https://www.ocomain.org/membership.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:15px 32px;border-radius:1px">Continue your membership →</a>
