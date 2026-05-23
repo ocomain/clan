@@ -44,12 +44,42 @@ exports.handler = async (event) => {
 
   const headers = {
     'Access-Control-Allow-Origin': '*',          // public endpoint
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Content-Type': 'application/json',
     // Browsers can cache for 60s — pin map doesn't need to be
     // second-precise. Adjust upward when traffic justifies it.
+    // Vary on Authorization so the gated public response doesn't
+    // poison the member-area cache (and vice versa).
     'Cache-Control': 'public, max-age=60, s-maxage=60',
+    'Vary': 'Authorization',
   };
+
+  // ── Optional auth — venue specifics (name, address, URL) are gated.
+  // Anyone can see THAT a gathering exists in London; only members
+  // see WHICH pub. The conversion gate: the venue is the reveal
+  // you get for joining. Pin coordinates still come through so the
+  // map can render the marker — coords alone identify a city, not a
+  // specific pub.
+  const authHeader = event.headers.authorization || event.headers.Authorization || '';
+  let isMember = false;
+  if (authHeader.toLowerCase().startsWith('bearer ')) {
+    try {
+      const token = authHeader.slice(7).trim();
+      const { data: userResp, error: authErr } = await supa().auth.getUser(token);
+      if (!authErr && userResp?.user?.email) {
+        // Validate the user is an active member, not just a logged-in
+        // auth row. Inactive/cancelled members shouldn't get the venue
+        // reveal either.
+        const email = userResp.user.email.toLowerCase();
+        const { data: m } = await supa()
+          .from('members')
+          .select('status')
+          .eq('email', email)
+          .maybeSingle();
+        if (m && m.status === 'active') isMember = true;
+      }
+    } catch (_) { /* fall through as non-member */ }
+  }
 
   // ── Year — default to current calendar year ─────────────────────────
   const q = event.queryStringParameters || {};
@@ -115,13 +145,18 @@ exports.handler = async (event) => {
         host_display_name: g.host_display_name || null,
         host_avatar_url:   g.host_avatar_url || null,
         message:           g.message || null,
-        venue_name:        g.venue_name,
-        venue_address:     g.venue_address,
+        // Venue specifics — only revealed to active members. Public
+        // callers see the city/country (those are visible on the map
+        // anyway from the pin position) but not which pub. Drives
+        // the "join to see where" conversion mechanic on the public
+        // popup.
+        venue_name:        isMember ? g.venue_name    : null,
+        venue_address:     isMember ? g.venue_address : null,
+        venue_url:         isMember ? (g.venue_url || null) : null,
         venue_city:        g.venue_city,
         venue_country:     g.venue_country,
         venue_lat:         Number(g.venue_lat),
         venue_lng:         Number(g.venue_lng),
-        venue_url:         g.venue_url || null,
         starts_local_time: g.starts_local_time,
         rsvp_count:        r.rows,
         total_attending:   r.attending,

@@ -127,6 +127,7 @@
     .lf-pop-link:hover{color:#F5ECD8}
     .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;margin-top:8px;padding-top:6px}
     .lf-pop-link-2:hover{color:#B8975A}
+    .lf-pop-reveal{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:#D4B483;background:rgba(184,151,90,.08);border-left:2px solid rgba(184,151,90,.5);padding:8px 11px;margin-bottom:13px;line-height:1.5}
 
     /* ── HOST CTA SECTION ─────────────────────────────────────────── */
     .lf-host{background:var(--ink-mid);padding:80px 0;border-top:1px solid var(--border)}
@@ -454,12 +455,30 @@
       hostBit = '<div class="lf-pop-host">Hosted by <span class="lf-pop-host-name">' + escHtml(g.host_display_name) + '</span></div>';
     }
 
+    // Title/header: when venue_name is gated (null for non-members),
+    // the city becomes the public-facing title and the popup quietly
+    // reveals that there's a specific venue you'll see once you join.
+    // When the caller is a member, venue_name is the title and the
+    // city sits below it as before.
+    var titleBlock;
+    var revealLine = '';
+    if (g.venue_name) {
+      titleBlock =
+        '<h3 class="lf-pop-title">' + escHtml(g.venue_name) + '</h3>' +
+        '<div class="lf-pop-city">' + escHtml(g.venue_city) + ', ' + escHtml(g.venue_country) + '</div>';
+    } else {
+      titleBlock =
+        '<h3 class="lf-pop-title">' + escHtml(g.venue_city) + '</h3>' +
+        '<div class="lf-pop-city">' + escHtml(g.venue_country) + '</div>';
+      revealLine = '<div class="lf-pop-reveal">The venue is shared with members on join.</div>';
+    }
+
     return '<div class="lf-pop-eyebrow">St Patrick\'s Day</div>' +
-           '<h3 class="lf-pop-title">' + escHtml(g.venue_name) + '</h3>' +
-           '<div class="lf-pop-city">' + escHtml(g.venue_city) + ', ' + escHtml(g.venue_country) + '</div>' +
+           titleBlock +
            '<div class="lf-pop-when">' + fmtTime(g.starts_local_time) + ' · 17 March</div>' +
            hostBit +
            msg +
+           revealLine +
            attendingLine +
            '<a class="lf-pop-link" href="/membership.html">Join the clan to RSVP →</a>' +
            '<a class="lf-pop-link-2" href="/members/">Already a member? Sign in →</a>';
@@ -491,7 +510,18 @@
         var m = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(map);
         // autoClose:false + closeOnClick:false so multiple popups can
         // be visible simultaneously when we auto-open them below.
-        m.bindPopup(popupHtml(g), { maxWidth: 320, autoClose: false, closeOnClick: false });
+        // autoPan: true (Leaflet default but explicit here) makes
+        // Leaflet shift the map when openPopup runs so the popup
+        // stays fully on-screen; the padding values give enough
+        // headroom for our taller popup with avatar + multiple CTAs.
+        m.bindPopup(popupHtml(g), {
+          maxWidth: 320,
+          autoClose: false,
+          closeOnClick: false,
+          autoPan: true,
+          autoPanPaddingTopLeft: L.point(20, 80),
+          autoPanPaddingBottomRight: L.point(20, 20),
+        });
         markers.push(m);
         bounds.push([g.venue_lat, g.venue_lng]);
       });
@@ -509,8 +539,22 @@
       // for Year One; once we have 6+ pins the heuristic naturally
       // disables itself and users discover the interaction via the
       // avatar pins instead.
+      //
+      // Delay until the map has finished its fitBounds/setView animation,
+      // otherwise the auto-pan padding can't compute against a settled
+      // viewport and the popup ends up clipped above the map (which is
+      // exactly the bug the screenshot showed).
       if (markers.length <= 5) {
-        markers.forEach(function(m){ m.openPopup(); });
+        map.once('moveend', function(){
+          markers.forEach(function(m){ m.openPopup(); });
+        });
+        // Belt-and-braces: if the map is already in place (no movement
+        // needed) the moveend never fires. Fallback after a tick.
+        setTimeout(function(){
+          if (!markers[0].getPopup() || !markers[0].getPopup().isOpen()) {
+            markers.forEach(function(m){ m.openPopup(); });
+          }
+        }, 350);
       }
     })
     .catch(function(err){

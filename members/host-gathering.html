@@ -804,7 +804,16 @@
   // on top: clicking a pin opens an inline RSVP card below the map.
   async function loadNetworkMap() {
     try {
-      const res = await fetch('/api/gathering-list?year=' + YEAR, { headers: { 'Accept': 'application/json' } });
+      // Pass the member's bearer token so the gathering-list endpoint
+      // returns full venue specifics (name, address, URL) — non-auth
+      // callers get the gated response with venue_name=null and a
+      // "venue revealed on join" line. Members always see the venue.
+      const res = await fetch('/api/gathering-list?year=' + YEAR, {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
       renderNetworkMap(data.gatherings || [], data.stats || { gatherings: 0, countries: 0, cities: 0 });
@@ -866,8 +875,17 @@
     const bounds = [];
     gatherings.forEach(g => {
       const marker = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(networkMap);
-      // autoClose:false so multiple popups can co-exist when auto-opened
-      marker.bindPopup(popupHtmlFor(g), { maxWidth: 320, autoClose: false, closeOnClick: false });
+      // autoClose:false so multiple popups can co-exist when auto-opened.
+      // autoPan padding keeps popups in view after open (the bug the
+      // public screenshot showed — popup clipped above the map).
+      marker.bindPopup(popupHtmlFor(g), {
+        maxWidth: 320,
+        autoClose: false,
+        closeOnClick: false,
+        autoPan: true,
+        autoPanPaddingTopLeft: L.point(20, 80),
+        autoPanPaddingBottomRight: L.point(20, 20),
+      });
       marker.on('popupopen', () => attachPopupHandlers(g));
       networkPins.push({ gathering: g, marker });
       bounds.push([g.venue_lat, g.venue_lng]);
@@ -877,10 +895,18 @@
     else networkMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
 
     // Auto-open while the map is sparse — same Year One heuristic as
-    // the public page. Avatar pins handle the affordance once we cross
-    // the threshold.
+    // the public page. Delay until movement settles so auto-pan can
+    // place the popup correctly against a stable viewport.
     if (networkPins.length <= 5) {
-      networkPins.forEach(p => p.marker.openPopup());
+      networkMap.once('moveend', () => {
+        networkPins.forEach(p => p.marker.openPopup());
+      });
+      setTimeout(() => {
+        const first = networkPins[0];
+        if (first && (!first.marker.getPopup() || !first.marker.getPopup().isOpen())) {
+          networkPins.forEach(p => p.marker.openPopup());
+        }
+      }, 350);
     }
   }
 
