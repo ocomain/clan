@@ -78,6 +78,15 @@ exports.handler = async (event) => {
     if (m.status !== 'active') {
       return { statusCode: 403, headers, body: JSON.stringify({ error: 'Hosting a gathering requires an active membership.' }) };
     }
+    // Tier gate: hosting is a Guardian+ benefit (Guardian, Steward, Life).
+    // Clan Member tier can RSVP and attend but not host their own pin.
+    // The same rule is mirrored client-side in /members/host-gathering.html
+    // so Clan Member tier members see a "your tier doesn't include hosting"
+    // message rather than a form they can't submit, but the authoritative
+    // check is here — never trust the client to enforce tier policy.
+    if (!m.tier || m.tier.startsWith('clan-')) {
+      return { statusCode: 403, headers, body: JSON.stringify({ error: 'Hosting a St Patrick\'s Day gathering is a Guardian-tier-or-above benefit. All tiers may RSVP and attend.', upgradeRequired: true }) };
+    }
     memberRow = m;
   } catch (e) {
     console.error('auth check failed:', e.message);

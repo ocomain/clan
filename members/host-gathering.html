@@ -171,6 +171,14 @@
   <div id="hg-not-active" class="hg-state" style="display:none">
     <div class="hg-state-msg">Hosting a gathering requires an active membership. <a href="/members/" style="color:var(--gold-deep);text-decoration:underline">View your membership</a> or <a href="mailto:clan@ocomain.org" style="color:var(--gold-deep);text-decoration:underline">write to the Office</a>.</div>
   </div>
+  <div id="hg-not-tier-eligible" class="hg-state" style="display:none">
+    <div class="hg-state-msg"><strong style="color:var(--ink)">Hosting is a Guardian-tier-or-above benefit.</strong></div>
+    <div class="hg-state-msg" style="margin-top:14px">Every member can <strong>attend</strong> a gathering and RSVP to any pin on the map — that's open to all tiers. Hosting your own pin, with the host responsibilities that come with it (booking a back room, replying to RSVPs, welcoming arrivals), is reserved for Guardian, Steward and Life members.</div>
+    <div style="margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="/st-patricks-day.html" class="hg-btn hg-btn-ghost">View the map</a>
+      <a href="/members/" class="hg-btn">Upgrade your tier</a>
+    </div>
+  </div>
 
   <div id="hg-content" style="display:none">
 
@@ -290,6 +298,7 @@
   const errorEl   = $('hg-error');
   const errorMsg  = $('hg-error-msg');
   const notActiveEl = $('hg-not-active');
+  const notTierEligibleEl = $('hg-not-tier-eligible');
   const contentEl = $('hg-content');
   const existingCard = $('hg-existing');
   const formCard  = $('hg-form-card');
@@ -338,6 +347,14 @@
     if (memberProfile.status && memberProfile.status !== 'active') {
       loadingEl.style.display = 'none';
       notActiveEl.style.display = 'block';
+      return;
+    }
+    // Tier gate — mirrors server-side check in gathering-host-upsert.js.
+    // Clan Member tier (clan-ind, clan-fam) can attend & RSVP but not host.
+    // Guardian, Steward and Life can host.
+    if (memberProfile.tier && memberProfile.tier.startsWith('clan-')) {
+      loadingEl.style.display = 'none';
+      notTierEligibleEl.style.display = 'block';
       return;
     }
 
