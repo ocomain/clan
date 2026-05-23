@@ -704,6 +704,37 @@ function toggleMenu(){
   <div class="stat"><div class="stat-num">2025</div><div class="stat-label">Officially recognised</div></div>
 </div>
 
+<!-- ST PATRICK'S DAY MAP STRIP — slim seasonal banner pointing at the
+     gathering map. Nav is maxed and Mythology is also queued for nav
+     attention; this strip surfaces the map without spending a nav slot.
+     Visible year-round; can be made conditional on date proximity to
+     17 March later if it starts to feel out-of-season. -->
+<style>
+  .stp-strip{background:linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 100%);padding:42px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:2px solid var(--gold)}
+  .stp-strip-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .stp-strip-text{flex:1;min-width:260px}
+  .stp-strip-eyebrow{font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;opacity:.92}
+  .stp-strip-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.6vw,28px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin:0 0 8px;font-style:italic}
+  .stp-strip-sub{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.78);line-height:1.6;margin:0}
+  .stp-strip-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;text-decoration:none;flex-shrink:0;border-radius:1px;transition:background .15s}
+  .stp-strip-cta:hover{background:var(--gold-pale)}
+  @media (max-width:560px){
+    .stp-strip{padding:32px 0}
+    .stp-strip-inner{flex-direction:column;align-items:flex-start;gap:18px}
+    .stp-strip-cta{width:100%;text-align:center;box-sizing:border-box}
+  }
+</style>
+<section class="stp-strip">
+  <div class="stp-strip-inner">
+    <div class="stp-strip-text">
+      <div class="stp-strip-eyebrow">St Patrick's Day · 17 March</div>
+      <h2 class="stp-strip-title">See where the kindred are gathering.</h2>
+      <p class="stp-strip-sub">A live map of Ó Comáin pubs across the diaspora — from Soho to Sydney, from Ennis to Newmarket. Find a gathering near you.</p>
+    </div>
+    <a href="/st-patricks-day.html" class="stp-strip-cta">View the map →</a>
+  </div>
+</section>
+
 <!-- VIDEO SOCIAL PROOF — high on page, immediately after stats -->
 <section class="video-section" id="videos">
   <div class="si">
