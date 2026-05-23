@@ -157,6 +157,11 @@
     .hg-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#8B6F32;margin-bottom:11px}
     .hg-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:#2E4A2E;margin-bottom:11px}
     .hg-pop-host-name{color:#0F1F0F;font-style:italic}
+    .hg-pop-host-row{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:9px 0;border-top:1px solid rgba(184,151,90,.22);border-bottom:1px solid rgba(184,151,90,.22)}
+    .hg-pop-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1.5px solid #B8975A;flex-shrink:0;background:#F5ECD8}
+    .hg-pop-host-stack{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+    .hg-pop-host-label{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#8B6F32;margin-bottom:3px}
+    .hg-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#0F1F0F;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .hg-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:#5A7A5A;font-style:italic;margin-bottom:13px;padding-left:9px;border-left:2px solid #E4D5A8}
     .hg-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#8B6F32;margin-bottom:11px}
     .hg-pop-badge{display:inline-block;background:rgba(184,151,90,.16);color:#8B6F32;font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;margin-bottom:10px}
@@ -860,8 +865,21 @@
       ? `<div class="hg-pop-attending">${g.total_attending} ${g.total_attending === 1 ? 'person' : 'people'} attending</div>`
       : '';
     const msg = g.message ? `<div class="hg-pop-msg">${esc(g.message)}</div>` : '';
-    const hostBit = g.host_display_name
-      ? `<div class="hg-pop-host">Hosted by <span class="hg-pop-host-name">${esc(g.host_display_name)}</span></div>` : '';
+
+    // Host row — avatar + name when both present, simple line otherwise
+    // (an empty avatar circle would look worse than no row at all)
+    let hostBit = '';
+    if (g.host_display_name && g.host_avatar_url) {
+      hostBit = `<div class="hg-pop-host-row">
+        <img class="hg-pop-avatar" src="${esc(g.host_avatar_url)}" alt="" loading="lazy">
+        <div class="hg-pop-host-stack">
+          <div class="hg-pop-host-label">Hosted by</div>
+          <div class="hg-pop-host-full">${esc(g.host_display_name)}</div>
+        </div>
+      </div>`;
+    } else if (g.host_display_name) {
+      hostBit = `<div class="hg-pop-host">Hosted by <span class="hg-pop-host-name">${esc(g.host_display_name)}</span></div>`;
+    }
 
     let badge = '';
     let cta = '';

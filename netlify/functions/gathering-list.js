@@ -71,6 +71,7 @@ exports.handler = async (event) => {
       .select(`
         id,
         host_display_name,
+        host_avatar_url,
         message,
         venue_name,
         venue_address,
@@ -112,6 +113,7 @@ exports.handler = async (event) => {
       return {
         id:                g.id,
         host_display_name: g.host_display_name || null,
+        host_avatar_url:   g.host_avatar_url || null,
         message:           g.message || null,
         venue_name:        g.venue_name,
         venue_address:     g.venue_address,

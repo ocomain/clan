@@ -108,6 +108,11 @@
     .lf-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#D4B483;margin-bottom:11px}
     .lf-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.88);margin-bottom:11px}
     .lf-pop-host-name{color:#F5ECD8;font-style:italic}
+    .lf-pop-host-row{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:9px 0;border-top:1px solid rgba(184,151,90,.18);border-bottom:1px solid rgba(184,151,90,.18)}
+    .lf-pop-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1.5px solid #B8975A;flex-shrink:0;background:#1a2a1a}
+    .lf-pop-host-stack{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+    .lf-pop-host-label{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;opacity:.85;margin-bottom:3px}
+    .lf-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#F5ECD8;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .lf-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.78);font-style:italic;margin-bottom:13px;padding-left:9px;border-left:2px solid rgba(184,151,90,.4)}
     .lf-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:11px}
     .lf-pop-link{display:inline-block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-top:1px solid rgba(184,151,90,.25);padding-top:11px;margin-top:4px}
@@ -278,7 +283,7 @@
     <div class="lf-host-inner">
       <div class="lf-host-eyebrow">Pin your own pub</div>
       <h2 class="lf-host-title">Don't see your town on the map?</h2>
-      <p class="lf-host-body">Become the first Ó Comáin to plant a flag there. Pick a pub, pick a time, post your pin — the kindred find you, walk-ins welcome, the map updates the moment you submit. Hosting is open to every member of the clan.</p>
+      <p class="lf-host-body">Pick a pub, pick a time, post your pin — walk-ins welcome, the kindred find you, the map updates the moment you submit. <strong style="color:var(--gold-light)">Attending a gathering is open to every member of the clan.</strong> Hosting your own pin is a benefit of Guardian membership and above.</p>
       <div class="lf-host-ctas">
         <a href="/members/host-gathering.html" class="lf-host-cta">Host a gathering</a>
         <a href="/membership.html" class="lf-host-cta lf-host-cta-ghost">Join the clan</a>
@@ -404,9 +409,25 @@
       attendingLine = '<div class="lf-pop-attending">' + n + ' ' + (n === 1 ? 'person' : 'people') + ' attending</div>';
     }
     var msg = g.message ? '<div class="lf-pop-msg">' + escHtml(g.message) + '</div>' : '';
-    var hostBit = g.host_display_name
-      ? '<div class="lf-pop-host">Hosted by <span class="lf-pop-host-name">' + escHtml(g.host_display_name) + '</span></div>'
-      : '';
+
+    // Host row: avatar + name when both present; otherwise the simple
+    // inline line. Falling back avoids an empty avatar circle when a
+    // host hasn't supplied a photo, which would look stranger than
+    // omitting the row entirely.
+    var hostBit = '';
+    if (g.host_display_name && g.host_avatar_url) {
+      hostBit =
+        '<div class="lf-pop-host-row">' +
+          '<img class="lf-pop-avatar" src="' + escHtml(g.host_avatar_url) + '" alt="" loading="lazy">' +
+          '<div class="lf-pop-host-stack">' +
+            '<div class="lf-pop-host-label">Hosted by</div>' +
+            '<div class="lf-pop-host-full">' + escHtml(g.host_display_name) + '</div>' +
+          '</div>' +
+        '</div>';
+    } else if (g.host_display_name) {
+      hostBit = '<div class="lf-pop-host">Hosted by <span class="lf-pop-host-name">' + escHtml(g.host_display_name) + '</span></div>';
+    }
+
     return '<div class="lf-pop-eyebrow">St Patrick\'s Day</div>' +
            '<h3 class="lf-pop-title">' + escHtml(g.venue_name) + '</h3>' +
            '<div class="lf-pop-city">' + escHtml(g.venue_city) + ', ' + escHtml(g.venue_country) + '</div>' +
