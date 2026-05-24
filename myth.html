@@ -52,16 +52,50 @@
        to paper — to subtly signal 'manuscript' rather than 'website'. */
     body{background:#FAF6EC;color:var(--ink)}
 
-    /* HERO — establishes the page's editorial position before the
-       first paragraph is read. Single dark band with eyebrow, title,
-       subtitle. Coat of arms watermarked centre for the heraldic
-       anchor. */
-    .myth-hero{background:var(--ink);padding:80px 0 70px;text-align:center;border-bottom:2px solid var(--gold);position:relative;overflow:hidden}
-    .myth-hero-inner{max-width:760px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
-    .myth-hero-coat{display:block;margin:0 auto 28px;width:68px;height:auto;opacity:.85}
-    .myth-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.95}
-    .myth-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,6vw,62px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin:0 0 18px;font-style:italic}
-    .myth-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2.2vw,21px);color:rgba(215,235,215,.78);line-height:1.7;margin:0 auto;max-width:580px;font-style:italic}
+    /* HERO — dramatic manuscript-opening treatment. Ink-green base
+       with vellum-texture overlay (SVG noise), faint Celtic-knot
+       watermark behind the title, oversized italic Garamond 'Myth'
+       as the dominant visual. Gold gradient on the title lifts it
+       off the dark background; the rest of the chrome stays modest
+       so the typography carries the page. */
+    .myth-hero{position:relative;overflow:hidden;text-align:center;padding:96px 0 92px;background:#0F1F0F;border-bottom:2px solid var(--gold)}
+    /* Vellum texture overlay — two layered radial gradients give the
+       background subtle warm patches like aged paper held to candlelight. */
+    .myth-hero::before{content:'';position:absolute;inset:0;background:
+      radial-gradient(ellipse at 20% 30%, rgba(184,151,90,.10), transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(140,30,30,.08), transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.4), transparent 70%);
+      pointer-events:none;z-index:1}
+    /* Noise/grain via SVG fractalNoise — encoded as a data URI so we
+       don't need an asset file. Adds the 'aged paper' feel that solid
+       colours can't give on their own. */
+    .myth-hero::after{content:'';position:absolute;inset:0;
+      background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.82  0 0 0 0 0.50  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity:.5;mix-blend-mode:overlay;pointer-events:none;z-index:1}
+    /* Celtic-knot watermark — sits behind the title at low opacity */
+    .myth-hero-knot{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:560px;max-width:90%;height:auto;opacity:.10;z-index:1;color:var(--gold)}
+    .myth-hero-knot svg{display:block;width:100%;height:auto}
+    .myth-hero-inner{position:relative;z-index:3;max-width:820px;margin:0 auto;padding:0 24px}
+    .myth-hero-coat{display:block;margin:0 auto 32px;width:64px;height:auto;opacity:.7}
+    .myth-hero-eyebrow{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;opacity:.95}
+    /* Dominant title — oversized italic Garamond, gold gradient text fill,
+       drop-shadow for depth against the textured background. Decorative
+       gold-line flourishes either side give the manuscript-opening feel. */
+    .myth-hero-title{font-family:'EB Garamond',serif;font-size:clamp(96px,18vw,200px);font-weight:400;line-height:0.95;margin:0;font-style:italic;
+      background:linear-gradient(180deg, #F5ECD8 0%, #D4B483 60%, #B8975A 100%);
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;color:transparent;
+      text-shadow:0 4px 30px rgba(0,0,0,.35);letter-spacing:-.01em;position:relative}
+    .myth-hero-title-flourish{display:flex;align-items:center;justify-content:center;gap:22px;margin:18px auto 26px;color:var(--gold);opacity:.7}
+    .myth-hero-title-flourish svg{flex-shrink:0}
+    .myth-hero-title-flourish-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold) 50%,transparent);max-width:160px}
+    .myth-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(18px,2.2vw,22px);color:rgba(215,235,215,.82);line-height:1.65;margin:0 auto;max-width:600px;font-style:italic}
+    @media (max-width:560px){
+      .myth-hero{padding:64px 0 60px}
+      .myth-hero-coat{width:52px;margin-bottom:24px}
+      .myth-hero-knot{width:420px}
+      .myth-hero-title-flourish-line{max-width:80px}
+    }
 
     /* OPENING FRAME — sets the editorial position. Lives just below
        the hero. Cream-tinted card with gold left-rule to read as a
@@ -98,11 +132,19 @@
        lines. Stops the page from reading flat. */
     .myth-pull{border-left:3px solid var(--gold);padding:6px 0 6px 28px;margin:30px 0;font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.55}
 
-    /* Section divider — a small gold mark between sections, breaks
-       the page rhythm. */
-    .myth-divider{display:flex;justify-content:center;align-items:center;margin:40px 0;gap:14px}
-    .myth-divider::before,.myth-divider::after{content:'';display:block;width:80px;height:1px;background:rgba(184,151,90,.4)}
-    .myth-divider-mark{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold);font-style:italic}
+    /* Inline figure — illustrations within section body. Centred,
+       gold-rule top + bottom, small caption in Jost-medium small-caps. */
+    .myth-figure{margin:38px -8px;padding:24px 8px 18px;border-top:1px solid rgba(184,151,90,.25);border-bottom:1px solid rgba(184,151,90,.25);text-align:center}
+    .myth-figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+    .myth-figure figcaption{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin-top:16px;line-height:1.5;opacity:.85}
+
+    /* Section divider — gold line + Celtic ornament marking the
+       break between sections. Replaces the previous '·  ·  ·' dots
+       with a more deliberate ornamental break. */
+    .myth-divider{display:flex;justify-content:center;align-items:center;margin:56px 0;gap:18px;color:var(--gold);opacity:.7}
+    .myth-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,151,90,.5) 50%,transparent);max-width:180px}
+    .myth-divider-mark{flex-shrink:0;color:var(--gold)}
+    .myth-divider-mark svg{display:block}
 
     /* CODA — the Newhall mermaid section. Subtly different chrome
        (slightly larger title, warmer background tint) so the closing
@@ -164,7 +206,7 @@
       <a href="clan-stories.html" class="nav-link">Stories</a>
       <a href="patrons.html" class="nav-link">Patrons</a>
       <a href="privy-council.html" class="nav-link">Council</a>
-      <a href="/members/login.html" class="nav-link">Login</a>
+      <a href="/members/login.html" class="nav-link">Members</a>
     </div>
     <a href="membership.html" class="nav-cta">Join the clan</a>
     <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
@@ -182,7 +224,7 @@
   <a href="clan-stories.html" class="nav-mobile-link">Stories</a>
   <a href="patrons.html" class="nav-mobile-link">Patrons</a>
   <a href="privy-council.html" class="nav-mobile-link">Council</a>
-  <a href="/members/login.html" class="nav-mobile-link">Login</a>
+  <a href="/members/login.html" class="nav-mobile-link">Members</a>
   <a href="membership.html" class="nav-mobile-cta">Join the clan</a>
 </div>
 <script>
@@ -194,12 +236,44 @@ function toggleMenu(){
 }
 </script>
 
-<!-- HERO -->
+<!-- HERO — dramatic manuscript-opening treatment. Vellum-textured
+     ink-green background, faint Celtic-knot watermark behind the
+     title, oversized italic Garamond 'Myth' as the dominant visual,
+     gold flourish between title and subtitle. -->
 <section class="myth-hero">
+  <!-- Celtic interlace knot — a triquetra (three-interlaced-rings)
+       motif scaled large behind the title. Pure ornament, not literal
+       symbolism. The triquetra IS a pre-Christian Irish symbol that
+       was later adopted into Christian iconography for the Trinity,
+       which is on-theme for a page that bridges pagan and Christian
+       layers of the Irish foundation story. -->
+  <div class="myth-hero-knot" aria-hidden="true">
+    <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5">
+      <!-- Three interlaced arcs forming a triquetra. Drawn as cubic
+           bezier paths rather than as a clean triquetra geometry so
+           the lines feel hand-drawn rather than mechanical. -->
+      <path d="M 100 30 C 60 60, 60 100, 100 130 C 140 100, 140 60, 100 30 Z" stroke-linejoin="round"/>
+      <path d="M 50 130 C 90 110, 130 130, 150 170 C 110 170, 70 170, 50 130 Z" stroke-linejoin="round"/>
+      <path d="M 150 130 C 110 110, 70 130, 50 170 C 90 170, 130 170, 150 130 Z" stroke-linejoin="round"/>
+      <!-- Outer circle binding the three arcs into a single motif. -->
+      <circle cx="100" cy="115" r="80"/>
+    </svg>
+  </div>
   <div class="myth-hero-inner">
     <img class="myth-hero-coat" src="/coat_of_arms.png" alt="">
     <div class="myth-hero-eyebrow">The story Ireland tells about herself</div>
     <h1 class="myth-hero-title">Myth</h1>
+    <!-- Gold flourish — line, ornament, line — between the title and
+         subtitle. Visually anchors the giant typography to the
+         smaller body text below. -->
+    <div class="myth-hero-title-flourish" aria-hidden="true">
+      <span class="myth-hero-title-flourish-line"></span>
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M 1 7 Q 6 1, 11 7 T 21 7"/>
+        <circle cx="11" cy="7" r="2" fill="currentColor"/>
+      </svg>
+      <span class="myth-hero-title-flourish-line"></span>
+    </div>
     <p class="myth-hero-sub">From the first man to the high kings of Tara — the inheritance kept alive in vellum manuscripts for nine hundred years, told here from the beginning.</p>
   </div>
 </section>
@@ -225,7 +299,21 @@ function toggleMenu(){
   </div>
 </section>
 
-<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+<div class="myth-divider" aria-hidden="true">
+  <span class="myth-divider-line"></span>
+  <span class="myth-divider-mark">
+    <!-- Small Celtic trefoil / shamrock-knot ornament. Three petals
+         emerging from a centre point — visually echoes the triquetra
+         in the hero without literal repetition. -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M 14 14 Q 8 8, 14 4 Q 20 8, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 22 12, 24 18 Q 18 22, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 6 12, 4 18 Q 10 22, 14 14 Z" stroke-linejoin="round"/>
+      <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    </svg>
+  </span>
+  <span class="myth-divider-line"></span>
+</div>
 
 <!-- SECTION 2: THE SCYTHIAN YEARS — [SCAFFOLD] -->
 <section class="myth-section">
@@ -239,7 +327,21 @@ function toggleMenu(){
   </div>
 </section>
 
-<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+<div class="myth-divider" aria-hidden="true">
+  <span class="myth-divider-line"></span>
+  <span class="myth-divider-mark">
+    <!-- Small Celtic trefoil / shamrock-knot ornament. Three petals
+         emerging from a centre point — visually echoes the triquetra
+         in the hero without literal repetition. -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M 14 14 Q 8 8, 14 4 Q 20 8, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 22 12, 24 18 Q 18 22, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 6 12, 4 18 Q 10 22, 14 14 Z" stroke-linejoin="round"/>
+      <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    </svg>
+  </span>
+  <span class="myth-divider-line"></span>
+</div>
 
 <!-- SECTION 3: BREOGÁN'S TOWER — [SCAFFOLD] -->
 <section class="myth-section">
@@ -253,7 +355,21 @@ function toggleMenu(){
   </div>
 </section>
 
-<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+<div class="myth-divider" aria-hidden="true">
+  <span class="myth-divider-line"></span>
+  <span class="myth-divider-mark">
+    <!-- Small Celtic trefoil / shamrock-knot ornament. Three petals
+         emerging from a centre point — visually echoes the triquetra
+         in the hero without literal repetition. -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M 14 14 Q 8 8, 14 4 Q 20 8, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 22 12, 24 18 Q 18 22, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 6 12, 4 18 Q 10 22, 14 14 Z" stroke-linejoin="round"/>
+      <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    </svg>
+  </span>
+  <span class="myth-divider-line"></span>
+</div>
 
 <!-- ════════════════════════════════════════════════════════════════
      SECTION 4: THE MILESIAN LANDING — VOICE EXEMPLAR, FULLY WRITTEN
@@ -272,6 +388,52 @@ function toggleMenu(){
     <p>The land was not empty.</p>
 
     <p>The people already there were called the <span class="irish">Túatha Dé Danann</span> — the People of the Goddess Danu. They had arrived in Ireland generations earlier, from somewhere further north, in ships or in clouds — the storytellers never quite agreed. They were a people of extraordinary skill. Their craftsmen could make weapons that never missed their mark. Their physicians could bring the dead back to life. Their poets could shape the weather with a verse. They had four great treasures with them: the <strong>Stone of Destiny</strong>, which cried out when a true king touched it; the <strong>Spear of Lugh</strong>, which never lost a fight; the <strong>Sword of Núada</strong>, which no one could escape once it was drawn; and the <strong>Cauldron of the Dagda</strong>, which never ran empty. When the Milesian fleet arrived, the Túatha Dé were the people of Ireland.</p>
+
+    <!-- The Four Treasures — small inline SVG illustration. Pure
+         decoration; the prose has already named them. Visually
+         breaks the long section and adds a moment of pause before
+         the Amergin song that follows. -->
+    <figure class="myth-figure">
+      <svg viewBox="0 0 480 180" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="var(--gold-deep)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <!-- Stone of Destiny — a standing stone, narrow at top -->
+        <g transform="translate(60,30)">
+          <path d="M 8 110 L 5 30 Q 15 18, 25 30 L 22 110 Z" fill="rgba(184,151,90,0.08)"/>
+          <path d="M 5 30 Q 15 18, 25 30"/>
+          <line x1="0" y1="115" x2="30" y2="115"/>
+          <text x="15" y="138" text-anchor="middle" font-family="Jost,sans-serif" font-size="8.5" font-weight="500" letter-spacing="0.12em" fill="var(--gold-deep)" stroke="none">STONE OF DESTINY</text>
+          <text x="15" y="152" text-anchor="middle" font-family="EB Garamond,serif" font-size="10" font-style="italic" fill="var(--ink-muted)" stroke="none">Lia Fáil</text>
+        </g>
+        <!-- Spear of Lugh — leaf-blade spear -->
+        <g transform="translate(170,18)">
+          <line x1="15" y1="20" x2="15" y2="110"/>
+          <path d="M 15 8 Q 6 24, 15 38 Q 24 24, 15 8 Z" fill="rgba(184,151,90,0.08)"/>
+          <line x1="9" y1="110" x2="21" y2="110"/>
+          <text x="15" y="138" text-anchor="middle" font-family="Jost,sans-serif" font-size="8.5" font-weight="500" letter-spacing="0.12em" fill="var(--gold-deep)" stroke="none">SPEAR OF LUGH</text>
+          <text x="15" y="152" text-anchor="middle" font-family="EB Garamond,serif" font-size="10" font-style="italic" fill="var(--ink-muted)" stroke="none">Gáe Assail</text>
+        </g>
+        <!-- Sword of Núada — straight sword, pommel + crossguard -->
+        <g transform="translate(280,28)">
+          <line x1="15" y1="30" x2="15" y2="100"/>
+          <line x1="6" y1="30" x2="24" y2="30"/>
+          <line x1="13" y1="22" x2="17" y2="22"/>
+          <circle cx="15" cy="20" r="3" fill="rgba(184,151,90,0.08)"/>
+          <path d="M 12 100 L 18 100 L 15 108 Z" fill="rgba(184,151,90,0.08)"/>
+          <text x="15" y="138" text-anchor="middle" font-family="Jost,sans-serif" font-size="8.5" font-weight="500" letter-spacing="0.12em" fill="var(--gold-deep)" stroke="none">SWORD OF NÚADA</text>
+          <text x="15" y="152" text-anchor="middle" font-family="EB Garamond,serif" font-size="10" font-style="italic" fill="var(--ink-muted)" stroke="none">Claíomh Solais</text>
+        </g>
+        <!-- Cauldron of the Dagda — round vessel with handles -->
+        <g transform="translate(390,40)">
+          <path d="M 5 30 Q 5 80, 15 95 Q 25 95, 35 95 Q 45 80, 45 30 Z" fill="rgba(184,151,90,0.08)"/>
+          <path d="M 5 30 Q 25 22, 45 30"/>
+          <path d="M 2 32 Q -2 38, 4 42"/>
+          <path d="M 48 32 Q 52 38, 46 42"/>
+          <line x1="8" y1="100" x2="42" y2="100"/>
+          <text x="25" y="125" text-anchor="middle" font-family="Jost,sans-serif" font-size="8.5" font-weight="500" letter-spacing="0.12em" fill="var(--gold-deep)" stroke="none">CAULDRON</text>
+          <text x="25" y="138" text-anchor="middle" font-family="EB Garamond,serif" font-size="10" font-style="italic" fill="var(--ink-muted)" stroke="none">of the Dagda</text>
+        </g>
+      </svg>
+      <figcaption>The four treasures the Túatha Dé brought to Ireland</figcaption>
+    </figure>
 
     <p>What happened next is the strangest and most beautiful moment in Irish mythology.</p>
 
@@ -303,7 +465,21 @@ function toggleMenu(){
   </div>
 </section>
 
-<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+<div class="myth-divider" aria-hidden="true">
+  <span class="myth-divider-line"></span>
+  <span class="myth-divider-mark">
+    <!-- Small Celtic trefoil / shamrock-knot ornament. Three petals
+         emerging from a centre point — visually echoes the triquetra
+         in the hero without literal repetition. -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M 14 14 Q 8 8, 14 4 Q 20 8, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 22 12, 24 18 Q 18 22, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 6 12, 4 18 Q 10 22, 14 14 Z" stroke-linejoin="round"/>
+      <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    </svg>
+  </span>
+  <span class="myth-divider-line"></span>
+</div>
 
 <!-- SECTION 5: HIGH KINGS OF TARA — [SCAFFOLD] -->
 <section class="myth-section">
@@ -317,7 +493,21 @@ function toggleMenu(){
   </div>
 </section>
 
-<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+<div class="myth-divider" aria-hidden="true">
+  <span class="myth-divider-line"></span>
+  <span class="myth-divider-mark">
+    <!-- Small Celtic trefoil / shamrock-knot ornament. Three petals
+         emerging from a centre point — visually echoes the triquetra
+         in the hero without literal repetition. -->
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.2">
+      <path d="M 14 14 Q 8 8, 14 4 Q 20 8, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 22 12, 24 18 Q 18 22, 14 14 Z" stroke-linejoin="round"/>
+      <path d="M 14 14 Q 6 12, 4 18 Q 10 22, 14 14 Z" stroke-linejoin="round"/>
+      <circle cx="14" cy="14" r="1.5" fill="currentColor"/>
+    </svg>
+  </span>
+  <span class="myth-divider-line"></span>
+</div>
 
 <!-- SECTION 6: THE FORK — [SCAFFOLD] -->
 <section class="myth-section">
