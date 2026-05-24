@@ -371,7 +371,7 @@ async function generateChiefsLetterPdf({ addressForm }) {
 
   drawParagraph('It is my pleasure to welcome you to the newly revived Clan Ó Comáin!');
   drawParagraph('After a long suppression of 800 years, the clan is back, and I am thrilled that you have chosen to be a part of our founding family in 2026.');
-  drawParagraph("I am incredibly excited to grow our community and would love for you to help & support me and be a part of that journey. I encourage you to browse our website to learn more about our shared heritage, the fascinating history of Irish clans, and how our ancestors lived under Brehon Law. Don't forget to explore the special Private Members' area.");
+  drawParagraph("I am incredibly excited to grow our community and would love for you to help & support me and be a part of that journey. I encourage you to browse our website to learn more about our shared heritage, the fascinating history of Irish clans, and how our ancestors lived under Brehon Law. Don't forget to explore the special Private Member's area.");
   drawParagraph("Here's to a long and wonderful friendship!");
 
   y -= 10;  // extra space before the formal close

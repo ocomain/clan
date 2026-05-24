@@ -121,7 +121,7 @@ exports.handler = async (event) => {
       </table>
       <h3 style="color:#0C1A0C;font-size:16px;margin:0 0 10px">Their question</h3>
       <div style="background:#faf6ec;border:1px solid #e5dcc8;padding:16px 18px;border-radius:2px;white-space:pre-wrap;font-size:14px;line-height:1.7">${esc(message)}</div>
-      <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Members' Area contact page. Reply directly to the member's email address above.</p>
+      <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Member's Area contact page. Reply directly to the member's email address above.</p>
     </div>`;
   } else {
     const { office = '', subject: userSubject = '' } = data;
@@ -140,7 +140,7 @@ exports.handler = async (event) => {
       </table>
       <h3 style="color:#0C1A0C;font-size:16px;margin:0 0 10px">Message</h3>
       <div style="background:#faf6ec;border:1px solid #e5dcc8;padding:16px 18px;border-radius:2px;white-space:pre-wrap;font-size:14px;line-height:1.7">${esc(message)}</div>
-      <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Members' Area contact page. Reply directly to the member's email address above.</p>
+      <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Member's Area contact page. Reply directly to the member's email address above.</p>
     </div>`;
   }
 

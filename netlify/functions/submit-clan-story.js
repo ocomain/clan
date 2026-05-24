@@ -138,7 +138,7 @@ exports.handler = async (event) => {
     <h3 style="color:#0C1A0C;font-size:16px;margin:0 0 10px">Their story</h3>
     <div style="background:#faf6ec;border:1px solid #e5dcc8;padding:16px 18px;border-radius:2px;white-space:pre-wrap;font-size:14px;line-height:1.7">${esc(story)}</div>
 
-    <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Members' Area Stories form. Reply directly to the member's email above to confirm and request the portrait photograph.</p>
+    <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Member's Area Stories form. Reply directly to the member's email above to confirm and request the portrait photograph.</p>
   </div>`;
 
   // ── Send the email ──────────────────────────────────────────────────────

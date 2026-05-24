@@ -1046,7 +1046,7 @@ async function sendMemberWelcome(email, name, productName, amount, currency, cer
   // ── ONE-CLICK SIGN-IN URL ────────────────────────────────────────
   // Look up the member row to get its id, then issue a one-click
   // sign-in token. The returned URL goes in both CTA buttons below
-  // (cert details + Members' Area). On click, the recipient is
+  // (cert details + Member's Area). On click, the recipient is
   // signed in directly and lands in /members/. If anything fails
   // (member not found, token issuance fails), buildSignInUrl
   // falls back to the standard email-prefilled login form URL —

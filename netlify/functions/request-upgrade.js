@@ -106,7 +106,7 @@ exports.handler = async (event) => {
       <tr><td style="padding:8px 10px;border:1px solid #e5dcc8;color:#6C5A4A;font-size:12px">Requested tier</td><td style="padding:8px 10px;border:1px solid #e5dcc8"><strong style="color:#0C1A0C">${esc(targetTierLabel)}</strong>${isFamily ? ' · family rate likely' : ''}</td></tr>
     </table>
     ${noteBlock}
-    <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Members' Area upgrade prompt. Reply directly to the member's email above.</p>
+    <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Member's Area upgrade prompt. Reply directly to the member's email above.</p>
   </div>`;
 
   // ── Send the email ──────────────────────────────────────────────────────

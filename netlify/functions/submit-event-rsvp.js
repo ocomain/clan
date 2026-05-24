@@ -94,7 +94,7 @@ exports.handler = async (event) => {
 
   const html = `<div style="font-family:Georgia,serif;max-width:620px;color:#3C2A1A">
     <h2 style="color:#0C1A0C;border-bottom:2px solid #B8975A;padding-bottom:10px;margin:0 0 18px">Event RSVP — Clan Ó Comáin</h2>
-    <p style="background:#f6efe3;border-left:3px solid #B8975A;padding:12px 14px;margin:0 0 22px;font-size:14px;line-height:1.6">A member has RSVP'd via the Members' Area event card.</p>
+    <p style="background:#f6efe3;border-left:3px solid #B8975A;padding:12px 14px;margin:0 0 22px;font-size:14px;line-height:1.6">A member has RSVP'd via the Member's Area event card.</p>
 
     <h3 style="color:#0C1A0C;font-size:16px;margin:0 0 10px">Event</h3>
     <table style="border-collapse:collapse;width:100%;font-size:13px;margin-bottom:20px">
@@ -116,7 +116,7 @@ exports.handler = async (event) => {
       ? `<div style="background:#faf6ec;border:1px solid #e5dcc8;padding:16px 18px;border-radius:2px;white-space:pre-wrap;font-size:14px;line-height:1.7">${esc(othersAttending)}</div>`
       : `<p style="font-size:14px;color:#6C5A4A;font-style:italic;margin:0">Attending alone.</p>`}
 
-    <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Members' Area event RSVP form. Reply directly to the member's email above to confirm or follow up.</p>
+    <p style="margin-top:24px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Member's Area event RSVP form. Reply directly to the member's email above to confirm or follow up.</p>
   </div>`;
 
   // ── Send the email ──────────────────────────────────────────────────────

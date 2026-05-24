@@ -1,6 +1,6 @@
 // netlify/functions/welcome-signin.js
 //
-// One-click auto-login from the welcome page → Members' Area, using the
+// One-click auto-login from the welcome page → Member's Area, using the
 // Stripe session_id in the URL as proof of identity.
 //
 // SECURITY MODEL:

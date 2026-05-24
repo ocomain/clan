@@ -103,7 +103,7 @@ function buildNoAccountEmail(recipientEmail) {
         <h1 style="font-family:'EB Garamond',Georgia,serif;font-size:28px;font-weight:400;color:#1F1B14;margin:0;line-height:1.3">No clan account <em style="font-style:italic;color:#6B1F1F">for this email</em></h1>
       </td></tr>
       <tr><td style="padding:8px 40px 16px;font-family:'EB Garamond',Georgia,serif;font-size:17px;color:#3C2A1A;line-height:1.75">
-        <p style="margin:0 0 18px">You tried to sign in to the Members' Area of Clan Ó Comáin using <strong>${escapeHtml(recipientEmail)}</strong>, but no clan account is held against that address.</p>
+        <p style="margin:0 0 18px">You tried to sign in to the Member's Area of Clan Ó Comáin using <strong>${escapeHtml(recipientEmail)}</strong>, but no clan account is held against that address.</p>
         <p style="margin:0 0 18px">A few possibilities:</p>
         <ul style="margin:0 0 24px;padding-left:22px">
           <li style="margin-bottom:8px"><strong>You are already a member, but with a different email.</strong> Try the address on your welcome correspondence from the clan.</li>

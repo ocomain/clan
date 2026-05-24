@@ -160,10 +160,10 @@
 
 <section class="wel-mbr">
   <div class="wel-mbr-inner">
-    <div class="wel-mbr-eyebrow">Your Members' Area — now open</div>
+    <div class="wel-mbr-eyebrow">Your Member's Area — now open</div>
     <h2 class="wel-mbr-title">Enter the <em>Register</em></h2>
     <p class="wel-mbr-sub">Access your membership details, view your tier and renewal date, and — once ready — download your digital certificate. Sign in with the email address on your membership record.</p>
-    <a href="/members/login.html" class="wel-mbr-btn">Open my Members' Area →</a>
+    <a href="/members/login.html" class="wel-mbr-btn">Open my Member's Area →</a>
     <p class="wel-mbr-note">Direct access from here — no sign-in needed.</p>
   </div>
 </section>
@@ -219,7 +219,7 @@
      attempted to send invitations directly from the welcome
      page, but the welcome page has no Supabase session yet
      (the just-paid member's session isn't established until
-     they click 'Open my Members' Area' which round-trips
+     they click 'Open my Member's Area' which round-trips
      /api/welcome-signin to mint a magic link). Result: every
      'Send invitation' click on the welcome page silently
      failed with 'Sign in first to send', a confusing dead-end
@@ -241,7 +241,7 @@
 
     <div style="text-align:center;margin-top:36px">
       <a href="/members/login.html" class="wel-mbr-btn">
-        Open my Members' Area to share →
+        Open my Member's Area to share →
       </a>
       <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);margin:18px auto 0;max-width:420px;line-height:1.6">
         The Chief writes personally to every new member you bring into the clan.
@@ -253,7 +253,7 @@
 <!-- FINAL CTA -->
 <section class="wel-final">
   <p class="wel-final-text"><em>Caithfidh an stair a bheith i réim</em> — History must prevail.</p>
-  <a href="/members/login.html" class="wel-final-btn">Open my Members' Area →</a>
+  <a href="/members/login.html" class="wel-final-btn">Open my Member's Area →</a>
 </section>
 
 <footer class="footer">
@@ -276,7 +276,7 @@
           <li><a href="clan-stories.html">Stories</a></li>
           <li><a href="patrons.html">Patrons</a></li>
           <li><a href="privy-council.html">Privy Council</a></li>
-          <li><a href="/members/">Members' Area</a></li>
+          <li><a href="/members/">Member's Area</a></li>
         </ul>
       </div>
     </div>
@@ -310,9 +310,9 @@
 
   const tierDisplay = TIER_NAMES[tier] || null;
 
-  // ── Members' Area auto-login from welcome page ────────────────────
+  // ── Member's Area auto-login from welcome page ────────────────────
   // When session_id is present in the URL (i.e. we just got here from
-  // Stripe redirect), rewrite the Members' Area buttons to use the
+  // Stripe redirect), rewrite the Member's Area buttons to use the
   // auto-login endpoint that trades session_id for a fresh auth
   // session. This avoids the magic-link prompt for the post-payment
   // moment where we already know who paid (Stripe just told us).

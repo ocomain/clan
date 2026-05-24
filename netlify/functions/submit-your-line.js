@@ -157,7 +157,7 @@ exports.handler = async (event) => {
     <h3 style="color:#0C1A0C;font-size:16px;margin:24px 0 8px">Notes to the Craoibhscríobhaí</h3>
     <div style="background:#faf6ec;border:1px solid #e5dcc8;padding:14px 16px;border-radius:2px;white-space:pre-wrap;font-size:14px;line-height:1.7;margin-bottom:20px">${esc(notes)}</div>` : ''}
 
-    <p style="margin-top:28px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Members' Area 'Your line in the clan' page. Reply directly to the member's email address above.</p>
+    <p style="margin-top:28px;font-size:12px;color:#8F7A5E;font-style:italic">Submitted via the Member's Area 'Your line in the clan' page. Reply directly to the member's email address above.</p>
   </div>`;
 
   // ── Send ────────────────────────────────────────────────────────────────

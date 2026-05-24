@@ -212,7 +212,7 @@ function buildGiftBuyerConfirmationHtml({
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-left:3px solid #B8975A;padding:22px 26px;margin:0 0 28px;border-radius:0 2px 2px 0">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">What happens next</p>
       <ol style="margin:0;padding-left:20px">
-        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email from this office with your personal message and a single-click link to their Members' Area.</li>
+        <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px"><strong>${escapeHtml(recipientDisplay)}</strong> receives a welcome email from this office with your personal message and a single-click link to their Member's Area.</li>
         <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">There they confirm their certificate details — their name, an optional ancestor dedication — and publish it. The certificate is sealed, in their name, entered in the Register at Newhall House.</li>
         <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:8px">We send you a copy of the published certificate as a keepsake of the gift you've given.</li>
         <li style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.7;margin-bottom:0">The Chief — Fergus Commane — writes to them personally in the weeks that follow.</li>
@@ -324,7 +324,7 @@ function buildGiftRecipientWelcomeHtml({
 
   const benefitsList = (benefits || []).map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
 
-  // Members' Area sign-in URL for the secondary CTA at the bottom —
+  // Member's Area sign-in URL for the secondary CTA at the bottom —
   // for the deferred branch this points to the gift-welcome landing
   // page (claim flow); for the upgrade branch it's the magic-link.
   const membersAreaUrl = claimToken
@@ -367,15 +367,15 @@ function buildGiftRecipientWelcomeHtml({
 
     <div style="border-top:1px solid rgba(184,151,90,.3);margin:0 0 28px"></div>
 
-    <!-- Members' Area sign-in CTA — same pattern as member welcome.
+    <!-- Member's Area sign-in CTA — same pattern as member welcome.
          Recipient will reference this email later for ongoing access
          and to find the giver's personal gift message; clear button
          makes future sign-ins obvious. Outline style keeps the cert
          action above as the primary post-purchase CTA. -->
     <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Member's Area</p>
       <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — sign in any time to view details, find ${escapeHtml(safeGiverName)}'s gift message, download your certificate, and access members-only content.</p>
-      <a href="${membersAreaUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+      <a href="${membersAreaUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Member's Area →</a>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">Any correspondence with the clan should be sent to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a>, and will be brought to the Chief's attention.</p>
@@ -423,7 +423,7 @@ function buildGiftRecipientWelcomeHtml({
 //   signInUrl        — pre-resolved one-click magic-link from
 //                      buildSignInUrl, with fallback if lookup
 //                      failed. Used for both the cert CTA and
-//                      the Members' Area CTA.
+//                      the Member's Area CTA.
 function buildMemberWelcomeHtml({ firstName, tierDisplayName, benefits, signInUrl }) {
   const safeFirstName = firstName || 'friend';
   const benefitsList = (benefits || []).map(b => `<li style="margin-bottom:8px;font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.6">${b}</li>`).join('');
@@ -491,15 +491,15 @@ function buildMemberWelcomeHtml({ firstName, tierDisplayName, benefits, signInUr
 
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The Chief will write to you personally in the coming weeks. In the meantime, all correspondence with the clan should be directed to this office at <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — it will be brought to the Chief's attention as appropriate.</p>
 
-    <!-- Members' Area sign-in CTA — secondary to the cert action above.
+    <!-- Member's Area sign-in CTA — secondary to the cert action above.
          Members will reference this email later for ongoing access (the
          cert action becomes irrelevant once published), so a clear
          button here makes future sign-ins obvious. Outline style keeps
          the cert action above as the primary post-purchase CTA. -->
     <div style="text-align:center;padding:22px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2);margin:0 0 28px">
-      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Members' Area</p>
+      <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">Your Member's Area</p>
       <p style="font-family:'Georgia',serif;font-size:14.5px;font-style:italic;color:#6C5A4A;line-height:1.6;margin:0 0 16px">The home of your membership — view details, download your certificate, and access members-only content any time.</p>
-      <a href="${signInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Members' Area →</a>
+      <a href="${signInUrl}" style="display:inline-block;background:transparent;color:#B8975A;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:13px 28px;border:1px solid #B8975A;border-radius:1px">Sign in to Member's Area →</a>
     </div>
 
     <p style="font-family:'Georgia',serif;font-size:16px;font-style:italic;color:#3C2A1A;line-height:1.8;margin:0 0 28px">Go raibh míle maith agat — a thousand thanks for joining the revival of Ó Comáin.</p>
