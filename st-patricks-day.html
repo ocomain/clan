@@ -246,6 +246,7 @@
     <div class="lf-stats-grid">
       <div class="lf-stat"><div class="lf-stat-num" id="lf-stat-gatherings">—</div><div class="lf-stat-label">Gatherings posted</div></div>
       <div class="lf-stat"><div class="lf-stat-num" id="lf-stat-countries">—</div><div class="lf-stat-label">Countries</div></div>
+      <div class="lf-stat"><div class="lf-stat-num" id="lf-stat-year">2027</div><div class="lf-stat-label">Year</div></div>
     </div>
   </div>
 </section>
@@ -361,6 +362,7 @@
     year = defaultYear();
   }
   document.getElementById('lf-year-eyebrow').textContent = year;
+  document.getElementById('lf-stat-year').textContent = year;
 
   // Default map view — North Atlantic centred so Ireland, UK, US east
   // coast and Canada are visible together. This is the diaspora's
