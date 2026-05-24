@@ -384,7 +384,7 @@
         </div>
 
         <div class="hg-field">
-          <label class="hg-label">Your headshot on the map <span style="text-transform:none;letter-spacing:0;color:var(--ink-muted);font-weight:400">(optional, but recommended)</span></label>
+          <label class="hg-label">Your headshot on the map <span style="text-transform:none;letter-spacing:0;color:var(--gold);font-weight:600">*</span></label>
           <div class="hg-avatar-picker">
             <div class="hg-avatar-preview" id="hg-avatar-preview">
               <div class="hg-avatar-preview-empty">No photo yet</div>
@@ -392,10 +392,9 @@
             <div class="hg-avatar-controls">
               <label for="hg-avatar-file" class="hg-btn hg-btn-ghost" style="cursor:pointer;display:inline-block">Choose photo…</label>
               <input type="file" id="hg-avatar-file" accept="image/jpeg,image/png,image/webp" style="display:none">
-              <button type="button" class="hg-btn hg-btn-ghost" id="hg-avatar-clear-btn" style="display:none">Remove</button>
             </div>
           </div>
-          <div class="hg-help">A face on the pin makes the map immediately legible — the kindred can see who they're meeting before they arrive. Centre-cropped to a square automatically. JPEG, PNG or WebP up to 8 MB.</div>
+          <div class="hg-help">A face on the pin makes the map immediately legible — the kindred can see who they're meeting before they arrive. Saved to your member profile too, so you won't need to re-upload it next time. Centre-cropped to a square automatically. JPEG, PNG or WebP up to 8 MB.</div>
           <input type="hidden" id="hg-avatar-data-url">
         </div>
 
@@ -466,6 +465,7 @@
 
   let memberProfile = null;
   let currentGathering = null;
+  let memberAvatarUrl = null;         // persisted profile headshot for pre-fill
   let session = null;
   let miniMap = null;
   let miniMarker = null;
@@ -568,6 +568,7 @@
       if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
 
       currentGathering = data.gathering;
+      memberAvatarUrl  = data.memberAvatarUrl || null;
       myRsvpsByGatheringId = {};
       (data.rsvps || []).forEach(r => { myRsvpsByGatheringId[r.gathering_id] = r; });
       renderExistingOrForm();
@@ -617,6 +618,16 @@
       existingCard.style.display = 'none';
       formCard.style.display = 'block';
       $('hg-form-title').textContent = 'Set up your gathering';
+      // Pre-fill the headshot from the persisted profile avatar if the
+      // member has uploaded one previously (e.g. hosted in a past year)
+      // and hasn't already chosen a different file in this session. We
+      // don't overwrite a user's in-progress pick — only seed an empty
+      // field. The hidden input holds the URL so the server recognises
+      // it as "existing avatar, leave the URL alone".
+      if (memberAvatarUrl && !avatarDataInput.value) {
+        setAvatarPreview(memberAvatarUrl);
+        avatarDataInput.value = memberAvatarUrl;
+      }
     }
   }
 
@@ -706,6 +717,13 @@
       showToast('Please enter a start time in HH:MM format (e.g. 19:00).', 'err');
       return;
     }
+    if (!avatarValue) {
+      showToast('Please choose a headshot photo — a face on the pin makes the gathering legible on the map.', 'err');
+      // Scroll the field into view so the toast plus the empty preview
+      // bubble give the user an obvious place to act.
+      $('hg-avatar-preview').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     const submitBtn = $('hg-submit-btn');
     submitBtn.disabled = true;
@@ -753,18 +771,15 @@
   const AVATAR_MAX_INPUT_BYTES = 8 * 1024 * 1024;
   const avatarFileInput = $('hg-avatar-file');
   const avatarPreviewEl = $('hg-avatar-preview');
-  const avatarClearBtn  = $('hg-avatar-clear-btn');
   const avatarDataInput = $('hg-avatar-data-url');
 
   function setAvatarPreview(url) {
     if (url) {
       avatarPreviewEl.innerHTML = `<img src="${url.replace(/"/g, '&quot;')}" alt="Avatar preview">`;
       avatarPreviewEl.classList.add('has-image');
-      avatarClearBtn.style.display = 'inline-block';
     } else {
       avatarPreviewEl.innerHTML = '<div class="hg-avatar-preview-empty">No photo yet</div>';
       avatarPreviewEl.classList.remove('has-image');
-      avatarClearBtn.style.display = 'none';
     }
   }
 
@@ -814,12 +829,6 @@
       showToast(e.message || 'Could not process the image.', 'err');
       avatarFileInput.value = '';
     }
-  });
-
-  avatarClearBtn.addEventListener('click', () => {
-    avatarFileInput.value = '';
-    avatarDataInput.value = '';   // empty = "clear" on submit
-    setAvatarPreview(null);
   });
 
   // ── Nominatim pub picker ───────────────────────────────────────────

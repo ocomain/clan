@@ -215,21 +215,30 @@ exports.handler = async (event) => {
   // avatarInput from the client tells us what to do:
   //   - starts with 'data:image/'  → fresh upload; push to Storage
   //   - other non-empty string     → existing URL; keep as-is
-  //   - empty/missing              → explicit clear
+  //   - empty/missing              → reject (avatar is required)
+  //
+  // Tracks whether this request brought a freshly-uploaded photo, so
+  // we can mirror it onto members.avatar_url after the upsert lands.
   let hostAvatarUrl = existing ? (existing.host_avatar_url || null) : null;
-  if (avatarInput === '' || avatarInput === null || avatarInput === undefined) {
-    hostAvatarUrl = null;
-  } else if (typeof avatarInput === 'string' && avatarInput.startsWith('data:image/')) {
+  let freshlyUploaded = false;
+  if (typeof avatarInput === 'string' && avatarInput.startsWith('data:image/')) {
     try {
       hostAvatarUrl = await uploadAvatarFromDataUrl(avatarInput, memberRow.id, year);
+      freshlyUploaded = true;
     } catch (e) {
-      console.warn('avatar upload failed (non-fatal, keeping existing):', e.message);
-      // Keep whatever was on the existing row; the rest of the save proceeds.
+      console.warn('avatar upload failed:', e.message);
+      return reject(headers, 'We could not save your photo — please try a different image (JPEG, PNG or WebP, under 8 MB).');
     }
-  } else if (typeof avatarInput === 'string') {
+  } else if (typeof avatarInput === 'string' && avatarInput.length > 0) {
     // Existing URL passed through unchanged — common path on edit when
     // the user didn't pick a new file.
     hostAvatarUrl = avatarInput;
+  }
+  // Mandatory: every published gathering must carry a host photo. The
+  // map relies on a face to make pins legible at-a-glance, and an
+  // empty-circle pin reads as broken rather than anonymous.
+  if (!hostAvatarUrl) {
+    return reject(headers, 'A headshot photo of the host is required — please choose one before saving.');
   }
 
   const row = {
@@ -270,6 +279,27 @@ exports.handler = async (event) => {
     saved,
     year,
   }).catch(e => console.warn('office notify failed (non-blocking):', e.message));
+
+  // ── Mirror a freshly-uploaded avatar onto the member profile ──────
+  // The host-form is the one place in the app where a member uploads a
+  // photo today, so this is also the canonical moment to persist the
+  // headshot as their profile avatar. Future flows (member directory,
+  // RSVP signature lines, etc.) can read members.avatar_url without
+  // re-prompting. Non-blocking: a failure to mirror should not prevent
+  // the gathering save from succeeding.
+  if (freshlyUploaded) {
+    try {
+      const { error: memberAvatarErr } = await supa()
+        .from('members')
+        .update({ avatar_url: hostAvatarUrl })
+        .eq('id', memberRow.id);
+      if (memberAvatarErr) {
+        console.warn('mirror to members.avatar_url failed (non-blocking):', memberAvatarErr.message);
+      }
+    } catch (e) {
+      console.warn('mirror to members.avatar_url threw (non-blocking):', e && e.message);
+    }
+  }
 
   // ── Audit event ────────────────────────────────────────────────────
   try {

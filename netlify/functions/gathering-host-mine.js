@@ -43,7 +43,7 @@ exports.handler = async (event) => {
     const memberEmail = userResp.user.email.toLowerCase();
     const { data: m } = await supa()
       .from('members')
-      .select('id, name, email, tier, status')
+      .select('id, name, email, tier, status, avatar_url')
       .eq('email', memberEmail)
       .maybeSingle();
     if (!m) return { statusCode: 404, headers, body: JSON.stringify({ error: 'Member record not found' }) };
@@ -113,6 +113,10 @@ exports.handler = async (event) => {
         year,
         gathering,
         rsvps,
+        // Profile-level avatar so the host-form can pre-fill the headshot
+        // field on a first-time-host's screen without forcing them to
+        // re-upload a photo they've already provided previously.
+        memberAvatarUrl: memberRow.avatar_url || null,
       }),
     };
   } catch (err) {
