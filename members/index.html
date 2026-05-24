@@ -690,6 +690,43 @@
         Founding Member by warrant of the Chief
       </div>
     ` : '';
+    // Standing Member / Observer marker. Shows a quiet line under the
+    // founder band indicating whether the member is in their Observer
+    // year or has crossed the year-and-a-day threshold to Standing
+    // Member. If they've also sworn the Oath, the line is upgraded to
+    // a small heraldic checkmark + 'Standing Member, sworn on [date]'.
+    // Same source-of-truth as the Oath page (member.created_at +
+    // member.oath_sworn_at).
+    const standingMarker = (() => {
+      const YEAR_AND_DAY_MS = 366 * 24 * 60 * 60 * 1000;
+      if (!member.created_at) return '';
+      const createdAt  = new Date(member.created_at).getTime();
+      const eligibleAt = createdAt + YEAR_AND_DAY_MS;
+      const now = Date.now();
+      const hasSworn   = !!member.oath_sworn_at;
+      const isStanding = now >= eligibleAt; // Standing Member by time, even if oath not sworn
+      if (hasSworn) {
+        const swornDate = new Date(member.oath_sworn_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        return `
+          <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--burgundy);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
+            ✦ Standing Member · Oath sworn on ${swornDate}
+          </div>
+        `;
+      }
+      if (isStanding) {
+        return `
+          <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
+            Standing Member of Clan Ó Comáin · <a href="/members/oath.html" style="color:var(--burgundy);text-decoration:underline;text-underline-offset:2px">take the Oath of Standing →</a>
+          </div>
+        `;
+      }
+      const daysRemaining = Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000));
+      return `
+        <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
+          Observer · Standing Member in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}
+        </div>
+      `;
+    })();
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
     // are set together at publication; checking either works.
@@ -736,6 +773,7 @@
         </div>
         ${founderBand}
         ${heraldNote}
+        ${standingMarker}
         <div class="mstatus-rows">
           <div>
             <div class="mstatus-row-label">Name on the Register</div>
@@ -1474,6 +1512,58 @@
           <div class="maction-desc">Lineage &amp; DNA queries for the Craoibhscríobhaí, general correspondence to any office, and apply to serve on the Privy Council. All triaged by the Office of the Private Secretary.</div>
           <span class="maction-btn">Write to the Council →</span>
         </a>
+        ${(() => {
+          // Oath of Standing tile — three states based on member's
+          // position along the year-and-a-day path:
+          //   - Sworn (oath_sworn_at is set): "Your oath, sworn on X"
+          //   - Unlocked (>= +366 days, not yet sworn): "Take the Oath"
+          //   - Locked (Observer year): "Unlocks in N days"
+          // The link is the same in all states; the page itself
+          // renders the matching state from the member record.
+          const YEAR_AND_DAY_MS = 366 * 24 * 60 * 60 * 1000;
+          const createdAt = member.created_at ? new Date(member.created_at).getTime() : null;
+          const eligibleAt = createdAt ? createdAt + YEAR_AND_DAY_MS : null;
+          const now = Date.now();
+          const hasSworn   = !!member.oath_sworn_at;
+          const isEligible = eligibleAt && now >= eligibleAt;
+          const daysRemaining = (eligibleAt && !isEligible)
+            ? Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000))
+            : 0;
+
+          let eyebrow, desc, btn;
+          if (hasSworn) {
+            const swornDate = new Date(member.oath_sworn_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+            eyebrow = 'Sworn and recorded';
+            desc = `You have taken the Oath of Standing — sworn on <strong>${swornDate}</strong>. You are a Standing Member of Clan Ó Comáin, with voice and vote at the Annual General Meeting.`;
+            btn = 'View your oath →';
+          } else if (isEligible) {
+            eyebrow = 'A rite of standing';
+            desc = `A year and a day has passed. You may now take the <em>Oath of Standing</em> — the voluntary rite by which a member passes from Observer to Standing Member of Clan Ó Comáin.`;
+            btn = 'Take the oath →';
+          } else {
+            eyebrow = 'Locked — opens at a year and a day';
+            desc = `In the Brehon law of the old kingdoms, <em>a year and a day</em> marked the threshold of standing. From that day, you may take the <em>Oath of Standing</em> — the voluntary rite by which you pass from Observer to Standing Member. <strong>Unlocks in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}.</strong>`;
+            btn = 'About the oath →';
+          }
+
+          return `
+        <a class="maction ${hasSworn || isEligible ? 'live' : 'locked'}" style="text-decoration:none;color:inherit" href="/members/oath.html">
+          <span class="maction-icon">
+            <!-- Hand raised in oath — single open palm, four fingers
+                 and thumb, formal hand-raised-to-swear gesture. -->
+            <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 36 V18 a2.5 2.5 0 0 1 5 0 V14 a2.5 2.5 0 0 1 5 0 V14 a2.5 2.5 0 0 1 5 0 V18 a2.5 2.5 0 0 1 5 0 V28 a8 8 0 0 1 -8 8 H22 a4 4 0 0 1 -4 -4 Z"/>
+              <line x1="23" y1="22" x2="23" y2="14"/>
+              <line x1="28" y1="22" x2="28" y2="14"/>
+              <line x1="33" y1="22" x2="33" y2="14"/>
+            </svg>
+          </span>
+          <div class="maction-eyebrow">${eyebrow}</div>
+          <div class="maction-title">The Oath of Standing</div>
+          <div class="maction-desc">${desc}</div>
+          <span class="maction-btn">${btn}</span>
+        </a>`;
+        })()}
         <a class="maction live" style="text-decoration:none;color:inherit" href="/privy-council.html">
           <span class="maction-icon">
             <!-- Heraldic shield — council authority, the clan's standing.

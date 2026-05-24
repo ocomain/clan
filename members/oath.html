@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Oath of Standing — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    /* HEADER — same chrome as the rest of /members. */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-back{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.7);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s,border-color .15s}
+    .mhdr-back:hover{color:var(--gold-light);border-color:var(--gold)}
+    .mhdr-back-arrow{font-size:13px;line-height:1}
+    @media (max-width:520px){.mhdr-back-label{display:none} .mhdr-back{padding:8px 10px}}
+
+    /* PAGE LAYOUT */
+    .wrap{max-width:720px;margin:0 auto;padding:56px 24px 80px}
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:12px;text-align:center}
+    .page-title{font-family:'EB Garamond',serif;font-size:clamp(34px,5vw,46px);font-weight:400;color:var(--ink);line-height:1.1;margin:0 0 14px;text-align:center}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-muted);line-height:1.7;text-align:center;margin:0 auto 48px;max-width:580px}
+
+    /* LOADING / AUTH GATE */
+    .loading,.gate{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-muted);text-align:center;padding:80px 24px;font-style:italic}
+
+    /* CARD CHROME — used by all three states */
+    .card{background:#FFF;border:1px solid var(--gold-faint);border-top:3px solid var(--gold);padding:46px 44px;border-radius:2px;margin-bottom:32px;box-shadow:0 2px 8px rgba(20,5,5,.04)}
+    .card-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px;text-align:center}
+    .card-title{font-family:'EB Garamond',serif;font-size:28px;color:var(--ink);font-weight:400;line-height:1.25;margin:0 0 18px;text-align:center;font-style:italic}
+    .card-body{font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:var(--ink-soft)}
+    .card-body p{margin:0 0 16px}
+    .card-body p:last-child{margin-bottom:0}
+    .card-body strong{color:var(--ink);font-weight:500}
+
+    /* LOCKED STATE */
+    .lock-icon{display:block;margin:0 auto 22px;width:42px;height:42px;color:var(--gold);opacity:.7}
+    .lock-icon svg{display:block;width:100%;height:100%}
+    .countdown{background:rgba(184,151,90,.08);border-left:3px solid var(--gold);padding:22px 28px;margin:28px 0 0;border-radius:1px;text-align:center}
+    .countdown-label{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
+    .countdown-days{font-family:'EB Garamond',serif;font-size:36px;color:var(--ink);font-weight:400;line-height:1;margin:0 0 8px}
+    .countdown-days .countdown-unit{font-size:18px;color:var(--ink-muted);font-style:italic;margin-left:6px}
+    .countdown-date{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-muted);font-style:italic}
+
+    /* UNLOCKED — READY TO SWEAR */
+    .oath-text{background:#FFFDF7;border:1px solid var(--gold-faint);border-left:3px solid var(--gold);padding:36px 40px;margin:32px 0;font-family:'EB Garamond',serif;font-size:21px;line-height:1.75;color:var(--ink);font-style:italic;text-align:center}
+    .oath-text-irish{font-style:italic}
+    .oath-text-sep{display:inline-block;color:var(--gold-deep);font-style:normal;margin:0 4px}
+    .swear-actions{text-align:center;margin-top:32px}
+    .swear-btn{display:inline-block;background:var(--burgundy);color:#FFFFFF;font-family:'Jost',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:16px 36px;border:none;cursor:pointer;border-radius:1px;transition:background .15s}
+    .swear-btn:hover{background:#7A1A1A}
+    .swear-btn:disabled{opacity:.5;cursor:not-allowed}
+    .swear-note{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-top:14px;line-height:1.6}
+
+    /* RECORD STATE */
+    .record-seal{display:block;margin:0 auto 22px;width:56px;height:56px}
+    .record-seal svg{display:block;width:100%;height:100%}
+    .record-date{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-muted);font-style:italic;text-align:center;margin-top:24px}
+    .record-date strong{color:var(--ink);font-weight:500;font-style:normal}
+
+    /* Error / toast */
+    .toast{padding:14px 18px;border-radius:2px;font-family:'EB Garamond',serif;font-size:15.5px;margin-bottom:16px;display:none;line-height:1.6}
+    .toast.show{display:block}
+    .toast.err{background:rgba(140,30,30,.06);border-left:3px solid var(--burgundy);color:#5A1414}
+
+    @media (max-width:560px){
+      .card{padding:32px 24px}
+      .oath-text{padding:24px 22px;font-size:19px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-back">
+      <span class="mhdr-back-arrow" aria-hidden="true">←</span>
+      <span class="mhdr-back-label">Back to dashboard</span>
+    </a>
+    <a href="/members/" class="mhdr-brand">
+      <img src="/coat_of_arms.png" alt="Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="page-eyebrow">A rite of the kindred</div>
+  <h1 class="page-title">The <em>Oath</em> of Standing</h1>
+  <p class="page-sub">A voluntary act, taken at the year-and-a-day threshold, by which a member affirms their standing in the clan.</p>
+
+  <div id="loading" class="loading">Loading…</div>
+  <div id="gate" class="gate" style="display:none">Please <a href="/members/login.html" style="color:var(--gold-deep)">sign in</a> to continue.</div>
+
+  <!-- LOCKED state — shown to Observer-year members. Brehon framing,
+       countdown to unlock date. Does NOT show the oath wording itself
+       (the reveal is the ceremony). -->
+  <div id="locked" class="card" style="display:none">
+    <div class="lock-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="4" y="11" width="16" height="10" rx="1.5"/>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+      </svg>
+    </div>
+    <div class="card-eyebrow">The threshold of standing</div>
+    <h2 class="card-title">A year and a day</h2>
+    <div class="card-body">
+      <p>In the Brehon law of the old kingdoms, <em>a year and a day</em> marked the threshold of claim — the time after which a thing was held to be truly yours, by your standing in it rather than by mere arrival.</p>
+      <p>The clan's convention, following the Brehon mind, is that the first year is one of welcome and observance. The new member is present at every gathering, named in the Register, but not yet voting in the clan's councils. From the year and a day, the welcome becomes a <strong>standing</strong>: you pass from Observer to <strong>Standing Member</strong> of Clan Ó Comáin, with voice and vote at the Annual General Meeting and the right to be heard on matters the clan decides together.</p>
+      <p>The <em>Oath of Standing</em> is the voluntary rite by which you mark that threshold. It is held back until the day arrives — both as ceremony and as kindness. When the time comes, this page will unlock, and the words of the oath will be shown for the first time.</p>
+    </div>
+    <div class="countdown">
+      <div class="countdown-label">Your year and a day</div>
+      <div class="countdown-days"><span id="cd-num">—</span><span class="countdown-unit" id="cd-unit">days remaining</span></div>
+      <div class="countdown-date" id="cd-date">—</div>
+    </div>
+  </div>
+
+  <!-- UNLOCKED state — ready to swear. -->
+  <div id="ready" class="card" style="display:none">
+    <div class="card-eyebrow">A year and a day has passed</div>
+    <h2 class="card-title">The threshold is at hand</h2>
+    <div class="card-body">
+      <p>You have stood with Clan Ó Comáin for a year and a day. The convention of the clan, following the Brehon mind, is that this is the threshold at which a member passes from Observer to <strong>Standing Member</strong> — with voice and vote at the Annual General Meeting, and the right to be heard on matters the clan decides together.</p>
+      <p>If you wish, you may now take the <em>Oath of Standing</em>. It is a single act, taken once, and recorded on this page as the mark of your standing in the clan.</p>
+    </div>
+    <div class="oath-text" id="oath-text">
+      <span class="oath-text-irish">Beirim mo bhriathar</span>
+      <span class="oath-text-sep">—</span>
+      <span>I give my word —</span>
+      <br>
+      <span>that I shall stand to the kindred,</span>
+      <br>
+      <span>and to the work of the revival, all my days.</span>
+    </div>
+    <div id="swear-toast" class="toast err"></div>
+    <div class="swear-actions">
+      <button type="button" class="swear-btn" id="swear-btn">I swear this oath →</button>
+      <p class="swear-note">The act is taken once. It cannot be undone, nor sworn again. The date will be recorded on this page as the mark of your standing.</p>
+    </div>
+  </div>
+
+  <!-- RECORD state — already sworn. The page becomes the record. -->
+  <div id="record" class="card" style="display:none">
+    <div class="record-seal" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="22" stroke="var(--gold)" stroke-width="1.5"/>
+        <circle cx="24" cy="24" r="17" stroke="var(--gold)" stroke-width="0.8" opacity="0.4"/>
+        <path d="M16 24l6 6 12-12" stroke="var(--burgundy)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="card-eyebrow">Sworn and recorded</div>
+    <h2 class="card-title">Standing Member of Ó Comáin</h2>
+    <div class="card-body">
+      <p>You have taken the Oath of Standing.</p>
+    </div>
+    <div class="oath-text">
+      <span class="oath-text-irish">Beirim mo bhriathar</span>
+      <span class="oath-text-sep">—</span>
+      <span>I give my word —</span>
+      <br>
+      <span>that I shall stand to the kindred,</span>
+      <br>
+      <span>and to the work of the revival, all my days.</span>
+    </div>
+    <div class="record-date">Sworn on <strong id="record-date">—</strong>.</div>
+  </div>
+
+</main>
+
+<script type="module">
+  import { currentSession } from './auth.js';
+
+  const YEAR_AND_DAY_MS = 366 * 24 * 60 * 60 * 1000;
+
+  const loadingEl = document.getElementById('loading');
+  const gateEl    = document.getElementById('gate');
+  const lockedEl  = document.getElementById('locked');
+  const readyEl   = document.getElementById('ready');
+  const recordEl  = document.getElementById('record');
+  const toastEl   = document.getElementById('swear-toast');
+
+  function show(el) { el.style.display = 'block'; }
+  function hide(el) { el.style.display = 'none'; }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+  }
+
+  function init() {
+    (async () => {
+      const session = await currentSession();
+      if (!session) {
+        hide(loadingEl);
+        show(gateEl);
+        return;
+      }
+
+      // Fetch member profile via the existing member-info endpoint.
+      // After migration 035 + my member-info patch, the response
+      // includes created_at + oath_sworn_at.
+      let member;
+      try {
+        const res = await fetch('/api/member-info', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (!res.ok) throw new Error('profile fetch failed');
+        member = await res.json();
+      } catch (e) {
+        hide(loadingEl);
+        gateEl.textContent = 'Could not load your member record. Please refresh, or sign in again.';
+        show(gateEl);
+        return;
+      }
+
+      const createdAt = new Date(member.created_at).getTime();
+      const eligibleAt = createdAt + YEAR_AND_DAY_MS;
+      const now = Date.now();
+      const isEligible = now >= eligibleAt;
+      const hasSworn   = !!member.oath_sworn_at;
+
+      hide(loadingEl);
+
+      if (hasSworn) {
+        document.getElementById('record-date').textContent = fmtDate(member.oath_sworn_at);
+        show(recordEl);
+        return;
+      }
+
+      if (isEligible) {
+        show(readyEl);
+        document.getElementById('swear-btn').addEventListener('click', () => swearOath(session));
+        return;
+      }
+
+      // Locked: show countdown
+      const daysRemaining = Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000));
+      document.getElementById('cd-num').textContent = daysRemaining;
+      document.getElementById('cd-unit').textContent = daysRemaining === 1 ? 'day remaining' : 'days remaining';
+      document.getElementById('cd-date').textContent = `Unlocks on ${fmtDate(new Date(eligibleAt).toISOString())}.`;
+      show(lockedEl);
+    })().catch(err => {
+      console.error('oath init failed:', err);
+      hide(loadingEl);
+      gateEl.textContent = 'Something went wrong loading this page. Please try again.';
+      show(gateEl);
+    });
+  }
+
+  async function swearOath(session) {
+    const btn = document.getElementById('swear-btn');
+    btn.disabled = true;
+    const orig = btn.textContent;
+    btn.textContent = 'Recording…';
+    toastEl.classList.remove('show');
+
+    try {
+      const res = await fetch('/api/oath-swear', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'The oath could not be recorded.');
+
+      // Flip to record state
+      hide(readyEl);
+      document.getElementById('record-date').textContent = fmtDate(data.oathSwornAt);
+      show(recordEl);
+      // Smooth-scroll to the record card so the transition feels intentional
+      recordEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      toastEl.textContent = e.message || 'The oath could not be recorded — please try again.';
+      toastEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = orig;
+    }
+  }
+
+  init();
+</script>
+
+</body>
+</html>
