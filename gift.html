@@ -209,6 +209,12 @@
       .gift-grid:not([data-active]) .gift-card[data-tier="guardian"]{
         display:block;
       }
+      /* Tighten the visible card's top so the price sits close to
+         the top edge of the box — matching the Membership page tier
+         card on mobile, where the eyebrow + price visually anchor
+         to the top border of the dark card with minimal whitespace
+         above. Was 36px all sides; now 20px top, 36px elsewhere. */
+      .gift-grid .gift-card{padding-top:20px}
       /* Hide the in-card 'Most gifted' badge on mobile — already on tab */
       .gift-badge{display:none}
     }
