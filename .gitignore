@@ -4,6 +4,16 @@ package-lock.json
 .env.local
 .netlify/
 .DS_Store
+
+# Email preview directories — regenerated on every deploy by the
+# `npm run previews` step in netlify.toml's build command. The files
+# at /email-previews/*, /email-previews-transactional/*, etc. on the
+# live site are always fresh from the latest source. Locally, running
+# the generators produces output here that should NOT be committed
+# (would create noise in PRs without changing what users see). The
+# tracked snapshots in the repo are from earlier manual force-adds
+# and remain only as a fallback for environments where Netlify's
+# build step can't run.
 email-previews/
 email-previews-pdf-lead/
 email-previews-cart-reengage/

@@ -1,6 +1,21 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  # Regenerate every email preview on every deploy. Without this, the
+  # previews at /email-previews/, /email-previews-transactional/, etc.
+  # drift behind the source the moment an email template is edited —
+  # production members get the new copy, but the review gallery still
+  # shows the old version, and the gap is silent until someone notices
+  # by hand. Running `npm run previews` here makes it impossible for
+  # the gallery to ever lag behind a deploy: the rendered HTML files
+  # are produced fresh from the same lib/ modules the Netlify
+  # functions use at runtime, so what you see in /email-previews/ is
+  # always exactly what the live functions will send.
+  #
+  # Cost: ~5-10s of build time for ~40 file renders. No external API
+  # calls, no Resend hits — preview generators import builder
+  # functions and render to disk.
+  command = "npm install && npm run previews"
 
 # Bundle non-code files (images, fonts) with the functions that need them.
 # Without this, the runtime container won't have the shield PNG and cert
