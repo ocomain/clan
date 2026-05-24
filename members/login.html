@@ -32,6 +32,19 @@
     .mlogin-status.error{background:rgba(210,120,120,.08);border:1px solid rgba(210,120,120,.3);color:rgba(235,180,180,.9)}
     .mlogin-help{font-family:'EB Garamond',serif;font-size:13px;color:rgba(215,235,215,.5);margin-top:28px;line-height:1.7}
     .mlogin-help a{color:var(--gold-light);border-bottom:1px solid rgba(184,151,90,.25);text-decoration:none}
+
+    /* Dashboard preview section — sits below the login form on dark-
+       background page, so a hesitant returner can see what they're
+       signing into without competing with the auth flow. Cream card
+       on the dark ink-green body, gold rule on top to match the
+       members-area chrome. Hidden on very narrow viewports to keep
+       the auth flow uncluttered. */
+    .mlogin-preview{max-width:680px;margin:0 auto;padding:64px 24px 80px}
+    .mlogin-preview-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:14px;opacity:.85}
+    .mlogin-preview-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,32px);font-weight:400;color:var(--gold-pale);text-align:center;line-height:1.2;margin:0 0 16px;font-style:italic}
+    .mlogin-preview-sub{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.7);text-align:center;line-height:1.7;margin:0 auto 32px;max-width:560px}
+    .mlogin-preview-img{display:block;width:100%;height:auto;border:1px solid rgba(184,151,90,.3);border-top:3px solid var(--gold);border-radius:2px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+    .mlogin-preview-caption{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:rgba(215,235,215,.5);text-align:center;margin:18px auto 0;line-height:1.6;max-width:520px}
   </style>
 <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
@@ -98,6 +111,21 @@
 
     <p class="mlogin-help">Not yet a member? <a href="/membership.html">Apply for membership →</a><br>Questions? <a href="mailto:clan@ocomain.org">Write to the Office →</a></p>
   </div>
+</section>
+
+<!-- DASHBOARD PREVIEW — what a member sees after signing in. Sits
+     below the auth form so the form is still the primary interaction;
+     this is for the hesitant returner who needs a "is this worth it?"
+     answer before bothering to check their email for the magic link.
+     Image is a faithful composition of the actual dashboard chrome
+     (same palette, type, structure); not a literal screenshot, since
+     using a real one would expose member-specific data. -->
+<section class="mlogin-preview">
+  <div class="mlogin-preview-eyebrow">What you'll see when you sign in</div>
+  <h2 class="mlogin-preview-title">Your members' area</h2>
+  <p class="mlogin-preview-sub">Your tier, your renewal date, your standing on the Register. The gathering map for the next St Patrick's Day. The library of clan scholarship. Honours awarded for bringing the kindred in. Everything one place.</p>
+  <img class="mlogin-preview-img" src="/members_dashboard_preview.jpg" alt="A preview of the Clan Ó Comáin members' dashboard — welcome card with tier and renewal details, action tiles for the library and honours, St Patrick's Day gathering banner.">
+  <p class="mlogin-preview-caption">A new sign-in link will arrive in your inbox; tap it and you'll land here.</p>
 </section>
 
 <!-- SITE FOOTER -->
