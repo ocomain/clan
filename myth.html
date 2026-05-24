@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myth — The story Ireland tells about herself · Clan Ó Comáin</title>
+  <meta name="description" content="The Lebor Gabála Érenn — Ireland's foundation story, told from the beginning. Adam through Scythia, Egypt and Spain to the Milesian landing, the Túatha Dé Danann who became the fairy folk, and the Gaelic high kings of Tara. The mythology that lives in every Irish-American grandmother's stories.">
+
+  <!-- This page is the public storytelling surface for the clan's
+       mythological inheritance. Two jobs running in parallel:
+
+         1. Tell the inherited story vividly enough that a casual
+            visitor (Irish-American, ~50, browsing on a phone) keeps
+            reading. Plain modern English; concrete nouns; active
+            verbs; documentary-narrator voice rather than academic
+            register.
+
+         2. Implicitly unseal the membership door. The clan is
+            affinity-based, not surname-gated, not bloodline-gated.
+            The page is structured so that the act of feeling at
+            home in the story is itself what qualifies the reader —
+            never stated apologetically, always implied through
+            choice of words ('the story Ireland tells about
+            herself', 'the kindred', 'anyone who feels it').
+
+       Structure:
+         - Opening frame (the page's editorial position)
+         - Out of Genesis (Adam → Noah → Japheth)
+         - The Scythian Years (Fénius the philosopher-king)
+         - Breogán's Tower (Galicia + the lighthouse that still
+           stands today)
+         - The Milesian Landing (and the Túatha Dé Danann who became
+           the fairy folk) ← THE EMOTIONAL TURN
+         - The High Kings of Tara through Conn
+         - The Fork (parallel inheritances — Connacht / Munster)
+         - The Mermaid Still on the Gate (Newhall coda)
+         - Membership CTA
+
+       Voice exemplar fully written: The Milesian Landing section.
+       Other sections currently scaffolded with [PLACEHOLDER] notes
+       so DDW can sign off on voice before commissioning the rest.
+  -->
+
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+
+  <style>
+    /* Page-specific palette extensions. The Myth page uses a slightly
+       warmer cream than the rest of the site — closer to vellum than
+       to paper — to subtly signal 'manuscript' rather than 'website'. */
+    body{background:#FAF6EC;color:var(--ink)}
+
+    /* HERO — establishes the page's editorial position before the
+       first paragraph is read. Single dark band with eyebrow, title,
+       subtitle. Coat of arms watermarked centre for the heraldic
+       anchor. */
+    .myth-hero{background:var(--ink);padding:80px 0 70px;text-align:center;border-bottom:2px solid var(--gold);position:relative;overflow:hidden}
+    .myth-hero-inner{max-width:760px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+    .myth-hero-coat{display:block;margin:0 auto 28px;width:68px;height:auto;opacity:.85}
+    .myth-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.95}
+    .myth-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,6vw,62px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin:0 0 18px;font-style:italic}
+    .myth-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2.2vw,21px);color:rgba(215,235,215,.78);line-height:1.7;margin:0 auto;max-width:580px;font-style:italic}
+
+    /* OPENING FRAME — sets the editorial position. Lives just below
+       the hero. Cream-tinted card with gold left-rule to read as a
+       prologue, not body text. */
+    .myth-frame{max-width:680px;margin:0 auto;padding:60px 24px 20px}
+    .myth-frame-card{background:rgba(184,151,90,.06);border-left:3px solid var(--gold);padding:36px 38px;border-radius:1px}
+    .myth-frame-card p{font-family:'EB Garamond',serif;font-size:17.5px;line-height:1.85;color:var(--ink-soft);margin:0 0 16px;font-style:italic}
+    .myth-frame-card p:last-child{margin-bottom:0}
+    .myth-frame-card strong{color:var(--ink);font-style:normal;font-weight:500}
+
+    /* SECTION CHROME — used for every story section. Generous
+       breathing room; serif body; gold dropcap on first letter; pull
+       quotes for emphasis. */
+    .myth-section{max-width:680px;margin:0 auto;padding:60px 24px}
+    .myth-section-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:12px}
+    .myth-section-title{font-family:'EB Garamond',serif;font-size:clamp(30px,4.5vw,42px);font-weight:400;color:var(--ink);line-height:1.15;margin:0 0 32px;font-style:italic}
+    .myth-section-title em{color:var(--burgundy);font-style:italic}
+    .myth-section-body p{font-family:'EB Garamond',serif;font-size:18px;line-height:1.85;color:var(--ink);margin:0 0 22px}
+    .myth-section-body p:last-child{margin-bottom:0}
+    .myth-section-body strong{font-weight:500;color:var(--ink)}
+    .myth-section-body em{font-style:italic;color:var(--ink-soft)}
+    .myth-section-body .irish{font-style:italic;color:var(--burgundy)}
+
+    /* Dropcap — first letter of the first paragraph in each section.
+       Heavy serif, gold, floated, gives the page its 'manuscript
+       opening' feel without trying to imitate an actual illuminated
+       capital. */
+    .myth-section-body > p:first-of-type::first-letter{
+      font-family:'EB Garamond',serif;font-size:64px;line-height:0.85;
+      float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400;
+    }
+
+    /* Pull quotes — used sparingly, only for genuinely arresting
+       lines. Stops the page from reading flat. */
+    .myth-pull{border-left:3px solid var(--gold);padding:6px 0 6px 28px;margin:30px 0;font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.55}
+
+    /* Section divider — a small gold mark between sections, breaks
+       the page rhythm. */
+    .myth-divider{display:flex;justify-content:center;align-items:center;margin:40px 0;gap:14px}
+    .myth-divider::before,.myth-divider::after{content:'';display:block;width:80px;height:1px;background:rgba(184,151,90,.4)}
+    .myth-divider-mark{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold);font-style:italic}
+
+    /* CODA — the Newhall mermaid section. Subtly different chrome
+       (slightly larger title, warmer background tint) so the closing
+       movement feels like a deliberate change of register. */
+    .myth-coda{background:linear-gradient(180deg,#FAF6EC 0%,#F2EBD8 100%);padding:80px 0 60px;border-top:1px solid rgba(184,151,90,.2);margin-top:20px}
+    .myth-coda-inner{max-width:680px;margin:0 auto;padding:0 24px;text-align:center}
+    .myth-coda-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:16px}
+    .myth-coda-title{font-family:'EB Garamond',serif;font-size:clamp(30px,4.5vw,40px);font-weight:400;color:var(--ink);line-height:1.2;margin:0 0 36px;font-style:italic}
+    .myth-coda-body p{font-family:'EB Garamond',serif;font-size:19px;line-height:1.85;color:var(--ink);margin:0 0 22px;text-align:left}
+
+    /* CTA — final movement. The page has done its emotional work;
+       the CTA is plain, confident, doesn't oversell. Same chrome as
+       /celtic-heritage-clan.html's CTA box. */
+    .myth-cta{background:var(--ink);padding:70px 0 80px;border-top:2px solid var(--gold);text-align:center}
+    .myth-cta-inner{max-width:640px;margin:0 auto;padding:0 24px}
+    .myth-cta-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .myth-cta-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin:0 0 16px;font-style:italic}
+    .myth-cta-sub{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.7);line-height:1.7;margin:0 0 32px;font-style:italic}
+    .myth-cta-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:16px 36px;text-decoration:none;border-radius:1px;transition:background .15s}
+    .myth-cta-btn:hover{background:var(--gold-pale)}
+
+    /* Placeholder note styles — used during the scaffold phase so
+       DDW can see what's still to be written. Removed once content
+       is in. Visually distinct enough to be unmissable but not
+       jarring. */
+    .myth-placeholder{background:rgba(140,30,30,.06);border:1px dashed rgba(140,30,30,.35);border-radius:2px;padding:24px 28px;font-family:'Jost',sans-serif;font-size:13.5px;color:var(--burgundy);line-height:1.7;margin:24px 0}
+    .myth-placeholder strong{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:11px;display:block;margin-bottom:6px}
+
+    @media (max-width:560px){
+      .myth-frame-card{padding:28px 24px}
+      .myth-section-body > p:first-of-type::first-letter{font-size:52px;margin:6px 10px 0 0}
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Myth — The story Ireland tells about herself",
+    "description": "The Lebor Gabála Érenn told vividly. Adam through Scythia and Spain to the Milesian landing, the Túatha Dé Danann who became the fairy folk, the Gaelic high kings of Tara, and the mermaid still on the gate at Newhall.",
+    "url": "https://ocomain.org/myth.html",
+    "publisher": { "@type": "Organization", "name": "Clan Ó Comáin" }
+  }
+  </script>
+</head>
+<body>
+
+<!-- NAV (same chrome as other public pages) -->
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="membership.html" class="nav-link">Membership</a>
+      <a href="myth.html" class="nav-link active">Myth</a>
+      <a href="pedigree.html" class="nav-link">Pedigree</a>
+      <a href="timeline.html" class="nav-link">Timeline</a>
+      <a href="heartlands.html" class="nav-link">Heartlands</a>
+      <a href="clan-stories.html" class="nav-link">Stories</a>
+      <a href="/members/" class="nav-link">Members</a>
+    </div>
+    <a href="membership.html" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="membership.html" class="nav-mobile-link">Membership</a>
+  <a href="myth.html" class="nav-mobile-link active">Myth</a>
+  <a href="pedigree.html" class="nav-mobile-link">Pedigree</a>
+  <a href="timeline.html" class="nav-mobile-link">Timeline</a>
+  <a href="heartlands.html" class="nav-mobile-link">Heartlands</a>
+  <a href="clan-stories.html" class="nav-mobile-link">Stories</a>
+  <a href="/members/" class="nav-mobile-link">Members</a>
+  <a href="membership.html" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>
+function toggleMenu(){
+  var menu=document.getElementById("mobile-menu");
+  var btn=document.querySelector(".nav-hamburger");
+  menu.classList.toggle("open");
+  btn.classList.toggle("open");
+}
+</script>
+
+<!-- HERO -->
+<section class="myth-hero">
+  <div class="myth-hero-inner">
+    <img class="myth-hero-coat" src="/coat_of_arms.png" alt="">
+    <div class="myth-hero-eyebrow">The story Ireland tells about herself</div>
+    <h1 class="myth-hero-title">Myth</h1>
+    <p class="myth-hero-sub">From the first man to the high kings of Tara — the inheritance kept alive in vellum manuscripts for nine hundred years, told here from the beginning.</p>
+  </div>
+</section>
+
+<!-- OPENING FRAME — establishes the page's editorial position. -->
+<section class="myth-frame">
+  <div class="myth-frame-card">
+    <p>What follows is not a history textbook. It is the story Ireland tells about herself — the way every people remembers itself before the historians arrive.</p>
+    <p>It begins with Adam and Eve. It passes through scholar-kings on the Black Sea steppe, through a sojourn in Egypt at the time of Moses, through a tower in Galicia whose stones still stand. It arrives in Ireland on a fleet of ships from Spain. And it tells of the people who were here <em>before</em> the Gaels — a people who became, in the end, the fairy folk you grew up hearing about.</p>
+    <p>This story was set down in the eleventh century, in a book called the <em>Lebor Gabála Érenn</em> — the Book of the Taking of Ireland. The monks who wrote it down were preserving what had been carried in memory for centuries before them. <strong>Some of it is myth. Some of it shades into history. The line between the two has always been the most interesting place to stand.</strong></p>
+  </div>
+</section>
+
+<!-- SECTION 1: OUT OF GENESIS — [SCAFFOLD ONLY, full prose to follow] -->
+<section class="myth-section">
+  <div class="myth-section-eyebrow">I. Out of Genesis</div>
+  <h2 class="myth-section-title">From Adam, to the <em>Flood</em></h2>
+  <div class="myth-section-body">
+    <div class="myth-placeholder">
+      <strong>Section to be written</strong>
+      The opening of the lineage. Adam → Noah → Japheth (one of Noah's three sons; the medieval texts give the Irish to Japheth's line, alongside other northern peoples). Beat: the Flood arrives as a hinge. Before the Flood, the world was something else. After the Flood, the world began again — and our story begins with Japheth stepping off the ark. Around 500–700 words. Emotional anchor: not "we are descended from Adam" (literal) but "we are part of the great line of peoples that the medieval mind imagined unfolding from a single beginning." Keep the religious register light — this is the audience's first taste of voice, don't make them feel they're being preached to.
+    </div>
+  </div>
+</section>
+
+<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+
+<!-- SECTION 2: THE SCYTHIAN YEARS — [SCAFFOLD] -->
+<section class="myth-section">
+  <div class="myth-section-eyebrow">II. The Scythian Years</div>
+  <h2 class="myth-section-title">A philosopher-king and the <em>weaving</em> of a language</h2>
+  <div class="myth-section-body">
+    <div class="myth-placeholder">
+      <strong>Section to be written</strong>
+      The Scythian period. Magog, son of Japheth, fathers the Scythians on the steppe north of the Black Sea. Generations pass. Then Fénius Farsaid — the philosopher-king who becomes obsessed with language after the Tower of Babel scatters human tongues. He sends seventy-two students to every corner of the earth to gather every language spoken there. He sits down with what they bring back, and from the best of all of them, he weaves <em>Gaelic</em>. The Gaels are the people who carried that language with them. Around 500–700 words. This is where the page first shows it can handle vivid medieval material in modern voice — the seventy-two scholars going out and coming back is the kind of detail Irish-Americans love because it sounds like something out of a film. Beat: the language itself is older than the people, and was made on purpose.
+    </div>
+  </div>
+</section>
+
+<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+
+<!-- SECTION 3: BREOGÁN'S TOWER — [SCAFFOLD] -->
+<section class="myth-section">
+  <div class="myth-section-eyebrow">III. Breogán's Tower</div>
+  <h2 class="myth-section-title">The lighthouse that <em>still stands</em></h2>
+  <div class="myth-section-body">
+    <div class="myth-placeholder">
+      <strong>Section to be written</strong>
+      The migration west: Scythia → Egypt (the medieval texts place the Gaels in Egypt at the time of Moses; some versions say they helped him, some say they were expelled with him) → Crete and Sicily → Spain. In northwestern Spain, in the kingdom that became Galicia, their leader Breogán builds a great tower. From its top on a clear day, looking northwest across the Bay of Biscay, his sons see green land in the distance. The land is Ireland. The tower — and this is the part that converts the reader — <strong>still stands today</strong>. The Tower of Hercules in A Coruña, Galicia, is the world's oldest still-functioning lighthouse. Roman work on Phoenician foundations, but in Irish mythology it is Breogán's. The reader can Google it. They can fly there. Around 500–700 words. Beat: the myth has a touchable artefact. The story leaves the realm of pure legend at this point and becomes something with a real place attached.
+    </div>
+  </div>
+</section>
+
+<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     SECTION 4: THE MILESIAN LANDING — VOICE EXEMPLAR, FULLY WRITTEN
+     This is the emotional turn of the page. The reader meets the
+     Túatha Dé Danann — the people who were here before the Gaels —
+     and recognises them as the fairy folk of every story they have
+     ever been told. If the voice works here, it works everywhere.
+     ════════════════════════════════════════════════════════════════ -->
+<section class="myth-section">
+  <div class="myth-section-eyebrow">IV. The Milesian Landing</div>
+  <h2 class="myth-section-title">A fleet on the horizon, and the people who were <em>already there</em></h2>
+  <div class="myth-section-body">
+
+    <p>The sons of Míl set sail from Galicia in a fleet of sixty-five ships. They had been preparing for years. Their father, Míl Espáine — <em>Míl of Spain</em> — had died before he could lead them, and so it fell to his sons, and to his widow Scota, the Egyptian princess whose name the country of Scotland still carries. They were a kindred of farmers and warriors and poets and druids. They were sailing for the green land their grandfather had seen from the top of Breogán's tower. They were sailing for Ireland.</p>
+
+    <p>The land was not empty.</p>
+
+    <p>The people already there were called the <span class="irish">Túatha Dé Danann</span> — the People of the Goddess Danu. They had arrived in Ireland generations earlier, from somewhere further north, in ships or in clouds — the storytellers never quite agreed. They were a people of extraordinary skill. Their craftsmen could make weapons that never missed their mark. Their physicians could bring the dead back to life. Their poets could shape the weather with a verse. They had four great treasures with them: the <strong>Stone of Destiny</strong>, which cried out when a true king touched it; the <strong>Spear of Lugh</strong>, which never lost a fight; the <strong>Sword of Núada</strong>, which no one could escape once it was drawn; and the <strong>Cauldron of the Dagda</strong>, which never ran empty. When the Milesian fleet arrived, the Túatha Dé were the people of Ireland.</p>
+
+    <p>What happened next is the strangest and most beautiful moment in Irish mythology.</p>
+
+    <p>The Milesians could not land. As they approached the coast, the druids of the Túatha Dé raised a storm out of nothing — a storm so violent it swept the ships back to sea and killed many of them. The survivors regrouped. They came back. This time their own poet, Amergin, the eldest of Míl's sons, stepped onto Irish soil first, and he sang. The song he sang is one of the oldest poems in the European tradition. It begins:</p>
+
+    <div class="myth-pull">
+      I am the wind on the sea.<br>
+      I am the wave on the ocean.<br>
+      I am the roar of the sea.<br>
+      I am the bull of seven battles.<br>
+      I am the hawk on the cliff.<br>
+      I am the tear of the sun.
+    </div>
+
+    <p>The storm fell still. The Milesians made landfall.</p>
+
+    <p>What followed was not a war of extermination. It was a settlement — and this is the part most worth pausing on, because it is the part that explains the next two thousand years of Irish stories.</p>
+
+    <p>The Milesians won the battles, and they took the surface of Ireland. The Túatha Dé were defeated. But they did not leave, and the Milesians did not destroy them. Instead, an agreement was made. The Milesians would have the world <em>above</em> the ground — the fields, the forests, the rivers, the kingdoms, the high seats. The Túatha Dé would have the world <em>below</em>. They would retreat into the hills and the burial mounds and the lakes and the deep places — the <span class="irish">sídhe</span>, the otherworld — and they would remain there, alongside the world of the Gaels but no longer visible to it. They would become, in time, what they have been ever since.</p>
+
+    <p><strong>The fairy folk.</strong> The <em>good people</em>. The wee folk your grandmother told you not to disturb. The <em>sídhe</em> who haunt the burial mounds. The mermaids in the lakes. The leprechauns under the hawthorn trees. The merrow and the banshee and the <em>pooka</em>. The whole magical Ireland that survives in nursery stories and old films and the songs you half-remember from someone who half-remembered them from someone before.</p>
+
+    <p>All of it is the same thing. All of it is the Túatha Dé Danann, retreated into the hills.</p>
+
+    <p>This is the moment most people don't realise when they think about Irish mythology. The fairies are not separate from the foundation story. They <em>are</em> the foundation story. The Disney animations of pots of gold and the postcards of leprechauns and the great-aunt who left out a saucer of milk for the wee folk — these are not folklore detached from history. They are the living afterlife of the people who held Ireland before the Gaels arrived, and who agreed to share it on the strangest of terms.</p>
+
+    <p>If you have ever been told a fairy story by someone who half-believed it, you have already heard the end of this section.</p>
+
+  </div>
+</section>
+
+<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+
+<!-- SECTION 5: HIGH KINGS OF TARA — [SCAFFOLD] -->
+<section class="myth-section">
+  <div class="myth-section-eyebrow">V. The High Kings of Tara</div>
+  <h2 class="myth-section-title">The Stone of Destiny, and the kings who <em>made it cry out</em></h2>
+  <div class="myth-section-body">
+    <div class="myth-placeholder">
+      <strong>Section to be written</strong>
+      The Milesians establish kingship at Tara, the central hill of Ireland. The Stone of Destiny (one of the four treasures the Túatha Dé left behind) cries out when a rightful king touches it. The high kings descend from Míl's son Éber Finn (south) and Éremón (north) — the first political division of Ireland between two brothers. Several generations of named kings. Around 700–900 words. Land especially on Conn Cétchathach — Conn of the Hundred Battles — who is the named ancestor through whom the next section's fork happens. Beat: this is when the page transitions from "mythology" to "the first names that genealogists work with." Don't lose voice; keep the documentary-narrator register. The reader is now hooked; this section confirms that the story keeps going.
+    </div>
+  </div>
+</section>
+
+<div class="myth-divider"><span class="myth-divider-mark">·  ·  ·</span></div>
+
+<!-- SECTION 6: THE FORK — [SCAFFOLD] -->
+<section class="myth-section">
+  <div class="myth-section-eyebrow">VI. The Fork</div>
+  <h2 class="myth-section-title">Two inheritances, one <em>kindred</em></h2>
+  <div class="myth-section-body">
+    <div class="myth-placeholder">
+      <strong>Section to be written</strong>
+      The fork moment. The shared story ends here, around Conn of the Hundred Battles (2nd century). After Conn, the line that becomes Clan Ó Comáin actually has TWO parallel traditions — one through Connacht and the Uí Maine (Brian, Mongfinn, the line of Eochaidh Mugmedón), one through Munster and the Déisi Muman (the southern frontier kingdom that produced the historical Mac Comáin kings). Both traditions are real; both manuscripts survive; both are carried by the modern clan as parallel inheritances. The Pedigree page handles the evidence. The Myth page just announces the fork and points the reader there. Around 400–500 words. Beat: this is where 'shared Gaelic inheritance' becomes 'our specific story'. Crucially, this is also where the page can subtly open the door to non-bloodline-affinity readers — the kindred is the people who CHOSE to carry one of these inheritances forward, not the people who are descended from them. Suggested transitional line: "This is where the shared story ends and the specific story begins. From here, the trail of who carried what forward belongs to the Pedigree page. But the question of who BELONGS to the kindred — that is not a question of descent. It is a question of who feels the story to be theirs."
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     CODA: THE MERMAID STILL ON THE GATE
+     The closing movement. The page's emotional task is done; now it
+     rolls up into a tight, three-paragraph coda that lands the
+     Newhall mermaid as the LIVING proof that the myth is not
+     archived. Then the CTA picks her up.
+     ════════════════════════════════════════════════════════════════ -->
+<section class="myth-coda">
+  <div class="myth-coda-inner">
+    <div class="myth-coda-eyebrow">Coda</div>
+    <h2 class="myth-coda-title">The mermaid still on the <em>gate</em></h2>
+    <div class="myth-coda-body">
+
+      <p>If the story ended in the eleventh century, when the monks first set it down in the Book of Invasions, this page would be a long footnote. But the story did not end there. It has been carried — in songs, in nursery rhymes, in the names of children and the names of lakes — for a thousand years since. It is still being carried now.</p>
+
+      <p>You can see it on the clan's own coat of arms. The figure in the centre is a <strong>mermaid</strong> — the mystical guardian of Newhall Lake, in the household's seat in County Clare. She is one of the Túatha Dé. She is the same kindred as the wee folk and the <em>sídhe</em> and the fairies in your grandmother's stories. She is playing an <strong>Irish harp</strong> — for the music of the line. She is surrounded by <strong>shamrocks</strong> — for the protection of the Holy Trinity, and for Saint Commán, the clan's patron, who is the bridge between the older pagan inheritance and the Christian one that came after.</p>
+
+      <p>The mermaid is still on the gate at Newhall. The kindred still gather under her. The story is not finished.</p>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA — the implicit affinity door, made explicit. -->
+<section class="myth-cta">
+  <div class="myth-cta-inner">
+    <div class="myth-cta-eyebrow">Join the kindred</div>
+    <h2 class="myth-cta-title">You do not need to carry the <em>surname</em>.</h2>
+    <p class="myth-cta-sub">You do not need an Irish grandparent. You do not need to prove descent. If this story makes you feel something — if you would rather belong to a kindred than not — the door is the same door. The mermaid is on the gate, and the gate is open.</p>
+    <a href="/membership.html" class="myth-cta-btn">See the membership tiers →</a>
+  </div>
+</section>
+
+<!-- FOOTER (same chrome as the rest of the public site) -->
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+        <p class="footer-motto-en">History must prevail</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="myth.html">Myth</a></li>
+          <li><a href="pedigree.html">Pedigree</a></li>
+          <li><a href="heartlands.html">Heartlands</a></li>
+          <li><a href="/members/">Member's Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="membership.html" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li>Clan seat: Newhall House, County Clare</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2025&ndash;2026 Tigh U&iacute; Chom&aacute;in &middot; House of &Oacute; Com&aacute;in &middot; All rights reserved &middot; <a href="/terms.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Terms</a> &middot; <a href="/privacy.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Privacy</a> &middot; <a href="/refund.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Refund</a> &middot; <a href="/about.html" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">About</a></div>
+      <div class="footer-rec">Approved by the Chief of &Oacute; Com&aacute;in &middot; Recognised by Clans of Ireland &middot; Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
