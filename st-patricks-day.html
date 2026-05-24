@@ -657,12 +657,16 @@
       window.__lfGatherings = gatherings;
       renderSidebar(gatherings, markers, map);
 
-      // Auto-open the FIRST pin on load. Only one popup is ever open at
-      // a time (autoClose default), so this is just a friendly "here's
-      // a pin to see" gesture — the user can click any other pin or
-      // sidebar entry to switch. Delay until fitBounds/setView settles
-      // so auto-pan padding can compute against a stable viewport.
-      if (markers.length >= 1) {
+      // Auto-open the popup only when there is exactly one pin. With a
+      // single tightly-framed marker the auto-open is a friendly "here's
+      // the gathering" gesture. With multiple pins spread across the
+      // diaspora, fitBounds correctly zooms out wide — and an
+      // auto-opened popup at the right-edge marker (the first in the
+      // list, by city order) sticks out past the map into the sidebar
+      // and obscures the rest of the geography. Users do better when
+      // they see the full pin spread on load and click whichever
+      // matters to them.
+      if (markers.length === 1) {
         map.once('moveend', function(){
           markers[0].openPopup();
         });
