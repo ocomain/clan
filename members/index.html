@@ -5,17 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Members' Area — Clan Ó Comáin</title>
-
-  <!-- Leaflet — needed for the embedded St Patrick's Day map at the
-       bottom of the dashboard. Pinned 1.9.4 with SRI; same version as
-       /st-patricks-day and /members/host-gathering so styling stays
-       consistent across surfaces. -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/shared.css">
@@ -43,101 +32,31 @@
     .mwelcome-title em{color:var(--gold);font-style:italic}
     .mwelcome-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);max-width:600px;margin:0 auto;line-height:1.7}
 
-    /* ST PATRICK'S DAY card — sits at the BOTTOM of the dashboard now
-       (moved from below the welcome on 2026-05-23). Contains the live
-       map + inline RSVP card embedded directly, so members can browse
-       pins and RSVP without leaving /members/. The host form remains
-       on its dedicated page (/members/host-gathering) to keep this
-       section focused on the social/discovery surface. */
-    .mstp{max-width:720px;margin:48px auto 32px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);border-radius:2px;overflow:hidden;box-shadow:0 6px 24px rgba(12,26,12,.06)}
-    .mstp-hero{background:linear-gradient(180deg, #0F1F0F 0%, #18301B 100%);padding:38px 36px;text-align:center;border-bottom:1px solid rgba(184,151,90,.25)}
-    .mstp-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:#B8975A;margin-bottom:14px;opacity:.95}
-    .mstp-hero-title{font-family:'EB Garamond',serif;font-size:clamp(34px,5vw,46px);font-weight:400;color:#F5ECD8;font-style:italic;line-height:1.05;margin:0 0 8px}
-    .mstp-hero-sub{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.75);font-style:italic;margin:0;line-height:1.5}
-    .mstp-body{padding:28px 36px}
-    .mstp-desc{font-family:'EB Garamond',serif;font-size:15.5px;color:var(--ink-soft);line-height:1.75;margin:0 0 18px}
-    .mstp-stats{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);font-style:italic;margin:0 0 16px;line-height:1.5}
-    .mstp-stats strong{color:var(--ink);font-weight:500;font-style:normal}
-    .mstp-map-canvas{width:100%;height:440px;border:1px solid var(--gold-border);background:var(--cream-mid)}
-    .mstp-empty{font-family:'EB Garamond',serif;font-style:italic;color:var(--ink-muted);text-align:center;padding:14px;font-size:15px;margin-top:12px}
-
-    /* Map popup style — light variant for the cream dashboard background */
-    .mstp-map-canvas .leaflet-popup-content-wrapper{background:#FFFFFF;color:#0F1F0F;border:1px solid #B8975A;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
-    .mstp-map-canvas .leaflet-popup-tip{background:#FFFFFF;border:1px solid #B8975A}
-    .mstp-map-canvas .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:240px;max-width:300px}
-    .stp-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8B6F32;margin-bottom:6px}
-    .stp-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#0F1F0F;margin:0 0 5px;font-weight:500}
-    .stp-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:#5A7A5A;font-style:italic;margin-bottom:11px}
-    .stp-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#8B6F32;margin-bottom:11px}
-    .stp-pop-host-row{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:9px 0;border-top:1px solid rgba(184,151,90,.22);border-bottom:1px solid rgba(184,151,90,.22)}
-    .stp-pop-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1.5px solid #B8975A;flex-shrink:0;background:#F5ECD8}
-    .stp-pop-host-stack{display:flex;flex-direction:column;line-height:1.2;min-width:0}
-    .stp-pop-host-label{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#8B6F32;margin-bottom:3px}
-    .stp-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#0F1F0F;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .stp-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:#2E4A2E;margin-bottom:11px}
-    .stp-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:#5A7A5A;font-style:italic;margin-bottom:13px;padding-left:9px;border-left:2px solid #E4D5A8}
-    .stp-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#8B6F32;margin-bottom:11px}
-    .stp-pop-badge{display:inline-block;background:rgba(184,151,90,.16);color:#8B6F32;font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;margin-bottom:10px}
-    .stp-pop-badge-own{background:rgba(46,74,46,.12);color:#2E4A2E}
-    .stp-pop-cta{display:inline-block;background:#B8975A;color:#0F1F0F;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;padding:10px 18px;margin-top:8px;border-radius:1px}
-    .stp-pop-cta:hover{background:#D4B483}
-    .stp-pop-cta-ghost{background:transparent;color:#8B6F32;border:1px solid rgba(184,151,90,.4)}
-    .stp-pop-cta-ghost:hover{background:rgba(184,151,90,.08);color:#0F1F0F}
-
-    /* Avatar pin (replaces gold heraldic teardrop when host has a photo) */
-    .stp-avatar-pin{background:none;border:none}
-    .stp-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(12,26,12,.25);background-color:#F5ECD8}
-    .stp-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(12,26,12,.2))}
-    .stp-avatar-pin:hover .stp-avatar-pin-circle{border-color:#0F1F0F;transition:border-color .15s}
-
-    /* RSVP card — slides in below the map when a pin is clicked */
-    .mstp-rsvp{background:rgba(184,151,90,.05);border:1px solid var(--gold-border);border-left:3px solid var(--gold);border-radius:1px;padding:24px 26px;margin-top:18px}
-    .mstp-rsvp-title{font-family:'EB Garamond',serif;font-size:21px;color:var(--ink);margin:0 0 14px;font-weight:500}
-    .mstp-rsvp-pin{background:var(--cream-mid);border-left:3px solid var(--gold);padding:14px 18px;margin-bottom:18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.65;color:var(--ink-soft)}
-    .mstp-rsvp-pin .pin-venue{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);font-weight:500;margin-bottom:4px}
-    .mstp-rsvp-pin .pin-meta{font-size:14px;color:var(--ink-muted);margin-top:6px}
-    .mstp-rsvp-pin .pin-msg{font-style:italic;margin-top:10px;padding-left:10px;border-left:2px solid var(--gold-border)}
-    .mstp-rsvp-existing{background:rgba(46,74,46,.07);border-left:3px solid var(--ink-soft);padding:12px 14px;margin-bottom:14px;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);line-height:1.55}
-    .mstp-rsvp-field{margin-bottom:18px}
-    .mstp-rsvp-label{display:block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px}
-    .mstp-rsvp-select,.mstp-rsvp-textarea{width:100%;background:var(--white);border:1px solid var(--gold-border);font-family:'EB Garamond',serif;font-size:16px;color:var(--ink);padding:10px 12px;border-radius:1px;outline:none;box-sizing:border-box}
-    .mstp-rsvp-select:focus,.mstp-rsvp-textarea:focus{border-color:var(--gold)}
-    .mstp-rsvp-textarea{resize:vertical;min-height:70px;line-height:1.55}
-    .mstp-rsvp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-    .mstp-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;text-decoration:none;border:none;cursor:pointer;border-radius:1px;transition:background .15s}
-    .mstp-btn:hover{background:var(--gold-light)}
-    .mstp-btn:disabled{opacity:.5;cursor:not-allowed}
-    .mstp-btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--gold-border)}
-    .mstp-btn-ghost:hover{background:var(--cream-mid);border-color:var(--gold);color:var(--ink)}
-    .mstp-btn-danger{background:transparent;color:#9C2A2A;border:1px solid rgba(156,42,42,.3)}
-    .mstp-btn-danger:hover{background:#9C2A2A;color:var(--white);border-color:#9C2A2A}
-
-    /* "You're attending" list of RSVPs */
-    .mstp-my-rsvps{margin-top:22px;border-top:1px solid var(--gold-border);padding-top:18px}
-    .mstp-my-rsvps-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);margin:0 0 10px;font-weight:500}
-    .mstp-rsvp-item{padding:11px 0;border-bottom:1px solid var(--cream-mid);font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.55}
-    .mstp-rsvp-item:last-child{border-bottom:none}
-    .mstp-rsvp-item strong{color:var(--ink);font-weight:500}
-    .mstp-rsvp-item .rsvp-count{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-left:8px}
-
-    /* Toast */
-    .mstp-toast{padding:12px 16px;border-radius:2px;font-family:'EB Garamond',serif;font-size:15px;margin-bottom:14px;display:none;line-height:1.55}
-    .mstp-toast.show{display:block}
-    .mstp-toast.ok{background:rgba(46,74,46,.08);border-left:3px solid var(--ink-soft);color:var(--ink)}
-    .mstp-toast.err{background:rgba(156,42,42,.07);border-left:3px solid #9C2A2A;color:#6C1E1E}
-
-    .mstp-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--gold-border)}
-    .mstp-cta-primary{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 26px;text-decoration:none;border-radius:1px;transition:background .15s}
-    .mstp-cta-primary:hover{background:var(--gold-light)}
-    .mstp-upgrade{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin:14px 0 0;line-height:1.55}
-    .mstp-upgrade a{color:var(--gold-deep);text-decoration:underline;text-underline-offset:2px}
-    .mstp-upgrade a:hover{color:var(--gold)}
-
+    /* ST PATRICK'S DAY BANNER — slim seasonal banner that slots between
+       the refer-a-friend section and the action tile grid. Replaces the
+       previous full-embed map (which was too dominant for a dashboard
+       surface and duplicated the experience of the host page). Mirrors
+       the homepage strip (stp-strip-*) visually but uses dashboard-
+       chrome colours so it sits naturally between mortar-coloured
+       sections rather than punching through them on dark ink-green. */
+    .mstp{max-width:720px;margin:0 auto 26px;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);border-radius:2px;overflow:hidden;box-shadow:0 6px 24px rgba(12,26,12,.06);transition:border-color .2s}
+    .mstp-link{display:block;text-decoration:none;color:inherit;padding:24px 28px}
+    .mstp-inner{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+    .mstp-text{flex:1;min-width:200px}
+    .mstp-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:8px}
+    .mstp-title{font-family:'EB Garamond',serif;font-size:21px;color:var(--ink);font-weight:400;line-height:1.3;margin:0 0 4px;font-style:italic;transition:color .15s}
+    .mstp-sub{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);line-height:1.5;margin:0}
+    .mstp-preview{flex-shrink:0;width:170px;height:136px;border:1px solid var(--gold-border);border-radius:2px;overflow:hidden;background:#a8d4e8;transition:border-color .2s,transform .2s}
+    .mstp-preview img{display:block;width:100%;height:100%;object-fit:cover}
+    .mstp-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;flex-shrink:0;border-radius:1px;transition:background .15s}
+    .mstp-link:hover .mstp-cta{background:var(--gold-light)}
+    .mstp-link:hover .mstp-preview{border-color:var(--gold);transform:translateY(-2px)}
+    .mstp-link:hover .mstp-title{color:var(--gold-deep)}
     @media (max-width:560px){
-      .mstp-hero{padding:30px 22px}
-      .mstp-body{padding:22px}
-      .mstp-map-canvas{height:380px}
-      .mstp-cta-primary{width:100%;text-align:center;box-sizing:border-box}
+      .mstp-inner{gap:18px}
+      .mstp-preview{width:100%;max-width:280px;height:auto;aspect-ratio:5/4;order:2}
+      .mstp-text{order:1;min-width:0}
+      .mstp-cta{order:3;width:100%;text-align:center;box-sizing:border-box}
     }
 
     /* UPCOMING EVENT card — slotted at top of dashboard, below welcome.
@@ -571,428 +490,50 @@
   // slides in when a pin is clicked, and a "you're attending" list.
   // The host form lives on its own page (/members/host-gathering) so
   // this section stays focused on the social/discovery surface.
+  // St Patrick's Day banner — slots between the refer-a-friend section
+  // and the action tile grid. Visual style mirrors the homepage strip
+  // (real-screenshot preview + tagline + CTA, whole banner clickable)
+  // but with dashboard chrome colours. Targets the next 17 March still
+  // in the future so the banner stays relevant year-round.
   function stPatricksFullSectionHtml(member) {
     const now = new Date();
-    const mo  = now.getUTCMonth();   // 0 = Jan
+    const mo  = now.getUTCMonth();
     const d   = now.getUTCDate();
     const y   = now.getUTCFullYear();
     const past17March = (mo > 2) || (mo === 2 && d > 17);
     const targetYear  = past17March ? y + 1 : y;
 
-    const tier = (member && member.tier) || '';
-    const canHost = tier && !tier.startsWith('clan-');
-
-    const ctaBlock = canHost
-      ? `<div class="mstp-ctas"><a href="/members/host-gathering.html?year=${targetYear}" class="mstp-cta-primary">Host your own pin →</a></div>`
-      : `<div class="mstp-ctas">
-           <a href="/members/host-gathering.html?year=${targetYear}" class="mstp-cta-primary">More about hosting →</a>
-         </div>
-         <p class="mstp-upgrade">Hosting your own pin is a Guardian-tier-or-above benefit. RSVPing to any pin on the map is open to every member. <a href="/membership.html#tiers">Upgrade your tier →</a></p>`;
-
     return `
-      <section class="mstp" id="mstpSection" data-target-year="${targetYear}">
-        <div class="mstp-hero">
-          <div class="mstp-hero-eyebrow">St Patrick's Day · 17 March ${targetYear}</div>
-          <div class="mstp-hero-title">Lá Fhéile Pádraig</div>
-          <div class="mstp-hero-sub">The clan gathers, wherever you are.</div>
-        </div>
-        <div class="mstp-body">
-          <p class="mstp-desc">A live map of Ó Comáin pubs across the diaspora. Click any pin to see the host, the venue, the time. RSVP in one tap — the host knows you're coming, the kindred find each other.</p>
-          <div id="mstpToast" class="mstp-toast"></div>
-          <div id="mstpStats" class="mstp-stats">Loading the gathering map…</div>
-          <div id="mstpMap" class="mstp-map-canvas"></div>
-          <div id="mstpEmpty" class="mstp-empty" style="display:none">No pins yet for 17 March ${targetYear}.</div>
-
-          <!-- RSVP card — hidden until a pin is clicked -->
-          <div id="mstpRsvpCard" class="mstp-rsvp" style="display:none">
-            <h3 class="mstp-rsvp-title" id="mstpRsvpTitle">RSVP to this gathering</h3>
-            <div class="mstp-rsvp-pin" id="mstpRsvpPinDisplay"></div>
-            <div id="mstpRsvpExisting" class="mstp-rsvp-existing" style="display:none">
-              <strong>You're attending</strong> — <span id="mstpRsvpExistingGuests"></span> · You'll receive an email reminder closer to the date.
+      <section class="mstp" id="mstpSection">
+        <a href="/st-patricks-day.html?year=${targetYear}" class="mstp-link">
+          <div class="mstp-inner">
+            <div class="mstp-text">
+              <div class="mstp-eyebrow">St Patrick's Day · 17 March ${targetYear}</div>
+              <h2 class="mstp-title">See where the kindred are gathering.</h2>
+              <p class="mstp-sub">A live map of Ó Comáin pubs.</p>
             </div>
-            <div class="mstp-rsvp-field">
-              <label class="mstp-rsvp-label" for="mstpRsvpGuests">How many of you?</label>
-              <select class="mstp-rsvp-select" id="mstpRsvpGuests">
-                <option value="1">Just me</option>
-                <option value="2">2 people</option>
-                <option value="3">3 people</option>
-                <option value="4">4 people</option>
-                <option value="5">5 people</option>
-                <option value="6">6 people</option>
-                <option value="7">7 people</option>
-                <option value="8">8 people</option>
-                <option value="9">9 people</option>
-                <option value="10">10 people</option>
-              </select>
+            <div class="mstp-preview">
+              <img src="/stp_homepage_preview.jpg" alt="" loading="lazy">
             </div>
-            <div class="mstp-rsvp-field">
-              <label class="mstp-rsvp-label" for="mstpRsvpNote">A note for the host <span style="text-transform:none;letter-spacing:0;color:var(--ink-muted);font-weight:400">(optional)</span></label>
-              <textarea class="mstp-rsvp-textarea" id="mstpRsvpNote" maxlength="200" placeholder="Dietary needs, when you'll arrive, who you're bringing…"></textarea>
-            </div>
-            <div class="mstp-rsvp-actions">
-              <button class="mstp-btn" type="button" id="mstpRsvpSubmitBtn">Confirm RSVP</button>
-              <button class="mstp-btn mstp-btn-danger" type="button" id="mstpRsvpRemoveBtn" style="display:none">Cancel my RSVP</button>
-              <button class="mstp-btn mstp-btn-ghost" type="button" id="mstpRsvpCloseBtn">Close</button>
-            </div>
+            <span class="mstp-cta">View live map →</span>
           </div>
-
-          <!-- You're attending list -->
-          <div id="mstpMyRsvps" class="mstp-my-rsvps" style="display:none">
-            <h4 class="mstp-my-rsvps-title">You're attending</h4>
-            <div id="mstpMyRsvpsList"></div>
-          </div>
-
-          ${ctaBlock}
-        </div>
+        </a>
       </section>
     `;
   }
+
 
   // Wire the embedded St Patrick's Day map — fetches gatherings,
   // renders pins (avatar pins for hosts with photos, gold heraldic
   // fallback otherwise), opens the inline RSVP card on click, posts
   // RSVPs to the server, refreshes the popup state. Safe to call
   // multiple times — it bails if the section isn't in the DOM.
-  async function wireStPatricksMap(member) {
-    const sectionEl = document.getElementById('mstpSection');
-    if (!sectionEl) return;
+  // wireStPatricksMap was removed 2026-05-24 — the embedded map at
+  // the bottom of the dashboard was replaced with a slim banner that
+  // links out to /st-patricks-day.html. RSVP and host actions live
+  // on the public map page (signed-in members get the full venue
+  // specifics and one-tap RSVP there) and on /members/host-gathering.
 
-    const YEAR = parseInt(sectionEl.getAttribute('data-target-year'), 10);
-
-    // Wait for Leaflet — script is deferred, so by the time the
-    // dashboard render runs it's normally already there, but on slow
-    // connections we may beat it. Poll briefly.
-    let waited = 0;
-    while (!window.L && waited < 3000) {
-      await new Promise(r => setTimeout(r, 50));
-      waited += 50;
-    }
-    if (!window.L) {
-      document.getElementById('mstpStats').textContent = 'Map library failed to load — please refresh shortly.';
-      return;
-    }
-
-    const stpEsc = (s) => String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    const stpFmtTime = (hhmm) => {
-      if (!hhmm || !/^\d{1,2}:\d{2}$/.test(hhmm)) return hhmm || '';
-      const [h, m] = hhmm.split(':');
-      const hi = parseInt(h, 10);
-      const am = hi < 12;
-      const h12 = ((hi % 12) === 0) ? 12 : (hi % 12);
-      return h12 + (m === '00' ? '' : ':' + m) + (am ? ' am' : ' pm');
-    };
-
-    const session = await currentSession();
-    if (!session) return;  // shouldn't happen on the dashboard but defensive
-
-    let myRsvpsByGatheringId = {};
-    let networkPins = [];
-    let ownGatheringId = null;
-    let activeRsvpGatheringId = null;
-    let networkMap = null;
-
-    const toastEl = document.getElementById('mstpToast');
-    function showToast(msg, kind) {
-      toastEl.textContent = msg;
-      toastEl.className = 'mstp-toast show ' + (kind === 'err' ? 'err' : 'ok');
-      setTimeout(() => toastEl.classList.remove('show'), 6000);
-      sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    const fallbackPin = L.divIcon({
-      className: 'stp-network-pin',
-      html: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36">' +
-            '<path d="M14 0 C6 0 0 6 0 14 c0 10 14 22 14 22 s14 -12 14 -22 c0 -8 -6 -14 -14 -14 z" fill="#B8975A" stroke="#0F1F0F" stroke-width="1.5"/>' +
-            '<circle cx="14" cy="14" r="5" fill="#0F1F0F"/></svg>',
-      iconSize: [28, 36], iconAnchor: [14, 36], popupAnchor: [0, -32],
-    });
-    function pinIconFor(g) {
-      if (!g.host_avatar_url) return fallbackPin;
-      return L.divIcon({
-        className: 'stp-avatar-pin',
-        html:
-          `<div class="stp-avatar-pin-circle" style="background-image:url('${g.host_avatar_url.replace(/'/g, "\\'")}')"></div>` +
-          `<div class="stp-avatar-pin-tail"></div>`,
-        iconSize: [52, 64], iconAnchor: [26, 62], popupAnchor: [0, -56],
-      });
-    }
-
-    function popupHtmlFor(g) {
-      const isOwn  = ownGatheringId && ownGatheringId === g.id;
-      const myRsvp = myRsvpsByGatheringId[g.id];
-      const attending = (g.total_attending && g.total_attending > 0)
-        ? `<div class="stp-pop-attending">${g.total_attending} ${g.total_attending === 1 ? 'person' : 'people'} attending</div>`
-        : '';
-      const msg = g.message ? `<div class="stp-pop-msg">${stpEsc(g.message)}</div>` : '';
-
-      let hostBit = '';
-      if (g.host_display_name && g.host_avatar_url) {
-        hostBit = `<div class="stp-pop-host-row">
-          <img class="stp-pop-avatar" src="${stpEsc(g.host_avatar_url)}" alt="" loading="lazy">
-          <div class="stp-pop-host-stack">
-            <div class="stp-pop-host-label">Hosted by</div>
-            <div class="stp-pop-host-full">${stpEsc(g.host_display_name.split(' ')[0])}</div>
-          </div>
-        </div>`;
-      } else if (g.host_display_name) {
-        hostBit = `<div class="stp-pop-host">Hosted by ${stpEsc(g.host_display_name.split(' ')[0])}</div>`;
-      }
-
-      let badge = '';
-      let cta = '';
-      if (isOwn) {
-        badge = `<div class="stp-pop-badge stp-pop-badge-own">Hosted by you</div>`;
-        cta = `<a class="stp-pop-cta stp-pop-cta-ghost" href="/members/host-gathering.html?year=${YEAR}">Edit your pin →</a>`;
-      } else if (myRsvp) {
-        const n = myRsvp.guest_count;
-        badge = `<div class="stp-pop-badge">You're attending · ${n === 1 ? 'just you' : n + ' people'}</div>`;
-        cta = `<button class="stp-pop-cta" data-stp-action="open-rsvp" data-gid="${stpEsc(g.id)}">Update RSVP</button>`;
-      } else {
-        cta = `<button class="stp-pop-cta" data-stp-action="open-rsvp" data-gid="${stpEsc(g.id)}">I'll be there →</button>`;
-      }
-
-      return `<div class="stp-pop-eyebrow">St Patrick's Day</div>
-        <h3 class="stp-pop-title">${stpEsc(g.venue_name || g.venue_city)}</h3>
-        <div class="stp-pop-city">${stpEsc(g.venue_city)}, ${stpEsc(g.venue_country)}</div>
-        <div class="stp-pop-when">${stpEsc(stpFmtTime(g.starts_local_time))} · 17 March ${YEAR}</div>
-        ${hostBit}${msg}${attending}${badge}${cta}`;
-    }
-
-    function attachPopupHandlers() {
-      const btn = document.querySelector('.mstp-map-canvas .leaflet-popup-content [data-stp-action="open-rsvp"]');
-      if (!btn) return;
-      btn.addEventListener('click', () => {
-        const gid = btn.getAttribute('data-gid');
-        openRsvpCard(gid);
-        networkMap.closePopup();
-      });
-    }
-
-    function openRsvpCard(gatheringId) {
-      const pin = networkPins.find(p => p.gathering.id === gatheringId);
-      if (!pin) return;
-      const g = pin.gathering;
-      activeRsvpGatheringId = gatheringId;
-
-      document.getElementById('mstpRsvpTitle').textContent = 'RSVP — ' + (g.venue_name || g.venue_city);
-      document.getElementById('mstpRsvpPinDisplay').innerHTML = `
-        <div class="pin-venue">${stpEsc(g.venue_name || g.venue_city)}</div>
-        ${g.venue_address ? `<div>${stpEsc(g.venue_address)}</div>` : ''}
-        <div class="pin-meta">${stpEsc(g.venue_city)}, ${stpEsc(g.venue_country)} · ${stpEsc(stpFmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
-        ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${stpEsc(g.host_display_name.split(' ')[0])}</strong></div>` : ''}
-        ${g.message ? `<div class="pin-msg">"${stpEsc(g.message)}"</div>` : ''}
-      `;
-
-      const existing = myRsvpsByGatheringId[gatheringId];
-      const existingBlock = document.getElementById('mstpRsvpExisting');
-      const submitBtn = document.getElementById('mstpRsvpSubmitBtn');
-      const removeBtn = document.getElementById('mstpRsvpRemoveBtn');
-      if (existing) {
-        document.getElementById('mstpRsvpGuests').value = String(existing.guest_count);
-        document.getElementById('mstpRsvpNote').value = existing.note || '';
-        existingBlock.style.display = 'block';
-        document.getElementById('mstpRsvpExistingGuests').textContent = existing.guest_count === 1 ? 'just you' : existing.guest_count + ' people';
-        submitBtn.textContent = 'Update RSVP';
-        removeBtn.style.display = 'inline-block';
-      } else {
-        document.getElementById('mstpRsvpGuests').value = '1';
-        document.getElementById('mstpRsvpNote').value = '';
-        existingBlock.style.display = 'none';
-        submitBtn.textContent = 'Confirm RSVP';
-        removeBtn.style.display = 'none';
-      }
-
-      const card = document.getElementById('mstpRsvpCard');
-      card.style.display = 'block';
-      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    document.getElementById('mstpRsvpCloseBtn').addEventListener('click', () => {
-      document.getElementById('mstpRsvpCard').style.display = 'none';
-      activeRsvpGatheringId = null;
-    });
-
-    document.getElementById('mstpRsvpSubmitBtn').addEventListener('click', async () => {
-      if (!activeRsvpGatheringId) return;
-      const guestCount = parseInt(document.getElementById('mstpRsvpGuests').value, 10) || 1;
-      const note = document.getElementById('mstpRsvpNote').value.trim();
-      const btn = document.getElementById('mstpRsvpSubmitBtn');
-      btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Saving…';
-      try {
-        const sess = await currentSession();
-        const res = await fetch('/api/gathering-rsvp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sess.access_token}` },
-          body: JSON.stringify({ gatheringId: activeRsvpGatheringId, action: 'set', guestCount, note }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'RSVP failed');
-        myRsvpsByGatheringId[activeRsvpGatheringId] = { gathering_id: activeRsvpGatheringId, guest_count: guestCount, note: note || null };
-        const pin = networkPins.find(p => p.gathering.id === activeRsvpGatheringId);
-        if (pin) {
-          pin.gathering.rsvp_count = data.gathering_rsvp_count;
-          pin.gathering.total_attending = data.gathering_total_attending;
-          pin.marker.setPopupContent(popupHtmlFor(pin.gathering));
-        }
-        showToast('RSVP confirmed. The host has been notified by email.', 'ok');
-        document.getElementById('mstpRsvpCard').style.display = 'none';
-        await refreshMyRsvpsList();
-      } catch (e) {
-        showToast(e.message || 'Could not save RSVP — please try again.', 'err');
-      } finally {
-        btn.disabled = false; btn.textContent = orig;
-      }
-    });
-
-    document.getElementById('mstpRsvpRemoveBtn').addEventListener('click', async () => {
-      if (!activeRsvpGatheringId) return;
-      if (!confirm('Remove your RSVP? The host will be notified.')) return;
-      const btn = document.getElementById('mstpRsvpRemoveBtn');
-      btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Removing…';
-      try {
-        const sess = await currentSession();
-        const res = await fetch('/api/gathering-rsvp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sess.access_token}` },
-          body: JSON.stringify({ gatheringId: activeRsvpGatheringId, action: 'remove' }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Remove failed');
-        delete myRsvpsByGatheringId[activeRsvpGatheringId];
-        const pin = networkPins.find(p => p.gathering.id === activeRsvpGatheringId);
-        if (pin) {
-          pin.gathering.rsvp_count = data.gathering_rsvp_count;
-          pin.gathering.total_attending = data.gathering_total_attending;
-          pin.marker.setPopupContent(popupHtmlFor(pin.gathering));
-        }
-        showToast('RSVP removed.', 'ok');
-        document.getElementById('mstpRsvpCard').style.display = 'none';
-        await refreshMyRsvpsList();
-      } catch (e) {
-        showToast(e.message || 'Could not remove RSVP — please try again.', 'err');
-      } finally {
-        btn.disabled = false; btn.textContent = orig;
-      }
-    });
-
-    async function refreshMyRsvpsList() {
-      try {
-        const sess = await currentSession();
-        const res = await fetch('/api/gathering-host-mine?year=' + YEAR, {
-          headers: { Authorization: `Bearer ${sess.access_token}` },
-        });
-        const data = await res.json();
-        if (!res.ok) return;
-        myRsvpsByGatheringId = {};
-        (data.rsvps || []).forEach(r => { myRsvpsByGatheringId[r.gathering_id] = r; });
-        ownGatheringId = data.gathering ? data.gathering.id : null;
-        renderMyRsvpsList(data.rsvps || []);
-      } catch (e) { console.warn('refreshMyRsvpsList failed:', e); }
-    }
-
-    function renderMyRsvpsList(rsvps) {
-      const wrap = document.getElementById('mstpMyRsvps');
-      const list = document.getElementById('mstpMyRsvpsList');
-      if (!rsvps || rsvps.length === 0) {
-        wrap.style.display = 'none';
-        return;
-      }
-      list.innerHTML = rsvps.map(r => {
-        const g = r.gathering;
-        const n = r.guest_count;
-        return `<div class="mstp-rsvp-item">
-          <strong>${stpEsc(g.venue_name || g.venue_city)}</strong>, ${stpEsc(g.venue_city)}
-          <span class="rsvp-count">${n === 1 ? 'just you' : n + ' people'}</span>
-        </div>`;
-      }).join('');
-      wrap.style.display = 'block';
-    }
-
-    // Fetch own pin + RSVPs first so popup state is correct on first render
-    try {
-      const sess = await currentSession();
-      const mineRes = await fetch('/api/gathering-host-mine?year=' + YEAR, {
-        headers: { Authorization: `Bearer ${sess.access_token}` },
-      });
-      const mineData = await mineRes.json();
-      if (mineRes.ok) {
-        myRsvpsByGatheringId = {};
-        (mineData.rsvps || []).forEach(r => { myRsvpsByGatheringId[r.gathering_id] = r; });
-        ownGatheringId = mineData.gathering ? mineData.gathering.id : null;
-        renderMyRsvpsList(mineData.rsvps || []);
-      }
-    } catch (e) { console.warn('fetch own-pin failed (non-fatal):', e); }
-
-    // Fetch the full gathering list (member bearer → venue specifics returned)
-    try {
-      const sess = await currentSession();
-      const listRes = await fetch('/api/gathering-list?year=' + YEAR, {
-        headers: { 'Accept': 'application/json', Authorization: `Bearer ${sess.access_token}` },
-      });
-      const listData = await listRes.json();
-      if (!listRes.ok) throw new Error(listData.error || ('HTTP ' + listRes.status));
-      const gatherings = listData.gatherings || [];
-      const stats = listData.stats || { gatherings: 0, countries: 0, cities: 0 };
-
-      document.getElementById('mstpStats').innerHTML = stats.gatherings > 0
-        ? `<strong>${stats.gatherings}</strong> ${stats.gatherings === 1 ? 'gathering' : 'gatherings'} across <strong>${stats.countries}</strong> ${stats.countries === 1 ? 'country' : 'countries'} for 17 March ${YEAR}. Click a pin to RSVP.`
-        : `No pins yet for 17 March ${YEAR}.`;
-
-      networkMap = L.map('mstpMap', {
-        center: [44, -25], zoom: 2,
-        scrollWheelZoom: false, worldCopyJump: true,
-      });
-      networkMap.attributionControl.setPrefix('');
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(networkMap);
-
-      if (gatherings.length === 0) {
-        document.getElementById('mstpEmpty').style.display = 'block';
-        return;
-      }
-
-      const bounds = [];
-      gatherings.forEach(g => {
-        const marker = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(networkMap);
-        marker.bindPopup(popupHtmlFor(g), {
-          maxWidth: 320,
-          autoClose: false,
-          closeOnClick: false,
-          autoPan: true,
-          autoPanPaddingTopLeft: L.point(20, 80),
-          autoPanPaddingBottomRight: L.point(20, 20),
-        });
-        marker.on('popupopen', () => attachPopupHandlers());
-        networkPins.push({ gathering: g, marker });
-        bounds.push([g.venue_lat, g.venue_lng]);
-      });
-      if (bounds.length === 1) networkMap.setView(bounds[0], 6);
-      else networkMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
-
-      // Auto-open popups while map is sparse (Year One). Same delay
-      // pattern as the other maps so auto-pan works against a settled
-      // viewport.
-      // Auto-open only when there's a single pin (see public map for
-      // rationale — popup overlap with 2+ nearby pins).
-      if (networkPins.length === 1) {
-        networkMap.once('moveend', () => {
-          networkPins.forEach(p => p.marker.openPopup());
-        });
-        setTimeout(() => {
-          const first = networkPins[0];
-          if (first && (!first.marker.getPopup() || !first.marker.getPopup().isOpen())) {
-            networkPins.forEach(p => p.marker.openPopup());
-          }
-        }, 400);
-      }
-    } catch (e) {
-      console.error('gathering-list fetch failed:', e);
-      document.getElementById('mstpStats').textContent = 'Could not load the map just now. Please refresh shortly.';
-    }
-  }
 
   function eventCardHtml(member) {
     if (Date.now() > new Date(EVENT_END_ISO).getTime()) return '';
@@ -1808,6 +1349,8 @@
            accent, gift icon, and 'A gift in their name' eyebrow)
            was redundant once the unified card was introduced. -->
 
+      ${stPatricksFullSectionHtml(member)}
+
       <section class="mactions">
         <a class="maction live" style="text-decoration:none;color:inherit" href="/members/library.html">
           <span class="maction-icon">
@@ -2180,8 +1723,6 @@
         <p class="mpriv-note" style="margin-top:14px"><button type="button" class="mupgrade-cta" data-target-tier="life" style="background:transparent;border:none;padding:0;cursor:pointer;color:var(--gold-deep);text-decoration:underline;font-style:normal;font-weight:500;font-family:inherit;font-size:inherit">Request Life Founder →</button></p>
       </section>
       ` : ''}
-
-      ${stPatricksFullSectionHtml(member)}
     `;
     loading.style.display = 'none';
     dashboard.style.display = 'block';
@@ -2203,10 +1744,6 @@
 
     // ── Upcoming event RSVP card (auto-hidden after EVENT_END_ISO) ─────────
     wireUpEventCard(member);
-
-    // ── St Patrick's Day embedded map + RSVP (fire-and-forget; safely
-    //    no-ops if the section markup isn't in the DOM for some reason) ──
-    wireStPatricksMap(member).catch(e => console.warn('stp map wire failed:', e));
 
     // ── Family edit modal (only present if Family tier) ────────────────────
     const familyEditBtn = document.getElementById('mfamEditBtn');
