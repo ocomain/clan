@@ -705,30 +705,31 @@ function toggleMenu(){
 </div>
 
 <!-- ST PATRICK'S DAY MAP STRIP — minimal seasonal banner pointing at the
-     gathering map. Less text, more visual: small map illustration with
-     avatar pins instead of paragraph copy. Nav is maxed; this strip
-     surfaces the map without spending a nav slot. Year-round; can be
-     made conditional on date proximity later. -->
+     gathering map. The whole strip is a single anchor so any click —
+     on the text, on the preview image, or on the CTA button — goes
+     through to the map page. -->
 <style>
   .stp-strip{background:linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 100%);padding:42px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:2px solid var(--gold)}
+  /* Anchor wraps the whole row; reset link colour/underline so
+     children inherit the design palette. */
+  .stp-strip-link{display:block;text-decoration:none;color:inherit}
   .stp-strip-inner{max-width:920px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
   .stp-strip-text{flex:1;min-width:240px}
   .stp-strip-eyebrow{font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;opacity:.92}
-  .stp-strip-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.6vw,26px);font-weight:400;color:var(--gold-pale);line-height:1.25;margin:0 0 6px;font-style:italic}
+  .stp-strip-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.6vw,26px);font-weight:400;color:var(--gold-pale);line-height:1.25;margin:0 0 6px;font-style:italic;transition:color .15s}
   .stp-strip-sub{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.7);line-height:1.55;margin:0}
-  /* Visual map preview — stylised landmass with avatar pins. Decorative
-     only (clicks the whole card via the CTA). Width-locked so it
-     doesn't compete with the text column. */
-  .stp-strip-preview{flex-shrink:0;width:240px;height:140px;position:relative;background:linear-gradient(180deg, #1a2a3d 0%, #14202e 100%);border:1px solid rgba(184,151,90,.3);border-radius:2px;overflow:hidden}
-  .stp-strip-preview svg{position:absolute;inset:0;width:100%;height:100%}
-  .stp-strip-pin{position:absolute;width:36px;height:36px;transform:translate(-50%,-100%)}
-  .stp-strip-pin-img{width:32px;height:32px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;background:var(--gold-pale);box-shadow:0 2px 6px rgba(0,0,0,.4)}
-  .stp-strip-pin-tail{position:absolute;left:50%;top:30px;width:0;height:0;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid var(--gold)}
-  .stp-strip-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;text-decoration:none;flex-shrink:0;border-radius:1px;transition:background .15s}
-  .stp-strip-cta:hover{background:var(--gold-pale)}
+  /* Real map screenshot as the preview. Width-locked so it doesn't
+     compete with the text column; subtle hover lift telegraphs that
+     the whole strip is interactive. */
+  .stp-strip-preview{flex-shrink:0;width:240px;height:192px;border:1px solid rgba(184,151,90,.4);border-radius:2px;overflow:hidden;transition:border-color .2s,transform .2s;background:#a8d4e8;display:block}
+  .stp-strip-preview img{display:block;width:100%;height:100%;object-fit:cover}
+  .stp-strip-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;flex-shrink:0;border-radius:1px;transition:background .15s}
+  .stp-strip-link:hover .stp-strip-cta{background:var(--gold-pale)}
+  .stp-strip-link:hover .stp-strip-preview{border-color:var(--gold);transform:translateY(-2px)}
+  .stp-strip-link:hover .stp-strip-title{color:#FFFFFF}
   @media (max-width:720px){
     .stp-strip-inner{gap:24px}
-    .stp-strip-preview{width:100%;max-width:320px;order:2}
+    .stp-strip-preview{width:100%;max-width:320px;height:auto;aspect-ratio:5/4;order:2}
     .stp-strip-text{order:1}
     .stp-strip-cta{order:3}
   }
@@ -739,37 +740,25 @@ function toggleMenu(){
   }
 </style>
 <section class="stp-strip">
-  <div class="stp-strip-inner">
-    <div class="stp-strip-text">
-      <div class="stp-strip-eyebrow">St Patrick's Day · 17 March</div>
-      <h2 class="stp-strip-title">See where the kindred are gathering.</h2>
-      <p class="stp-strip-sub">A live map of Ó Comáin pubs.</p>
-    </div>
-    <!-- Decorative map preview — stylised British Isles outline with
-         two avatar pins (the current real-pin hosts) to telegraph what
-         the actual map looks like. SVG is hand-traced rough shape; it
-         does not need to be cartographically accurate, it's a hint
-         not a map. -->
-    <div class="stp-strip-preview" aria-hidden="true">
-      <svg viewBox="0 0 240 140" preserveAspectRatio="none">
-        <!-- Ireland (left) -->
-        <path d="M 30,55 Q 28,42 38,38 Q 50,34 62,42 Q 70,52 68,68 Q 64,82 54,90 Q 42,92 34,82 Q 28,70 30,55 Z" fill="rgba(184,151,90,0.14)" stroke="rgba(184,151,90,0.35)" stroke-width="0.8"/>
-        <!-- Great Britain (right) -->
-        <path d="M 95,32 Q 105,22 118,28 Q 128,32 132,46 Q 134,58 130,68 Q 138,72 142,82 Q 146,95 138,108 Q 128,118 116,114 Q 108,108 110,98 Q 104,92 100,82 Q 92,72 94,58 Q 88,46 95,32 Z" fill="rgba(184,151,90,0.14)" stroke="rgba(184,151,90,0.35)" stroke-width="0.8"/>
-      </svg>
-      <!-- Linda pin (Perth, Scotland — upper area of GB) -->
-      <div class="stp-strip-pin" style="left:48%;top:38%">
-        <img class="stp-strip-pin-img" src="/linda_avatar.jpg" alt="">
-        <div class="stp-strip-pin-tail"></div>
+  <a href="/st-patricks-day.html" class="stp-strip-link">
+    <div class="stp-strip-inner">
+      <div class="stp-strip-text">
+        <div class="stp-strip-eyebrow">St Patrick's Day · 17 March</div>
+        <h2 class="stp-strip-title">See where the kindred are gathering.</h2>
+        <p class="stp-strip-sub">A live map of Ó Comáin pubs.</p>
       </div>
-      <!-- Antóin pin (London, England — lower area of GB) -->
-      <div class="stp-strip-pin" style="left:58%;top:78%">
-        <img class="stp-strip-pin-img" src="/antoin_avatar.png" alt="">
-        <div class="stp-strip-pin-tail"></div>
+      <!-- Preview is a real screenshot of the live map showing Linda's
+           (Perth) + Antóin's (London) avatar pins — instantly readable
+           as "this is what you'll get when you click", which the
+           hand-traced SVG version was not. Decorative for screen-reader
+           purposes since the anchor + title already carry the link
+           context; alt left empty. -->
+      <div class="stp-strip-preview">
+        <img src="/stp_homepage_preview.jpg" alt="" loading="lazy">
       </div>
+      <span class="stp-strip-cta">View live map →</span>
     </div>
-    <a href="/st-patricks-day.html" class="stp-strip-cta">View live map →</a>
-  </div>
+  </a>
 </section>
 
 <!-- VIDEO SOCIAL PROOF — high on page, immediately after stats -->
