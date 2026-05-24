@@ -97,14 +97,62 @@
       .myth-hero-title-flourish-line{max-width:80px}
     }
 
-    /* OPENING FRAME — sets the editorial position. Lives just below
-       the hero. Cream-tinted card with gold left-rule to read as a
-       prologue, not body text. */
-    .myth-frame{max-width:680px;margin:0 auto;padding:60px 24px 20px}
-    .myth-frame-card{background:rgba(184,151,90,.06);border-left:3px solid var(--gold);padding:36px 38px;border-radius:1px}
-    .myth-frame-card p{font-family:'EB Garamond',serif;font-size:17.5px;line-height:1.85;color:var(--ink-soft);margin:0 0 16px;font-style:italic}
-    .myth-frame-card p:last-child{margin-bottom:0}
-    .myth-frame-card strong{color:var(--ink);font-style:normal;font-weight:500}
+    /* OPENING FRAME — the editorial position card. Manuscript-style
+       treatment: vellum-textured interior matching the hero, faint
+       gold corner ornaments framing the card as a 'page within a
+       page', illuminated drop-cap on the opening word, and slightly
+       more breathing room between paragraphs so each beat lands. */
+    .myth-frame{max-width:720px;margin:-40px auto 0;padding:0 24px 20px;position:relative;z-index:5}
+    .myth-frame-card{position:relative;background:#FBF6E8;
+      background-image:
+        radial-gradient(ellipse at 25% 20%, rgba(184,151,90,.06), transparent 50%),
+        radial-gradient(ellipse at 75% 80%, rgba(140,30,30,.04), transparent 60%);
+      border:1px solid rgba(184,151,90,.4);
+      box-shadow:0 12px 48px rgba(12,26,12,.12), 0 2px 8px rgba(12,26,12,.06);
+      padding:54px 60px 48px;border-radius:2px}
+    /* Vellum noise overlay — fractalNoise data-URI, same technique as
+       the hero. Sits inside the card at low opacity for the aged-
+       paper feel. */
+    .myth-frame-card::before{content:'';position:absolute;inset:0;
+      background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6  0 0 0 0 0.48  0 0 0 0 0.25  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity:.5;mix-blend-mode:multiply;pointer-events:none;border-radius:2px}
+    /* Corner ornaments — small gold flourishes at each corner of the
+       card frame the prose like a manuscript page. Pure CSS, no SVG
+       required. */
+    .myth-frame-corner{position:absolute;width:22px;height:22px;border:1px solid var(--gold);opacity:.6;pointer-events:none}
+    .myth-frame-corner-tl{top:14px;left:14px;border-right:none;border-bottom:none}
+    .myth-frame-corner-tr{top:14px;right:14px;border-left:none;border-bottom:none}
+    .myth-frame-corner-bl{bottom:14px;left:14px;border-right:none;border-top:none}
+    .myth-frame-corner-br{bottom:14px;right:14px;border-left:none;border-top:none}
+    /* Body paragraphs — italic serif, slightly heavier line-height
+       than before to create the unhurried opening register. */
+    .myth-frame-body{position:relative;z-index:2}
+    .myth-frame-body p{font-family:'EB Garamond',serif;font-size:18.5px;line-height:1.95;color:var(--ink);margin:0 0 22px;font-style:italic}
+    .myth-frame-body p:last-child{margin-bottom:0}
+    .myth-frame-body strong{color:var(--burgundy);font-style:normal;font-weight:500}
+    /* Illuminated drop-cap — the opening 'W' renders large, gold,
+       slightly raised. Manuscript-style without going Disney-medieval. */
+    .myth-frame-body > p:first-child::first-letter{
+      font-family:'EB Garamond',serif;font-style:normal;font-weight:400;
+      font-size:78px;line-height:0.85;float:left;
+      margin:8px 14px -4px 0;color:var(--gold-deep);
+      background:linear-gradient(180deg, #D4B483 0%, #B8975A 60%, #8B6F32 100%);
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;color:transparent;
+      text-shadow:0 1px 0 rgba(0,0,0,.04);
+    }
+    /* Soft heading mark above the first paragraph — a small gold
+       eyebrow line + italic word, names the frame as 'a prologue'
+       so the reader knows what they're reading before they start. */
+    .myth-frame-prologue{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:28px;position:relative;z-index:2}
+    .myth-frame-prologue-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,151,90,.55) 50%,transparent);max-width:80px}
+    .myth-frame-prologue-mark{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;letter-spacing:.04em;color:var(--gold-deep);text-transform:lowercase}
+    @media (max-width:560px){
+      .myth-frame{margin-top:-20px}
+      .myth-frame-card{padding:44px 30px 40px}
+      .myth-frame-body p{font-size:17px;line-height:1.85}
+      .myth-frame-body > p:first-child::first-letter{font-size:62px;margin:6px 12px -2px 0}
+    }
 
     /* SECTION CHROME — used for every story section. Generous
        breathing room; serif body; gold dropcap on first letter; pull
@@ -171,7 +219,6 @@
        needed on the page. */
 
     @media (max-width:560px){
-      .myth-frame-card{padding:28px 24px}
       .myth-section-body > p:first-of-type::first-letter{font-size:52px;margin:6px 10px 0 0}
     }
   </style>
@@ -275,12 +322,28 @@ function toggleMenu(){
   </div>
 </section>
 
-<!-- OPENING FRAME — establishes the page's editorial position. -->
+<!-- OPENING FRAME — establishes the page's editorial position before
+     the first body section. Vellum-textured card with gold corner
+     ornaments, illuminated drop-cap on the opening word, and slight
+     negative top-margin so it lifts into the hero's gold border. -->
 <section class="myth-frame">
   <div class="myth-frame-card">
-    <p>What follows is not a history textbook. It is the story Ireland tells about herself — the way every people remembers itself before the historians arrive.</p>
-    <p>It begins with Adam and Eve. It passes through scholar-kings on the Black Sea steppe, through a sojourn in Egypt at the time of Moses, through a tower in Galicia whose stones still stand. It arrives in Ireland on a fleet of ships from Spain. And it tells of the people who were here <em>before</em> the Gaels — a people who became, in the end, the fairy folk you grew up hearing about.</p>
-    <p>This story was set down in the eleventh century, in a book called the <em>Lebor Gabála Érenn</em> — the Book of the Taking of Ireland. The monks who wrote it down were preserving what had been carried in memory for centuries before them. <strong>Some of it is myth. Some of it shades into history. The line between the two has always been the most interesting place to stand.</strong></p>
+    <span class="myth-frame-corner myth-frame-corner-tl" aria-hidden="true"></span>
+    <span class="myth-frame-corner myth-frame-corner-tr" aria-hidden="true"></span>
+    <span class="myth-frame-corner myth-frame-corner-bl" aria-hidden="true"></span>
+    <span class="myth-frame-corner myth-frame-corner-br" aria-hidden="true"></span>
+
+    <div class="myth-frame-prologue" aria-hidden="true">
+      <span class="myth-frame-prologue-line"></span>
+      <span class="myth-frame-prologue-mark">a prologue</span>
+      <span class="myth-frame-prologue-line"></span>
+    </div>
+
+    <div class="myth-frame-body">
+      <p>What follows is not a history textbook. It is the story Ireland tells about herself — the way every people remembers itself before the historians arrive.</p>
+      <p>It begins with Adam and Eve. It passes through scholar-kings on the Black Sea steppe, through a sojourn in Egypt at the time of Moses, through a tower in Galicia whose stones still stand. It arrives in Ireland on a fleet of ships from Spain. And it tells of the people who were here <em>before</em> the Gaels — a people who became, in the end, the fairy folk you grew up hearing about.</p>
+      <p>This story was set down in the eleventh century, in a book called the <em>Lebor Gabála Érenn</em> — the Book of the Taking of Ireland. The monks who wrote it down were preserving what had been carried in memory for centuries before them. <strong>Some of it is myth. Some of it shades into history. The line between the two has always been the most interesting place to stand.</strong></p>
+    </div>
   </div>
 </section>
 
