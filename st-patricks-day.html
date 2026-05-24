@@ -652,6 +652,18 @@
           autoPanPaddingTopLeft: L.point(20, 150),
           autoPanPaddingBottomRight: L.point(20, 30),
         });
+        // Clicking a pin directly on the map zooms in to at least
+        // country-level (zoom 6) before opening the popup — same
+        // behaviour as clicking a sidebar entry. Without this, a
+        // pin click on the wide diaspora-overview map opens a popup
+        // at zoom 3 where neighbouring pins are still visible behind
+        // the popup, which reads as messy. By default Leaflet just
+        // opens the popup at the current zoom; we override here.
+        (function(marker, lat, lng){
+          marker.on('click', function(){
+            map.setView([lat, lng], Math.max(map.getZoom(), 6));
+          });
+        })(m, g.venue_lat, g.venue_lng);
         markers.push(m);
         bounds.push([g.venue_lat, g.venue_lng]);
       });
