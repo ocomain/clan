@@ -299,7 +299,7 @@ const VOICES = {
     replyTo: 'antoin@ocomain.org',
     eyebrow: 'A note from the Tánaiste',
     signature: () => signatureBlock({
-      avatar: 'antoin_tanist.png',
+      avatar: 'antoin_commane_bubble.jpg',
       name: 'Antóin Commane, Cara of Ó Comáin',
       role: 'Tánaiste',
       irish: null,
