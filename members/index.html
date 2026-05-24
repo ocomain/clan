@@ -725,9 +725,11 @@
         return '<span class="mbadge sworn" title="You have taken the Oath of Standing — voice and vote at the AGM.">Standing Member</span>';
       }
       if (isStanding) {
-        return '<a class="mbadge standing" href="/members/oath.html" title="A year and a day has passed — take the Oath of Standing.">Standing Member</a>';
+        return '<a class="mbadge standing" href="/members/oath.html" title="A year and a day has passed — take the Oath of Standing.">Take the Oath →</a>';
       }
-      return '<a class="mbadge observer" href="/members/oath.html" title="Observer year — Standing Member at a year and a day on the Register.">Observer</a>';
+      const daysRemaining = Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000));
+      const daysLabel = daysRemaining === 1 ? '1 day' : `${daysRemaining} days`;
+      return `<a class="mbadge observer" href="/members/oath.html" title="Observer year — Standing Member at a year and a day on the Register.">Observer · ${daysLabel} →</a>`;
     })();
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
