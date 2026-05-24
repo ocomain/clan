@@ -238,7 +238,7 @@ function antoinSignatureHtml() {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/antoin_tanist.png" width="68" height="68" alt="Antoin Commane, Tánaiste" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+      <img src="${SITE}/antoin_commane_bubble.jpg" width="68" height="68" alt="Antoin Commane, Tánaiste" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Antóin Commane, Cara of Ó Comáin</strong></p>
