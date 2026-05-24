@@ -648,7 +648,14 @@
         // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
         map.setView(bounds[0], 6);
       } else {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+        // Expand the bounds by 25% before fitting so pins don't land
+        // right at the viewport edge — useful for transatlantic spreads
+        // (e.g. Austin + London + Perth), where the natural fit puts
+        // the easternmost and westernmost pins flush against the
+        // borders and the map feels cramped. The .pad() expansion is
+        // applied in addition to the pixel-level padding below.
+        var paddedBounds = L.latLngBounds(bounds).pad(0.25);
+        map.fitBounds(paddedBounds, { padding: [40, 40], maxZoom: 8 });
       }
 
       // Stash for sidebar wiring (defined below renderSidebar)
