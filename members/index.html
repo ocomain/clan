@@ -140,6 +140,18 @@
     .mbadge.active{background:rgba(160,180,100,.18);color:#556B1F;border:1px solid rgba(160,180,100,.4)}
     .mbadge.lapsed{background:rgba(210,150,80,.18);color:#8F5E1B;border:1px solid rgba(210,150,80,.4)}
     .mbadge.cancelled{background:rgba(180,180,180,.18);color:#666;border:1px solid rgba(180,180,180,.4)}
+    /* Standing Member badges — three states matching the Oath page +
+       dashboard tile. 'sworn' is the most decorated (burgundy + small
+       heraldic mark), since it represents the completed rite; 'standing'
+       and 'observer' are subdued so the row doesn't compete with the
+       'active' status badge. Anchor variants for the two states where
+       the badge is also a link to /members/oath.html so members can
+       discover the page without scrolling to the action tile. */
+    .mbadge.sworn{background:rgba(140,30,30,.10);color:var(--burgundy);border:1px solid rgba(140,30,30,.35);text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+    .mbadge.sworn::before{content:'✦';font-size:11px;letter-spacing:0;font-weight:400}
+    .mbadge.standing{background:rgba(184,151,90,.14);color:var(--gold-deep);border:1px solid rgba(184,151,90,.4);text-decoration:none}
+    .mbadge.observer{background:rgba(120,120,120,.10);color:#5A5A5A;border:1px solid rgba(120,120,120,.28);text-decoration:none}
+    a.mbadge.standing:hover,a.mbadge.observer:hover{background:rgba(184,151,90,.22);color:var(--ink);border-color:var(--gold)}
     .mstatus-rows{display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;margin-top:24px}
     @media (max-width:520px){.mstatus-rows{grid-template-columns:1fr}}
     .mstatus-row-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px}
@@ -690,42 +702,32 @@
         Founding Member by warrant of the Chief
       </div>
     ` : '';
-    // Standing Member / Observer marker. Shows a quiet line under the
-    // founder band indicating whether the member is in their Observer
-    // year or has crossed the year-and-a-day threshold to Standing
-    // Member. If they've also sworn the Oath, the line is upgraded to
-    // a small heraldic checkmark + 'Standing Member, sworn on [date]'.
+    // Standing Member badge — sits alongside the active/lapsed
+    // status pill in the mstatus-head row. Three states:
+    //   - Observer (Observer year, < +366 days): grey pill, links to
+    //     /members/oath.html so the locked-state page can explain.
+    //   - Standing (>= +366, not yet sworn): gold pill, links to
+    //     oath page (now in 'ready to swear' state) — the link is
+    //     itself the call to action without needing extra text.
+    //   - Sworn (oath_sworn_at set): burgundy pill with heraldic
+    //     mark; no longer a link (the rite is done).
     // Same source-of-truth as the Oath page (member.created_at +
     // member.oath_sworn_at).
-    const standingMarker = (() => {
+    const standingBadge = (() => {
       const YEAR_AND_DAY_MS = 366 * 24 * 60 * 60 * 1000;
       if (!member.created_at) return '';
       const createdAt  = new Date(member.created_at).getTime();
       const eligibleAt = createdAt + YEAR_AND_DAY_MS;
       const now = Date.now();
       const hasSworn   = !!member.oath_sworn_at;
-      const isStanding = now >= eligibleAt; // Standing Member by time, even if oath not sworn
+      const isStanding = now >= eligibleAt;
       if (hasSworn) {
-        const swornDate = new Date(member.oath_sworn_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        return `
-          <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--burgundy);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
-            ✦ Standing Member · Oath sworn on ${swornDate}
-          </div>
-        `;
+        return '<span class="mbadge sworn" title="You have taken the Oath of Standing — voice and vote at the AGM.">Standing Member</span>';
       }
       if (isStanding) {
-        return `
-          <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
-            Standing Member of Clan Ó Comáin · <a href="/members/oath.html" style="color:var(--burgundy);text-decoration:underline;text-underline-offset:2px">take the Oath of Standing →</a>
-          </div>
-        `;
+        return '<a class="mbadge standing" href="/members/oath.html" title="A year and a day has passed — take the Oath of Standing.">Standing Member</a>';
       }
-      const daysRemaining = Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000));
-      return `
-        <div style="text-align:center;font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:-6px 0 18px;letter-spacing:0.005em" role="note">
-          Observer · Standing Member in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}
-        </div>
-      `;
+      return '<a class="mbadge observer" href="/members/oath.html" title="Observer year — Standing Member at a year and a day on the Register.">Observer</a>';
     })();
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
@@ -769,11 +771,13 @@
             <div class="mstatus-head-label">Your membership</div>
             <div class="mstatus-head-tier">${escHtml(tierLabel)}</div>
           </div>
-          ${statusBadge}
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            ${statusBadge}
+            ${standingBadge}
+          </div>
         </div>
         ${founderBand}
         ${heraldNote}
-        ${standingMarker}
         <div class="mstatus-rows">
           <div>
             <div class="mstatus-row-label">Name on the Register</div>
