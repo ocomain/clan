@@ -25,6 +25,10 @@
 //   07-title-award-onoir.html            — Onóir raising
 //   08-abandoned-reminder.html           — checkout abandoned, place
 //                                          held (lib/checkout-email.js)
+//   09-gift-renewal-reminder.html        — T-30 reminder to gift
+//                                          recipients before their
+//                                          one-year gift membership
+//                                          lapses (daily-expiry-sweep.js)
 
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -54,6 +58,14 @@ const {
   buildSponsorLetterHtml,
   buildTitleAwardLetterHtml,
 } = require(path.join(REPO_ROOT, 'netlify/functions/lib/sponsor-email.js'));
+
+// Gift-renewal reminder lives in the daily-expiry-sweep function
+// (not in lib/), because it's the only email that function sends. The
+// pure HTML builder is exported alongside the Netlify handler so the
+// preview generator can render it without Resend side effects.
+const {
+  buildGiftRenewalReminderHtml,
+} = require(path.join(REPO_ROOT, 'netlify/functions/daily-expiry-sweep.js'));
 
 const { SPONSOR_TITLES } = require(path.join(REPO_ROOT, 'netlify/functions/lib/sponsor-service.js'));
 const TITLES = Object.fromEntries((SPONSOR_TITLES || []).map(t => [t.slug, t]));
@@ -163,6 +175,20 @@ const VARIANTS = [
     builder: () => buildAbandonedReminderHtml({
       firstName: 'Antoin',
       tierName: 'Guardian of the Clan',
+    }),
+  },
+  // T-30 reminder sent to gift recipients before their one-year gift
+  // membership lapses. Lives in daily-expiry-sweep.js (not lib/).
+  // Sample data: 30 days from today, gift from a friend, Clan Member
+  // tier — typical entry-level gift scenario.
+  {
+    file: '09-gift-renewal-reminder.html',
+    builder: () => buildGiftRenewalReminderHtml({
+      recipientName: 'Antoin Commane',
+      recipientTitle: null,
+      buyerName: 'Maeve O\'Connor',
+      tierLabel: 'Clan Member',
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     }),
   },
 ];

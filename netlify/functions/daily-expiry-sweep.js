@@ -160,12 +160,12 @@ exports.handler = async () => {
 // Framing: "your year is ending", "the door remains open", offer to
 // continue on their own terms. Mentions the original giver by name to
 // anchor the emotional connection.
+//
+// Split into a pure HTML builder + a thin sender so the preview gallery
+// can render the same template without hitting Resend or having a
+// RESEND_API_KEY in the environment.
 // ──────────────────────────────────────────────────────────────────────────
-async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipientTitle, buyerName, tierLabel, expiresAt }) {
-  if (!RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not configured — cannot send renewal reminder');
-    return;
-  }
+function buildGiftRenewalReminderHtml({ recipientName, recipientTitle, buyerName, tierLabel, expiresAt }) {
   const firstName = recipientName ? recipientName.split(' ')[0] : 'friend';
   // Title-aware greeting: 'Dia dhuit, Cara James' if a sponsorship
   // title is held, 'Dia dhuit, James' otherwise. Mirrors the
@@ -180,7 +180,7 @@ async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipien
     ? new Date(expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     : 'next month';
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"></head>
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
@@ -235,6 +235,14 @@ async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipien
 </div>
 </body>
 </html>`;
+}
+
+async function sendGiftRenewalReminder({ recipientEmail, recipientName, recipientTitle, buyerName, tierLabel, expiresAt }) {
+  if (!RESEND_API_KEY) {
+    console.warn('RESEND_API_KEY not configured — cannot send renewal reminder');
+    return;
+  }
+  const html = buildGiftRenewalReminderHtml({ recipientName, recipientTitle, buyerName, tierLabel, expiresAt });
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -261,3 +269,8 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+// Exported for the preview generator (scripts/preview-transactional-emails.mjs).
+// Coexists with the Netlify-function default export of `handler` above;
+// preview scripts pull just the pure HTML builder, no Resend side effects.
+module.exports.buildGiftRenewalReminderHtml = buildGiftRenewalReminderHtml;
