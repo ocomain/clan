@@ -161,21 +161,21 @@
     .lf-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(0,0,0,.45);background-color:#1a2a1a}
     .lf-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
     .lf-avatar-pin:hover .lf-avatar-pin-circle{border-color:#F5ECD8;transition:border-color .15s}
-    .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:220px;max-width:300px}
-    .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:6px;opacity:.85}
-    .lf-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#F5ECD8;margin:0 0 5px;font-weight:500}
-    .lf-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.75);font-style:italic;margin-bottom:11px}
-    .lf-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#D4B483;margin-bottom:11px}
-    .lf-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.88);margin-bottom:11px}
+    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:440px;overflow-y:auto}
+    .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:5px;opacity:.85}
+    .lf-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#F5ECD8;margin:0 0 4px;font-weight:500}
+    .lf-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.75);font-style:italic;margin-bottom:9px}
+    .lf-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#D4B483;margin-bottom:9px}
+    .lf-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.88);margin-bottom:9px}
     .lf-pop-host-name{color:#F5ECD8;font-style:italic}
-    .lf-pop-host-row{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:9px 0;border-top:1px solid rgba(184,151,90,.18);border-bottom:1px solid rgba(184,151,90,.18)}
-    .lf-pop-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1.5px solid #B8975A;flex-shrink:0;background:#1a2a1a}
+    .lf-pop-host-row{display:flex;align-items:center;gap:11px;margin-bottom:10px;padding:7px 0;border-top:1px solid rgba(184,151,90,.18);border-bottom:1px solid rgba(184,151,90,.18)}
+    .lf-pop-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid #B8975A;flex-shrink:0;background:#1a2a1a}
     .lf-pop-host-stack{display:flex;flex-direction:column;line-height:1.2;min-width:0}
     .lf-pop-host-label{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;opacity:.85;margin-bottom:3px}
     .lf-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#F5ECD8;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .lf-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.78);font-style:italic;margin-bottom:13px;padding-left:9px;border-left:2px solid rgba(184,151,90,.4)}
-    .lf-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:11px}
-    .lf-pop-link{display:inline-block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-top:1px solid rgba(184,151,90,.25);padding-top:11px;margin-top:4px}
+    .lf-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.78);font-style:italic;margin-bottom:10px;padding-left:9px;border-left:2px solid rgba(184,151,90,.4)}
+    .lf-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:9px}
+    .lf-pop-link{display:inline-block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-top:1px solid rgba(184,151,90,.25);padding-top:9px;margin-top:4px}
     .lf-pop-link:hover{color:#F5ECD8}
     .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;margin-top:8px;padding-top:6px}
     .lf-pop-link-2:hover{color:#B8975A}
@@ -638,8 +638,14 @@
           autoClose: true,
           closeOnClick: true,
           autoPan: true,
-          autoPanPaddingTopLeft: L.point(20, 80),
-          autoPanPaddingBottomRight: L.point(20, 20),
+          // Generous top padding (120px) so the auto-pan lands the
+          // popup with the title comfortably visible — the popup opens
+          // upward from the marker by default, so we need real
+          // breathing room above. The max-height + overflow on
+          // .leaflet-popup-content is a belt-and-braces fallback for
+          // popups that still wouldn't fit.
+          autoPanPaddingTopLeft: L.point(20, 120),
+          autoPanPaddingBottomRight: L.point(20, 30),
         });
         markers.push(m);
         bounds.push([g.venue_lat, g.venue_lng]);
@@ -648,13 +654,14 @@
         // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
         map.setView(bounds[0], 6);
       } else {
-        // Expand the bounds by 25% before fitting so pins don't land
-        // right at the viewport edge — useful for transatlantic spreads
-        // (e.g. Austin + London + Perth), where the natural fit puts
-        // the easternmost and westernmost pins flush against the
-        // borders and the map feels cramped. The .pad() expansion is
-        // applied in addition to the pixel-level padding below.
-        var paddedBounds = L.latLngBounds(bounds).pad(0.25);
+        // Expand the bounds by 50% before fitting so pins sit
+        // comfortably INSIDE the frame, not flush against the viewport
+        // edges. Transatlantic spreads (e.g. Austin + London + Perth)
+        // otherwise land with the easternmost pin barely visible at
+        // the right edge — the map reads as cropped rather than wide.
+        // The .pad() expansion is applied in addition to the
+        // pixel-level padding below.
+        var paddedBounds = L.latLngBounds(bounds).pad(0.5);
         map.fitBounds(paddedBounds, { padding: [40, 40], maxZoom: 8 });
       }
 
