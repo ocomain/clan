@@ -161,7 +161,7 @@
     .lf-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(0,0,0,.45);background-color:#1a2a1a}
     .lf-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
     .lf-avatar-pin:hover .lf-avatar-pin-circle{border-color:#F5ECD8;transition:border-color .15s}
-    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:440px;overflow-y:auto}
+    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:360px;overflow-y:auto}
     .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:5px;opacity:.85}
     .lf-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#F5ECD8;margin:0 0 4px;font-weight:500}
     .lf-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.75);font-style:italic;margin-bottom:9px}
@@ -175,11 +175,16 @@
     .lf-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#F5ECD8;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .lf-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.78);font-style:italic;margin-bottom:10px;padding-left:9px;border-left:2px solid rgba(184,151,90,.4)}
     .lf-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:9px}
-    .lf-pop-link{display:inline-block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-top:1px solid rgba(184,151,90,.25);padding-top:9px;margin-top:4px}
+    /* Action area — primary "Join" link sits flush against a divider,
+       secondary "Sign in" link directly under it with no extra border.
+       Compact stack keeps the popup short enough that the title stays
+       on screen when the popup opens near a map edge. */
+    .lf-pop-actions{margin-top:6px;padding-top:8px;border-top:1px solid rgba(184,151,90,.25)}
+    .lf-pop-link{display:block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;margin-bottom:5px}
     .lf-pop-link:hover{color:#F5ECD8}
-    .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;margin-top:8px;padding-top:6px}
+    .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
     .lf-pop-link-2:hover{color:#B8975A}
-    .lf-pop-reveal{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:#D4B483;background:rgba(184,151,90,.08);border-left:2px solid rgba(184,151,90,.5);padding:8px 11px;margin-bottom:13px;line-height:1.5}
+    .lf-pop-reveal{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:#D4B483;background:rgba(184,151,90,.08);border-left:2px solid rgba(184,151,90,.5);padding:6px 10px;margin-bottom:9px;line-height:1.45}
 
     /* ── HOST CTA SECTION ─────────────────────────────────────────── */
     .lf-host{background:var(--ink-mid);padding:80px 0;border-top:1px solid var(--border)}
@@ -564,8 +569,10 @@
            msg +
            revealLine +
            attendingLine +
-           '<a class="lf-pop-link" href="/membership.html#tiers">Join the clan to RSVP →</a>' +
-           '<a class="lf-pop-link-2" href="/members/#mstpSection">Already a member? Sign in →</a>';
+           '<div class="lf-pop-actions">' +
+             '<a class="lf-pop-link" href="/membership.html#tiers">Join the clan to RSVP →</a>' +
+             '<a class="lf-pop-link-2" href="/members/#mstpSection">Already a member? Sign in</a>' +
+           '</div>';
   }
 
   // ── Auth-aware fetch ───────────────────────────────────────────────
@@ -638,13 +645,12 @@
           autoClose: true,
           closeOnClick: true,
           autoPan: true,
-          // Generous top padding (120px) so the auto-pan lands the
-          // popup with the title comfortably visible — the popup opens
-          // upward from the marker by default, so we need real
-          // breathing room above. The max-height + overflow on
-          // .leaflet-popup-content is a belt-and-braces fallback for
-          // popups that still wouldn't fit.
-          autoPanPaddingTopLeft: L.point(20, 120),
+          // Aggressive top padding so when the popup opens upward from
+          // the marker, the title and host row always sit comfortably
+          // below the map's top edge — combined with the popup's
+          // max-height + overflow-y:auto, this guarantees the full
+          // event box is readable on screen.
+          autoPanPaddingTopLeft: L.point(20, 150),
           autoPanPaddingBottomRight: L.point(20, 30),
         });
         markers.push(m);
