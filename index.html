@@ -379,7 +379,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   .mem-grid{grid-template-columns:1fr 1fr}
   .gallery-grid{grid-template-columns:1fr 1fr}
   .si{padding:0 24px}
-  .hero{height:70vh;height:70svh}
+  .hero{height:auto;min-height:0;max-height:none;padding:80px 16px 110px}
+  .hero-scroll{display:none}
   .cahir-section{height:380px}
   /* Chief letter — full width on mobile */
   .letter-section .si > div{grid-template-columns:1fr !important;gap:24px !important}
@@ -597,8 +598,13 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 <script>(function(){
   var s=document.getElementById('giftStrip');
   var m=document.getElementById('mobileActions');
+  // Threshold lowered from 500 to 120 so the gift bar appears soon
+  // after the user has started engaging with the page, not only deep
+  // into a scroll. 120px clears the visual top of the hero on most
+  // viewports so the bar doesn't compete with the hero on first
+  // impression but is reliably visible thereafter.
   window.addEventListener('scroll',function(){
-    if(window.scrollY>500){s.classList.add('visible');m.classList.add('visible');}
+    if(window.scrollY>120){s.classList.add('visible');m.classList.add('visible');}
     else{s.classList.remove('visible');m.classList.remove('visible');}
   },{passive:true});
 })();</script>
@@ -625,6 +631,7 @@ function toggleMenu(){
   btn.classList.toggle('open');
 }
 </script>
+<script defer src="/js/nav-menu-autoclose.js"></script>
 
 <!-- HERO — Newhall at dusk, full bleed -->
 <section class="hero">
