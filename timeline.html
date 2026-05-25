@@ -31,6 +31,11 @@
     --endures: #639922;
     --modern: #BA7517;
     --today: #534AB7;
+    /* Legendary horizon — burgundy, the brand colour for editorial
+       weight. Sets the era visually apart from the historical eras
+       so readers immediately register 'this is medieval tradition,
+       not dated history.' */
+    --legendary: #8C1E1E;
   }
 
   body {
@@ -225,6 +230,7 @@
   }
 
   /* Era colours */
+  [data-era="legendary"] .tl-dot { background: var(--legendary); }
   [data-era="prehistoric"] .tl-dot { background: var(--prehistoric); }
   [data-era="royal"] .tl-dot { background: var(--royal); }
   [data-era="munster"] .tl-dot { background: var(--munster); }
@@ -234,6 +240,51 @@
   [data-era="endures"] .tl-dot { background: var(--endures); }
   [data-era="modern"] .tl-dot { background: var(--modern); }
   [data-era="today"] .tl-dot { background: var(--today); }
+
+  /* Legendary horizon entries — visually distinct so readers know at
+     a glance that these are medieval tradition, not dated history.
+     The date field renders italic (because none of these IS a literal
+     date — they're 'Out of Genesis', 'The Scythian years', etc) and
+     the title gets a small mythological-mark prefix in burgundy. */
+  [data-era="legendary"] .tl-date {
+    font-style: italic;
+    color: var(--legendary);
+    font-weight: 400;
+  }
+  [data-era="legendary"] .tl-title {
+    color: var(--ink);
+  }
+
+  /* Framing note above the legendary band — sets the editorial
+     position before the first entry. Same visual register as the
+     Myth page's prologue: cream background, burgundy left-rule,
+     italic serif body. */
+  .legendary-prologue {
+    background: rgba(140,30,30,0.04);
+    border-left: 3px solid var(--legendary);
+    padding: 22px 28px;
+    margin: 0 0 26px;
+    border-radius: 1px;
+    font-family: 'EB Garamond', serif;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--ink-mid);
+    font-style: italic;
+  }
+  .legendary-prologue strong {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .legendary-prologue a {
+    color: var(--legendary);
+    text-decoration: underline;
+    text-decoration-color: rgba(140,30,30,0.3);
+    text-underline-offset: 2px;
+  }
+  .legendary-prologue a:hover {
+    text-decoration-color: var(--legendary);
+  }
 
   .tl-date {
     font-size: 11px;
@@ -510,6 +561,7 @@ function toggleMenu(){
 <div class="filter-section">
   <div class="filter-row" id="filters">
     <button class="filter-btn active" data-era="all" onclick="filterEra('all', this)">All eras</button>
+    <button class="filter-btn" data-era="legendary" onclick="filterEra('legendary', this)">Legendary horizon</button>
     <button class="filter-btn" data-era="prehistoric" onclick="filterEra('prehistoric', this)">Prehistoric</button>
     <button class="filter-btn" data-era="royal" onclick="filterEra('royal', this)">Royal ancestry</button>
     <button class="filter-btn" data-era="munster" onclick="filterEra('munster', this)">Munster kings</button>
@@ -525,6 +577,7 @@ function toggleMenu(){
 <div class="main">
 
   <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--legendary)"></span>Legendary horizon</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--prehistoric)"></span>Prehistoric</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--royal)"></span>Royal ancestry</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--munster)"></span>Munster kings</div>
@@ -536,7 +589,7 @@ function toggleMenu(){
     <div class="legend-item"><span class="legend-dot" style="background:var(--today)"></span>Today</div>
   </div>
 
-  <div class="count-badge" id="count-badge">Showing all 42 entries — click any entry to expand</div>
+  <div class="count-badge" id="count-badge">Showing all 48 entries — click any entry to expand</div>
 
   <div class="timeline" id="timeline">
     <div class="tl-spine"></div>
@@ -558,6 +611,7 @@ function toggleMenu(){
 
 <script>
 const eras = [
+  { key: "legendary", label: "Legendary horizon" },
   { key: "prehistoric", label: "Prehistoric" },
   { key: "royal", label: "Royal ancestry" },
   { key: "munster", label: "Munster kings" },
@@ -570,6 +624,53 @@ const eras = [
 ];
 
 const events = [
+  // ──────────────────────────────────────────────────────────────────────
+  // LEGENDARY HORIZON — six entries from the Lebor Gabála tradition.
+  // None of these carries a confident historical date. The framing is
+  // unambiguous: this is the inherited story Ireland tells about herself,
+  // recorded by 11th-century monks reconciling older Gaelic memory with
+  // biblical chronology. The boundary at Conn Cétchathach is where the
+  // story begins to shade into history — matching the same boundary on
+  // the Myth page (/myth.html). See also the framing note that the
+  // renderer injects above the first legendary entry.
+  // ──────────────────────────────────────────────────────────────────────
+  {
+    date: "Out of Genesis",
+    title: "From Adam, by way of Noah and Japheth",
+    text: "The chroniclers of the <em>Lebor Gabála Érenn</em> began where all medieval histories began: with Adam. Through the long generations of the Bible to Noah, and from Noah's third son Japheth came the kindred who would, after centuries of wandering, find their way to Ireland. By the chroniclers' own biblical reckoning this places the line's deep beginning roughly six thousand years before the present. Human habitation of Ireland itself, the archaeology tells us, reaches back further still — about ten thousand years. The legendary tradition and the archaeology speak in different registers; both are inheritance.",
+    era: "legendary"
+  },
+  {
+    date: "The Scythian years",
+    title: "Magog, Fénius Farsaid, the weaving of Gaelic",
+    text: "Japheth's son Magog, in the tradition, fathered the Scythians — horse-people of the steppe north of the Black Sea. Generations later, a scholar-king of that kindred called Fénius Farsaid sent seventy-two students out to every corner of the earth to learn every tongue spoken there. When they returned he sat with them and wove, from the best of all the languages, one new tongue. He named it for his son Gaedheal. The Gaels are the people who carried that language west.",
+    era: "legendary"
+  },
+  {
+    date: "Breogán's Tower",
+    title: "Galicia — the lighthouse still standing today",
+    text: "The kindred's long migration brought them, in the tradition, through Egypt at the time of Moses (where the Egyptian princess Scota gave her name to what would become Scotland), through the Mediterranean, and at last to Galicia in northwestern Spain. There their leader Breogán built a great tower beside the sea. From its top on a clear evening, Breogán's brother Íth saw a green land on the northern horizon — the land that would become Ireland. The tower is still there. It stands today on the Atlantic cliffs at A Coruña as the Tower of Hercules — the oldest still-functioning lighthouse in the world, a UNESCO World Heritage site since 2009.",
+    era: "legendary"
+  },
+  {
+    date: "The Milesian landing",
+    title: "The sons of Míl arrive · the Túatha Dé go under the hills",
+    text: "The chroniclers placed the Milesian landing at roughly 1700 BCE — the arrival of the sons of Míl Espáine in a fleet of sixty-five ships, the storm raised against them by the Túatha Dé Danann, the song of the poet Amergin that quieted the sea, the agreement by which the older people went under the hills to become the <em>sídhe</em> — the fairy folk of later tradition. The Bronze Age period the chroniclers reach for in this story overlaps, broadly, with the period the clan's Y-DNA points to for its deep male-line ancestry in northwestern Europe. The match in timing is genuinely interesting; the relationship between genetic ancestry and medieval tradition is not provable. Both stand as they are.",
+    era: "legendary"
+  },
+  {
+    date: "The high kings of Tara",
+    title: "Éber Finn and Éremón · the line through the Stone of Destiny",
+    text: "The two surviving sons of Míl, Éber Finn and Éremón, divided Ireland between them — the first political partition of the island in the tradition, older by the Gaels' own reckoning than Rome. The seat of the high king was the Hill of Tara. The Stone of Destiny, left behind by the Túatha Dé, cried out beneath the foot of a true king at the moment of his inauguration. The long line of high kings ran on, generation by generation, in a kingship that the chroniclers traced for the better part of two thousand years.",
+    era: "legendary"
+  },
+  {
+    date: "Conn Cétchathach · 2nd century AD",
+    title: "Conn of the Hundred Battles · the legendary horizon ends here",
+    text: "Conn Cétchathach — Conn of the Hundred Battles — is the named ancestor through whom the modern clan's documented pedigree eventually descends. Conn is also the moment, by the careful reading of historians, when the Irish story begins to shade from legend into something like history. Almost every Irish royal house that the historians later wrote about traced itself back through him. With Conn the legendary horizon ends and the historical record begins. The Pedigree page picks up from here.",
+    era: "legendary"
+  },
+
   {
     date: "c. 3000–2500 BC",
     title: "Ancient origins — 4,000 years in Ireland",
@@ -870,6 +971,16 @@ function renderTimeline() {
     html += `<span class="era-label">${eraInfo.label}</span>`;
     html += `<div class="era-rule"></div>`;
     html += `</div>`;
+    // Legendary horizon — show a framing note before the first entry
+    // so the editorial position is unmistakeable. The entries that
+    // follow are medieval Irish tradition (the Lebor Gabála lineage
+    // from Adam to Conn of the Hundred Battles), not history with
+    // dates. Mirrors the prologue card on /myth.html.
+    if (era.key === 'legendary') {
+      html += `<div class="legendary-prologue">
+        These six entries record the line as the medieval Irish chroniclers gave it — the inherited story Ireland tells about herself, set down in the eleventh century from older Gaelic memory and reconciled with biblical history. Some of it is myth. Some of it shades into history. The line between the two has always been the most interesting place to stand. The full storytelling lives on the <a href="/myth.html">Myth page</a>; the historical record proper begins below, with Conn of the Hundred Battles as the threshold.
+      </div>`;
+    }
     items.forEach(({ ev, i }) => {
       const isOpen = openItems.has(i);
       html += `
