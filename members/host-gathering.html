@@ -66,6 +66,16 @@
     .hg-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,40px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:10px}
     .hg-title em{color:var(--gold);font-style:italic}
     .hg-sub{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-soft);max-width:560px;margin:0 auto;line-height:1.7}
+    /* Sits below .hg-sub to defuse the most common worry hosts have
+       (am I signing up to buy drinks for strangers / book a back room
+       / run an event?). Cream card with gold left-rule, plain-prose
+       not italic — separates it visually from the page subtitle so
+       a member can find this fast even on a phone. Mirrors the
+       reassurance Jessica's St Patrick's Day broadcast email makes,
+       so a member who arrives from the email sees the same words
+       restated on the page. */
+    .hg-sub-reassure{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.75;max-width:600px;margin:24px auto 0;padding:18px 24px;background:rgba(184,151,90,.06);border-left:3px solid var(--gold);border-radius:1px;text-align:left}
+    .hg-sub-reassure strong{color:var(--ink);font-weight:500}
 
     /* Loading / error states */
     .hg-state{max-width:560px;margin:60px auto;text-align:center;padding:36px 32px;background:var(--white);border:1px solid var(--gold-border)}
@@ -229,7 +239,10 @@
   <div class="hg-welcome">
     <div class="hg-eyebrow">St Patrick's Day</div>
     <h1 class="hg-title">Host a <em>gathering</em></h1>
-    <p class="hg-sub">Pick a pub in your town, plant your pin on the map, let the kindred find you on St Patrick's Day. Walk-ins welcome from anyone; members can RSVP digitally so you have a real headcount.</p>
+    <p class="hg-sub">Pick a pub in your town, plant your pin on the map, let the kindred find you on St Patrick's Day.</p>
+    <div class="hg-sub-reassure">
+      <strong>What hosting actually means:</strong> being at the pub on the day with the Ó Comáin badge on your table — that's it. <strong>Everyone buys their own drinks.</strong> Everyone makes their own way there. No tab to pick up, no event to plan, no register to keep — just nominate a pub you like and welcome whoever your RSVPs turn out to be.
+    </div>
   </div>
 
   <div id="hg-loading" class="hg-state"><div class="hg-state-msg">Loading…</div></div>
@@ -307,7 +320,7 @@
         <h2 class="hg-card-title">Want to host your own gathering?</h2>
       </div>
       <div class="hg-card-body">
-        <p>You can RSVP and attend any gathering on the map — that's open to all tiers. Hosting your own pin (booking a back room, replying to RSVPs, welcoming arrivals) is reserved for <strong>Guardian, Steward and Life</strong> members.</p>
+        <p>You can RSVP and attend any gathering on the map — that's open to all tiers. Hosting your own pin (turning up on the day with the Ó Comáin badge on your table, welcoming whoever your RSVPs turn out to be) is reserved for <strong>Guardian, Steward and Life</strong> members. Everyone buys their own drinks; the bar is genuinely that low.</p>
         <div class="hg-actions">
           <a href="/members/" class="hg-btn">Upgrade your tier</a>
           <a href="mailto:clan@ocomain.org?subject=Upgrading%20to%20Guardian" class="hg-btn hg-btn-ghost">Write to the Office</a>
