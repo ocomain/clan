@@ -168,17 +168,24 @@
       .founder-callout-grid > div > p{font-size:15px!important;line-height:1.7!important}
     }
 
-    /* ── MOBILE TIER TAB SWITCHER ───────────────────────────────────
-       Hidden on desktop where the 3-column grid does the job.
-       On mobile, the three tiers stack would be very long (3 × ~14
-       perks + 3 CTAs = a lot of scroll). Tabs let the reader pick
-       one tier at a time, with all three CTAs always one tap away.
-
-       Designed for an older demographic: tap targets are 60px+ tall,
-       18-20px text, no swipe gesture required. Active tab is visually
-       obvious (gold underline + ink colour). Featured tab carries the
-       'Most popular' badge so the recommended choice is visible
-       before the reader picks. Guardian loads active by default. */
+    /* ── MOBILE TIER TABS — STICKY OVERVIEW BAR ─────────────────────
+       
+       Originally a visibility-toggle: clicking a tab swapped which
+       single tier card was visible below. Clarity recordings showed
+       many users scrolled through Guardian (the pre-selected default)
+       without ever clicking the other tabs — so they never saw Clan
+       Member's €49 entry price or Steward's higher-tier perks. The
+       tabs failed as a discovery affordance.
+       
+       Now: all three tier cards are visible stacked on mobile; tabs
+       become sticky jump-links that follow the user down the page,
+       providing a quick-jump overview and remaining accessible while
+       they scroll through the cards. Active state updates as the
+       user scrolls past each tier (via IntersectionObserver).
+       
+       Tap targets remain 60px+ tall, 18-20px text, no swipe gesture.
+       Active state is gold underline + ink colour. Featured 'Most
+       popular' badge on Guardian remains. */
     .tier-tabs{display:none}
     @media(max-width:900px){
       .tier-tabs{
@@ -189,6 +196,10 @@
         border:1px solid var(--border);
         border-bottom:none;
         margin-bottom:0;
+        position:sticky;
+        top:58px;       /* clears the 58px-tall mobile nav */
+        z-index:50;
+        box-shadow:0 2px 10px rgba(12,26,12,.08);
       }
       .tier-tab{
         position:relative;
@@ -272,21 +283,23 @@
       .tier-tab-price .individual-price{display:inline}
       body.family-mode .tier-tab-price .individual-price{display:none}
       body.family-mode .tier-tab-price .family-price{display:inline}
-      /* Tier cards on mobile: only show the active one. Active state
-         is driven by a class on .tiers-grid set by JS. Default
-         (no class yet) shows Guardian. */
-      .tiers-grid .tier{display:none}
-      .tiers-grid[data-active="clan"] .tier[data-tier="clan"],
-      .tiers-grid[data-active="guardian"] .tier[data-tier="guardian"],
-      .tiers-grid[data-active="steward"] .tier[data-tier="steward"],
-      .tiers-grid:not([data-active]) .tier[data-tier="guardian"]{
-        display:block;
+      /* All three tier cards visible stacked on mobile. Previous
+         visibility-toggle behaviour failed (Clarity showed users
+         scrolling past Guardian without clicking other tabs), so
+         the tabs are now sticky jump-links rather than visibility
+         switches — see the tier-tabs comment above. */
+      .tiers-grid .tier{display:block}
+      /* Visual separation between stacked tiers: each gets a clear
+         bottom border, with the featured (Guardian) tier carrying
+         a subtle tinted background so it still reads as "the
+         recommended choice" even without the desktop's lifted card
+         treatment. */
+      .tiers-grid .tier{
+        border-bottom:1px solid var(--border);
+        scroll-margin-top:140px;  /* sticky tabs + nav clearance for jump-links */
       }
-      /* Active tier on mobile has no border-bottom (the section ends
-         it); featured tier doesn't need its negative-margin trick
-         when standing alone. */
-      .tiers-grid .tier{border-bottom:none}
-      .tiers-grid .tier.featured{margin:0;border-width:0}
+      .tiers-grid .tier:last-child{border-bottom:none}
+      .tiers-grid .tier.featured{margin:0;border-width:0 0 1px 0;background:rgba(184,151,90,.04)}
       /* Hide the in-card 'Most popular' badge on mobile — it's
          already shown on the Guardian tab, so duplication is noise. */
       .tier-badge{display:none}
@@ -865,27 +878,73 @@ function setMode(mode) {
   }
 }
 
-/* ── MOBILE TIER TABS ──────────────────────────────────────────
-   On mobile (≤900px), the CSS hides all .tier cards except the
-   one whose data-tier matches .tiers-grid[data-active=…]. With no
-   data-active attribute, Guardian shows by default (CSS rule).
-   On desktop the tabs are display:none and all three tiers stay
-   visible in the 3-column grid regardless of data-active — the
-   active state only matters on mobile.
-   Active tab pre-selected on load is Guardian (set in the markup
-   aria-selected=true). Clicking a tab moves the aria-selected
-   flag and sets data-active on the grid. */
+/* Mobile tier tabs — sticky jump-link behaviour.
+   ───────────────────────────────────────────────────────────────
+   The previous visibility-toggle pattern (one tier visible at a
+   time, others display:none) was failing per Clarity recordings:
+   users scrolled through Guardian without clicking other tabs and
+   never saw the €49 Clan Member tier. Tabs are now sticky and act
+   as jump-links — all three cards are visible stacked, and the tab
+   bar follows the user down the page as a quick-jump overview.
+   
+   Active state is driven by IntersectionObserver: whichever tier
+   card is closest to the top of the viewport (just below the
+   sticky tab bar) is the "active" one. Clicking a tab smooth-
+   scrolls to its card.
+*/
 (function(){
   var tabs = document.querySelectorAll('.tier-tab');
-  var grid = document.querySelector('.tiers-grid');
-  if (!tabs.length || !grid) return;
+  var cards = document.querySelectorAll('.tiers-grid .tier');
+  if (!tabs.length || !cards.length) return;
+
+  function setActive(tier){
+    tabs.forEach(function(t){
+      t.setAttribute('aria-selected', t.getAttribute('data-tier') === tier ? 'true' : 'false');
+    });
+  }
+
+  // Click → smooth-scroll to card. The scroll-margin-top on .tier
+  // (set in CSS) handles the offset for the sticky tabs + nav.
   tabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       var tier = tab.getAttribute('data-tier');
-      tabs.forEach(function(t){ t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
-      grid.setAttribute('data-active', tier);
+      var card = document.querySelector('.tiers-grid .tier[data-tier="' + tier + '"]');
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActive(tier);
     });
   });
+
+  // Scroll → mark active whichever card is most prominent in the
+  // viewport. Only meaningful on mobile (≤900px) where the cards
+  // are stacked; on desktop the cards are side-by-side and the
+  // tabs are display:none anyway, so the observer has nothing to
+  // do but doesn't cost anything to run.
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries){
+      // Among currently-intersecting cards, pick the one with the
+      // largest intersection ratio — that's the card the user is
+      // looking at most.
+      var best = null;
+      var bestRatio = 0;
+      entries.forEach(function(entry){
+        if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
+          best = entry.target;
+          bestRatio = entry.intersectionRatio;
+        }
+      });
+      if (best) {
+        setActive(best.getAttribute('data-tier'));
+      }
+    }, {
+      // Trigger when the card crosses the line ~140px below viewport top
+      // (clears the 58px nav + ~80px tab bar). The negative bottom margin
+      // means we only consider cards in roughly the top third of the
+      // viewport — the part the user is actively reading.
+      rootMargin: '-140px 0px -55% 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    });
+    cards.forEach(function(c){ observer.observe(c); });
+  }
 })();
 </script>
 
