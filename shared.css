@@ -1,5 +1,24 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:80px;
+  /* Disable iOS Safari's automatic text-size adjustment.
+     ────────────────────────────────────────────────────
+     Without this, Safari boosts the font-size of text it deems
+     "important" — typically paragraphs that wrap to multiple lines
+     or sit inside fixed-position UI. This produced a visible bug
+     on the mobile bars (#mobileActions): "Start application" (one
+     line) stayed at the intended 11px while "Gift someone their
+     Irish heritage" (wrapped to two lines on portrait phones) got
+     inflated to roughly 24px, making the two adjacent bars look
+     wildly different sizes despite identical inline font-size.
+     
+     Setting 100% (not "none") preserves the user's accessibility
+     zoom preferences — only the automatic browser-driven inflation
+     is disabled, not pinch-to-zoom or system text-size settings. */
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
 @media(max-width:768px){html{scroll-padding-top:110px}}
 :root{
   --gold:#B8975A;--gold-light:#D4B483;--gold-pale:#F5ECD8;
