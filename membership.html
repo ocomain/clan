@@ -299,7 +299,15 @@
         scroll-margin-top:140px;  /* sticky tabs + nav clearance for jump-links */
       }
       .tiers-grid .tier:last-child{border-bottom:none}
-      .tiers-grid .tier.featured{margin:0;border-width:0 0 1px 0;background:rgba(184,151,90,.04)}
+      /* Guardian (.featured) keeps its desktop visual identity: dark
+         ink background with light/gold text. Gold borders top and
+         bottom sit at the seams between it and the adjacent cards,
+         giving it a clearly framed "recommended" presence in the
+         stack. background and text-colour rules from the desktop
+         block (lines 93–107) apply on mobile too, so we just need
+         to reset the negative-margin trick and the lift z-index
+         here. */
+      .tiers-grid .tier.featured{margin:0;border-width:2px 0;border-style:solid;z-index:auto}
       /* Hide the in-card 'Most popular' badge on mobile — it's
          already shown on the Guardian tab, so duplication is noise. */
       .tier-badge{display:none}
