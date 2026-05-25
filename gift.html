@@ -107,11 +107,14 @@
     /* ── FINAL CTA ── */
     .gift-cta-section{background:var(--cream);padding:80px 0;border-top:1px solid var(--border);text-align:center}
 
-    /* ── MOBILE GIFT-TIER TAB SWITCHER ──────────────────────────────
-       Mirrors the membership-page tab pattern, adapted for the gift
-       page's dark (ink-mid) background. Hidden on desktop where the
-       3-column grid does the job. Mobile gets a tap-targets-only UX —
-       no swipe gesture required, all three CTAs always one tap away. */
+    /* ── MOBILE GIFT-TIER TABS — STICKY OVERVIEW BAR ────────────────
+       Mirrors the membership-page restructure: ALL three gift-card
+       options are visible stacked on mobile; the tab bar is sticky
+       and acts as a jump-link overview rather than a visibility
+       switch. Clarity recordings on the membership page showed users
+       scrolling past the default-selected tier without tapping
+       others — the same applies on gift, so the same fix applies.
+       Active state updates as the user scrolls via IntersectionObserver. */
     .gift-tier-tabs{display:none}
     @media(max-width:900px){
       .gift-tier-tabs{
@@ -122,6 +125,10 @@
         border:1px solid rgba(184,151,90,.25);
         border-bottom:none;
         margin-top:32px;
+        position:sticky;
+        top:58px;       /* clears the 58px-tall mobile nav */
+        z-index:50;
+        box-shadow:0 2px 10px rgba(0,0,0,.18);
       }
       .gift-tier-tab{
         position:relative;
@@ -199,22 +206,12 @@
       .gift-tier-tab-price .ind-only{display:inline}
       body.fam-mode .gift-tier-tab-price .ind-only{display:none}
       body.fam-mode .gift-tier-tab-price .fam-only{display:inline}
-      /* Gift cards on mobile: only show the active one. Active state
-         is driven by a data-active attribute on .gift-grid set by JS.
-         With no data-active attribute, Guardian shows by default. */
-      .gift-grid .gift-card{display:none}
-      .gift-grid[data-active="clan"] .gift-card[data-tier="clan"],
-      .gift-grid[data-active="guardian"] .gift-card[data-tier="guardian"],
-      .gift-grid[data-active="life"] .gift-card[data-tier="life"],
-      .gift-grid:not([data-active]) .gift-card[data-tier="guardian"]{
-        display:block;
-      }
-      /* Tighten the visible card's top so the price sits close to
-         the top edge of the box — matching the Membership page tier
-         card on mobile, where the eyebrow + price visually anchor
-         to the top border of the dark card with minimal whitespace
-         above. Was 36px all sides; now 20px top, 36px elsewhere. */
-      .gift-grid .gift-card{padding-top:20px}
+      /* All three gift cards visible stacked on mobile. Previous
+         visibility-toggle pattern was failing — see the tier-tabs
+         comment above for full context. Tabs are now jump-links.
+         scroll-margin-top clears the sticky tabs + nav stack so
+         jump-link clicks land cleanly at the card's top. */
+      .gift-grid .gift-card{display:block;scroll-margin-top:140px}
       /* Hide the in-card 'Most gifted' badge on mobile — already on tab */
       .gift-badge{display:none}
     }
@@ -650,21 +647,57 @@ function gSetMode(mode){
   }
 }
 
-/* MOBILE GIFT-TIER TABS — same pattern as the membership page.
-   Tabs are display:none on desktop; the 3-column grid handles
-   layout there. Active state on click sets data-active on the
-   grid, which the CSS uses to swap which card is visible. */
+/* Mobile gift-tier tabs — sticky jump-link behaviour.
+   ───────────────────────────────────────────────────────────────
+   Mirrors the membership-page restructure. Tabs were previously
+   visibility switches (one card visible at a time); now they're
+   sticky jump-links — all three cards visible stacked, tab bar
+   follows the user down the page, active state reflects scroll
+   position via IntersectionObserver. Clicking a tab smooth-scrolls
+   to that gift card.
+*/
 (function(){
   var tabs = document.querySelectorAll('.gift-tier-tab');
-  var grid = document.querySelector('.gift-grid');
-  if (!tabs.length || !grid) return;
+  var cards = document.querySelectorAll('.gift-grid .gift-card');
+  if (!tabs.length || !cards.length) return;
+
+  function setActive(tier){
+    tabs.forEach(function(t){
+      t.setAttribute('aria-selected', t.getAttribute('data-tier') === tier ? 'true' : 'false');
+    });
+  }
+
   tabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       var tier = tab.getAttribute('data-tier');
-      tabs.forEach(function(t){ t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
-      grid.setAttribute('data-active', tier);
+      var card = document.querySelector('.gift-grid .gift-card[data-tier="' + tier + '"]');
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActive(tier);
     });
   });
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries){
+      var best = null;
+      var bestRatio = 0;
+      entries.forEach(function(entry){
+        if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
+          best = entry.target;
+          bestRatio = entry.intersectionRatio;
+        }
+      });
+      if (best) {
+        setActive(best.getAttribute('data-tier'));
+      }
+    }, {
+      // -140px top clears the 58px nav + ~80px tab bar; -55% bottom
+      // means we only track cards in the top third of the viewport
+      // (the part the user is actively reading).
+      rootMargin: '-140px 0px -55% 0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
+    });
+    cards.forEach(function(c){ observer.observe(c); });
+  }
 })();
 </script>
 <!-- Members-area handoff (2026-05-01, v2) — when a logged-in

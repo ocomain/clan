@@ -370,7 +370,13 @@
 #mobileActions a{text-decoration:none!important}
 #mobileActions{display:none;position:fixed;top:58px;left:0;right:0;z-index:97;transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #mobileActions.visible{transform:translateY(0);pointer-events:all}
-@media(max-width:768px){
+/* Breakpoint raised 768 → 900 to match the rest of the page's
+   responsive reflow. Previously the desktop #giftStrip kept showing
+   on iPad portrait (~820px) and similar mid-width viewports, where
+   the 'Buying this as a gift?' Garamond text wrapped over multiple
+   lines and consumed an outsize amount of vertical space. At 900+
+   the compact #mobileActions takes over. */
+@media(max-width:900px){
   #giftStrip{display:none}
   #mobileActions{display:block}
 }
@@ -379,7 +385,7 @@
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
     <div onclick="location.href='gift.html'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
