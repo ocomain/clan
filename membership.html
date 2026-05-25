@@ -362,48 +362,30 @@
     <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
-<!-- GIFT STRIP — scroll triggered -->
-<style>
-#giftStrip{position:fixed;top:58px;left:0;right:0;z-index:97;background:#F8F4EC;border-bottom:2px solid #B8975A;padding:11px 0;box-shadow:0 3px 16px rgba(0,0,0,.15);transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
-#giftStrip.visible{transform:translateY(0);pointer-events:all}
-#giftStrip a{color:#0C1A0C!important;text-decoration:none!important;background:#B8975A}
-#mobileActions a{text-decoration:none!important}
-#mobileActions{display:none;position:fixed;top:58px;left:0;right:0;z-index:97;transform:translateY(-120%);transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none}
-#mobileActions.visible{transform:translateY(0);pointer-events:all}
-/* Breakpoint raised 768 → 900 to match the rest of the page's
-   responsive reflow. Previously the desktop #giftStrip kept showing
-   on iPad portrait (~820px) and similar mid-width viewports, where
-   the 'Buying this as a gift?' Garamond text wrapped over multiple
-   lines and consumed an outsize amount of vertical space. At 900+
-   the compact #mobileActions takes over. */
-@media(max-width:900px){
-  #giftStrip{display:none}
-  #mobileActions{display:block}
-}
-</style>
-
-<!-- Desktop gift strip -->
-<div id="giftStrip">
-  <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift.html'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
-  </div>
-</div>
-
-<!-- Mobile two-bar strip -->
-<div id="mobileActions">
-  <div onclick="location.href='join-chat.html'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;line-height:1.3;box-sizing:border-box;cursor:pointer">Start application &#8594;</div>
-  <div onclick="location.href='gift.html'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:13px 16px;line-height:1.3;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer"><span style="font-size:12px;vertical-align:-1px">&#127873;</span> &nbsp;Gift someone their Irish heritage &#8594;</div>
-</div>
-
-<script>(function(){
-  var s=document.getElementById('giftStrip');
-  var m=document.getElementById('mobileActions');
-  window.addEventListener('scroll',function(){
-    if(window.scrollY>500){s.classList.add('visible');m.classList.add('visible');}
-    else{s.classList.remove('visible');m.classList.remove('visible');}
-  },{passive:true});
-})();</script>
+<!-- GIFT STRIP / MOBILE ACTIONS — REMOVED 2026-05-25 ─────────────────
+     Previously this page carried two scroll-triggered sticky bars:
+     a desktop #giftStrip ("Buying this as a gift?") and a mobile
+     two-bar #mobileActions stack (Start application + Gift someone).
+     
+     Both removed because:
+     
+     1. On mobile, the sticky bars sat at top:58px (below the nav)
+        and competed for the same real estate as the new sticky tier
+        tabs (added in commit ad693d2). The bars hid the tier-tab
+        active-state cue and the user reported the conflict.
+     
+     2. On both viewports, this page is the buy flow — pushing the
+        user to "Start application" from a sticky bar while they're
+        already reading the tier comparison is noise. Gift signposting
+        belongs on pages where the user is NOT yet committed (homepage,
+        heritage pages); on the membership page itself it duplicates
+        the page's own CTAs.
+     
+     gift.html (the symmetric page) has never carried these bars for
+     the same reason. Now both pages are consistent: once a user is
+     on the destination page for a purchase intent, the page does the
+     selling, not a sticky bar.
+-->
 
 <div class="nav-mobile-menu" id="mobile-menu">
   <a href="join.html" class="nav-mobile-link">Why Join</a>
