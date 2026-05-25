@@ -147,6 +147,16 @@
   status = 301
   force = true
 
+# Hurley page renamed from hurley-o-comain.html to hurley-heritage.html (May 2026)
+# to match the surname-targeted page convention (cummins-heritage, coman-heritage,
+# commons-ireland). Old URL had minimal indexed traffic but 301 covers any
+# external links and bookmarks during the migration.
+[[redirects]]
+  from = "/hurley-o-comain.html"
+  to = "/hurley-heritage.html"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
