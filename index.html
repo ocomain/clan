@@ -95,7 +95,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   body{padding-top:58px}
 }
 .nav .si{height:58px;display:flex;align-items:center;justify-content:space-between}
-.nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none}
+.nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none;white-space:nowrap}
 .nav-brand em{font-style:italic}
 .nav-links{display:flex;gap:18px;padding-left:32px}
 .nav-link{font-size:10.5px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(160,210,160,.6);text-decoration:none;transition:color .2s}
@@ -367,10 +367,13 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .nav-mobile-link:hover,.nav-mobile-link.active{color:var(--gold-light)}
 .nav-mobile-cta{margin:12px 20px;text-align:center;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px;border-radius:1px;text-decoration:none;display:block}
 
-@media(max-width:900px){
+@media(max-width:1100px){
   .nav-links{display:none}
   .nav-hamburger{display:flex}
   .nav .nav-cta{display:none}
+}
+
+@media(max-width:900px){
   .two-col,.three-col,.letter-grid,.tl-grid,.crest-grid,.clans-grid,.video-grid,.footer-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:1fr 1fr}
   .mem-grid{grid-template-columns:1fr 1fr}
