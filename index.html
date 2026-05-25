@@ -91,7 +91,7 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 /* NAV */
 .nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(184,151,90,.15)}
 @media(max-width:768px){
-  .nav{position:fixed;left:0;right:0}
+  .nav{position:fixed;top:0;left:0;right:0}
   body{padding-top:58px}
 }
 .nav .si{height:58px;display:flex;align-items:center;justify-content:space-between}
@@ -598,13 +598,8 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 <script>(function(){
   var s=document.getElementById('giftStrip');
   var m=document.getElementById('mobileActions');
-  // Threshold lowered from 500 to 120 so the gift bar appears soon
-  // after the user has started engaging with the page, not only deep
-  // into a scroll. 120px clears the visual top of the hero on most
-  // viewports so the bar doesn't compete with the hero on first
-  // impression but is reliably visible thereafter.
   window.addEventListener('scroll',function(){
-    if(window.scrollY>120){s.classList.add('visible');m.classList.add('visible');}
+    if(window.scrollY>500){s.classList.add('visible');m.classList.add('visible');}
     else{s.classList.remove('visible');m.classList.remove('visible');}
   },{passive:true});
 })();</script>
