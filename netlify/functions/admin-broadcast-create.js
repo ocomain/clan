@@ -147,9 +147,17 @@ exports.handler = async (event) => {
   }
 
   // ── FETCH ACTIVE MEMBERS ────────────────────────────────────────────
-  // We page through in chunks of 1000 in case the clan grows beyond a
-  // single Supabase response payload. For Ó Comáin at present this is
-  // a single round-trip.
+  // Every active, non-unsubscribed member with an email address gets
+  // broadcasts. Previously this query also required cert_published_at
+  // IS NOT NULL — that gate has been removed (2026-05-25). Rationale:
+  // cert publication is on a 30-day auto-publish schedule, and during
+  // that window a new member is fully paid up and engaged but was
+  // being silently excluded from clan communications. The gate
+  // originated when broadcast copy was written to address "members
+  // with published Letters Patent" specifically; current broadcast
+  // copy addresses the kindred generally, so the cert gate is no
+  // longer meaningful and was excluding 17 of 64 active members
+  // (27%) from milestone news as of mid-May 2026.
   const members = [];
   let page = 0;
   const pageSize = 1000;
@@ -159,7 +167,6 @@ exports.handler = async (event) => {
       .select('id, email, name, tier')
       .eq('clan_id', cid)
       .eq('status', 'active')
-      .not('cert_published_at', 'is', null)
       .is('email_unsubscribed_at', null)
       .range(page * pageSize, page * pageSize + pageSize - 1);
     if (error) {
