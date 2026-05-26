@@ -235,10 +235,55 @@
       padding:14px 18px 10px;
       border-bottom:1px solid var(--gold-border);
     }
+    .hg-network-list-scroll-wrap{
+      position:relative;
+      max-height:360px;
+      overflow:hidden;
+    }
     .hg-network-list{
       max-height:360px;
-      overflow-y:auto;
-      padding:4px 0;
+      overflow-y:scroll;
+      padding:4px 14px 4px 0;   /* right padding leaves room for fake scrollbar */
+      /* Hide the native scrollbar everywhere — fake one is drawn over the top */
+      scrollbar-width:none;
+    }
+    .hg-network-list::-webkit-scrollbar{display:none}
+    /* Fake scrollbar — gold-on-cream against the members page palette.
+       Same JS-driven pattern as the public page's lf-fake-scroll. */
+    .hg-list-fake-scroll{
+      position:absolute;
+      top:6px;
+      bottom:6px;
+      right:4px;
+      width:6px;
+      background:rgba(184,151,90,.18);
+      border-radius:3px;
+      pointer-events:none;
+      z-index:2;
+      opacity:0;
+      transition:opacity .2s;
+    }
+    .hg-list-fake-scroll.active{opacity:1}
+    .hg-list-fake-scroll-thumb{
+      position:absolute;
+      left:0;
+      right:0;
+      background:var(--gold);
+      border-radius:3px;
+      min-height:32px;
+    }
+    /* Soft fade at the bottom to signal more content below — pulled in
+       14px from the right edge so the gold scrollbar reads as distinct. */
+    .hg-network-list-scroll-wrap::after{
+      content:'';
+      position:absolute;
+      left:0;
+      right:14px;
+      bottom:0;
+      height:32px;
+      background:linear-gradient(to bottom, rgba(248,244,236,0), rgba(248,244,236,.95));
+      pointer-events:none;
+      z-index:1;
     }
     .hg-network-list-item{
       display:block;
@@ -373,7 +418,15 @@
            view so the user actually sees the result. -->
       <div id="hg-network-list-wrap" class="hg-network-list-wrap" style="display:none">
         <div class="hg-network-list-title" id="hg-network-list-title">All gatherings</div>
-        <div class="hg-network-list" id="hg-network-list"></div>
+        <div class="hg-network-list-scroll-wrap">
+          <div class="hg-network-list" id="hg-network-list"></div>
+          <!-- Fake scrollbar — JS-driven for iOS Safari which strips
+               native ::-webkit-scrollbar styling on inner containers.
+               Same pattern as the public st-patricks-day page. -->
+          <div class="hg-list-fake-scroll" id="hg-list-fake-scroll" aria-hidden="true">
+            <div class="hg-list-fake-scroll-thumb" id="hg-list-fake-scroll-thumb"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -407,7 +460,7 @@
           </div>
           <div class="hg-field">
             <label class="hg-label" for="hg-rsvp-note">A note for the host <span style="text-transform:none;letter-spacing:0;color:var(--ink-muted);font-weight:400">(optional, 200 characters)</span></label>
-            <textarea class="hg-textarea" id="hg-rsvp-note" maxlength="200" placeholder="Anything the host should know — dietary needs, when you'll arrive, who you're bringing…"></textarea>
+            <textarea class="hg-textarea" id="hg-rsvp-note" maxlength="200" placeholder="Anything the host should know — when you'll arrive, who you're bringing…"></textarea>
           </div>
         </div>
         <div class="hg-actions">
@@ -1288,6 +1341,38 @@
             });
           }
         );
+
+        // ── Fake scrollbar sync ─────────────────────────────────────
+        // iOS Safari strips native scrollbar styling on inner scroll
+        // containers, so the all-gatherings list draws its own. Sync
+        // the thumb's height and top to the underlying scrollTop on
+        // every scroll/resize event. Hides itself when content fits.
+        const fakeTrack = document.getElementById('hg-list-fake-scroll');
+        const fakeThumb = document.getElementById('hg-list-fake-scroll-thumb');
+        if (fakeTrack && fakeThumb && listEl) {
+          const syncFakeScroll = () => {
+            const listH    = listEl.clientHeight;
+            const contentH = listEl.scrollHeight;
+            if (contentH <= listH + 1) {
+              fakeTrack.classList.remove('active');
+              return;
+            }
+            fakeTrack.classList.add('active');
+            const trackH = fakeTrack.clientHeight;
+            const thumbH = Math.max(32, Math.round((listH / contentH) * trackH));
+            const maxScrollTop = contentH - listH;
+            const maxThumbTop  = trackH - thumbH;
+            const scrollFrac   = maxScrollTop > 0 ? (listEl.scrollTop / maxScrollTop) : 0;
+            const thumbTop     = Math.round(scrollFrac * maxThumbTop);
+            fakeThumb.style.height = thumbH + 'px';
+            fakeThumb.style.top    = thumbTop + 'px';
+          };
+          listEl.addEventListener('scroll', syncFakeScroll, { passive: true });
+          window.addEventListener('resize', syncFakeScroll, { passive: true });
+          // Defer the first sync so the list has its final layout
+          // dimensions (innerHTML was just set above).
+          setTimeout(syncFakeScroll, 0);
+        }
       }
     }
   }
