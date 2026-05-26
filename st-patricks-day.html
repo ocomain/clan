@@ -110,54 +110,70 @@
     .lf-map-row > .lf-map{flex:1;min-width:0}
     .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:680px;overflow:hidden}
     .lf-sidebar-title{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
-    /* Custom scrollbar — always visible to signal the list is scrollable.
-       iOS Safari hides scrollbars by default until the user is actively
-       scrolling, which left mobile users with no static cue that the
-       gatherings list could scroll up and down. Forced visibility via:
-         - overflow-y:scroll (reserves space, not just `auto` which only
-           reserves space when content overflows)
-         - explicit ::-webkit-scrollbar styling with gold track + thumb
-           against the dark green ink background
-         - color contrast generous enough to read against ink at a glance
-       Width 8px is a good balance — visible without being heavy. */
-    .lf-sidebar-list{
-      flex:1;
-      overflow-y:scroll;
-      padding:6px 0;
+    /* JS-DRIVEN FAKE SCROLLBAR
+       ─────────────────────────────────────────────────────────────────
+       iOS Safari strips ::-webkit-scrollbar styling on inner scroll
+       containers regardless of how you mark it up — the platform
+       always uses its auto-hiding overlay scrollbar, so there's no way
+       to make the native scrollbar always-visible on iPhone.
+       
+       Instead: render a fake scrollbar in JS, positioned absolutely
+       along the right edge of the scroll container. We sync the
+       thumb's height and top to the underlying scrollTop on every
+       scroll event. Always visible, fully styleable, works
+       identically across iOS/Android/desktop. */
+    .lf-sidebar-list-wrap{
       position:relative;
-      scrollbar-width:thin;
-      scrollbar-color:rgba(184,151,90,.55) rgba(184,151,90,.1);
+      flex:1;
+      min-height:0;        /* allow shrinking inside flex parent */
+      overflow:hidden;
+    }
+    .lf-sidebar-list{
+      height:100%;
+      overflow-y:scroll;
+      padding:6px 12px 6px 0;  /* right padding leaves room for fake scrollbar */
+      -webkit-overflow-scrolling:touch;
+      /* Hide the native scrollbar everywhere — we draw our own. */
+      scrollbar-width:none;
     }
     .lf-sidebar-list::-webkit-scrollbar{
-      width:8px;
-      -webkit-appearance:none;
+      display:none;
     }
-    .lf-sidebar-list::-webkit-scrollbar-track{
-      background:rgba(184,151,90,.1);
+    .lf-fake-scroll{
+      position:absolute;
+      top:6px;
+      bottom:6px;
+      right:4px;
+      width:6px;
+      background:rgba(184,151,90,.12);
+      border-radius:3px;
+      pointer-events:none;   /* purely visual; scrolling still goes via the list itself */
+      z-index:2;
+      opacity:0;             /* hidden until JS measures and confirms scrollable */
+      transition:opacity .2s;
     }
-    .lf-sidebar-list::-webkit-scrollbar-thumb{
-      background:rgba(184,151,90,.55);
-      border-radius:4px;
+    .lf-fake-scroll.active{
+      opacity:1;
+    }
+    .lf-fake-scroll-thumb{
+      position:absolute;
+      left:0;
+      right:0;
+      background:var(--gold);
+      border-radius:3px;
       min-height:32px;
-    }
-    .lf-sidebar-list::-webkit-scrollbar-thumb:hover{
-      background:rgba(184,151,90,.8);
+      transition:none;       /* immediate response on scroll */
     }
     /* Soft gradient fade at the bottom of the scrollable list — visual
-       cue that there are more gatherings below the fold. Without this,
-       users on mobile (where only ~3 items are visible at a time) had
-       no signal that scrolling would reveal more. Pseudo-element on
-       the scroll container's parent so the fade stays in place as the
-       user scrolls — it's a viewport-edge effect, not a content one.
-       Pointer-events none so it doesn't block taps on the last item. */
-    .lf-sidebar{position:relative}
-    .lf-sidebar::after{
+       cue that there are more gatherings below the fold. Anchored to
+       the list-wrap (which sits above the absolutely-positioned fake
+       scrollbar's z-index). Right gap of 14px so the gold fake
+       scrollbar stays visually distinct from the fade. */
+    .lf-sidebar-list-wrap::after{
       content:'';
       position:absolute;
       left:0;
-      /* Right gap of 12px so the gold scrollbar (8px wide + 2px each
-         side track padding) stays visually distinct from the fade. */
-      right:12px;
+      right:14px;
       bottom:0;
       height:36px;
       background:linear-gradient(to bottom, rgba(15,31,15,0), rgba(15,31,15,.88));
@@ -340,7 +356,18 @@
            map has data; collapses below the map on narrow viewports. -->
       <aside class="lf-sidebar" id="lf-sidebar" style="display:none">
         <div class="lf-sidebar-title" id="lf-sidebar-title">All gatherings</div>
-        <div class="lf-sidebar-list" id="lf-sidebar-list"></div>
+        <div class="lf-sidebar-list-wrap">
+          <div class="lf-sidebar-list" id="lf-sidebar-list"></div>
+          <!-- Fake scrollbar — JS-driven because iOS Safari strips
+               ::-webkit-scrollbar styling on inner scroll containers
+               regardless of how you mark it up. This div is positioned
+               absolutely along the right edge of the list, with a child
+               thumb whose height + top are calculated from the list's
+               scroll state. Hidden when content doesn't overflow. -->
+          <div class="lf-fake-scroll" id="lf-fake-scroll" aria-hidden="true">
+            <div class="lf-fake-scroll-thumb" id="lf-fake-scroll-thumb"></div>
+          </div>
+        </div>
       </aside>
     </div>
   </div>
@@ -572,6 +599,44 @@
         btn.classList.remove('active');
       });
     });
+
+    // ── Fake scrollbar sync ─────────────────────────────────────────
+    // iOS Safari strips native scrollbar styling on inner scroll
+    // containers, so we draw our own. Sync the thumb's height + top
+    // from the list's scroll state on every scroll/resize event.
+    // Hides the track entirely when content fits without overflow.
+    var fakeTrack = document.getElementById('lf-fake-scroll');
+    var fakeThumb = document.getElementById('lf-fake-scroll-thumb');
+    if (fakeTrack && fakeThumb && list) {
+      var syncFakeScroll = function() {
+        var listH    = list.clientHeight;            // visible viewport height
+        var contentH = list.scrollHeight;            // total scrollable content height
+        if (contentH <= listH + 1) {
+          // Content fits; hide the fake scrollbar entirely.
+          fakeTrack.classList.remove('active');
+          return;
+        }
+        fakeTrack.classList.add('active');
+        // Track height equals the visible list height minus the small
+        // top/bottom inset (the CSS sets top:6 bottom:6).
+        var trackH = fakeTrack.clientHeight;
+        // Thumb height in proportion to visible/total, with min-height
+        // floor (enforced by CSS too) so the thumb stays grabbable
+        // visually even for very long lists.
+        var thumbH = Math.max(32, Math.round((listH / contentH) * trackH));
+        var maxScrollTop = contentH - listH;
+        var maxThumbTop  = trackH - thumbH;
+        var scrollFrac   = maxScrollTop > 0 ? (list.scrollTop / maxScrollTop) : 0;
+        var thumbTop     = Math.round(scrollFrac * maxThumbTop);
+        fakeThumb.style.height = thumbH + 'px';
+        fakeThumb.style.top    = thumbTop + 'px';
+      };
+      list.addEventListener('scroll', syncFakeScroll, { passive: true });
+      window.addEventListener('resize', syncFakeScroll, { passive: true });
+      // Defer the first sync by a tick so the list has its final
+      // layout dimensions (innerHTML was just set above).
+      setTimeout(syncFakeScroll, 0);
+    }
   }
 
   function popupHtml(g) {
