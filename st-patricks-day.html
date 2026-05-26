@@ -611,12 +611,22 @@
       var syncFakeScroll = function() {
         var listH    = list.clientHeight;            // visible viewport height
         var contentH = list.scrollHeight;            // total scrollable content height
+        // Track is ALWAYS visible as a subtle "this is a scrollable
+        // area" affordance — even when content fits. Without this,
+        // desktop users with few gatherings (where the sidebar's
+        // flex:1 fills the full 680px and content doesn't overflow)
+        // saw no scrollbar at all, missing the cue that more items
+        // could be added.
+        fakeTrack.classList.add('active');
         if (contentH <= listH + 1) {
-          // Content fits; hide the fake scrollbar entirely.
-          fakeTrack.classList.remove('active');
+          // Content fits — hide the thumb (so the visible track reads
+          // as "scrollable territory, all visible"). When more
+          // gatherings appear and overflow happens, the thumb
+          // re-appears with correct size and position.
+          fakeThumb.style.display = 'none';
           return;
         }
-        fakeTrack.classList.add('active');
+        fakeThumb.style.display = '';
         // Track height equals the visible list height minus the small
         // top/bottom inset (the CSS sets top:6 bottom:6).
         var trackH = fakeTrack.clientHeight;
@@ -816,15 +826,17 @@
         // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
         map.setView(bounds[0], 6);
       } else {
-        // Plain fitBounds with pixel-level padding only — no .pad()
-        // expansion. The members map (host-gathering.html) does this
-        // and produces a much tighter, more legible frame both on
-        // desktop and mobile. The previous device-aware .pad() values
-        // left an empty Atlantic/Arctic gap at the top of the mobile
-        // map. The pixel padding [40, 40] gives enough breathing room
-        // for the easternmost/westernmost pins without crashing them
-        // into the edges.
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+        // Pixel-level padding only — no .pad() expansion. On mobile
+        // portrait (narrow viewport, near-square map area, pin spread
+        // tends to be wider-than-tall: e.g. Texas → UAE) the
+        // symmetric [40, 40] padding made Leaflet pick a zoom where
+        // the horizontal span fit comfortably but the vertical
+        // dimension had visible empty padding top+bottom. Asymmetric
+        // [40 horizontal, 10 vertical] favours vertical fill so the
+        // map reads as full-box rather than partial.
+        var isNarrow = window.innerWidth < 760;
+        var pad = isNarrow ? [40, 10] : [40, 40];
+        map.fitBounds(bounds, { padding: pad, maxZoom: 8 });
       }
 
       // Stash for sidebar wiring (defined below renderSidebar)

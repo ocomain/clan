@@ -1257,6 +1257,27 @@
         autoPanPaddingBottomRight: L.point(20, 20),
       });
       marker.on('popupopen', () => attachPopupHandlers(g));
+      // Click handler: zoom to country-level before opening the popup.
+      // Same logic as the public st-patricks-day map — without this,
+      // tapping a pin on the wide diaspora-overview map opened the
+      // popup at zoom 2-3 and the country focus the user expected
+      // never happened.
+      (function(mk, lat, lng){
+        mk.off('click');  // remove Leaflet's bind-popup click binding
+        mk.on('click', (e) => {
+          if (e && e.originalEvent) {
+            e.originalEvent.preventDefault();
+            e.originalEvent.stopPropagation();
+          }
+          const targetZoom = Math.max(networkMap.getZoom(), 6);
+          if (networkMap.getZoom() >= 6) {
+            mk.openPopup();
+          } else {
+            networkMap.once('moveend', () => mk.openPopup());
+            networkMap.flyTo([lat, lng], targetZoom, { duration: 0.8 });
+          }
+        });
+      })(marker, g.venue_lat, g.venue_lng);
       networkPins.push({ gathering: g, marker });
       bounds.push([g.venue_lat, g.venue_lng]);
     });
@@ -1353,11 +1374,16 @@
           const syncFakeScroll = () => {
             const listH    = listEl.clientHeight;
             const contentH = listEl.scrollHeight;
+            // Track is ALWAYS visible as a subtle "this is a scrollable
+            // area" affordance — even when content fits. Same rationale
+            // as the public st-patricks-day page: desktop users with
+            // few gatherings saw no scrollbar at all otherwise.
+            fakeTrack.classList.add('active');
             if (contentH <= listH + 1) {
-              fakeTrack.classList.remove('active');
+              fakeThumb.style.display = 'none';
               return;
             }
-            fakeTrack.classList.add('active');
+            fakeThumb.style.display = '';
             const trackH = fakeTrack.clientHeight;
             const thumbH = Math.max(32, Math.round((listH / contentH) * trackH));
             const maxScrollTop = contentH - listH;
