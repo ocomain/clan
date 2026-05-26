@@ -214,6 +214,52 @@
     .hg-network-empty{margin-top:14px;font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--ink-muted);text-align:center;padding:14px}
     @media (max-width:560px){.hg-network-map{height:360px}}
 
+    /* All-gatherings list — sits below the map.
+       Visual style matches the rest of this page (cream theme, ink
+       text) rather than the public page's dark sidebar. Mobile users
+       get the same "scrollable index" affordance the public page now
+       has, in the format that fits this page's column layout. */
+    .hg-network-list-wrap{
+      margin-top:18px;
+      border:1px solid var(--gold-border);
+      border-left:3px solid var(--gold);
+      background:rgba(184,151,90,.04);
+    }
+    .hg-network-list-title{
+      font-family:'Jost',sans-serif;
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--ink-soft);
+      padding:14px 18px 10px;
+      border-bottom:1px solid var(--gold-border);
+    }
+    .hg-network-list{
+      max-height:360px;
+      overflow-y:auto;
+      padding:4px 0;
+    }
+    .hg-network-list-item{
+      display:block;
+      width:100%;
+      background:transparent;
+      border:none;
+      border-left:3px solid transparent;
+      text-align:left;
+      padding:12px 18px;
+      cursor:pointer;
+      font-family:'EB Garamond',serif;
+      color:var(--ink);
+      transition:background .12s,border-color .12s;
+    }
+    .hg-network-list-item:hover{background:rgba(184,151,90,.08);border-left-color:var(--gold)}
+    .hg-network-list-item.active{background:rgba(184,151,90,.15);border-left-color:var(--gold)}
+    .hg-network-list-city{font-family:'EB Garamond',serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:2px;line-height:1.25}
+    .hg-network-list-region{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-bottom:4px}
+    .hg-network-list-meta{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.1em;color:var(--gold-dark,#8C7340);text-transform:uppercase}
+    .hg-network-list-host{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:3px}
+
     /* Map popup style — light variant for the members area (page bg is cream) */
     .hg-network-map .leaflet-popup-content-wrapper{background:#FFFFFF;color:#0F1F0F;border:1px solid #B8975A;border-radius:2px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
     .hg-network-map .leaflet-popup-tip{background:#FFFFFF;border:1px solid #B8975A}
@@ -318,6 +364,16 @@
       <div id="hg-network-map" class="hg-network-map"></div>
       <div id="hg-network-empty" class="hg-network-empty" style="display:none">
         No gatherings have been pinned yet for this St Patrick's Day. Be the first.
+      </div>
+      <!-- All-gatherings list — sits below the map as a textual index
+           the user can scroll through and tap. Mirrors the public
+           st-patricks-day page's sidebar pattern but stacks under the
+           map on this page (no horizontal sidebar). Each row opens the
+           matching pin's popup and (on mobile) scrolls the map into
+           view so the user actually sees the result. -->
+      <div id="hg-network-list-wrap" class="hg-network-list-wrap" style="display:none">
+        <div class="hg-network-list-title" id="hg-network-list-title">All gatherings</div>
+        <div class="hg-network-list" id="hg-network-list"></div>
       </div>
     </div>
 
@@ -1171,6 +1227,81 @@
         }
       }, 350);
     }
+
+    // ── All-gatherings list (below the map) ─────────────────────────
+    // Scrollable index of every gathering. Each row centres + zooms
+    // the map onto the matching pin and opens its popup. Mirrors the
+    // public st-patricks-day page's sidebar list.
+    const listWrap  = document.getElementById('hg-network-list-wrap');
+    const listTitle = document.getElementById('hg-network-list-title');
+    const listEl    = document.getElementById('hg-network-list');
+    if (listWrap && listEl) {
+      if (gatherings.length === 0) {
+        listWrap.style.display = 'none';
+      } else {
+        listWrap.style.display = 'block';
+        if (listTitle) {
+          listTitle.textContent = 'All gatherings · ' + gatherings.length;
+        }
+        // Sort: by region A→Z, then by city A→Z within region. Stable
+        // ordering as the dataset grows; readers scan by place.
+        const sortedForList = gatherings.slice().sort((a, b) => {
+          const ra = regionLabelFor(a), rb = regionLabelFor(b);
+          if (ra !== rb) return ra.localeCompare(rb);
+          return (a.venue_city || '').localeCompare(b.venue_city || '');
+        });
+        listEl.innerHTML = sortedForList.map(g => {
+          const hostBit = g.host_display_name
+            ? `<div class="hg-network-list-host">Hosted by ${esc(g.host_display_name.split(' ')[0])}</div>`
+            : '';
+          return `<button type="button" class="hg-network-list-item" data-gid="${esc(g.id)}">
+            <div class="hg-network-list-city">${esc(g.venue_city)}</div>
+            <div class="hg-network-list-region">${esc(regionLabelFor(g))}</div>
+            <div class="hg-network-list-meta">${esc(fmtTime(g.starts_local_time))} · 17 March</div>
+            ${hostBit}
+          </button>`;
+        }).join('');
+        // Wire each row.
+        Array.prototype.forEach.call(
+          listEl.querySelectorAll('.hg-network-list-item'),
+          (btn) => {
+            btn.addEventListener('click', () => {
+              const gid = btn.getAttribute('data-gid');
+              const pin = networkPins.find(p => p.gathering.id === gid);
+              if (!pin) return;
+              // Scroll the map into view so the user actually sees the
+              // popup land (on mobile the list sits below the map, so
+              // tapping a row otherwise pops a popup off-screen).
+              networkMapEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              // Defer the zoom + open by ~200ms so the scroll has
+              // settled before Leaflet does its auto-pan calculations.
+              setTimeout(() => {
+                const ll = [pin.gathering.venue_lat, pin.gathering.venue_lng];
+                const targetZoom = Math.max(networkMap.getZoom(), 6);
+                if (networkMap.getZoom() >= 6) {
+                  pin.marker.openPopup();
+                } else {
+                  networkMap.once('moveend', () => pin.marker.openPopup());
+                  networkMap.flyTo(ll, targetZoom, { duration: 0.8 });
+                }
+              }, 220);
+            });
+          }
+        );
+      }
+    }
+  }
+
+  // Region label for the all-gatherings list — same logic as the
+  // public page's regionLabel(), kept in sync by reproducing the
+  // GB subdivision rules.
+  function regionLabelFor(g) {
+    if (g.venue_country !== 'GB') return g.venue_country;
+    const lat = Number(g.venue_lat), lng = Number(g.venue_lng);
+    if (lat >= 54.0 && lat <= 55.3 && lng >= -8.2 && lng <= -5.4) return 'Northern Ireland';
+    if (lat >= 54.6) return 'Scotland';
+    if (lng <= -2.6 && lat <= 53.5) return 'Wales';
+    return 'England';
   }
 
   function popupHtmlFor(g) {

@@ -777,16 +777,36 @@
           autoPanPaddingTopLeft: L.point(20, 150),
           autoPanPaddingBottomRight: L.point(20, 30),
         });
-        // Clicking a pin directly on the map zooms in to at least
-        // country-level (zoom 6) before opening the popup — same
-        // behaviour as clicking a sidebar entry. Without this, a
-        // pin click on the wide diaspora-overview map opens a popup
-        // at zoom 3 where neighbouring pins are still visible behind
-        // the popup, which reads as messy. By default Leaflet just
-        // opens the popup at the current zoom; we override here.
+        // Clicking a pin on the map zooms in to country-level (zoom 6)
+        // BEFORE opening the popup. Previously this called setView at
+        // the same time as Leaflet's built-in popup-on-click handler
+        // fired — the popup's autoPan would race with our setView and
+        // sometimes the map landed at the popup's preferred (lower)
+        // zoom rather than the country-level we wanted. The fix:
+        //   - Use `flyTo` instead of `setView` (animated, gives a sense
+        //     of motion the user can follow)
+        //   - Defer the popup-open until flyTo finishes via the
+        //     'moveend' event, so the popup auto-pan calculates against
+        //     a settled, zoomed-in viewport
+        //   - Suppress Leaflet's default popup-on-click so it doesn't
+        //     fire at the same time as our flyTo
         (function(marker, lat, lng){
-          marker.on('click', function(){
-            map.setView([lat, lng], Math.max(map.getZoom(), 6));
+          marker.off('click');  // remove Leaflet's bind-popup click handler
+          marker.on('click', function(e){
+            if (e && e.originalEvent) {
+              e.originalEvent.preventDefault();
+              e.originalEvent.stopPropagation();
+            }
+            var targetZoom = Math.max(map.getZoom(), 6);
+            if (map.getZoom() >= 6) {
+              // Already zoomed-in — just open the popup, no flyTo needed.
+              marker.openPopup();
+            } else {
+              map.once('moveend', function(){
+                marker.openPopup();
+              });
+              map.flyTo([lat, lng], targetZoom, { duration: 0.8 });
+            }
           });
         })(m, g.venue_lat, g.venue_lng);
         markers.push(m);
@@ -796,19 +816,15 @@
         // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
         map.setView(bounds[0], 6);
       } else {
-        // Bounds padding is device-aware: desktop has a 280px sidebar
-        // eating horizontal space alongside the map, so we need a
-        // generous .pad(0.5) so pins don't crash up against the
-        // right-edge sidebar. Mobile has no sidebar competing for
-        // space — the map fills the full viewport width — so the
-        // 50% expansion leaves a lot of empty Atlantic/Arctic at top
-        // and bottom (user reported this). On mobile we use a much
-        // smaller .pad(0.15) so the pin cluster fills the available
-        // vertical space rather than floating in mid-ocean.
-        var isNarrow = window.innerWidth < 900;
-        var padPct   = isNarrow ? 0.15 : 0.5;
-        var paddedBounds = L.latLngBounds(bounds).pad(padPct);
-        map.fitBounds(paddedBounds, { padding: [40, 40], maxZoom: 8 });
+        // Plain fitBounds with pixel-level padding only — no .pad()
+        // expansion. The members map (host-gathering.html) does this
+        // and produces a much tighter, more legible frame both on
+        // desktop and mobile. The previous device-aware .pad() values
+        // left an empty Atlantic/Arctic gap at the top of the mobile
+        // map. The pixel padding [40, 40] gives enough breathing room
+        // for the easternmost/westernmost pins without crashing them
+        // into the edges.
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
       }
 
       // Stash for sidebar wiring (defined below renderSidebar)
