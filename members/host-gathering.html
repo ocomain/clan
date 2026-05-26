@@ -836,6 +836,15 @@
       showToast(data.isNew ? 'Your pin is on the map. The kindred can now find you.' : 'Your gathering has been updated.', 'ok');
       renderExistingOrForm();
       renderRsvps(data.gathering ? data.gathering.id : null);
+      // Re-fetch + re-render the network map so the user sees their
+      // edited pin in context immediately. Without this, edits to
+      // venue location, time, photo, or message looked like they
+      // hadn't taken effect — the user would update the pub address
+      // and the 'Where the kindred are gathering' map below would
+      // still show the old location until a full page refresh.
+      // Fire-and-forget; the user has already seen the success toast,
+      // so a slow network shouldn't block the confirmation.
+      loadNetworkMap().catch(e => console.warn('post-save map refresh failed:', e));
     } catch (e) {
       showToast(e.message || 'Could not save — please try again.', 'err');
     } finally {
