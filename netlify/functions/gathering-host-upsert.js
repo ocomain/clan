@@ -42,12 +42,18 @@ const MAX_VENUE_ADDRESS = 240;
 const MAX_VENUE_CITY    = 80;
 const MAX_VENUE_URL     = 500;
 
-// Avatar upload constraints. Decoded payload max is enforced server-side
-// even though the client resizes to ~400x400 JPEG (~50-150KB typical) —
-// a hostile client could send anything. 1 MB ceiling after decode gives
-// plenty of headroom for legitimate uploads while bounding worst case.
+// Avatar upload constraints. The client resizes to ~400x400 JPEG at 0.85
+// quality (~50-150KB typical), so even a 5MB ceiling here is hugely
+// generous for legitimate uploads. The ceiling exists only to bound the
+// worst case from a hostile client that bypasses the resize. Bumped
+// from 1 MB → 5 MB (2026-05-25) after a real-world host reported a
+// rejection on a normal-sized photo: their image was within the 8 MB
+// raw-file ceiling but the client-side canvas round-trip produced
+// output slightly over 1 MB (high-megapixel modern phone photos can
+// do this even with 0.85 JPEG quality), and the resulting rejection
+// was opaque to the user.
 const AVATAR_BUCKET = 'gathering-avatars';
-const AVATAR_MAX_DECODED_BYTES = 1024 * 1024;       // 1 MB
+const AVATAR_MAX_DECODED_BYTES = 5 * 1024 * 1024;   // 5 MB
 const AVATAR_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 // Upload a data: URL to Supabase Storage and return the public URL.
@@ -227,7 +233,24 @@ exports.handler = async (event) => {
       freshlyUploaded = true;
     } catch (e) {
       console.warn('avatar upload failed:', e.message);
-      return reject(headers, 'We could not save your photo — please try a different image (JPEG, PNG or WebP, under 8 MB).');
+      // Pick a user-facing message that actually matches the failure
+      // mode. The internal e.message values are intentionally verbose
+      // for the server log; the public-facing string is short and
+      // actionable. Note: the previous message mentioned "under 8 MB"
+      // which was misleading — that's the raw-file client ceiling,
+      // not the server's post-decode limit. Users were sending small
+      // photos and getting an irrelevant "8 MB" message back.
+      let userMsg;
+      if (e.message.startsWith('Avatar too large')) {
+        userMsg = 'Your photo is too large after processing — please try a smaller or lower-resolution image.';
+      } else if (e.message.includes('not allowed')) {
+        userMsg = 'That image format is not supported — please use JPEG, PNG or WebP.';
+      } else if (e.message.startsWith('Storage upload')) {
+        userMsg = 'There was a temporary problem saving your photo — please try again in a moment.';
+      } else {
+        userMsg = 'We could not save your photo — please try a different image (JPEG, PNG or WebP).';
+      }
+      return reject(headers, userMsg);
     }
   } else if (typeof avatarInput === 'string' && avatarInput.length > 0) {
     // Existing URL passed through unchanged — common path on edit when

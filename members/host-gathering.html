@@ -139,10 +139,39 @@
     .hg-btn-danger:hover{background:#9C2A2A;color:var(--white);border-color:#9C2A2A}
 
     /* Toast */
-    .hg-toast{padding:14px 18px;border-radius:2px;font-family:'EB Garamond',serif;font-size:16px;margin-bottom:18px;display:none;line-height:1.6}
+    /* Toast notifications.
+       
+       Previously inline in the document flow, requiring a window.scrollTo
+       to make the toast visible after an error fired deep in the form
+       (e.g. avatar upload failure on the photo field which sits
+       mid-form). Maria reported the scroll-to-top behaviour being
+       disorientating — she'd tap Save at the bottom and the page would
+       jump away from her.
+       
+       Now: position:fixed at the top of the viewport, so the toast
+       appears near the user's eyeline regardless of scroll position.
+       z-index:1000 keeps it above the leaflet map and any other UI.
+       max-width keeps it readable on desktop without becoming a
+       cross-page banner. Centred horizontally with margin auto. */
+    .hg-toast{
+      position:fixed;
+      top:78px;       /* clears the 58px-tall mobile nav + 20px gap */
+      left:50%;
+      transform:translateX(-50%);
+      max-width:560px;
+      width:calc(100% - 32px);
+      padding:14px 18px;
+      border-radius:2px;
+      font-family:'EB Garamond',serif;
+      font-size:16px;
+      line-height:1.5;
+      display:none;
+      z-index:1000;
+      box-shadow:0 6px 24px rgba(0,0,0,.18);
+    }
     .hg-toast.show{display:block}
-    .hg-toast.ok{background:rgba(46,74,46,.08);border-left:3px solid var(--ink-soft);color:var(--ink)}
-    .hg-toast.err{background:rgba(156,42,42,.07);border-left:3px solid #9C2A2A;color:#6C1E1E}
+    .hg-toast.ok{background:#F8F4EC;border-left:3px solid var(--ink-soft);color:var(--ink)}
+    .hg-toast.err{background:#FDF4F2;border-left:3px solid #9C2A2A;color:#6C1E1E}
 
     /* RSVPs list */
     .hg-rsvp{padding:16px 0;border-bottom:1px solid var(--cream-mid);font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.65}
@@ -407,7 +436,7 @@
               <input type="file" id="hg-avatar-file" accept="image/jpeg,image/png,image/webp" style="display:none">
             </div>
           </div>
-          <div class="hg-help">A face on the pin makes the map immediately legible — the kindred can see who they're meeting before they arrive. Saved to your member profile too, so you won't need to re-upload it next time. Centre-cropped to a square automatically. JPEG, PNG or WebP up to 8 MB.</div>
+          <div class="hg-help">A face on the pin makes the map immediately legible — the kindred can see who they're meeting before they arrive. Saved to your member profile too, so you won't need to re-upload it next time. Centre-cropped to a square automatically. JPEG, PNG or WebP.</div>
           <input type="hidden" id="hg-avatar-data-url">
         </div>
 
@@ -495,8 +524,10 @@
   function showToast(msg, kind) {
     toastEl.textContent = msg;
     toastEl.className = 'hg-toast show ' + (kind === 'err' ? 'err' : 'ok');
+    // No longer scrolls to top — the toast is position:fixed so it
+    // appears near the viewport top regardless of where the user is
+    // in the page. Auto-hides after 6 seconds.
     setTimeout(() => { toastEl.classList.remove('show'); }, 6000);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function showError(msg) {
@@ -830,7 +861,7 @@
     const file = avatarFileInput.files && avatarFileInput.files[0];
     if (!file) return;
     if (file.size > AVATAR_MAX_INPUT_BYTES) {
-      showToast('That image is over 8 MB — please choose a smaller photo or resize it first.', 'err');
+      showToast('That photo file is unusually large — please pick a different photo, or take a fresh one from your phone camera.', 'err');
       avatarFileInput.value = '';
       return;
     }
