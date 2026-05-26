@@ -619,9 +619,16 @@
             var ll = [gatherings[i].venue_lat, gatherings[i].venue_lng];
             // setView before openPopup so the popup auto-pan has a
             // settled viewport to work against; openPopup itself will
-            // refine the pan if anything's still clipped.
-            map.setView(ll, Math.max(map.getZoom(), 6));
-            markers[i].openPopup();
+            // flyTo for the cool zoom-in animation that DDW likes on
+            // the members map; same logic as marker click below.
+            var currentZoom = map.getZoom();
+            var targetZoom  = currentZoom < 6
+              ? 6
+              : Math.min(map.getMaxZoom(), currentZoom + 1);
+            map.once('moveend', function(){
+              markers[i].openPopup();
+            });
+            map.flyTo(ll, targetZoom, { duration: 0.8 });
             return;
           }
         }
@@ -864,18 +871,17 @@
           autoPanPaddingBottomRight: L.point(20, bottomPad),
         });
         // Clicking a pin on the map zooms in to country-level (zoom 6)
-        // BEFORE opening the popup. Previously this called setView at
-        // the same time as Leaflet's built-in popup-on-click handler
-        // fired — the popup's autoPan would race with our setView and
-        // sometimes the map landed at the popup's preferred (lower)
-        // zoom rather than the country-level we wanted. The fix:
-        //   - Use `flyTo` instead of `setView` (animated, gives a sense
-        //     of motion the user can follow)
-        //   - Defer the popup-open until flyTo finishes via the
-        //     'moveend' event, so the popup auto-pan calculates against
-        //     a settled, zoomed-in viewport
-        //   - Suppress Leaflet's default popup-on-click so it doesn't
-        //     fire at the same time as our flyTo
+        // before opening the popup. The animation IS the affordance —
+        // DDW called the same effect 'very cool' on the members map
+        // and asked for it on the public page. Previously this had a
+        // short-circuit 'if (getZoom() >= 6) just open popup' branch,
+        // but with the current pin spread the default-load zoom from
+        // fitBounds can land at exactly 6, which made the click feel
+        // static (no animation). Now we always flyTo — if the target
+        // matches current zoom and pin is centred, flyTo still emits
+        // moveend and the popup opens; if the pin is off-centre,
+        // flyTo gives a smooth recentre. Target zoom is max(current, 6)
+        // so we never zoom OUT — only ever in or sideways.
         (function(marker, lat, lng){
           marker.off('click');  // remove Leaflet's bind-popup click handler
           marker.on('click', function(e){
@@ -883,16 +889,19 @@
               e.originalEvent.preventDefault();
               e.originalEvent.stopPropagation();
             }
-            var targetZoom = Math.max(map.getZoom(), 6);
-            if (map.getZoom() >= 6) {
-              // Already zoomed-in — just open the popup, no flyTo needed.
+            // If user is already zoomed in further than 6, bump up one
+            // step rather than zooming back to 6 — feels like 'closer
+            // look' rather than 'reset'. Capped at the map's maxZoom
+            // (which is 10 for non-members per the privacy gate, 18
+            // for members).
+            var currentZoom = map.getZoom();
+            var targetZoom  = currentZoom < 6
+              ? 6
+              : Math.min(map.getMaxZoom(), currentZoom + 1);
+            map.once('moveend', function(){
               marker.openPopup();
-            } else {
-              map.once('moveend', function(){
-                marker.openPopup();
-              });
-              map.flyTo([lat, lng], targetZoom, { duration: 0.8 });
-            }
+            });
+            map.flyTo([lat, lng], targetZoom, { duration: 0.8 });
           });
         })(m, g.venue_lat, g.venue_lng);
         markers.push(m);

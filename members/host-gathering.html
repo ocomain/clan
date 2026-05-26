@@ -375,7 +375,17 @@
     .hg-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(12,26,12,.25);background-color:#F5ECD8}
     .hg-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(12,26,12,.2))}
     .hg-avatar-pin:hover .hg-avatar-pin-circle{border-color:#0F1F0F;transition:border-color .15s}
-    .hg-network-map .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:240px;max-width:300px}
+    .hg-network-map .leaflet-popup-content{margin:16px 20px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.6;min-width:240px;max-width:300px;max-height:280px;overflow-y:auto}
+    /* Mobile popup cap — the members map is 360px tall on mobile
+       portrait, and without a max-height a long host message could
+       produce a popup taller than the map itself. Leaflet's auto-pan
+       then can't fit the popup within the visible map and half-clips
+       it (DDW reported). Cap at 240px on narrow viewports → ~290px
+       total bubble with wrapper chrome, comfortably inside 360px
+       with auto-pan headroom. */
+    @media(max-width:720px){
+      .hg-network-map .leaflet-popup-content{max-height:240px}
+    }
     .hg-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8B6F32;margin-bottom:6px}
     .hg-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#0F1F0F;margin:0 0 5px;font-weight:500}
     .hg-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:#5A7A5A;font-style:italic;margin-bottom:11px}
@@ -1314,20 +1324,30 @@
       // side by side, both fighting for screen real estate. autoClose:
       // true makes the map behave like the public st-patricks-day map
       // and feels right on first interaction.
+      // Auto-pan padding is viewport-aware: the 80px top padding
+      // works fine on desktop (440px map) but on mobile portrait the
+      // map is only 360px tall, so 80+20 reserved leaves 260px for
+      // the popup body — tight when the popup is full max-height.
+      // Tighter padding on narrow viewports gives Leaflet room to
+      // position the popup fully on screen rather than half-clipping.
+      const isNarrowMap = window.innerWidth < 720;
+      const topPad      = isNarrowMap ? 30 : 80;
+      const bottomPad   = isNarrowMap ? 20 : 20;
       marker.bindPopup(popupHtmlFor(g), {
         maxWidth: 320,
         autoClose: true,
         closeOnClick: true,
         autoPan: true,
-        autoPanPaddingTopLeft: L.point(20, 80),
-        autoPanPaddingBottomRight: L.point(20, 20),
+        autoPanPaddingTopLeft: L.point(20, topPad),
+        autoPanPaddingBottomRight: L.point(20, bottomPad),
       });
       marker.on('popupopen', () => attachPopupHandlers(g));
-      // Click handler: zoom to country-level before opening the popup.
-      // Same logic as the public st-patricks-day map — without this,
-      // tapping a pin on the wide diaspora-overview map opened the
-      // popup at zoom 2-3 and the country focus the user expected
-      // never happened.
+      // Click handler: always zoom to country-level (or zoom in one
+      // step if already there) before opening the popup. The animation
+      // is the affordance — short-circuiting on getZoom()>=6 made the
+      // click feel static when the default-load zoom already happened
+      // to be 6 (which it often is with current pin spread). Always
+      // flyTo means clicks always feel responsive.
       (function(mk, lat, lng){
         mk.off('click');  // remove Leaflet's bind-popup click binding
         mk.on('click', (e) => {
@@ -1335,13 +1355,12 @@
             e.originalEvent.preventDefault();
             e.originalEvent.stopPropagation();
           }
-          const targetZoom = Math.max(networkMap.getZoom(), 6);
-          if (networkMap.getZoom() >= 6) {
-            mk.openPopup();
-          } else {
-            networkMap.once('moveend', () => mk.openPopup());
-            networkMap.flyTo([lat, lng], targetZoom, { duration: 0.8 });
-          }
+          const currentZoom = networkMap.getZoom();
+          const targetZoom  = currentZoom < 6
+            ? 6
+            : Math.min(networkMap.getMaxZoom(), currentZoom + 1);
+          networkMap.once('moveend', () => mk.openPopup());
+          networkMap.flyTo([lat, lng], targetZoom, { duration: 0.8 });
         });
       })(marker, g.venue_lat, g.venue_lng);
       networkPins.push({ gathering: g, marker });
@@ -1426,13 +1445,12 @@
               // settled before Leaflet does its auto-pan calculations.
               setTimeout(() => {
                 const ll = [pin.gathering.venue_lat, pin.gathering.venue_lng];
-                const targetZoom = Math.max(networkMap.getZoom(), 6);
-                if (networkMap.getZoom() >= 6) {
-                  pin.marker.openPopup();
-                } else {
-                  networkMap.once('moveend', () => pin.marker.openPopup());
-                  networkMap.flyTo(ll, targetZoom, { duration: 0.8 });
-                }
+                const currentZoom = networkMap.getZoom();
+                const targetZoom  = currentZoom < 6
+                  ? 6
+                  : Math.min(networkMap.getMaxZoom(), currentZoom + 1);
+                networkMap.once('moveend', () => pin.marker.openPopup());
+                networkMap.flyTo(ll, targetZoom, { duration: 0.8 });
               }, 220);
             });
           }
