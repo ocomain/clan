@@ -110,7 +110,26 @@
     .lf-map-row > .lf-map{flex:1;min-width:0}
     .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:680px;overflow:hidden}
     .lf-sidebar-title{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
-    .lf-sidebar-list{flex:1;overflow-y:auto;padding:6px 0}
+    .lf-sidebar-list{flex:1;overflow-y:auto;padding:6px 0;position:relative}
+    /* Soft gradient fade at the bottom of the scrollable list — visual
+       cue that there are more gatherings below the fold. Without this,
+       users on mobile (where only ~3 items are visible at a time) had
+       no signal that scrolling would reveal more. Pseudo-element on
+       the scroll container's parent so the fade stays in place as the
+       user scrolls — it's a viewport-edge effect, not a content one.
+       Pointer-events none so it doesn't block taps on the last item. */
+    .lf-sidebar{position:relative}
+    .lf-sidebar::after{
+      content:'';
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:36px;
+      background:linear-gradient(to bottom, rgba(15,31,15,0), rgba(15,31,15,.88));
+      pointer-events:none;
+      z-index:1;
+    }
     .lf-sidebar-item{display:block;width:100%;background:transparent;border:none;border-left:3px solid transparent;text-align:left;padding:14px 20px;cursor:pointer;font-family:'EB Garamond',serif;color:var(--gold-pale);transition:background .12s,border-color .12s}
     .lf-sidebar-item:hover{background:rgba(184,151,90,.08);border-left-color:var(--gold)}
     .lf-sidebar-item.active{background:rgba(184,151,90,.13);border-left-color:var(--gold)}
@@ -286,7 +305,7 @@
            map and opens the clicked pin's popup. Hidden until the
            map has data; collapses below the map on narrow viewports. -->
       <aside class="lf-sidebar" id="lf-sidebar" style="display:none">
-        <div class="lf-sidebar-title">All gatherings</div>
+        <div class="lf-sidebar-title" id="lf-sidebar-title">All gatherings</div>
         <div class="lf-sidebar-list" id="lf-sidebar-list"></div>
       </aside>
     </div>
@@ -451,10 +470,17 @@
   function renderSidebar(gatherings, markers, map) {
     var sidebar = document.getElementById('lf-sidebar');
     var list    = document.getElementById('lf-sidebar-list');
+    var title   = document.getElementById('lf-sidebar-title');
     if (!sidebar || !list) return;
     if (!gatherings || gatherings.length === 0) {
       sidebar.style.display = 'none';
       return;
+    }
+    // Title shows the count so users on mobile can see at a glance
+    // that there are more gatherings than the 3-or-so visible in the
+    // scroll viewport. Without this it looked like only 3 existed.
+    if (title) {
+      title.textContent = 'All gatherings · ' + gatherings.length;
     }
     // Sort: by city A→Z within each country. Keeps the list stable as
     // the dataset grows; readers scan by place rather than by recency.
@@ -671,14 +697,18 @@
         // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
         map.setView(bounds[0], 6);
       } else {
-        // Expand the bounds by 50% before fitting so pins sit
-        // comfortably INSIDE the frame, not flush against the viewport
-        // edges. Transatlantic spreads (e.g. Austin + London + Perth)
-        // otherwise land with the easternmost pin barely visible at
-        // the right edge — the map reads as cropped rather than wide.
-        // The .pad() expansion is applied in addition to the
-        // pixel-level padding below.
-        var paddedBounds = L.latLngBounds(bounds).pad(0.5);
+        // Bounds padding is device-aware: desktop has a 280px sidebar
+        // eating horizontal space alongside the map, so we need a
+        // generous .pad(0.5) so pins don't crash up against the
+        // right-edge sidebar. Mobile has no sidebar competing for
+        // space — the map fills the full viewport width — so the
+        // 50% expansion leaves a lot of empty Atlantic/Arctic at top
+        // and bottom (user reported this). On mobile we use a much
+        // smaller .pad(0.15) so the pin cluster fills the available
+        // vertical space rather than floating in mid-ocean.
+        var isNarrow = window.innerWidth < 900;
+        var padPct   = isNarrow ? 0.15 : 0.5;
+        var paddedBounds = L.latLngBounds(bounds).pad(padPct);
         map.fitBounds(paddedBounds, { padding: [40, 40], maxZoom: 8 });
       }
 
