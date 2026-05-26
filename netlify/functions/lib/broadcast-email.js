@@ -285,7 +285,7 @@ const VOICES = {
     replyTo: 'maria@ocomain.org',
     eyebrow: 'A letter from the Chancellor',
     signature: () => signatureBlock({
-      avatar: 'maria_kinfauns_bubble.jpg',
+      avatar: 'images/people/maria_kinfauns_bubble.jpg',
       name: 'Maria Kinfauns',
       role: 'Chancellor of Clan Ó Comáin',
       irish: 'Seansailéir',
@@ -299,7 +299,7 @@ const VOICES = {
     replyTo: 'antoin@ocomain.org',
     eyebrow: 'A note from the Tánaiste',
     signature: () => signatureBlock({
-      avatar: 'antoin_commane_bubble.jpg',
+      avatar: 'images/people/antoin_commane_bubble.jpg',
       name: 'Antóin Commane, Cara of Ó Comáin',
       role: 'Tánaiste',
       irish: null,
@@ -313,7 +313,7 @@ const VOICES = {
     replyTo: 'jessica@ocomain.org',
     eyebrow: 'From the Keeper of the Seat',
     signature: () => signatureBlock({
-      avatar: 'jessica_commane_bubble.jpg',
+      avatar: 'images/people/jessica_commane_bubble.jpg',
       name: 'Jessica-Lily Commane',
       role: 'Keeper of the Seat of Clan Ó Comáin',
       irish: 'Coimeádaí na Suíochán',
@@ -327,7 +327,7 @@ const VOICES = {
     replyTo: 'herald@ocomain.org',
     eyebrow: 'A proclamation from the Herald',
     signature: () => signatureBlock({
-      avatar: 'the_herald_seal.png',
+      avatar: 'images/archive/the_herald_seal.png',
       name: 'The Herald of Clan Ó Comáin',
       role: null,
       irish: 'An tAralt',
@@ -357,7 +357,7 @@ const VOICES = {
     replyTo: 'linda@ocomain.org',
     eyebrow: 'From the Office of the Private Secretary',
     signature: () => signatureBlock({
-      avatar: 'linda_cryan_bubble.png',
+      avatar: 'images/people/linda_cryan_bubble.png',
       name: 'Linda Commane Cryan',
       role: 'Office of the Private Secretary to the Chief',
       irish: null,
@@ -483,7 +483,7 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
 
   <!-- Letterhead — cream background, coat of arms + 'Ó COMÁIN' -->
   <div style="padding:44px 40px 0;text-align:center">
-    <img src="${SITE}/coat_of_arms.png" width="88" alt="Ó Comáin" style="display:block;margin:0 auto 10px;height:auto">
+    <img src="${SITE}/images/brand/coat_of_arms.png" width="88" alt="Ó Comáin" style="display:block;margin:0 auto 10px;height:auto">
     <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.32em;color:#8C7A4A;margin:0 0 22px;text-align:center;text-indent:0.32em">Ó COMÁIN</p>
     <div style="height:1px;background:rgba(184,151,90,.45);margin:0 auto 0;max-width:120px"></div>
   </div>

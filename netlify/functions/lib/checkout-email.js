@@ -65,7 +65,7 @@ function buildAbandonedReminderHtml({ firstName, tierName }) {
 <html><body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
   <div style="background:#0C1A0C;padding:36px 40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:80px">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:80px">Ó COMÁIN</p>
   </div>
   <div style="padding:40px">
     <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${escapeHtml(safeFirst)},</p>
@@ -102,7 +102,7 @@ function buildGiftConfirmationsHtml({ buyerFirstName, tierDisplayName }) {
 <html><body style="margin:0;padding:0;background:#F8F4EC">
 <div style="max-width:580px;margin:0 auto">
   <div style="background:#0C1A0C;padding:40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
     <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0">Gift confirmed</h1>
   </div>
   <div style="padding:40px">
@@ -113,7 +113,7 @@ function buildGiftConfirmationsHtml({ buyerFirstName, tierDisplayName }) {
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
       <tr>
         <td style="vertical-align:middle;padding-right:18px;width:84px">
-          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
+          <img src="https://www.ocomain.org/images/people/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
         </td>
         <td style="vertical-align:middle">
           <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Linda Commane Cryan</strong></p>
@@ -168,7 +168,7 @@ function buildGiftBuyerConfirmationHtml({
 <body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
   <div style="background:#0C1A0C;padding:40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
     <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0">Your gift is on its way</h1>
   </div>
   <div style="padding:40px">
@@ -240,7 +240,7 @@ function buildGiftBuyerConfirmationHtml({
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
       <tr>
         <td style="vertical-align:middle;padding-right:18px;width:84px">
-          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
+          <img src="https://www.ocomain.org/images/people/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
         </td>
         <td style="vertical-align:middle">
           <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Linda Commane Cryan</strong></p>
@@ -339,7 +339,7 @@ function buildGiftRecipientWelcomeHtml({
 
   <!-- Header -->
   <div style="background:#0C1A0C;padding:40px 40px 32px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:0.22em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:96px">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:0.22em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:96px">Ó COMÁIN</p>
     <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">A gift to you</p>
     <h1 style="font-family:'Georgia',serif;font-size:36px;font-weight:400;color:#D4B87A;margin:0;line-height:1.1">Céad míle fáilte</h1>
     <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#D4B483;margin:8px 0 0">A hundred thousand welcomes</p>
@@ -386,7 +386,7 @@ function buildGiftRecipientWelcomeHtml({
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;width:100%">
       <tr>
         <td style="vertical-align:middle;padding-right:18px;width:90px">
-          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
+          <img src="https://www.ocomain.org/images/people/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
         </td>
         <td style="vertical-align:middle">
           <p style="font-family:'Georgia',serif;font-size:17px;color:#0C1A0C;line-height:1.3;margin:0 0 5px"><strong>Linda Commane Cryan</strong></p>
@@ -455,7 +455,7 @@ function buildMemberWelcomeHtml({ firstName, tierDisplayName, benefits, signInUr
 
   <!-- Header -->
   <div style="background:#0C1A0C;padding:40px 40px 32px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:0.22em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:96px">Ó COMÁIN</p>
+    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="96" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto"><p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;font-weight:700;letter-spacing:0.22em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:96px">Ó COMÁIN</p>
     <h1 style="font-family:'Georgia',serif;font-size:36px;font-weight:400;color:#D4B87A;margin:0;line-height:1.1">Céad míle fáilte</h1>
     <p style="font-family:'Georgia',serif;font-size:14px;font-style:italic;color:#D4B483;margin:8px 0 0">A hundred thousand welcomes</p>
   </div>
@@ -508,7 +508,7 @@ function buildMemberWelcomeHtml({ firstName, tierDisplayName, benefits, signInUr
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;width:100%">
       <tr>
         <td style="vertical-align:middle;padding-right:18px;width:90px">
-          <img src="https://www.ocomain.org/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
+          <img src="https://www.ocomain.org/images/people/linda_cryan_bubble.png" width="76" height="76" alt="Linda Commane Cryan" style="display:block;width:76px;height:76px;border-radius:50%">
         </td>
         <td style="vertical-align:middle">
           <p style="font-family:'Georgia',serif;font-size:17px;color:#0C1A0C;line-height:1.3;margin:0 0 5px"><strong>Linda Commane Cryan</strong></p>

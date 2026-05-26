@@ -279,7 +279,7 @@ These have been iterated on through the build and now form the operating constit
 - `join.html`, `patrons.html`, `pedigree.html`, `privy-council.html` — substance pages
 - `timeline.html`, `surname-variants.html`, `relics.html`, `coat-of-arms.html`, `heartlands.html` — clan info
 - `celtic-heritage-clan.html`, `coman-heritage.html`, `commins-ireland.html`, `commons-ireland.html`, `cummins-heritage.html`, `hurley-o-comain.html`, `irish-diaspora-clan.html` — surname-variant SEO
-- `coat_of_arms.png` — site-wide
+- `images/brand/coat_of_arms.png` — site-wide
 
 ### Member surfaces
 - `members/index.html` — dashboard. Has: founder welcome band, mstatus panel (with Held in Honour row), cert section, family-edit modal, postal-address modal, invite section + count + honours link, **gift CTA section**, action grid (6 cards with icons)

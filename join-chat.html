@@ -7,8 +7,8 @@
   <title>Apply for Membership — Clan Ó Comáin</title>
   <meta name="description" content="Begin your membership application for Clan Ó Comáin — speak with the Clan Herald and join one of Ireland's most ancient Gaelic lineages.">
   <link rel="stylesheet" href="/fonts/fonts.css">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/brand/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/brand/favicon-16x16.png">
   <link rel="icon" href="/favicon.ico">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -301,14 +301,14 @@
   <meta property="og:url" content="https://www.ocomain.org/join-chat">
   <meta property="og:title" content="Apply for Membership — Clan Ó Comáin">
   <meta property="og:description" content="Begin your membership application for Clan Ó Comáin — speak with the Clan Herald and join one of Ireland's most ancient Gaelic lineages.">
-  <meta property="og:image" content="https://www.ocomain.org/coat_of_arms.png">
+  <meta property="og:image" content="https://www.ocomain.org/images/brand/coat_of_arms.png">
   <meta property="og:site_name" content="Clan Ó Comáin">
   <meta property="og:locale" content="en_IE">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Apply for Membership — Clan Ó Comáin">
   <meta name="twitter:description" content="Begin your membership application for Clan Ó Comáin — speak with the Clan Herald and join one of Ireland's most ancient Gaelic lineages.">
-  <meta name="twitter:image" content="https://www.ocomain.org/coat_of_arms.png">
+  <meta name="twitter:image" content="https://www.ocomain.org/images/brand/coat_of_arms.png">
 <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 <!-- Analytics — Clarity + Meta Pixel, deferred until first user
@@ -327,7 +327,7 @@
      is now a deliberate choice rather than something a mis-tap
      can trigger. -->
 <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--ink);border-bottom:1px solid var(--border)">
-  <img src="coat_of_arms.png" alt="Clan Ó Comáin" style="width:32px;height:auto;display:block">
+  <img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin" style="width:32px;height:auto;display:block">
   <span style="font-family:'EB Garamond',serif;font-size:16px;color:var(--gold);letter-spacing:.01em">Clan <em>Ó Comáin</em></span>
   <a href="/" style="margin-left:auto;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.45);text-decoration:none;padding:6px 10px;border-radius:2px;transition:color .15s,background .15s" onmouseover="this.style.color='var(--gold)';this.style.background='rgba(184,151,90,.06)'" onmouseout="this.style.color='rgba(184,151,90,.45)';this.style.background='transparent'">Return to site</a>
 </div>
@@ -336,7 +336,7 @@
 
   <div class="chat-header">
     <div class="ch-inner">
-      <div class="ch-avatar ch-avatar-seal"><img src="the_herald_seal.png" alt="Seal of the Clan Herald"></div>
+      <div class="ch-avatar ch-avatar-seal"><img src="images/archive/the_herald_seal.png" alt="Seal of the Clan Herald"></div>
       <div>
         <div class="ch-name">The Clan Herald</div>
         <div class="ch-role">Arailt Clan Ó Comáin</div>
@@ -368,7 +368,7 @@
 
 <div class="completion" id="completion">
   <div class="completion-inner">
-    <div class="completion-crest"><img src="coat_of_arms.png" alt="Ó Comáin"></div>
+    <div class="completion-crest"><img src="images/brand/coat_of_arms.png" alt="Ó Comáin"></div>
     <div class="completion-eyebrow">Ó Comáin</div>
     <div class="gold-rule" style="margin:10px auto 14px"></div>
     <p class="completion-sub" style="font-size:17px;margin-bottom:20px">Complete payment below to confirm your membership.</p>
@@ -615,7 +615,7 @@ function addHeraldBubble(text) {
   const formatted = escHtml(text)
     .replace(/\n\n/g, '</p><p style="margin-top:12px">')
     .replace(/\n/g, '<br>');
-  div.innerHTML = `<div class="msg-avatar"><img src="coat_of_arms.png" alt="Herald"></div>
+  div.innerHTML = `<div class="msg-avatar"><img src="images/brand/coat_of_arms.png" alt="Herald"></div>
     <div class="msg-bubble"><p>${formatted}</p></div>`;
   msgs.appendChild(div);
   scrollBottom();
@@ -635,7 +635,7 @@ function showThinking() {
   const msgs = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'msg herald';
-  div.innerHTML = `<div class="msg-avatar"><img src="coat_of_arms.png" alt="Herald"></div>
+  div.innerHTML = `<div class="msg-avatar"><img src="images/brand/coat_of_arms.png" alt="Herald"></div>
     <div class="msg-bubble thinking"><span></span><span></span><span></span></div>`;
   thinkingEl = div;
   msgs.appendChild(div);
@@ -648,7 +648,7 @@ function showPreparing(text) {
   const msgs = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'msg herald';
-  div.innerHTML = `<div class="msg-avatar"><img src="coat_of_arms.png" alt="Herald"></div>
+  div.innerHTML = `<div class="msg-avatar"><img src="images/brand/coat_of_arms.png" alt="Herald"></div>
     <div class="msg-bubble" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
       <span style="font-style:italic;color:rgba(215,235,215,.8)">${text}</span>
       <span class="thinking" style="padding:0;flex-shrink:0"><span></span><span></span><span></span></span>

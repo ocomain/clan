@@ -26,7 +26,7 @@ exports.handler = async (event) => {
 <div style="max-width:580px;margin:0 auto">
 
   <div style="background:#0C1A0C;padding:36px 40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
+    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 12px;height:auto">
     <p style="font-family:sans-serif;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#B8975A;margin:0">Clan Ó Comáin · County Clare, Ireland</p>
   </div>
 

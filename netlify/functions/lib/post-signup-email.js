@@ -153,7 +153,7 @@ function wrapInChrome({ eyebrow, heading, bodyHtml }) {
 
   <!-- Header -->
   <div style="background:#0C1A0C;padding:38px 40px 30px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="${SITE}/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto">
+    <img src="${SITE}/images/brand/coat_of_arms.png" width="84" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto">
     <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto 18px;text-align:center;max-width:84px">Ó COMÁIN</p>
     <p style="font-family:'Georgia',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 12px">${escapeHtml(eyebrow)}</p>
     <h1 style="font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#D4B87A;margin:0;line-height:1.18">${escapeHtml(heading)}</h1>
@@ -193,7 +193,7 @@ function lindaSignatureHtml() {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
+      <img src="${SITE}/images/people/linda_cryan_bubble.png" width="68" height="68" alt="Linda Commane Cryan" style="display:block;width:68px;height:68px;border-radius:50%">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Linda Commane Cryan</strong></p>
@@ -214,7 +214,7 @@ function paddySignatureHtml() {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/paddy_commane_ballymacooda.png" width="68" height="68" alt="Paddy Commane, Seanchaí" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+      <img src="${SITE}/images/people/paddy_commane_ballymacooda.png" width="68" height="68" alt="Paddy Commane, Seanchaí" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Paddy Commane</strong></p>
@@ -238,7 +238,7 @@ function antoinSignatureHtml() {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/antoin_commane_bubble.jpg" width="68" height="68" alt="Antoin Commane, Tánaiste" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+      <img src="${SITE}/images/people/antoin_commane_bubble.jpg" width="68" height="68" alt="Antoin Commane, Tánaiste" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Antóin Commane, Cara of Ó Comáin</strong></p>
@@ -258,7 +258,7 @@ function michaelSignatureHtml() {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/michael_commane_capecod.png" width="68" height="68" alt="Michael Commane, Marshall" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+      <img src="${SITE}/images/people/michael_commane_capecod.png" width="68" height="68" alt="Michael Commane, Marshall" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Michael Commane</strong></p>
@@ -279,7 +279,7 @@ function jessicaSignatureHtml() {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/jessica_commane_bubble.jpg" width="68" height="68" alt="Jessica-Lily Commane" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
+      <img src="${SITE}/images/people/jessica_commane_bubble.jpg" width="68" height="68" alt="Jessica-Lily Commane" style="display:block;width:68px;height:68px;border-radius:50%;object-fit:cover">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>Jessica-Lily Commane</strong></p>
@@ -299,14 +299,14 @@ function jessicaSignatureHtml() {
 // at the head of the public Register page at /register.html). Same
 // design lifted into the email signature so the visual identity is
 // continuous between the Herald's emails and the Register page the
-// emails point to. Asset: the_herald_seal.png (rendered from the
+// emails point to. Asset: images/archive/the_herald_seal.png (rendered from the
 // inline SVG in register.html).
 function heraldSignatureHtml() {
   return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 8px;width:100%">
   <tr>
     <td style="vertical-align:middle;padding-right:18px;width:84px">
-      <img src="${SITE}/the_herald_seal.png" alt="Sigillum · Clan Ó Comáin" width="72" style="display:block;width:72px;height:72px;border:0">
+      <img src="${SITE}/images/archive/the_herald_seal.png" alt="Sigillum · Clan Ó Comáin" width="72" style="display:block;width:72px;height:72px;border:0">
     </td>
     <td style="vertical-align:middle">
       <p style="font-family:'Georgia',serif;font-size:15px;color:#0C1A0C;line-height:1.3;margin:0 0 4px"><strong>The Herald of Clan Ó Comáin</strong></p>

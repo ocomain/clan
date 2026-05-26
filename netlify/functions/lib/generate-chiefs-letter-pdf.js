@@ -99,9 +99,9 @@ let _assetCache = null;
 function loadAssetBuffers() {
   if (_assetCache) return _assetCache;
   _assetCache = {
-    coatOfArms: fs.readFileSync(path.join(ASSETS_DIR, 'coat_of_arms.png')),
-    signature:  fs.readFileSync(path.join(ASSETS_DIR, 'the_commane_signature.png')),
-    chancerySeal: fs.readFileSync(path.join(ASSETS_DIR, 'the_commane_seal.png')),
+    coatOfArms: fs.readFileSync(path.join(ASSETS_DIR, 'images/brand/coat_of_arms.png')),
+    signature:  fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_commane_signature.png')),
+    chancerySeal: fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_commane_seal.png')),
   };
   return _assetCache;
 }
@@ -446,7 +446,7 @@ async function generateChiefsLetterPdf({ addressForm }) {
   // top of all underlying text (signature, typed name, PS).
   //
   // OPACITY NOTE — this is subtler than it looks. The chancery stamp
-  // PNG (the_commane_seal.png) was rendered with natural ink-wash
+  // PNG (images/archive/the_commane_seal.png) was rendered with natural ink-wash
   // variation baked into its alpha channel: ~67% of pixels are fully
   // transparent (the gaps in the ink impression), and the inked
   // pixels themselves are mostly at alpha 0.65 (giving the ink the

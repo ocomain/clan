@@ -144,8 +144,8 @@ async function ensureCertificate(member, clan_id, opts = {}) {
 
   // Generate fresh
   const certNumber = shortCertNumber(member.id, member.joined_at);
-  const shieldPng    = fs.readFileSync(path.join(__dirname, '..', 'assets', 'coat_of_arms.png'));
-  const signaturePng = fs.readFileSync(path.join(__dirname, '..', 'assets', 'the_commane_signature.png'));
+  const shieldPng    = fs.readFileSync(path.join(__dirname, '..', 'assets', 'images/brand/coat_of_arms.png'));
+  const signaturePng = fs.readFileSync(path.join(__dirname, '..', 'assets', 'images/archive/the_commane_signature.png'));
 
   const pdfBytes = await generateCertificate({
     name:                 member.name || member.email,
