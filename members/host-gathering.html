@@ -227,13 +227,20 @@
       gap:18px;
       align-items:stretch;
     }
-    .hg-network-row > .hg-network-map{flex:1;min-width:0}
+    /* In column flex direction (mobile, <900px), `flex:1` would have the
+       map take available HEIGHT — collapsing to 0 since .hg-network-row
+       has no fixed height. The map must stay at its explicit
+       height:440px (or 360px on mobile <560px). flex:1 only applies in
+       row-direction (desktop ≥900px), where it correctly fills
+       available WIDTH alongside the 300px list. */
+    .hg-network-row > .hg-network-map{flex:none;min-width:0}
     @media(min-width:900px){
       .hg-network-card{
         margin-left:-130px;
         margin-right:-130px;
       }
       .hg-network-row{flex-direction:row}
+      .hg-network-row > .hg-network-map{flex:1}
       .hg-network-row > #hg-network-list-wrap{
         width:300px;
         flex-shrink:0;
@@ -859,7 +866,7 @@
       $('hg-pin-display').innerHTML = `
         <div class="pin-venue">${esc(g.venue_name)}</div>
         <div>${esc(g.venue_address)}</div>
-        <div class="pin-meta">${esc(g.venue_city)}, ${esc(g.venue_country)} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
+        <div class="pin-meta">${esc(g.venue_city)}, ${esc(countryName(g.venue_country))} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
         ${hostName ? `<div class="pin-meta">Listed as: <strong style="color:var(--ink)">${esc(hostName)}</strong></div>` : ''}
         ${g.message ? `<div class="pin-msg">"${esc(g.message)}"</div>` : ''}
       `;
@@ -1471,11 +1478,37 @@
     }
   }
 
+  // ISO 3166-1 alpha-2 → human-readable country name. Mirrors the
+  // public st-patricks-day page's COUNTRY_NAMES; kept in sync by hand
+  // for now (small map, low churn). Unknown codes fall through to the
+  // raw code so we never display nothing.
+  const COUNTRY_NAMES = {
+    AE:'United Arab Emirates', AR:'Argentina', AT:'Austria', AU:'Australia',
+    BE:'Belgium', BR:'Brazil', CA:'Canada', CH:'Switzerland', CL:'Chile',
+    CN:'China', CZ:'Czech Republic', DE:'Germany', DK:'Denmark',
+    EE:'Estonia', EG:'Egypt', ES:'Spain', FI:'Finland', FR:'France',
+    GB:'United Kingdom', GR:'Greece', HK:'Hong Kong', HU:'Hungary',
+    ID:'Indonesia', IE:'Ireland', IL:'Israel', IN:'India', IS:'Iceland',
+    IT:'Italy', JP:'Japan', KE:'Kenya', KR:'South Korea', LU:'Luxembourg',
+    MA:'Morocco', MX:'Mexico', MY:'Malaysia', NL:'Netherlands',
+    NO:'Norway', NZ:'New Zealand', PE:'Peru', PH:'Philippines',
+    PL:'Poland', PT:'Portugal', QA:'Qatar', RO:'Romania', RU:'Russia',
+    SA:'Saudi Arabia', SE:'Sweden', SG:'Singapore', TH:'Thailand',
+    TR:'Türkiye', TW:'Taiwan', UA:'Ukraine', US:'United States',
+    VN:'Vietnam', ZA:'South Africa'
+  };
+  function countryName(code) {
+    if (!code) return '';
+    return COUNTRY_NAMES[code] || code;
+  }
+
   // Region label for the all-gatherings list — same logic as the
   // public page's regionLabel(), kept in sync by reproducing the
-  // GB subdivision rules.
+  // GB subdivision rules. For non-GB countries we return the full
+  // human name (via COUNTRY_NAMES) rather than the raw ISO code so
+  // the list reads as 'Spain' not 'ES'.
   function regionLabelFor(g) {
-    if (g.venue_country !== 'GB') return g.venue_country;
+    if (g.venue_country !== 'GB') return countryName(g.venue_country);
     const lat = Number(g.venue_lat), lng = Number(g.venue_lng);
     if (lat >= 54.0 && lat <= 55.3 && lng >= -8.2 && lng <= -5.4) return 'Northern Ireland';
     if (lat >= 54.6) return 'Scotland';
@@ -1523,7 +1556,7 @@
 
     return `<div class="hg-pop-eyebrow">St Patrick's Day</div>
       <h3 class="hg-pop-title">${esc(g.venue_name)}</h3>
-      <div class="hg-pop-city">${esc(g.venue_city)}, ${esc(g.venue_country)}</div>
+      <div class="hg-pop-city">${esc(g.venue_city)}, ${esc(countryName(g.venue_country))}</div>
       <div class="hg-pop-when">${esc(fmtTime(g.starts_local_time))} · 17 March ${YEAR}</div>
       ${hostBit}${msg}${attending}${badge}${cta}`;
   }
@@ -1560,7 +1593,7 @@
     $('hg-rsvp-pin-display').innerHTML = `
       <div class="pin-venue">${esc(g.venue_name)}</div>
       <div>${esc(g.venue_address)}</div>
-      <div class="pin-meta">${esc(g.venue_city)}, ${esc(g.venue_country)} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
+      <div class="pin-meta">${esc(g.venue_city)}, ${esc(countryName(g.venue_country))} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
       ${g.host_display_name ? `<div class="pin-meta">Hosted by: <strong style="color:var(--ink)">${esc(g.host_display_name.split(' ')[0])}</strong></div>` : ''}
       ${g.message ? `<div class="pin-msg">"${esc(g.message)}"</div>` : ''}
     `;

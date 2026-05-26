@@ -534,11 +534,38 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // ISO 3166-1 alpha-2 → human-readable country name. Covers the
+  // countries likely to host gatherings (broad diaspora). Unknown
+  // codes fall through to the raw code so we never display nothing.
+  // Add new entries as new countries appear in the data; the small
+  // file impact (~1KB) is fine for the readability win.
+  var COUNTRY_NAMES = {
+    AE:'United Arab Emirates', AR:'Argentina', AT:'Austria', AU:'Australia',
+    BE:'Belgium', BR:'Brazil', CA:'Canada', CH:'Switzerland', CL:'Chile',
+    CN:'China', CZ:'Czech Republic', DE:'Germany', DK:'Denmark',
+    EE:'Estonia', EG:'Egypt', ES:'Spain', FI:'Finland', FR:'France',
+    GB:'United Kingdom', GR:'Greece', HK:'Hong Kong', HU:'Hungary',
+    ID:'Indonesia', IE:'Ireland', IL:'Israel', IN:'India', IS:'Iceland',
+    IT:'Italy', JP:'Japan', KE:'Kenya', KR:'South Korea', LU:'Luxembourg',
+    MA:'Morocco', MX:'Mexico', MY:'Malaysia', NL:'Netherlands',
+    NO:'Norway', NZ:'New Zealand', PE:'Peru', PH:'Philippines',
+    PL:'Poland', PT:'Portugal', QA:'Qatar', RO:'Romania', RU:'Russia',
+    SA:'Saudi Arabia', SE:'Sweden', SG:'Singapore', TH:'Thailand',
+    TR:'Türkiye', TW:'Taiwan', UA:'Ukraine', US:'United States',
+    VN:'Vietnam', ZA:'South Africa'
+  };
+  function countryName(code) {
+    if (!code) return '';
+    return COUNTRY_NAMES[code] || code;
+  }
+
   // Region label for the sidebar — matches the GB subdivision used by
   // the server-side stats (gathering-list.js countryKey). Kept in
-  // sync by sharing the same lat/lng bounds.
+  // sync by sharing the same lat/lng bounds. For non-GB countries we
+  // return the full human name (via COUNTRY_NAMES) rather than the
+  // raw ISO code so the list reads as 'Spain' not 'ES'.
   function regionLabel(g) {
-    if (g.venue_country !== 'GB') return g.venue_country;
+    if (g.venue_country !== 'GB') return countryName(g.venue_country);
     var lat = Number(g.venue_lat), lng = Number(g.venue_lng);
     if (lat >= 54.0 && lat <= 55.3 && lng >= -8.2 && lng <= -5.4) return 'Northern Ireland';
     if (lat >= 54.6) return 'Scotland';
@@ -707,11 +734,11 @@
     if (g.venue_name) {
       titleBlock =
         '<h3 class="lf-pop-title">' + escHtml(g.venue_name) + '</h3>' +
-        '<div class="lf-pop-city">' + escHtml(g.venue_city) + ', ' + escHtml(g.venue_country) + '</div>';
+        '<div class="lf-pop-city">' + escHtml(g.venue_city) + ', ' + escHtml(countryName(g.venue_country)) + '</div>';
     } else {
       titleBlock =
         '<h3 class="lf-pop-title">' + escHtml(g.venue_city) + '</h3>' +
-        '<div class="lf-pop-city">' + escHtml(g.venue_country) + '</div>';
+        '<div class="lf-pop-city">' + escHtml(countryName(g.venue_country)) + '</div>';
       revealLine = '<div class="lf-pop-reveal">The venue is shared with members on join.</div>';
     }
 
@@ -782,6 +809,31 @@
       if (gatherings.length === 0) {
         emptyEl.classList.add('show');
         return;
+      }
+
+      // Privacy gate: cap maxZoom for non-members so the public map can
+      // show the city but not zoom in close enough to reveal the venue
+      // by visual inspection of streets and landmarks. The server-side
+      // API already nulls out venue_name + venue_address for non-auth
+      // callers (see gathering-list.js gating), but tile-level imagery
+      // could still betray the pub if a visitor zoomed in to street
+      // level (Leaflet's default maxZoom is 18 — building detail).
+      //
+      // Detection: the API returns venue_name=null when the caller is
+      // not authenticated. If ANY gathering in the payload has a
+      // venue_name populated, the caller is a member and gets the full
+      // zoom range. Otherwise cap at zoom 10 — city outline visible,
+      // street layout not yet recognisable.
+      //
+      // Note: limiting to zoom 10 applies to map.setMaxZoom but not to
+      // the tile layer's maxZoom (still 18) — the tiles themselves stay
+      // available, the map UI just doesn't let the user zoom past 10.
+      // setZoom is also capped to enforce the limit on any programmatic
+      // zoom requests (e.g. our flyTo click handler clamps to 6 which
+      // is below 10 so it's unaffected).
+      var isMember = gatherings.some(function(g){ return !!g.venue_name; });
+      if (!isMember) {
+        map.setMaxZoom(10);
       }
 
       var bounds = [];
