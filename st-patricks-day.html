@@ -108,7 +108,7 @@
        with the map for breathing room. */
     .lf-map-row{display:flex;gap:18px;align-items:stretch}
     .lf-map-row > .lf-map{flex:1;min-width:0}
-    .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:680px;overflow:hidden}
+    .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:440px;overflow:hidden}
     .lf-sidebar-title{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
     /* JS-DRIVEN FAKE SCROLLBAR
        ─────────────────────────────────────────────────────────────────
@@ -209,7 +209,7 @@
       .lf-member-banner{padding:16px 18px}
       .lf-member-banner-cta{width:100%;text-align:center;box-sizing:border-box}
     }
-    .lf-map{width:100%;height:680px;border:1px solid var(--gold-border);background:var(--ink-mid);position:relative}
+    .lf-map{width:100%;height:440px;border:1px solid var(--gold-border);background:var(--ink-mid);position:relative}
     .lf-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-family:'EB Garamond',serif;font-style:italic;font-size:17px;background:var(--ink-mid);z-index:401;opacity:.85}
     .lf-map-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,31,15,.72);z-index:402;padding:24px}
     .lf-map-empty.show{display:flex}
@@ -230,7 +230,7 @@
     .lf-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(0,0,0,.45);background-color:#1a2a1a}
     .lf-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
     .lf-avatar-pin:hover .lf-avatar-pin-circle{border-color:#F5ECD8;transition:border-color .15s}
-    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:340px;overflow-y:auto}
+    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:280px;overflow-y:auto}
     /* Mobile popup cap — the map is 360px tall on mobile portrait
        (matching the members map), and a 340px popup leaves no room
        for Leaflet's auto-pan to land the popup fully on screen. The
@@ -845,15 +845,15 @@
         // closes any other — so a user clicking through the sidebar
         // list never sees overlapping popups stacking up.
         // Auto-pan padding is viewport-aware: the 150px top padding
-        // was tuned for the 680px desktop map (clears the nav, leaves
-        // breathing room above the popup). On mobile portrait the map
-        // is only 360px tall, so 150px+30px reserved padding leaves
-        // 180px for the popup body — less than the popup itself.
-        // Leaflet then can't fit the popup within the constraints and
-        // half-clips it. Tighten the padding on narrow viewports so
-        // Leaflet has room to position the popup fully on screen.
+        // was tuned for the previous 680px desktop map. With the map
+        // now 440px (matching members), 150px top + 30px bottom
+        // reserved leaves only 260px for the popup body — less than
+        // the popup's 340px max-height. Leaflet then can't fit the
+        // popup within the constraints and clips it. Tightened to
+        // 60px / 30px on desktop for comfortable headroom, 30px / 20px
+        // on narrow viewports as before.
         var isNarrowMap = window.innerWidth < 720;
-        var topPad      = isNarrowMap ? 30  : 150;
+        var topPad      = isNarrowMap ? 30  : 60;
         var bottomPad   = isNarrowMap ? 20  : 30;
         m.bindPopup(popupHtml(g), {
           maxWidth: 320,
