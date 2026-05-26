@@ -110,7 +110,39 @@
     .lf-map-row > .lf-map{flex:1;min-width:0}
     .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:680px;overflow:hidden}
     .lf-sidebar-title{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
-    .lf-sidebar-list{flex:1;overflow-y:auto;padding:6px 0;position:relative}
+    /* Custom scrollbar — always visible to signal the list is scrollable.
+       iOS Safari hides scrollbars by default until the user is actively
+       scrolling, which left mobile users with no static cue that the
+       gatherings list could scroll up and down. Forced visibility via:
+         - overflow-y:scroll (reserves space, not just `auto` which only
+           reserves space when content overflows)
+         - explicit ::-webkit-scrollbar styling with gold track + thumb
+           against the dark green ink background
+         - color contrast generous enough to read against ink at a glance
+       Width 8px is a good balance — visible without being heavy. */
+    .lf-sidebar-list{
+      flex:1;
+      overflow-y:scroll;
+      padding:6px 0;
+      position:relative;
+      scrollbar-width:thin;
+      scrollbar-color:rgba(184,151,90,.55) rgba(184,151,90,.1);
+    }
+    .lf-sidebar-list::-webkit-scrollbar{
+      width:8px;
+      -webkit-appearance:none;
+    }
+    .lf-sidebar-list::-webkit-scrollbar-track{
+      background:rgba(184,151,90,.1);
+    }
+    .lf-sidebar-list::-webkit-scrollbar-thumb{
+      background:rgba(184,151,90,.55);
+      border-radius:4px;
+      min-height:32px;
+    }
+    .lf-sidebar-list::-webkit-scrollbar-thumb:hover{
+      background:rgba(184,151,90,.8);
+    }
     /* Soft gradient fade at the bottom of the scrollable list — visual
        cue that there are more gatherings below the fold. Without this,
        users on mobile (where only ~3 items are visible at a time) had
@@ -123,7 +155,9 @@
       content:'';
       position:absolute;
       left:0;
-      right:0;
+      /* Right gap of 12px so the gold scrollbar (8px wide + 2px each
+         side track padding) stays visually distinct from the fade. */
+      right:12px;
       bottom:0;
       height:36px;
       background:linear-gradient(to bottom, rgba(15,31,15,0), rgba(15,31,15,.88));
