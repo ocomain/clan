@@ -231,6 +231,18 @@
     .lf-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
     .lf-avatar-pin:hover .lf-avatar-pin-circle{border-color:#F5ECD8;transition:border-color .15s}
     .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:340px;overflow-y:auto}
+    /* Mobile popup cap — the map is 360px tall on mobile portrait
+       (matching the members map), and a 340px popup leaves no room
+       for Leaflet's auto-pan to land the popup fully on screen. The
+       popup's wrapper adds tip/border/shadow on top of the content
+       max-height, so the effective bubble at 340px content was
+       ~390px total — taller than the map. Result: popup half-clipped
+       below the map's lower edge (DDW reported). Cap content to
+       240px on narrow viewports → ~290px total bubble height,
+       comfortably inside 360px with auto-pan headroom. */
+    @media(max-width:720px){
+      .leaflet-popup-content{max-height:240px}
+    }
     .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:5px;opacity:.85}
     .lf-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#F5ECD8;margin:0 0 4px;font-weight:500}
     .lf-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.75);font-style:italic;margin-bottom:9px}
@@ -780,18 +792,24 @@
         // here so future-me doesn't second-guess). Opening one popup
         // closes any other — so a user clicking through the sidebar
         // list never sees overlapping popups stacking up.
+        // Auto-pan padding is viewport-aware: the 150px top padding
+        // was tuned for the 680px desktop map (clears the nav, leaves
+        // breathing room above the popup). On mobile portrait the map
+        // is only 360px tall, so 150px+30px reserved padding leaves
+        // 180px for the popup body — less than the popup itself.
+        // Leaflet then can't fit the popup within the constraints and
+        // half-clips it. Tighten the padding on narrow viewports so
+        // Leaflet has room to position the popup fully on screen.
+        var isNarrowMap = window.innerWidth < 720;
+        var topPad      = isNarrowMap ? 30  : 150;
+        var bottomPad   = isNarrowMap ? 20  : 30;
         m.bindPopup(popupHtml(g), {
           maxWidth: 320,
           autoClose: true,
           closeOnClick: true,
           autoPan: true,
-          // Aggressive top padding so when the popup opens upward from
-          // the marker, the title and host row always sit comfortably
-          // below the map's top edge — combined with the popup's
-          // max-height + overflow-y:auto, this guarantees the full
-          // event box is readable on screen.
-          autoPanPaddingTopLeft: L.point(20, 150),
-          autoPanPaddingBottomRight: L.point(20, 30),
+          autoPanPaddingTopLeft: L.point(20, topPad),
+          autoPanPaddingBottomRight: L.point(20, bottomPad),
         });
         // Clicking a pin on the map zooms in to country-level (zoom 6)
         // BEFORE opening the popup. Previously this called setView at
