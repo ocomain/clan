@@ -313,7 +313,7 @@ const VOICES = {
     replyTo: 'jessica@ocomain.org',
     eyebrow: 'From the Keeper of the Seat',
     signature: () => signatureBlock({
-      avatar: 'jessica_lily_commane.png',
+      avatar: 'jessica_commane_bubble.jpg',
       name: 'Jessica-Lily Commane',
       role: 'Keeper of the Seat of Clan Ó Comáin',
       irish: 'Coimeádaí na Suíochán',
