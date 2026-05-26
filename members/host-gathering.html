@@ -141,37 +141,56 @@
     /* Toast */
     /* Toast notifications.
        
-       Previously inline in the document flow, requiring a window.scrollTo
-       to make the toast visible after an error fired deep in the form
-       (e.g. avatar upload failure on the photo field which sits
-       mid-form). Maria reported the scroll-to-top behaviour being
-       disorientating — she'd tap Save at the bottom and the page would
-       jump away from her.
+       Position-fixed BOTTOM-RIGHT so it appears near where most action
+       buttons live (Save, RSVP, Cancel) without obscuring them.
+       Errors persist until manually dismissed via the close button —
+       Maria reported errors flashing past too quickly to read, and a
+       member who turns away to check a photo or look up an address
+       would otherwise miss the message entirely.
        
-       Now: position:fixed at the top of the viewport, so the toast
-       appears near the user's eyeline regardless of scroll position.
-       z-index:1000 keeps it above the leaflet map and any other UI.
-       max-width keeps it readable on desktop without becoming a
-       cross-page banner. Centred horizontally with margin auto. */
+       Success (.ok) auto-dismisses after 4 seconds — they confirm a
+       happy-path action and the user doesn't need to interact with
+       them. Errors (.err) stay until tapped.
+       
+       z-index:1000 keeps it above the leaflet map and any other UI. */
     .hg-toast{
       position:fixed;
-      top:78px;       /* clears the 58px-tall mobile nav + 20px gap */
-      left:50%;
-      transform:translateX(-50%);
-      max-width:560px;
-      width:calc(100% - 32px);
-      padding:14px 18px;
+      bottom:24px;
+      right:24px;
+      max-width:420px;
+      width:calc(100% - 48px);
+      padding:14px 44px 14px 18px;  /* right padding for close button */
       border-radius:2px;
       font-family:'EB Garamond',serif;
       font-size:16px;
       line-height:1.5;
       display:none;
       z-index:1000;
-      box-shadow:0 6px 24px rgba(0,0,0,.18);
+      box-shadow:0 6px 24px rgba(0,0,0,.22);
     }
     .hg-toast.show{display:block}
     .hg-toast.ok{background:#F8F4EC;border-left:3px solid var(--ink-soft);color:var(--ink)}
     .hg-toast.err{background:#FDF4F2;border-left:3px solid #9C2A2A;color:#6C1E1E}
+    .hg-toast-close{
+      position:absolute;
+      top:8px;
+      right:8px;
+      width:28px;
+      height:28px;
+      background:transparent;
+      border:none;
+      color:inherit;
+      opacity:.55;
+      font-size:22px;
+      line-height:1;
+      cursor:pointer;
+      font-family:'Jost',sans-serif;
+      padding:0;
+    }
+    .hg-toast-close:hover{opacity:1}
+    @media(max-width:560px){
+      .hg-toast{bottom:16px;right:8px;left:8px;width:auto;max-width:none}
+    }
 
     /* RSVPs list */
     .hg-rsvp{padding:16px 0;border-bottom:1px solid var(--cream-mid);font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.65}
@@ -522,12 +541,32 @@
   }
 
   function showToast(msg, kind) {
-    toastEl.textContent = msg;
-    toastEl.className = 'hg-toast show ' + (kind === 'err' ? 'err' : 'ok');
-    // No longer scrolls to top — the toast is position:fixed so it
-    // appears near the viewport top regardless of where the user is
-    // in the page. Auto-hides after 6 seconds.
-    setTimeout(() => { toastEl.classList.remove('show'); }, 6000);
+    const isErr = (kind === 'err');
+    // Build the toast with an explicit close button so errors stay
+    // visible until the user dismisses them. The button uses a real
+    // <button> for keyboard + screen-reader accessibility; the
+    // listener is wired here each time the toast is shown.
+    toastEl.innerHTML = '';
+    const msgSpan = document.createElement('span');
+    msgSpan.textContent = msg;
+    toastEl.appendChild(msgSpan);
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'hg-toast-close';
+    closeBtn.setAttribute('aria-label', 'Dismiss');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.addEventListener('click', () => {
+      toastEl.classList.remove('show');
+    });
+    toastEl.appendChild(closeBtn);
+    toastEl.className = 'hg-toast show ' + (isErr ? 'err' : 'ok');
+    // Success toasts confirm a happy-path action and auto-dismiss
+    // after 4 seconds. Error toasts persist until the user taps the
+    // close button — they convey actionable information the user
+    // needs time to read and respond to.
+    if (!isErr) {
+      setTimeout(() => { toastEl.classList.remove('show'); }, 4000);
+    }
   }
 
   function showError(msg) {

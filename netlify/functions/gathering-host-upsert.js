@@ -240,13 +240,24 @@ exports.handler = async (event) => {
       // which was misleading — that's the raw-file client ceiling,
       // not the server's post-decode limit. Users were sending small
       // photos and getting an irrelevant "8 MB" message back.
+      //
+      // Storage-upload failures (the most informative class) now
+      // surface the underlying Supabase Storage error in the response
+      // — Maria was hitting this with no actionable info. The
+      // detail field is small enough not to overwhelm the toast but
+      // gives DDW + the user a real clue.
       let userMsg;
       if (e.message.startsWith('Avatar too large')) {
         userMsg = 'Your photo is too large after processing — please try a smaller or lower-resolution image.';
       } else if (e.message.includes('not allowed')) {
         userMsg = 'That image format is not supported — please use JPEG, PNG or WebP.';
       } else if (e.message.startsWith('Storage upload')) {
-        userMsg = 'There was a temporary problem saving your photo — please try again in a moment.';
+        // Strip the prefix and pass the underlying Supabase message
+        // through so it's visible. Keeps the toast short while still
+        // conveying the real failure (e.g. "Bucket not found",
+        // "Object exists", "Payload too large").
+        const detail = e.message.replace(/^Storage upload failed:\s*/, '');
+        userMsg = `Could not save your photo: ${detail}. Please try again, or send the photo to clan@ocomain.org and we'll add it manually.`;
       } else {
         userMsg = 'We could not save your photo — please try a different image (JPEG, PNG or WebP).';
       }
@@ -294,14 +305,51 @@ exports.handler = async (event) => {
     return { statusCode: 500, headers, body: JSON.stringify({ error: 'Could not save gathering — please try again.' }) };
   }
 
-  // ── Notify the Office (non-blocking) ───────────────────────────────
-  notifyOffice({
-    isNew,
-    memberRow,
-    memberEmail,
-    saved,
-    year,
-  }).catch(e => console.warn('office notify failed (non-blocking):', e.message));
+  // ── Notify the Office (non-blocking, deduped) ──────────────────────
+  // Send a notification to the Office on every create, but on update
+  // only if the previous notification was more than 30 minutes ago.
+  // Without this, a member iterating on their pin (e.g. tweaking the
+  // venue, photo, and message in succession over a few minutes) can
+  // generate 5+ Office emails for what is effectively one editing
+  // session. The 30-minute window collapses a normal editing session
+  // into a single email; genuine return-visits later in the day still
+  // produce a fresh notification.
+  //
+  // Implementation: check the events log for the most recent
+  // gathering_created or gathering_updated event for this member and
+  // this gathering, BEFORE we write the new one. If it's within 30
+  // minutes, skip the email. The event log gets a fresh row below
+  // either way so future calls can rate-check correctly.
+  let shouldNotify = isNew;
+  if (!isNew) {
+    try {
+      const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      const { data: recentEvents } = await supa()
+        .from('events')
+        .select('id')
+        .eq('member_id', memberRow.id)
+        .in('event_type', ['gathering_created', 'gathering_updated'])
+        .gte('created_at', cutoff)
+        .limit(1);
+      // No recent event for this member → notify. Recent event → skip.
+      shouldNotify = !recentEvents || recentEvents.length === 0;
+    } catch (e) {
+      // Rate-check failure shouldn't suppress a legitimate notification.
+      // Default to notify on error so we err toward over-emailing rather
+      // than swallowing important signals.
+      console.warn('notify rate-check failed (defaulting to notify):', e && e.message);
+      shouldNotify = true;
+    }
+  }
+  if (shouldNotify) {
+    notifyOffice({
+      isNew,
+      memberRow,
+      memberEmail,
+      saved,
+      year,
+    }).catch(e => console.warn('office notify failed (non-blocking):', e.message));
+  }
 
   // ── Mirror a freshly-uploaded avatar onto the member profile ──────
   // The host-form is the one place in the app where a member uploads a
