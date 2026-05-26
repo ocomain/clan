@@ -1131,13 +1131,18 @@
     const bounds = [];
     gatherings.forEach(g => {
       const marker = L.marker([g.venue_lat, g.venue_lng], { icon: pinIconFor(g) }).addTo(networkMap);
-      // autoClose:false so multiple popups can co-exist when auto-opened.
-      // autoPan padding keeps popups in view after open (the bug the
-      // public screenshot showed — popup clipped above the map).
+      // One popup at a time. Previously autoClose:false to support an
+      // "open all popups on a sparse map" behaviour that was removed
+      // in favour of single-pin auto-open only. Without autoClose,
+      // clicking pin B leaves pin A's popup open — DDW screenshot
+      // showed Joe (Austin) and Maria (Barcelona) popups stacked
+      // side by side, both fighting for screen real estate. autoClose:
+      // true makes the map behave like the public st-patricks-day map
+      // and feels right on first interaction.
       marker.bindPopup(popupHtmlFor(g), {
         maxWidth: 320,
-        autoClose: false,
-        closeOnClick: false,
+        autoClose: true,
+        closeOnClick: true,
         autoPan: true,
         autoPanPaddingTopLeft: L.point(20, 80),
         autoPanPaddingBottomRight: L.point(20, 20),
