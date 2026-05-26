@@ -272,7 +272,13 @@
       .lf-hero{padding:50px 0;min-height:auto}
       .lf-stats{padding:36px 0}
       .lf-stats-grid{gap:32px}
-      .lf-map{height:440px}
+      /* Map height: 360px on mobile portrait to match the members map.
+         Was 440px which left a visible empty Atlantic/Arctic gap above
+         the pin cluster: with a wide pin spread (Texas to UAE), Leaflet
+         fits the horizontal span and the resulting zoom leaves
+         excess vertical space in the taller container. Members map at
+         360px shows the same pins comfortably with no gap. */
+      .lf-map{height:360px}
       .lf-host{padding:60px 0}
     }
   </style>
@@ -826,17 +832,12 @@
         // Single pin — frame it loosely so it doesn't zoom uncomfortably close.
         map.setView(bounds[0], 6);
       } else {
-        // Pixel-level padding only — no .pad() expansion. On mobile
-        // portrait (narrow viewport, near-square map area, pin spread
-        // tends to be wider-than-tall: e.g. Texas → UAE) the
-        // symmetric [40, 40] padding made Leaflet pick a zoom where
-        // the horizontal span fit comfortably but the vertical
-        // dimension had visible empty padding top+bottom. Asymmetric
-        // [40 horizontal, 10 vertical] favours vertical fill so the
-        // map reads as full-box rather than partial.
-        var isNarrow = window.innerWidth < 760;
-        var pad = isNarrow ? [40, 10] : [40, 40];
-        map.fitBounds(bounds, { padding: pad, maxZoom: 8 });
+        // Symmetric pixel padding — same as the members map which DDW
+        // reported as 'perfect'. Asymmetric padding overcorrected on
+        // mobile and the height mismatch with members map was the
+        // actual source of the vertical gap (now resolved by matching
+        // the members 360px map height).
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
       }
 
       // Stash for sidebar wiring (defined below renderSidebar)
@@ -844,6 +845,22 @@
       window.__lfMap = map;
       window.__lfGatherings = gatherings;
       renderSidebar(gatherings, markers, map);
+
+      // renderSidebar reveals the sidebar (display:none → ''), which on
+      // desktop reduces the map's flex sibling width by ~298px (280px
+      // sidebar + 18px gap). fitBounds was already run against the
+      // pre-reveal wider map, so any right-edge pin (e.g. Antóin's UAE
+      // gathering) ends up off-screen under the now-visible sidebar.
+      // Invalidate size + re-fit on next frame so Leaflet picks up the
+      // settled dimensions and re-frames against them.
+      setTimeout(function(){
+        map.invalidateSize();
+        if (bounds.length === 1) {
+          map.setView(bounds[0], 6);
+        } else if (bounds.length > 1) {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+        }
+      }, 50);
 
       // Auto-open the popup only when there is exactly one pin. With a
       // single tightly-framed marker the auto-open is a friendly "here's
