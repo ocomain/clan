@@ -260,7 +260,28 @@
        secondary "Sign in" link directly under it with no extra border.
        Compact stack keeps the popup short enough that the title stays
        on screen when the popup opens near a map edge. */
-    .lf-pop-actions{margin-top:6px;padding-top:8px;border-top:1px solid rgba(184,151,90,.25)}
+    /* Sticky popup action bar — always visible at the bottom of the
+       popup even when the content above overflows the mobile
+       max-height (240px) cap. Previously the Join/Sign in links would
+       get pushed below the scroll fold on mobile where popups with
+       longer host messages exceeded the height — user reported they
+       were 'hidden'.
+       
+       Implementation: position:sticky;bottom:0 keeps the actions
+       pinned to the bottom of the scrolling popup body. Negative
+       margins extend the action area to the popup wrapper's inner
+       edges so it reads as a footer band rather than indented inline
+       content. Solid background matches the popup body (#0F1F0F) so
+       the scrolling content slides cleanly behind. */
+    .lf-pop-actions{
+      position:sticky;
+      bottom:-14px;       /* negative cancels popup-content's 14px margin */
+      background:#0F1F0F;
+      margin:6px -18px -14px;
+      padding:8px 18px 12px;
+      border-top:1px solid rgba(184,151,90,.25);
+      z-index:2;
+    }
     .lf-pop-link{display:block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;margin-bottom:5px}
     .lf-pop-link:hover{color:#F5ECD8}
     .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}

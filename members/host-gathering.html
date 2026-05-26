@@ -399,9 +399,33 @@
     .hg-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#0F1F0F;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .hg-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:#5A7A5A;font-style:italic;margin-bottom:13px;padding-left:9px;border-left:2px solid #E4D5A8}
     .hg-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#8B6F32;margin-bottom:11px}
+    /* Sticky popup footer — keeps the badge + CTA pinned to the
+       bottom of the popup body so they stay visible even when the
+       content above overflows the mobile 240px max-height cap. User
+       reported the 'I'll be there' button was hidden on mobile when
+       popups had longer host messages.
+       
+       Implementation: position:sticky;bottom keeps the footer pinned
+       as content scrolls underneath. Negative margins extend it to
+       the popup wrapper's inner edges so it reads as a footer band.
+       Solid white background matches the popup body so scrolling
+       content slides cleanly behind. */
+    .hg-pop-footer{
+      position:sticky;
+      bottom:-16px;       /* negative cancels popup-content's 16px margin */
+      background:#FFFFFF;
+      margin:8px -20px -16px;
+      padding:10px 20px 14px;
+      border-top:1px solid rgba(184,151,90,.25);
+      z-index:2;
+    }
     .hg-pop-badge{display:inline-block;background:rgba(184,151,90,.16);color:#8B6F32;font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;margin-bottom:10px}
     .hg-pop-badge-own{background:rgba(46,74,46,.12);color:#2E4A2E}
-    .hg-pop-cta{display:inline-block;background:#B8975A;color:#0F1F0F;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;padding:10px 18px;margin-top:8px;border-radius:1px}
+    .hg-pop-cta{display:inline-block;background:#B8975A;color:#0F1F0F;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;padding:10px 18px;border-radius:1px}
+    /* When the badge is present (user already RSVP'd, or own pin),
+       sit the CTA below the badge with a tight gap. When the badge
+       isn't shown, the CTA stands alone — no top margin needed. */
+    .hg-pop-footer .hg-pop-badge + .hg-pop-cta{margin-top:4px}
     .hg-pop-cta:hover{background:#D4B483}
     .hg-pop-cta-ghost{background:transparent;color:#8B6F32;border:1px solid rgba(184,151,90,.4)}
     .hg-pop-cta-ghost:hover{background:rgba(184,151,90,.08);color:#0F1F0F}
@@ -1576,7 +1600,8 @@
       <h3 class="hg-pop-title">${esc(g.venue_name)}</h3>
       <div class="hg-pop-city">${esc(g.venue_city)}, ${esc(countryName(g.venue_country))}</div>
       <div class="hg-pop-when">${esc(fmtTime(g.starts_local_time))} · 17 March ${YEAR}</div>
-      ${hostBit}${msg}${attending}${badge}${cta}`;
+      ${hostBit}${msg}${attending}
+      <div class="hg-pop-footer">${badge}${cta}</div>`;
   }
 
   function attachPopupHandlers(g) {
