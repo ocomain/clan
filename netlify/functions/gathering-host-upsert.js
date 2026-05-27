@@ -161,7 +161,30 @@ exports.handler = async (event) => {
 
   const trim = (s, max) => String(s == null ? '' : s).trim().slice(0, max);
 
-  const hostDisplayName = trim(body.hostDisplayName, MAX_DISPLAY_NAME) || null;
+  // host_display_name policy: the form no longer collects this — we
+  // derive a first-name-only display from the member's registered name
+  // automatically. The full registered name (e.g. 'Jessica Lily Ó
+  // Comáin') doesn't fit nicely on a map pin and was producing pins
+  // with no "Hosted by" line at all when members skipped the optional
+  // field. Now: take the first whitespace-delimited token from
+  // memberRow.name. Strip any leading particles ('Mr', 'Dr', 'The')
+  // we don't want to expose. The client can still override by sending
+  // hostDisplayName explicitly (kept for forward compatibility in case
+  // we re-add a customisation UI later), but the form does not.
+  function deriveDisplayFirstName(fullName) {
+    if (!fullName) return null;
+    const tokens = String(fullName).trim().split(/\s+/);
+    if (tokens.length === 0) return null;
+    // Skip honorifics if they appear first.
+    const HONORIFICS = new Set(['Mr', 'Mr.', 'Mrs', 'Mrs.', 'Ms', 'Ms.', 'Dr', 'Dr.', 'The', 'Lord', 'Lady']);
+    const first = HONORIFICS.has(tokens[0]) && tokens.length > 1 ? tokens[1] : tokens[0];
+    return first || null;
+  }
+  const hostDisplayName = (
+    trim(body.hostDisplayName, MAX_DISPLAY_NAME) ||
+    deriveDisplayFirstName(memberRow && memberRow.name) ||
+    null
+  );
   const message         = trim(body.message,         MAX_MESSAGE)      || null;
   const venueName       = trim(body.venueName,       MAX_VENUE_NAME);
   const venueAddress    = trim(body.venueAddress,    MAX_VENUE_ADDRESS);

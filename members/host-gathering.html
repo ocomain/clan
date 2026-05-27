@@ -638,17 +638,10 @@
           <div class="hg-mini-map" id="hg-mini-map"></div>
         </div>
 
-        <div class="hg-row-2">
-          <div class="hg-field">
-            <label class="hg-label" for="hg-time">Start time (local)</label>
-            <input type="text" class="hg-input" id="hg-time" placeholder="19:00" pattern="\d{1,2}:\d{2}">
-            <div class="hg-help">24-hour format, e.g. 19:00 for 7 pm.</div>
-          </div>
-          <div class="hg-field">
-            <label class="hg-label" for="hg-display-name">Host name on map</label>
-            <input type="text" class="hg-input" id="hg-display-name" placeholder="(optional)">
-            <div class="hg-help">Leave blank to use your registered name.</div>
-          </div>
+        <div class="hg-field">
+          <label class="hg-label" for="hg-time">Start time (local)</label>
+          <input type="text" class="hg-input" id="hg-time" placeholder="19:00" pattern="\d{1,2}:\d{2}">
+          <div class="hg-help">24-hour format, e.g. 19:00 for 7 pm.</div>
         </div>
 
         <div class="hg-field">
@@ -896,12 +889,17 @@
 
     if (currentGathering && currentGathering.status === 'published') {
       const g = currentGathering;
-      const hostName = g.host_display_name || memberProfile.name || '';
+      // "Listed as" shows first name only — same first-name-only
+      // policy as the popups and sidebar list. Server now auto-
+      // populates host_display_name with a derived first name, so
+      // hostName here should already be one token; the .split call
+      // is a safety net for any rows that pre-date the policy.
+      const hostFirstName = (g.host_display_name || memberProfile.name || '').split(/\s+/)[0] || '';
       $('hg-pin-display').innerHTML = `
         <div class="pin-venue">${esc(g.venue_name)}</div>
         <div>${esc(g.venue_address)}</div>
         <div class="pin-meta">${esc(g.venue_city)}, ${esc(countryName(g.venue_country))} · ${esc(fmtTime(g.starts_local_time))} on 17 March ${YEAR}</div>
-        ${hostName ? `<div class="pin-meta">Listed as: <strong style="color:var(--ink)">${esc(hostName)}</strong></div>` : ''}
+        ${hostFirstName ? `<div class="pin-meta">Listed as: <strong style="color:var(--ink)">${esc(hostFirstName)}</strong></div>` : ''}
         ${g.message ? `<div class="pin-msg">"${esc(g.message)}"</div>` : ''}
       `;
       existingCard.style.display = 'block';
@@ -935,7 +933,6 @@
     $('hg-venue-lat').value     = g.venue_lat;
     $('hg-venue-lng').value     = g.venue_lng;
     $('hg-time').value          = g.starts_local_time;
-    $('hg-display-name').value  = g.host_display_name || '';
     $('hg-message').value       = g.message || '';
     $('hg-pub-search').value    = g.venue_name;
     // Preload the existing avatar (if any) so editing without picking
@@ -991,7 +988,12 @@
     const venueLat      = parseFloat($('hg-venue-lat').value);
     const venueLng      = parseFloat($('hg-venue-lng').value);
     const time          = $('hg-time').value.trim();
-    const displayName   = $('hg-display-name').value.trim();
+    // hostDisplayName: no longer collected from the form. Server
+    // derives a first-name-only display from the member's registered
+    // name automatically (see gathering-host-upsert.js
+    // deriveDisplayFirstName). The form's "How should the kindred
+    // address you?" field was producing pins with no "Hosted by"
+    // line at all when members left it blank (it was optional).
     const message       = $('hg-message').value.trim();
     // Avatar handling: hg-avatar-data-url holds either a freshly-uploaded
     // resized data URL (data:image/...) OR the URL of an existing avatar
@@ -1032,7 +1034,6 @@
           year: YEAR,
           venueName, venueAddress, venueCity, venueCountry, venueLat, venueLng,
           startsLocalTime: time,
-          hostDisplayName: displayName,
           message,
           avatar: avatarValue,  // data: URL, existing URL, or '' for clear
         }),
