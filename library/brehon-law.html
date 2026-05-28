@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What Was Brehon Law? The Native Legal System of Gaelic Ireland · Clan Ó Comáin</title>
-  <meta name="description" content="Brehon law was the native legal system of Gaelic Ireland for over a thousand years. The year-and-a-day rule, the honour-price, the clan as legal unit, women who served as judges — a careful introduction by Clan Ó Comáin.">
-
+  <meta name="description" content="Brehon law was the native legal system of Gaelic Ireland for over a thousand years — the year-and-a-day rule, the honour-price, women who served as judges.">
+  <link rel="canonical" href="https://www.ocomain.org/library/brehon-law.html">
   <link rel="stylesheet" href="/fonts/fonts.css">
   <link rel="stylesheet" href="/shared.css">
   <link rel="icon" href="/favicon.ico">
@@ -53,14 +53,37 @@
     .art-hero-dek{font-family:'EB Garamond',serif;font-size:clamp(18px,2vw,22px);color:var(--ink-soft);line-height:1.6;margin:0 auto 28px;max-width:580px;font-style:italic}
     .art-hero-meta{display:inline-flex;align-items:center;gap:12px;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted)}
     .art-hero-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--gold)}
+    /* Hero illustration — open manuscript + quill. Sits below the meta
+       row, gives the hero a visual anchor without a photographic asset. */
+    .art-hero-art{margin:32px auto 0;max-width:240px}
+    .art-hero-art svg{display:block;width:100%;height:auto}
 
     /* BODY — reading-room column. Slightly generous line-height
        (1.85) and 18.5px base size; print-quality reading on a phone
        AND a desktop. */
     .art-body{max-width:680px;margin:0 auto;padding:48px 24px 60px;font-size:18.5px;line-height:1.85;color:var(--ink)}
 
-    /* Drop-cap on the first paragraph — same as Myth */
-    .art-body > p:first-of-type::first-letter{font-family:'EB Garamond',serif;font-size:64px;line-height:0.85;float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400}
+    /* Drop-cap — lands on the first regular body paragraph (the one
+       right after the Seanchaí opening frame). Targets the paragraph
+       immediately following .art-seanchai-open. */
+    .art-seanchai-open + p::first-letter{font-family:'EB Garamond',serif;font-size:64px;line-height:0.85;float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400}
+
+    /* SEANCHAÍ host byline — Paddy Commane as the teller. Circular
+       avatar + label/name/role, sits at the very top of the article
+       body. Establishes the storyteller before the first word. */
+    .art-teller{display:flex;align-items:center;gap:16px;padding:0 0 28px;margin-bottom:28px;border-bottom:1px solid var(--gold-border)}
+    .art-teller-img{width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--gold);flex-shrink:0;box-shadow:0 2px 10px rgba(12,26,12,.12)}
+    .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:4px}
+    .art-teller-name{font-family:'EB Garamond',serif;font-size:21px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:3px}
+    .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic}
+
+    /* Seanchaí first-person frame paragraphs — warm storyteller voice
+       at open and close. Burgundy left-rule, slightly larger, so they
+       read as Paddy speaking rather than as body prose. Drop-cap
+       suppressed here so it lands on the first real body paragraph. */
+    .art-seanchai-open,.art-seanchai-close{font-family:'EB Garamond',serif;font-size:19.5px;line-height:1.8;color:var(--ink);font-style:italic;border-left:3px solid var(--burgundy);padding:4px 0 4px 24px;margin:0 0 28px}
+    .art-seanchai-open::first-letter{font-size:inherit;float:none;margin:0;color:inherit}
+    .art-seanchai-close{margin-top:8px;margin-bottom:0}
 
     .art-body p{margin:0 0 22px}
     .art-body p:last-child{margin-bottom:0}
@@ -131,8 +154,12 @@
     @media (max-width:560px){
       .art-hero{padding:42px 0 36px}
       .art-body{padding:32px 20px 40px;font-size:17.5px}
-      .art-body > p:first-of-type::first-letter{font-size:52px}
+      .art-seanchai-open + p::first-letter{font-size:52px}
       .art-callout{padding:18px 22px}
+      .art-teller{gap:13px;padding-bottom:22px;margin-bottom:22px}
+      .art-teller-img{width:56px;height:56px}
+      .art-teller-name{font-size:19px}
+      .art-seanchai-open,.art-seanchai-close{font-size:18px;padding-left:18px}
     }
   </style>
 
@@ -153,6 +180,14 @@
   </script>
 </head>
 <body>
+
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
+<!-- Analytics — Microsoft Clarity + Meta Pixel, deferred until first
+     user interaction so iOS Safari doesn't surface its 'Reduce Privacy
+     Protections' banner on initial paint. See /js/analytics-deferred.js
+     for the loader, rationale, and failsafe behaviour. -->
+<script defer src="/js/analytics-deferred.js"></script>
 
 <!-- NAV -->
 <nav class="nav">
@@ -206,17 +241,71 @@ function toggleMenu(){
       <span class="art-hero-meta-dot"></span>
       <span>Curated by Clan Ó Comáin</span>
     </div>
+    <!-- Decorative manuscript illustration — an open vellum book with
+         a quill, framed by a simple Celtic-knot border. Sets the
+         'written law' theme visually. Pure SVG, no asset. -->
+    <div class="art-hero-art" aria-hidden="true">
+      <svg viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Open book — two pages meeting at a centre spine -->
+        <path d="M120 38 C100 28, 70 26, 44 32 L44 100 C70 94, 100 96, 120 106 Z" fill="rgba(184,151,90,0.06)" stroke="var(--gold-deep)" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M120 38 C140 28, 170 26, 196 32 L196 100 C170 94, 140 96, 120 106 Z" fill="rgba(184,151,90,0.06)" stroke="var(--gold-deep)" stroke-width="1.3" stroke-linejoin="round"/>
+        <!-- Centre spine -->
+        <line x1="120" y1="38" x2="120" y2="106" stroke="var(--gold-deep)" stroke-width="1.3"/>
+        <!-- Text lines on the left page -->
+        <line x1="56" y1="44" x2="108" y2="42" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="52" x2="108" y2="50" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="60" x2="108" y2="58" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="68" x2="100" y2="66" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="76" x2="108" y2="74" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="84" x2="96" y2="82" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <!-- Text lines on the right page -->
+        <line x1="132" y1="42" x2="184" y2="44" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="132" y1="50" x2="184" y2="52" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="132" y1="58" x2="184" y2="60" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="140" y1="66" x2="184" y2="68" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="132" y1="74" x2="184" y2="76" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <line x1="144" y1="82" x2="184" y2="84" stroke="var(--gold)" stroke-width="0.8" opacity="0.6"/>
+        <!-- Quill — diagonal feather over the right page -->
+        <path d="M188 18 C176 30, 168 44, 162 62 C160 68, 158 72, 156 78 L160 80 C164 74, 168 68, 174 62 C186 50, 192 36, 192 22 C191 20, 190 19, 188 18 Z" fill="rgba(184,151,90,0.10)" stroke="var(--gold-deep)" stroke-width="1.1" stroke-linejoin="round"/>
+        <line x1="170" y1="40" x2="180" y2="34" stroke="var(--gold-deep)" stroke-width="0.7" opacity="0.7"/>
+        <line x1="166" y1="48" x2="176" y2="42" stroke="var(--gold-deep)" stroke-width="0.7" opacity="0.7"/>
+        <!-- Small Celtic triskele flourishes flanking the book -->
+        <g stroke="var(--gold)" stroke-width="1" opacity="0.55" stroke-linejoin="round">
+          <path d="M22 64 Q16 58, 22 54 Q28 58, 22 64 Z"/>
+          <path d="M22 64 Q28 70, 22 74 Q16 70, 22 64 Z"/>
+        </g>
+        <g stroke="var(--gold)" stroke-width="1" opacity="0.55" stroke-linejoin="round">
+          <path d="M218 64 Q212 58, 218 54 Q224 58, 218 64 Z"/>
+          <path d="M218 64 Q224 70, 218 74 Q212 70, 218 64 Z"/>
+        </g>
+      </svg>
+    </div>
   </div>
 </section>
 
 <!-- BODY -->
 <article class="art-body">
 
-  <p>Long before Ireland was ruled from Westminster, and long before it was Christian, and long before any of the modern lawyers it now produces could be said to exist, the Irish had a legal system of their own. They called it <span class="irish">fénechas</span> — the law of the kindred — though it has been remembered, ever since, by the name of the people who carried it. <strong>Brehon law.</strong> The <span class="irish">brithem</span> was the judge; the plural, <span class="irish">brithemain</span>, became, in English, <em>brehons</em>. They were the lawyers, mediators, arbitrators, scholars and memory-keepers of Gaelic Ireland — a profession passed from one generation to the next, in families, for a thousand years.</p>
+  <!-- Seanchaí host byline — establishes Paddy Commane as the teller.
+       His voice frames the piece in first person at the open and the
+       close; the body between stays in clear authoritative prose so
+       the article still ranks for informational search intent. -->
+  <div class="art-teller">
+    <img class="art-teller-img" src="/paddy_commane_bubble.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin">
+    <div class="art-teller-text">
+      <div class="art-teller-label">Told by the Seanchaí</div>
+      <div class="art-teller-name">Paddy Commane</div>
+      <div class="art-teller-role">Historian &amp; Storyteller · of Ballymacooda</div>
+    </div>
+  </div>
 
-  <p>This is not a legal system most people have heard of. It is also, by any reasonable measure, one of the most sophisticated bodies of native law that survived anywhere in medieval Europe. It governed inheritance and marriage and the price of a cow. It defined the rights of a child, the bond between a fosterling and his foster-mother, the obligations of a guest, the compensation owed for an insult or an injury. It had, in some readings, more women in senior legal roles than any system that followed it in Ireland for nearly a thousand years. It was finally extinguished — in name — by the Tudor conquest of the sixteenth and seventeenth centuries. In substance, much of it survived in the customs of rural Ireland until comparatively recently. Some of it survives still.</p>
+  <p class="art-seanchai-open">Pull your chair in. Before there were courts in wigs, before a word of English law was ever read aloud on Irish soil, our people had a law of their own — and they kept it, in their heads and in their hearts, for a thousand years and more. I'll tell it to you the way it was told to me. Some of it is hard fact, set down in old books you can still read today. Some of it is the kind of story that's truer than fact. You'll know which is which as we go.</p>
 
-  <p>This article is an honest, careful introduction to what Brehon law actually was, what it remembered, and what — at the edges of modern Irish life — it still does.</p>
+  <p>They called it <span class="irish">fénechas</span> — the law of the kindred — though it has been remembered, ever since, by the name of the people who carried it. <strong>Brehon law.</strong> The <span class="irish">brithem</span> was the judge; the plural, <span class="irish">brithemain</span>, became, in English, <em>brehons</em>. They were the lawyers, the mediators, the arbitrators, the scholars and the memory-keepers of Gaelic Ireland — a profession passed from one generation to the next, in families, for a thousand years. A man did not simply decide to become a brehon. He was born into it, or apprenticed young, and he spent the better part of twenty years learning the law by heart before he was trusted to give a judgement of his own.</p>
+
+  <p>This is not a legal system most people have heard of. It is also, by any reasonable measure, one of the most sophisticated bodies of native law that survived anywhere in medieval Europe. It governed inheritance and marriage and the price of a cow. It defined the rights of a child, the bond between a fosterling and his foster-mother, the obligations of a guest, the compensation owed for an insult or an injury. It gave women rights they would not hold again in Ireland for the better part of a thousand years. It was finally extinguished — in name — by the Tudor conquest of the sixteenth and seventeenth centuries. In substance, much of it survived in the customs of rural Ireland far longer. Some of it survives still.</p>
+
+  <p>Let me take you through what it was, what it remembered, and what — at the edges of Irish life, and in the work of this clan — it still does.</p>
 
   <!-- I. ORIGINS -->
   <div class="art-h2">
@@ -226,7 +315,7 @@ function toggleMenu(){
 
   <p>Like most of the great early-medieval European legal traditions, Brehon law existed in the memory of its specialists long before it was set down in writing. The first surviving manuscripts that contain Brehon legal material date from around the seventh and eighth centuries after Christ. The law they record is plainly older still — in some places measurably so. References to weapons, to social roles, and to economic units that had vanished by the time of writing tell us we are looking at a system whose oldest layers reach back into prehistory.</p>
 
-  <p>The Christian church arrived in Ireland in the fifth century, and the writing of Brehon law was, in part, a response to that arrival. The native legal tradition had to be reconciled with the new Christian one, and the way Ireland did this was — characteristically — to write everything down and let both stand. The result is the most extensive body of vernacular legal literature to survive from any early-medieval European people. The single most important collection is the <span class="irish">Senchas Már</span>, the "Great Tradition," which gathers older legal material into a structured corpus of around forty separate tracts. Alongside it stand the <span class="irish">Bretha Nemed</span> — the "Judgements of the Privileged" — and a wealth of independent tracts: the <span class="irish">Críth Gablach</span> on social rank, the <span class="irish">Bretha Crólige</span> on sick-maintenance, the <span class="irish">Cáin Adomnáin</span> on the protection of women and children. Each is a window into a way of organising a society that, on careful reading, turns out to be more humane and more thought-through than the legal regimes that ultimately replaced it.</p>
+  <p>The Christian church arrived in Ireland in the fifth century, and the writing of Brehon law was, in part, a response to that arrival. The native legal tradition had to be reconciled with the new Christian one, and the way Ireland did this was — characteristically — to write everything down and let both stand. The result is the most extensive body of vernacular legal literature to survive from any early-medieval European people. The single most important collection is the <span class="irish">Senchas Már</span>, the "Great Tradition," which gathers older legal material into a structured corpus of around forty separate tracts. Alongside it stand the <span class="irish">Bretha Nemed</span> — the "Judgements of the Privileged" — and a wealth of independent tracts: the <span class="irish">Críth Gablach</span> on social rank, the <span class="irish">Bretha Crólige</span> on sick-maintenance, the <span class="irish">Cáin Adomnáin</span> on the protection of women and children. Each is a window into how one early-medieval people thought carefully about how to live together — what was owed, to whom, and why.</p>
 
   <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
 
@@ -290,6 +379,36 @@ function toggleMenu(){
 
   <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
 
+  <!-- WORKED EXAMPLE: the Cathach / Colum Cille judgement. Framed as
+       tradition, not documented fact (the story survives in much later
+       sources). Gives the reader one vivid concrete case — the thing
+       that makes an explainer memorable rather than merely thorough. -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">A Case Remembered</span>
+    <h2 class="art-h2-title">"To every cow its calf, to every book its <em>copy</em>"</h2>
+  </div>
+
+  <p>Here is a story they tell, and it is worth telling whether or not it happened exactly as the tellers say.</p>
+
+  <p>In the sixth century, a young monk named Colum Cille — Saint Columba, as he is better known — borrowed a beautiful psalter, a book of psalms, from his old teacher Finnian. Books in those days were treasures; each one was copied by hand, over months, and a fine one was worth a small fortune. Colum Cille loved this book. And so, quietly, by candlelight, over many nights, he copied it for himself.</p>
+
+  <p>Finnian found out, and he was furious. He claimed the copy as his own — the copy had come out of <em>his</em> book, he argued, so the copy was his too. Colum Cille refused. He had done the work; the labour was his; the copy belonged to the man who made it. Neither would give way. And because this was Ireland, and because there was a law for everything, they brought the dispute before the High King at Tara — Diarmait mac Cerbaill — for judgement.</p>
+
+  <p>The king listened to both sides. And then he gave a ruling that has echoed down fourteen centuries:</p>
+
+  <div class="art-pull">
+    <span class="irish">Le gach boin a boinín, le gach leabhar a leabhrán.</span><br>
+    To every cow its calf — and to every book, its copy.
+  </div>
+
+  <p>As the calf belongs to the owner of the cow, the king reasoned, so the copy belongs to the owner of the book. The copy went to Finnian. Colum Cille lost.</p>
+
+  <p>He lost so badly, and took it so hard, that the quarrel is said to have spiralled into a battle in which thousands died — and Colum Cille, stricken with remorse, exiled himself to the island of Iona off the coast of Scotland, where he founded the monastery that would carry Irish Christianity back across the sea to Britain and Europe. From one argument about a borrowed book came one of the most consequential journeys in the history of the Western church.</p>
+
+  <p>Historians will tell you, rightly, that this tale was written down centuries after Colum Cille's death, and that we cannot prove the judgement was ever given. That is true. But the story is sometimes called <em>the first copyright ruling in history</em> — and whether or not Diarmait ever spoke those words, the fact that the Irish told this story about themselves tells you something real: that they were a people who believed every dispute, even one between two saints over a single book, had a right answer that the law could find. <strong>That belief was the engine of the whole system.</strong> A law for every cow, every book, every insult, every wound. A judgement for everything.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
   <!-- V. WOMEN AND BREHON LAW -->
   <div class="art-h2">
     <span class="art-h2-eyebrow">V. Women in Brehon Law</span>
@@ -342,7 +461,7 @@ function toggleMenu(){
 
   <p>None of this is reconstruction in the antiquarian sense. It is not pretending to be medieval. It is using principles that worked once, in a society that thought carefully about how to organise itself, and asking which of them still have something to offer now.</p>
 
-  <p>The answer, on Brehon law in particular, is: more than you might think.</p>
+  <p class="art-seanchai-close">So that is the law our people kept — the law of the kindred, the year and the day, the price of a person's face, the judges who were women, the copy that belonged to the maker of the book. They ground it out four hundred years ago, and thought it gone. But a story does not die so easily as a statute. We are still here. We are still telling it. And every time someone new takes their place at the table — every time the kindred gathers and decides a thing together — a little more of it comes back. Pull your chair in. There is room.</p>
 
 </article>
 
