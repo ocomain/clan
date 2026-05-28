@@ -928,35 +928,42 @@ function dignityRank(member) {
   return DIGNITY_RANK[slug] ?? 99;
 }
 
-// Section-by-tier render (2026-05-02) — restored after a brief
-// single-list interlude. Sort sequence:
+// Section render — sort sequence (revised 2026-05-28):
 //   0) Chief (Taoiseach) at the absolute top, regardless of tier.
-//      The Chief is the Fount of Honour from which all other
-//      dignities flow, and ceremonially outranks every member
-//      regardless of which tier-section they sit in. A chief
-//      holding a Guardian-tier membership still sits ABOVE Life
-//      Members. He is the source of the precedence, not subject
-//      to it.
-//   1) Tier rank (Life → Steward → Guardian)
-//   2) Dignity rank within tier (Onóir → Ardchara → Cara → none)
+//   1) Dignity rank (Onóir → Ardchara → Cara → none) — a title
+//      conferred by the Chief's hand outranks the membership tier
+//      (which is a purchase). So a Cara on a Guardian membership
+//      sits ABOVE an untitled Life member. This matches the clan's
+//      order of precedence and the server-side sort in register.js.
+//   2) Tier rank (Life → Steward → Guardian) — tiebreak within the
+//      same dignity band.
 //   3) Founder vs non-founder (founders first; visible from
 //      Year 2 onward, no-op in Year 1)
 //   4) Surname alphabetical (case-insensitive)
+//
+// NOTE: steps 1 and 2 were previously reversed (tier before
+// dignity), which buried titled members who hold a lower tier —
+// e.g. Cara Toby Hall (Guardian) sorted below the untitled Life
+// members instead of up with Cara Antóin. DDW flagged this; the
+// server sort was already corrected, but THIS client-side re-sort
+// was overriding it. Now both agree.
 function isChief(member) {
   return !!(member.held_dignity && member.held_dignity.slug === 'taoiseach');
 }
 function sortMembers(members) {
   return members.slice().sort((a, b) => {
-    // Chief absolutely first — outranks tier itself.
+    // Chief absolutely first — outranks everything.
     const ca = isChief(a) ? 0 : 1;
     const cb = isChief(b) ? 0 : 1;
     if (ca !== cb) return ca - cb;
-    const ra = tierRank(a);
-    const rb = tierRank(b);
-    if (ra !== rb) return ra - rb;
+    // Dignity rank BEFORE tier — titles of dignity rank first.
     const da = dignityRank(a);
     const db = dignityRank(b);
     if (da !== db) return da - db;
+    // Tier rank as the tiebreak within a dignity band.
+    const ra = tierRank(a);
+    const rb = tierRank(b);
+    if (ra !== rb) return ra - rb;
     const fa = FOUNDING_YEARS.has(getJoinYear(a.joined_at)) ? 0 : 1;
     const fb = FOUNDING_YEARS.has(getJoinYear(b.joined_at)) ? 0 : 1;
     if (fa !== fb) return fa - fb;
