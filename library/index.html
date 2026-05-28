@@ -82,14 +82,21 @@
        shown mid-performance. Portrait image (not a circle), text
        alongside, in a cream card. Sits between intro and grid. */
     .lib-teller{max-width:640px;margin:32px auto 0;padding:26px 30px;background:#FFFDF7;border:1px solid var(--gold-border);border-left:3px solid var(--burgundy);border-radius:2px;display:flex;align-items:flex-start;gap:24px}
-    .lib-teller-img{width:130px;height:174px;object-fit:cover;object-position:center top;border-radius:3px;flex-shrink:0;border:1px solid var(--gold-border);box-shadow:0 6px 20px rgba(12,26,12,.14)}
+    /* Arched portal frame around the Seanchaí portrait — rounded-arch
+       top echoing the doorway behind him in the photo, gold double-
+       border, soft shadow. Reads as a doorway into the story. */
+    .lib-teller-portal{position:relative;flex-shrink:0;width:130px;height:180px;border-radius:65px 65px 6px 6px;padding:5px;background:linear-gradient(160deg, var(--gold-light), var(--gold-deep));box-shadow:0 8px 24px rgba(12,26,12,.20)}
+    .lib-teller-portal::after{content:'';position:absolute;inset:5px;border-radius:61px 61px 3px 3px;border:1px solid rgba(255,253,247,.55);pointer-events:none;z-index:2}
+    .lib-teller-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:61px 61px 3px 3px}
     .lib-teller-text{flex:1;min-width:0}
     .lib-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--burgundy);margin-bottom:5px}
     .lib-teller-name{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:10px}
     .lib-teller-role{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);line-height:1.65}
     @media (max-width:560px){
       .lib-teller{flex-direction:column;align-items:center;text-align:center;gap:18px;padding:24px 22px}
-      .lib-teller-img{width:140px;height:187px}
+      .lib-teller-portal{width:150px;height:200px;border-radius:75px 75px 6px 6px}
+      .lib-teller-portal::after{border-radius:71px 71px 3px 3px}
+      .lib-teller-img{border-radius:71px 71px 3px 3px}
     }
 
     @media (max-width:560px){
@@ -177,7 +184,9 @@ function toggleMenu(){
 <!-- Seanchaí host — Paddy Commane keeps the Library, the way the
      Seanchaí kept the stories of the túath. Shown mid-performance. -->
 <div class="lib-teller">
-  <img class="lib-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+  <div class="lib-teller-portal">
+    <img class="lib-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+  </div>
   <div class="lib-teller-text">
     <div class="lib-teller-label">Kept by the Seanchaí</div>
     <div class="lib-teller-name">Paddy Commane</div>

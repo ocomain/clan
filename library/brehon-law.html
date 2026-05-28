@@ -72,7 +72,21 @@
        mid-performance. Portrait image (not a circle — the pose is
        the point), text alongside. Sits at the top of the body. */
     .art-teller{display:flex;align-items:flex-start;gap:22px;padding:0 0 30px;margin-bottom:30px;border-bottom:1px solid var(--gold-border)}
-    .art-teller-img{width:120px;height:160px;object-fit:cover;object-position:center top;border-radius:3px;flex-shrink:0;border:1px solid var(--gold-border);box-shadow:0 6px 20px rgba(12,26,12,.14)}
+    /* Arched portal frame around the Seanchaí portrait — a rounded-
+       arch top (echoing the doorway arch behind him in the photo) with
+       a gold double-border and soft shadow, so the image reads as a
+       framed niche / doorway into the story rather than a plain photo.
+       The arch shape: large radius on the top two corners, small on
+       the bottom two. An inset ::after draws a fine inner gold line
+       for the 'framed' double-rule effect. */
+    .art-teller-portal{position:relative;flex-shrink:0;width:120px;height:166px;
+      border-radius:60px 60px 6px 6px;
+      padding:5px;background:linear-gradient(160deg, var(--gold-light), var(--gold-deep));
+      box-shadow:0 8px 24px rgba(12,26,12,.20)}
+    .art-teller-portal::after{content:'';position:absolute;inset:5px;
+      border-radius:56px 56px 3px 3px;border:1px solid rgba(255,253,247,.55);pointer-events:none;z-index:2}
+    .art-teller-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;
+      border-radius:56px 56px 3px 3px}
     .art-teller-text{flex:1;min-width:0}
     .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
     .art-teller-name{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:4px}
@@ -159,7 +173,9 @@
       .art-seanchai-open + p::first-letter{font-size:52px}
       .art-callout{padding:18px 22px}
       .art-teller{gap:16px;padding-bottom:24px;margin-bottom:24px}
-      .art-teller-img{width:92px;height:124px}
+      .art-teller-portal{width:96px;height:132px;border-radius:48px 48px 5px 5px}
+      .art-teller-portal::after{border-radius:44px 44px 3px 3px}
+      .art-teller-img{border-radius:44px 44px 3px 3px}
       .art-teller-name{font-size:21px}
       .art-teller-note{font-size:14px}
       .art-seanchai-open,.art-seanchai-close{font-size:18px;padding-left:18px}
@@ -294,7 +310,9 @@ function toggleMenu(){
        recites, as a seanchaí does). Portrait image, not a circular
        avatar — the performance pose is the point. -->
   <div class="art-teller">
-    <img class="art-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+    <div class="art-teller-portal">
+      <img class="art-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+    </div>
     <div class="art-teller-text">
       <div class="art-teller-label">Told by the Seanchaí</div>
       <div class="art-teller-name">Paddy Commane</div>
