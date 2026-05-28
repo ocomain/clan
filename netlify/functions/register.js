@@ -59,6 +59,30 @@ const TIER_WEIGHT = {
   'guardian-ind': 3, 'guardian-fam': 3,
 };
 
+// Dignity sort weight — held titles rank FIRST in order of seniority,
+// ABOVE tier. Per the clan's order of precedence: a title of dignity
+// (conferred by the Chief's hand) outranks the membership tier
+// (a purchase). So a Cara on a Guardian membership sits above an
+// untitled Life member. Within the same dignity, tier then joined_at
+// break the tie. Lower number = higher precedence = earlier in list.
+//
+//   Taoiseach (chiefly role)   → 0  (outranks everything)
+//   Onóir     (15 sponsorships)→ 1
+//   Ardchara  (5 sponsorships) → 2
+//   Cara      (1 sponsorship)  → 3
+//   (no dignity held)          → 99 (falls through to tier sort)
+const DIGNITY_WEIGHT = {
+  taoiseach: 0,
+  onoir:     1,
+  ardchara:  2,
+  cara:      3,
+};
+function dignityWeight(sponsorTitlesAwarded) {
+  const held = highestAwardedTitle(sponsorTitlesAwarded);
+  if (!held) return 99;
+  return DIGNITY_WEIGHT[held.slug] != null ? DIGNITY_WEIGHT[held.slug] : 99;
+}
+
 // Extract first name(s) from a full name string. For 'Anita Smith' returns
 // 'Anita'; for 'Mary Catherine O'Brien' returns 'Mary Catherine'. Naive
 // split on whitespace; takes everything except the last token. Privacy-
@@ -138,14 +162,24 @@ exports.handler = async (event) => {
     const data = visibleRes.data;
     const totalActive = totalRes.count || (data ? data.length : 0);
 
-    // Sort: tier weight first, then joined_at ASC. Done in JS rather
-    // than via Supabase's .order() because we want a CASE-style ordering
-    // that .order() can't express directly.
+    // Sort priority (per the clan's order of precedence):
+    //   1. Dignity weight — titled members first, by seniority
+    //      (Taoiseach > Onóir > Ardchara > Cara > untitled). A title
+    //      conferred by the Chief outranks the membership tier.
+    //   2. Tier weight — within the same dignity band, Life > Steward
+    //      > Guardian.
+    //   3. joined_at ASC — within the same dignity + tier, founders
+    //      bubble up (oldest membership first).
+    // Done in JS rather than via Supabase's .order() because we want a
+    // CASE-style multi-key ordering that .order() can't express, and
+    // the dignity weight needs computing from sponsor_titles_awarded.
     const sorted = (data || []).sort((a, b) => {
+      const da = dignityWeight(a.sponsor_titles_awarded);
+      const db = dignityWeight(b.sponsor_titles_awarded);
+      if (da !== db) return da - db;
       const wa = TIER_WEIGHT[a.tier] || 99;
       const wb = TIER_WEIGHT[b.tier] || 99;
       if (wa !== wb) return wa - wb;
-      // Within tier-group: oldest joined_at first (founders bubble up)
       return new Date(a.joined_at) - new Date(b.joined_at);
     });
 
