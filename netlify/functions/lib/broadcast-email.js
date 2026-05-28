@@ -343,7 +343,7 @@ const VOICES = {
     replyTo: 'clan@ocomain.org',
     eyebrow: 'A word from the Chief',
     signature: () => signatureBlock({
-      avatar: 'fergus_kinfauns.jpg',
+      avatar: 'images/people/fergus_kinfauns_bubble.jpg',
       name: 'Fergus Christopher The Commane Kinfauns',
       role: 'Ceann Fine · Chief of Clan Ó Comáin',
       irish: null,
