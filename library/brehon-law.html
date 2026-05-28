@@ -68,14 +68,16 @@
        immediately following .art-seanchai-open. */
     .art-seanchai-open + p::first-letter{font-family:'EB Garamond',serif;font-size:64px;line-height:0.85;float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400}
 
-    /* SEANCHAÍ host byline — Paddy Commane as the teller. Circular
-       avatar + label/name/role, sits at the very top of the article
-       body. Establishes the storyteller before the first word. */
-    .art-teller{display:flex;align-items:center;gap:16px;padding:0 0 28px;margin-bottom:28px;border-bottom:1px solid var(--gold-border)}
-    .art-teller-img{width:68px;height:68px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--gold);flex-shrink:0;box-shadow:0 2px 10px rgba(12,26,12,.12)}
-    .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:4px}
-    .art-teller-name{font-family:'EB Garamond',serif;font-size:21px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:3px}
-    .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic}
+    /* SEANCHAÍ host byline — Paddy Commane as the teller, shown
+       mid-performance. Portrait image (not a circle — the pose is
+       the point), text alongside. Sits at the top of the body. */
+    .art-teller{display:flex;align-items:flex-start;gap:22px;padding:0 0 30px;margin-bottom:30px;border-bottom:1px solid var(--gold-border)}
+    .art-teller-img{width:120px;height:160px;object-fit:cover;object-position:center top;border-radius:3px;flex-shrink:0;border:1px solid var(--gold-border);box-shadow:0 6px 20px rgba(12,26,12,.14)}
+    .art-teller-text{flex:1;min-width:0}
+    .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
+    .art-teller-name{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:4px}
+    .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:12px}
+    .art-teller-note{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0;font-style:italic}
 
     /* Seanchaí first-person frame paragraphs — warm storyteller voice
        at open and close. Burgundy left-rule, slightly larger, so they
@@ -156,9 +158,10 @@
       .art-body{padding:32px 20px 40px;font-size:17.5px}
       .art-seanchai-open + p::first-letter{font-size:52px}
       .art-callout{padding:18px 22px}
-      .art-teller{gap:13px;padding-bottom:22px;margin-bottom:22px}
-      .art-teller-img{width:56px;height:56px}
-      .art-teller-name{font-size:19px}
+      .art-teller{gap:16px;padding-bottom:24px;margin-bottom:24px}
+      .art-teller-img{width:92px;height:124px}
+      .art-teller-name{font-size:21px}
+      .art-teller-note{font-size:14px}
       .art-seanchai-open,.art-seanchai-close{font-size:18px;padding-left:18px}
     }
   </style>
@@ -286,16 +289,17 @@ function toggleMenu(){
 <!-- BODY -->
 <article class="art-body">
 
-  <!-- Seanchaí host byline — establishes Paddy Commane as the teller.
-       His voice frames the piece in first person at the open and the
-       close; the body between stays in clear authoritative prose so
-       the article still ranks for informational search intent. -->
+  <!-- Seanchaí host byline — Paddy Commane as the teller, shown
+       mid-performance (he metamorphoses into the character when he
+       recites, as a seanchaí does). Portrait image, not a circular
+       avatar — the performance pose is the point. -->
   <div class="art-teller">
-    <img class="art-teller-img" src="/paddy_commane_bubble.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin">
+    <img class="art-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
     <div class="art-teller-text">
       <div class="art-teller-label">Told by the Seanchaí</div>
       <div class="art-teller-name">Paddy Commane</div>
       <div class="art-teller-role">Historian &amp; Storyteller · of Ballymacooda</div>
+      <p class="art-teller-note">In the Gaelic tradition the <span class="irish">seanchaí</span> was the keeper of memory — the one who held the stories, the laws and the lore of the people, and told them aloud so they would not be lost. Paddy carries that office for the clan, and when he tells, he becomes the tale.</p>
     </div>
   </div>
 

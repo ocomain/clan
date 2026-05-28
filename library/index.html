@@ -78,14 +78,19 @@
     .lib-intro{max-width:680px;margin:0 auto;padding:48px 24px 0;font-family:'EB Garamond',serif;font-size:17.5px;color:var(--ink-soft);line-height:1.8;font-style:italic;text-align:center}
     .lib-intro strong{font-style:normal;color:var(--ink);font-weight:500}
 
-    /* Seanchaí host block — Paddy Commane as keeper of the Library.
-       Avatar + label/name/role, in a cream card. Sits between the
-       intro blurb and the article grid. */
-    .lib-teller{max-width:620px;margin:32px auto 0;padding:24px 28px;background:#FFFDF7;border:1px solid var(--gold-border);border-left:3px solid var(--burgundy);border-radius:2px;display:flex;align-items:center;gap:18px}
-    .lib-teller-img{width:76px;height:76px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--gold);flex-shrink:0;box-shadow:0 2px 10px rgba(12,26,12,.12)}
-    .lib-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--burgundy);margin-bottom:4px}
-    .lib-teller-name{font-family:'EB Garamond',serif;font-size:20px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:8px}
-    .lib-teller-role{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);line-height:1.6}
+    /* Seanchaí host block — Paddy Commane as keeper of the Library,
+       shown mid-performance. Portrait image (not a circle), text
+       alongside, in a cream card. Sits between intro and grid. */
+    .lib-teller{max-width:640px;margin:32px auto 0;padding:26px 30px;background:#FFFDF7;border:1px solid var(--gold-border);border-left:3px solid var(--burgundy);border-radius:2px;display:flex;align-items:flex-start;gap:24px}
+    .lib-teller-img{width:130px;height:174px;object-fit:cover;object-position:center top;border-radius:3px;flex-shrink:0;border:1px solid var(--gold-border);box-shadow:0 6px 20px rgba(12,26,12,.14)}
+    .lib-teller-text{flex:1;min-width:0}
+    .lib-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--burgundy);margin-bottom:5px}
+    .lib-teller-name{font-family:'EB Garamond',serif;font-size:22px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:10px}
+    .lib-teller-role{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);line-height:1.65}
+    @media (max-width:560px){
+      .lib-teller{flex-direction:column;align-items:center;text-align:center;gap:18px;padding:24px 22px}
+      .lib-teller-img{width:140px;height:187px}
+    }
 
     @media (max-width:560px){
       .lib-head{padding:48px 0 24px}
@@ -170,14 +175,13 @@ function toggleMenu(){
 <p class="lib-intro">A growing collection of pieces on the deep heritage of Ireland. Not blog posts. <strong>Reference articles</strong> meant to be returned to — to share, to send on, to settle an argument. Each one rooted in primary sources where they survive, in the careful work of historians where they don't, and in the living memory the clan still carries.</p>
 
 <!-- Seanchaí host — Paddy Commane keeps the Library, the way the
-     Seanchaí kept the stories of the túath. Establishes a consistent
-     teller across every article. -->
+     Seanchaí kept the stories of the túath. Shown mid-performance. -->
 <div class="lib-teller">
-  <img class="lib-teller-img" src="/paddy_commane_bubble.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin">
+  <img class="lib-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
   <div class="lib-teller-text">
     <div class="lib-teller-label">Kept by the Seanchaí</div>
     <div class="lib-teller-name">Paddy Commane</div>
-    <div class="lib-teller-role">In the Gaelic tradition, the <span style="font-style:italic">seanchaí</span> was the keeper of memory — the one who held the stories, the laws and the lore of the people, and told them so they would not be lost. Paddy Commane carries that office for Clan Ó Comáin, and these are his tellings.</div>
+    <div class="lib-teller-role">In the Gaelic tradition, the <span style="font-style:italic">seanchaí</span> was the keeper of memory — the one who held the stories, the laws and the lore of the people, and told them aloud so they would not be lost. Paddy Commane carries that office for Clan Ó Comáin. When he tells, he becomes the tale — and these are his tellings.</div>
   </div>
 </div>
 
