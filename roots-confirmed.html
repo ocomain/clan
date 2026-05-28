@@ -17,6 +17,13 @@
     .conf-card a.btn-p{margin-top:12px}
     .conf-foot{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);margin-top:32px}
   </style>
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
+<!-- Analytics — Clarity + Meta Pixel, deferred until first user
+     interaction so iOS Safari doesn't surface its 'Reduce Privacy
+     Protections' banner on initial paint. See /js/analytics-deferred.js
+     for the loader, rationale, and failsafe behaviour. -->
+<script defer src="/js/analytics-deferred.js"></script>
 </head>
 <body>
   <div class="conf-wrap">
