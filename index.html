@@ -711,12 +711,73 @@ function toggleMenu(){
   <div class="stat"><div class="stat-num">2025</div><div class="stat-label">Officially recognised</div></div>
 </div>
 
+<!-- VIDEO SOCIAL PROOF — moved here 2026-05-28.
+     Promoted ABOVE the St Patrick's Day live-map strip after Clarity
+     showed homepage visitors largely weren't scrolling past the live
+     map. The map is a high-engagement element but a long stop:
+     visitors who reached it spent time on it and then bounced
+     without seeing the rest of the page, including the "Clan Ó
+     Comáin recognised" video social proof, the heritage section,
+     the Chief's letter etc.
+     
+     Putting recognition videos FIRST establishes credibility before
+     the engagement-rich element, so the visit's first signal is
+     "this is a real recognised clan" rather than "look at this map."
+     The map still sits immediately below — same prominence — but no
+     longer eats the rest of the page's airtime.
+     
+     A separate gold divider (the 2px gold border-bottom previously
+     on .stp-strip) now sits on .video-section's bottom edge, keeping
+     the same visual separator BETWEEN the two sections. -->
+<section class="video-section" id="videos">
+  <div class="si">
+    <div class="eyebrow" style="color:var(--gold)">Clan Ó Comáin recognised</div>
+    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--gold-pale);margin-bottom:28px;line-height:1.2">Moments from the clan revival</h2>
+    <div class="video-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+
+      <!-- VIDEO 1 -->
+      <div>
+        <div id="videoContainer" style="position:relative;cursor:pointer" onclick="playVideo()">
+          <img src="images/people/chief_recognition.jpg" alt="Chief of Ó Comáin greeted by the Chairman of Clans of Ireland" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Chief of Ó Comáin greeted by the Chairman of Clans of Ireland</p>
+      </div>
+
+      <!-- VIDEO 2 -->
+      <div>
+        <div id="videoContainer2" style="position:relative;cursor:pointer" onclick="playVideo2()">
+          <img src="images/events/clans_dublin_thumbnail.jpg" alt="Clans of Ireland gathering, Dublin" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Clans of Ireland gathering — Dublin 2026</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ST PATRICK'S DAY MAP STRIP — minimal seasonal banner pointing at the
      gathering map. The whole strip is a single anchor so any click —
      on the text, on the preview image, or on the CTA button — goes
      through to the map page. -->
 <style>
-  .stp-strip{background:linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 100%);padding:42px 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:2px solid var(--gold)}
+  /* Gold divider moved 2026-05-28: was border-bottom on .stp-strip
+     (when stp-strip sat above .video-section), now lives on
+     .video-section bottom so it continues to sit BETWEEN the two
+     sections in their new order. .stp-strip retains its top border
+     (subtle gold rgba) but no longer carries the heavy 2px divider. */
+  .video-section{border-bottom:2px solid var(--gold)}
+  .stp-strip{background:linear-gradient(180deg, var(--ink) 0%, var(--ink-mid) 100%);padding:42px 0;border-top:1px solid rgba(184,151,90,.2)}
   /* Anchor wraps the whole row; reset link colour/underline so
      children inherit the design palette. */
   .stp-strip-link{display:block;text-decoration:none;color:inherit}
@@ -768,43 +829,6 @@ function toggleMenu(){
   </a>
 </section>
 
-<!-- VIDEO SOCIAL PROOF — high on page, immediately after stats -->
-<section class="video-section" id="videos">
-  <div class="si">
-    <div class="eyebrow" style="color:var(--gold)">Clan Ó Comáin recognised</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--gold-pale);margin-bottom:28px;line-height:1.2">Moments from the clan revival</h2>
-    <div class="video-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
-
-      <!-- VIDEO 1 -->
-      <div>
-        <div id="videoContainer" style="position:relative;cursor:pointer" onclick="playVideo()">
-          <img src="images/people/chief_recognition.jpg" alt="Chief of Ó Comáin greeted by the Chairman of Clans of Ireland" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
-              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
-            </div>
-          </div>
-        </div>
-
-        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Chief of Ó Comáin greeted by the Chairman of Clans of Ireland</p>
-      </div>
-
-      <!-- VIDEO 2 -->
-      <div>
-        <div id="videoContainer2" style="position:relative;cursor:pointer" onclick="playVideo2()">
-          <img src="images/events/clans_dublin_thumbnail.jpg" alt="Clans of Ireland gathering, Dublin" style="width:100%;display:block;border-radius:2px;border:1px solid rgba(184,151,90,.3);aspect-ratio:16/9;object-fit:cover" loading="lazy">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,15,8,.35)">
-            <div style="width:52px;height:52px;border-radius:50%;background:rgba(184,151,90,.9);display:flex;align-items:center;justify-content:center">
-              <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19" fill="#0C1A0C"/></svg>
-            </div>
-          </div>
-        </div>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.92);margin-top:10px">Clans of Ireland gathering — Dublin 2026</p>
-      </div>
-
-    </div>
-  </div>
-</section>
 <!-- VIDEO MODAL -->
 <div id="videoModal" onclick="closeModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
   <div style="position:relative;width:100%;max-width:340px" onclick="event.stopPropagation()">
