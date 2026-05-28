@@ -101,8 +101,17 @@
 
     @media (max-width:560px){
       .lib-head{padding:48px 0 24px}
-      .lib-grid{padding:40px 16px 60px;gap:20px}
-      .lib-card{padding:26px 24px 24px}
+      .lib-head-title{font-size:clamp(38px,11vw,52px)}
+      .lib-head-sub{font-size:16px}
+      .lib-intro{font-size:16px;padding-top:36px}
+      /* Single column, and crucially drop the 340px min so the grid
+         can't force horizontal overflow on narrow screens. */
+      .lib-grid{padding:36px 16px 56px;gap:18px;grid-template-columns:1fr}
+      .lib-card{padding:24px 22px 22px;gap:12px}
+      .lib-card-title{font-size:23px}
+      .lib-card-dek{font-size:15px}
+      .lib-teller-name{font-size:20px}
+      .lib-teller-role{font-size:14px}
     }
   </style>
 

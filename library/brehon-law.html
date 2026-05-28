@@ -155,6 +155,11 @@
     .art-cta-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.7;margin:0 0 28px;font-style:italic}
     .art-cta-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.20em;text-transform:uppercase;padding:14px 32px;text-decoration:none;border-radius:1px;transition:background .15s}
     .art-cta-btn:hover{background:var(--gold-pale)}
+    /* Dual-CTA row — join (solid gold) + gift (ghost). Centred, wraps
+       to stacked on narrow screens. */
+    .art-cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .art-cta-btn-ghost{background:transparent;color:var(--gold-deep);border:1px solid var(--gold)}
+    .art-cta-btn-ghost:hover{background:rgba(184,151,90,.10)}
 
     /* RELATED — links to other library articles. Lives between
        article body and CTA. Subtle. */
@@ -168,17 +173,44 @@
     .art-related-item.coming{opacity:.55;cursor:default}
 
     @media (max-width:560px){
-      .art-hero{padding:42px 0 36px}
-      .art-body{padding:32px 20px 40px;font-size:17.5px}
-      .art-seanchai-open + p::first-letter{font-size:52px}
-      .art-callout{padding:18px 22px}
-      .art-teller{gap:16px;padding-bottom:24px;margin-bottom:24px}
-      .art-teller-portal{width:96px;height:132px;border-radius:48px 48px 5px 5px}
-      .art-teller-portal::after{border-radius:44px 44px 3px 3px}
-      .art-teller-img{border-radius:44px 44px 3px 3px}
-      .art-teller-name{font-size:21px}
-      .art-teller-note{font-size:14px}
-      .art-seanchai-open,.art-seanchai-close{font-size:18px;padding-left:18px}
+      .art-hero{padding:42px 0 34px}
+      .art-hero-dek{font-size:17px}
+      .art-hero-meta{font-size:10px;gap:8px;flex-wrap:wrap;justify-content:center}
+      .art-hero-art{max-width:180px;margin-top:24px}
+      .art-body{padding:30px 20px 36px;font-size:17.5px}
+      .art-seanchai-open + p::first-letter{font-size:50px;margin:6px 10px 0 0}
+      .art-callout{padding:18px 20px;margin:26px 0}
+      .art-callout-title{font-size:18px}
+      .art-callout-body{font-size:15.5px}
+      .art-teller{gap:15px;padding-bottom:22px;margin-bottom:24px}
+      .art-teller-portal{width:92px;height:126px;border-radius:46px 46px 5px 5px}
+      .art-teller-portal::after{border-radius:42px 42px 3px 3px}
+      .art-teller-img{border-radius:42px 42px 3px 3px}
+      .art-teller-name{font-size:20px}
+      .art-teller-role{font-size:13px}
+      .art-teller-note{font-size:13.5px;line-height:1.6}
+      /* H2 section heads — tighten the gaps so sections don't feel
+         marooned in whitespace on a small screen. */
+      .art-h2{margin:36px 0 18px}
+      .art-h2-title{font-size:27px}
+      /* Pull-quote — smaller and less indented so it doesn't crowd
+         against the narrow column edge. */
+      .art-pull{font-size:19px;padding-left:20px;margin:26px 0;line-height:1.5}
+      .art-divider{margin:32px 0}
+      .art-divider::before,.art-divider::after{width:70px}
+      .art-seanchai-open,.art-seanchai-close{font-size:18px;padding-left:18px;line-height:1.75}
+      .art-sources{padding:28px 20px 48px}
+      /* Related strip — single column, drop the 260px min so it can't
+         overflow. */
+      .art-related{padding:28px 20px 12px}
+      .art-related-list{grid-template-columns:1fr;gap:12px}
+      .art-cta{padding:52px 0 60px}
+      .art-cta-title{font-size:25px}
+      .art-cta-sub{font-size:16px}
+      /* Dual CTA buttons go full-width stacked on mobile for easy
+         tapping. */
+      .art-cta-actions{flex-direction:column;gap:12px}
+      .art-cta-btn{display:block;width:100%;box-sizing:border-box;padding:15px 24px}
     }
   </style>
 
@@ -524,7 +556,10 @@ function toggleMenu(){
     <div class="art-cta-eyebrow">If this story is yours too</div>
     <h2 class="art-cta-title">Clan Ó Comáin is reviving these traditions for the modern era.</h2>
     <p class="art-cta-sub">You do not need to carry the surname. You do not need an Irish grandparent. If you feel the kindred to be yours, the door is open.</p>
-    <a href="/membership.html" class="art-cta-btn">About membership →</a>
+    <div class="art-cta-actions">
+      <a href="/membership.html" class="art-cta-btn">About membership →</a>
+      <a href="/gift.html" class="art-cta-btn art-cta-btn-ghost">🎁 &nbsp;Gift it to someone →</a>
+    </div>
   </div>
 </section>
 
