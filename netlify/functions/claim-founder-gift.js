@@ -37,6 +37,9 @@
 
 const { supa, clanId, logEvent, TIER_BY_SLUG } = require('./lib/supabase');
 const { ensureAuthUser } = require('./lib/cert-service');
+const { sendEmail } = require('./lib/email');
+const { buildMemberWelcomeHtml, tierWelcomeInfo } = require('./lib/checkout-email');
+const { buildSignInUrl } = require('./lib/signin-token');
 
 // One year in ms — used to compute the new member's expires_at.
 // Mirrors paid annual memberships.
@@ -313,6 +316,51 @@ exports.handler = async (event) => {
     });
   } catch (e) {
     console.warn('founder_gift_claimed event log failed (non-fatal):', e.message);
+  }
+
+  // ── 7a. SEND WELCOME EMAIL (added 2026-05-29) ─────────────────────
+  // Mirrors the welcome-send in claim-and-enter-founder.js (the
+  // one-click path). Founders previously claimed in this alternate
+  // flow and got nothing — silent membership activation. The same
+  // member-welcome template the paid flow uses works as-is for
+  // comped founders (no 'purchase' wording in the body).
+  //
+  // Wrapped fire-and-forget so a mail failure never blocks the
+  // success response. Only fires on FIRST successful claim — the
+  // already-claimed branch above returns early, so a re-click won't
+  // re-send.
+  try {
+    const firstName = (pending.recipient_name || '').split(/\s+/)[0] || 'friend';
+    const welcomeInfo = tierWelcomeInfo(tierInfo.tier);
+    const SITE_URL = process.env.SITE_URL || 'https://www.ocomain.org';
+
+    let signInUrl;
+    try {
+      signInUrl = await buildSignInUrl({
+        memberId: member.id,
+        email: pending.recipient_email,
+        purpose: 'welcome_self',
+      });
+    } catch (e) {
+      console.warn('[claim-founder-gift] signin URL build failed (using fallback):', e.message);
+      signInUrl = `${SITE_URL}/members/login.html?email=${encodeURIComponent(pending.recipient_email)}`;
+    }
+
+    const html = buildMemberWelcomeHtml({
+      firstName,
+      tierDisplayName: welcomeInfo.name,
+      benefits: welcomeInfo.benefits,
+      signInUrl,
+    });
+
+    await sendEmail({
+      to: pending.recipient_email,
+      subject: "Welcome to Clan O'Comain (membership area login)",
+      html,
+    });
+    console.log(`[claim-founder-gift] welcome email sent to ${pending.recipient_email}`);
+  } catch (e) {
+    console.error('[claim-founder-gift] welcome email failed (non-fatal):', e.message);
   }
 
   // ── 8. SUCCESS ────────────────────────────────────────────────────

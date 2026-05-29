@@ -2,7 +2,7 @@
 // Triggered by Stripe when a payment completes
 // Sends welcome email via Resend, records member in Supabase.
 
-const { supa, clanId, normaliseTier, logEvent } = require('./lib/supabase');
+const { supa, clanId, normaliseTier, logEvent, filterEmailsAlreadyMembers } = require('./lib/supabase');
 const { buildSignInUrl } = require('./lib/signin-token');
 const { ensureCertificate, signCertUrl, ensureAuthUser, sanitizeFilename } = require('./lib/cert-service');
 const { sendEmail } = require('./lib/email');
@@ -993,6 +993,51 @@ exports.handler = async (event) => {
       }
       const tier = matchTier(productName);
 
+      // ── Existing-member check (added 2026-05-29) ────────────────
+      // The applications-table dedupe below only catches duplicates
+      // BETWEEN the cron and this webhook. It does NOT catch the
+      // case where the email already belongs to a confirmed member
+      // with no application row. Toby Hall (a Guardian comp member
+      // who accepted a founder gift from the Chief) hit this: he
+      // had no application row (founder claim flow doesn't write
+      // one), abandoned a Stripe session at some point, and got
+      // 'Your place is still open' reminders despite being active.
+      //
+      // Members can reach this code path legitimately when:
+      //   - They started a Guardian checkout, abandoned it, then
+      //     later accepted a founder comp (no application row)
+      //   - They started a gift checkout for someone else and
+      //     abandoned it (they're already a member of the clan
+      //     but the gift session is unrelated to their own
+      //     membership)
+      //   - Edge: case/whitespace mismatch between the Stripe
+      //     email and their member row (filter normalises with
+      //     lower() + trim so this is handled)
+      //
+      // Skip the reminder if the email belongs to an existing
+      // member. Log a skipped event so we can monitor the
+      // false-positive rate.
+      try {
+        const cid = await clanId();
+        const memberEmails = await filterEmailsAlreadyMembers(cid, [customerEmail]);
+        if (memberEmails.has(customerEmail.toLowerCase().trim())) {
+          console.log(`[abandoned] skipping — ${customerEmail} is already an active member`);
+          await logEvent({
+            clan_id: cid,
+            event_type: 'abandoned_reminder_skipped_existing_member',
+            payload: { email: customerEmail, source: 'stripe_session_expired', session_id: session.id },
+          });
+          return { statusCode: 200, body: JSON.stringify({ received: true, skipped: 'existing_member' }) };
+        }
+      } catch (e) {
+        // Best-effort: if the membership lookup fails, fall through
+        // to the existing dedupe path. Same tradeoff as the cron's
+        // filter — better to send a false-positive reminder than to
+        // silently fail and never email a legitimate abandoner.
+        console.warn('[abandoned] member existence check failed (non-fatal — proceeding):', e.message);
+      }
+
+      // ── Existing applications-table dedupe (unchanged) ──────────
       // Look up the application row by email. If found and a reminder
       // has already been sent, skip — we're crossing a path with the
       // cron that already handled it. If found and reminder is null,

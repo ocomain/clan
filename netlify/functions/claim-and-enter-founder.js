@@ -65,6 +65,9 @@
 
 const { supa, clanId, logEvent, TIER_BY_SLUG } = require('./lib/supabase');
 const { ensureAuthUser } = require('./lib/cert-service');
+const { sendEmail } = require('./lib/email');
+const { buildMemberWelcomeHtml, tierWelcomeInfo } = require('./lib/checkout-email');
+const { buildSignInUrl } = require('./lib/signin-token');
 
 const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 const SITE_URL = process.env.SITE_URL || 'https://www.ocomain.org';
@@ -275,6 +278,57 @@ exports.handler = async (event) => {
       },
     });
   } catch (e) { /* event log non-fatal */ }
+
+  // ── 8a. SEND WELCOME EMAIL (added 2026-05-29) ──────────────────────
+  // Founders previously accepted invites and got nothing — silent
+  // membership activation. Now we send the same member-welcome email
+  // a paying member receives (buildMemberWelcomeHtml). The template
+  // doesn't reference 'purchase' anywhere, so it works as-is for
+  // comped founders — opens with welcome + name, lists tier benefits,
+  // routes to the members area via a one-click sign-in URL.
+  //
+  // Sent as a fire-and-forget side effect: wrapped in try/catch so a
+  // mail failure never blocks the redirect to the members area
+  // (which is the primary user outcome of clicking 'Claim my place').
+  // The redirect always happens; the email arrives shortly after.
+  try {
+    const firstName = (pending.recipient_name || '').split(/\s+/)[0] || 'friend';
+    const welcomeInfo = tierWelcomeInfo(tierInfo.tier);
+
+    // One-click sign-in URL — same pattern as the paid flow. If the
+    // token issuance fails, fall back to the standard login form
+    // URL so the recipient always has a working button.
+    let signInUrl;
+    try {
+      signInUrl = await buildSignInUrl({
+        memberId: member.id,
+        email: pending.recipient_email,
+        purpose: 'welcome_self',
+      });
+    } catch (e) {
+      console.warn('[claim-and-enter-founder] signin URL build failed (using fallback):', e.message);
+      signInUrl = `${SITE_URL}/members/login.html?email=${encodeURIComponent(pending.recipient_email)}`;
+    }
+
+    const html = buildMemberWelcomeHtml({
+      firstName,
+      tierDisplayName: welcomeInfo.name,
+      benefits: welcomeInfo.benefits,
+      signInUrl,
+    });
+
+    await sendEmail({
+      to: pending.recipient_email,
+      subject: "Welcome to Clan O'Comain (membership area login)",
+      html,
+    });
+    console.log(`[claim-and-enter-founder] welcome email sent to ${pending.recipient_email}`);
+  } catch (e) {
+    // Non-fatal: log and continue. The redirect to /members/ is the
+    // primary outcome the user expects; the email is a useful
+    // secondary asset (they can find the welcome link again later).
+    console.error(`[claim-and-enter-founder] welcome email failed (non-fatal):`, e.message);
+  }
 
   // ── 9. GENERATE MAGIC LINK + RETURN action_link AS JSON ────────────
   // Same pattern as welcome-signin.js: admin generateLink returns an

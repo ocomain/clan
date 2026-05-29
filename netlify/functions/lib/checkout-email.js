@@ -534,10 +534,43 @@ function buildMemberWelcomeHtml({ firstName, tierDisplayName, benefits, signInUr
 </html>`;
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// TIER → display name + benefits, keyed by canonical slug.
+//
+// Single source of truth for what each tier's welcome email should
+// promise. Used by:
+//   * stripe-webhook.js sendMemberWelcome (paid flow)
+//   * claim-and-enter-founder.js (founder accept flow)
+//   * claim-founder-gift.js (alternate founder accept path)
+//
+// The slug aligns with TIER_BY_SLUG in lib/supabase.js (the canonical
+// tier registry); this map adds the email-facing presentation layer
+// (display name, benefit bullet list) on top of that. Keep aligned
+// with the older TIER_NAMES product-name map in stripe-webhook.js —
+// they describe the same tiers via two different keys (slug vs
+// Stripe product name).
+// ─────────────────────────────────────────────────────────────────────
+const TIER_BENEFITS_BY_SLUG = {
+  'clan-ind':     { name: 'Clan Member',                       benefits: ['Digital membership certificate', 'Chief-approved crest use', 'Member-only access to clan festivals (member rates apply)', 'Clan chronicle', 'Place in the Register of Members'] },
+  'clan-fam':     { name: 'Clan Member (Family)',              benefits: ['Digital family certificate', 'Chief-approved crest use', 'Member-only access to clan festivals (member rates apply)', 'Clan chronicle', 'Both names in the Register'] },
+  'guardian-ind': { name: 'Guardian of the Clan',              benefits: ['Physical certificate signed by the Chief — posted to you', 'Personal letter of welcome from the Chief', 'Listed on the Guardians page', "Place at the annual Guardian's Dinner at Newhall House (members contribute to the evening)", 'Member-only access to clan festivals (member rates apply)', 'Priority on Privy Council openings'] },
+  'guardian-fam': { name: 'Guardian of the Clan (Family)',     benefits: ['Physical family certificate signed by the Chief', "Both seated at the annual Guardian's Dinner at Newhall House (members contribute to the evening)", 'Family listed on Guardians page', 'Member-only access to clan festivals (member rates apply)'] },
+  'steward-ind':  { name: 'Steward of the Clan',               benefits: ['Everything in Guardian', 'Place at the annual dinner at Newhall House with the Chief (members contribute to the evening)', 'Name on Clan Roll of Honour at Newhall', 'Dedicated website acknowledgement', 'Private call with the Chief'] },
+  'steward-fam':  { name: 'Steward of the Clan (Family)',      benefits: ['Everything in Guardian Family', 'Both seated at the annual dinner at Newhall (members contribute to the evening)', 'Family on Clan Roll of Honour'] },
+  'life-ind':     { name: 'Life Member',                       benefits: ['Guardian benefits for life', 'Name engraved on Roll of Honour at Newhall House', 'Clan heirloom keepsake pack', 'Your name in the Register forever'] },
+  'life-fam':     { name: 'Life Member (Family)',              benefits: ['Guardian Family benefits for life', 'Family on Roll of Honour at Newhall', 'Family heirloom keepsake pack'] },
+};
+
+function tierWelcomeInfo(slug) {
+  return TIER_BENEFITS_BY_SLUG[slug] || { name: 'Clan Member', benefits: ['Place in the Register of Members'] };
+}
+
 module.exports = {
   buildAbandonedReminderHtml,
   buildGiftConfirmationsHtml,
   buildGiftBuyerConfirmationHtml,
   buildGiftRecipientWelcomeHtml,
   buildMemberWelcomeHtml,
+  TIER_BENEFITS_BY_SLUG,
+  tierWelcomeInfo,
 };
