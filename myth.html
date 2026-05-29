@@ -175,6 +175,26 @@
     .myth-frame-prologue{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:28px;position:relative;z-index:2}
     .myth-frame-prologue-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,151,90,.55) 50%,transparent);max-width:80px}
     .myth-frame-prologue-mark{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;letter-spacing:.04em;color:var(--gold-deep);text-transform:lowercase}
+    /* Seanchaí byline — matches the Library articles; attributes the telling */
+    .art-teller{display:flex;align-items:flex-start;gap:22px;padding:0 0 30px;margin:0 0 30px;border-bottom:1px solid var(--gold-border)}
+    .art-teller-portal{position:relative;flex-shrink:0;width:120px;height:166px;border-radius:60px 60px 6px 6px;padding:5px;background:linear-gradient(160deg, var(--gold-light), var(--gold-deep));box-shadow:0 8px 24px rgba(12,26,12,.20)}
+    .art-teller-portal::after{content:'';position:absolute;inset:5px;border-radius:56px 56px 3px 3px;border:1px solid rgba(255,253,247,.55);pointer-events:none;z-index:2}
+    .art-teller-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:56px 56px 3px 3px}
+    .art-teller-text{flex:1;min-width:0}
+    .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
+    .art-teller-name{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:4px}
+    .art-teller-pron{font-size:15px;color:var(--ink-faint);font-style:italic;letter-spacing:.02em;margin-left:4px}
+    .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:12px}
+    .art-teller-note{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0;font-style:italic}
+    @media(max-width:600px){
+      .art-teller{gap:15px;padding-bottom:22px;margin-bottom:24px}
+      .art-teller-portal{width:92px;height:126px;border-radius:46px 46px 5px 5px}
+      .art-teller-portal::after{border-radius:42px 42px 3px 3px}
+      .art-teller-img{border-radius:42px 42px 3px 3px}
+      .art-teller-name{font-size:20px}
+      .art-teller-role{font-size:13px}
+      .art-teller-note{font-size:13.5px;line-height:1.6}
+    }
     @media (max-width:560px){
       .myth-frame{margin-top:-20px}
       .myth-frame-card{padding:44px 30px 40px}
@@ -373,6 +393,18 @@ function toggleMenu(){
       <span class="myth-frame-prologue-line"></span>
       <span class="myth-frame-prologue-mark">a prologue</span>
       <span class="myth-frame-prologue-line"></span>
+    </div>
+
+    <div class="art-teller">
+      <div class="art-teller-portal">
+        <img class="art-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+      </div>
+      <div class="art-teller-text">
+        <div class="art-teller-label">Told by</div>
+        <div class="art-teller-name">The Seanchaí <span class="art-teller-pron">(SHAN-ə-khee)</span></div>
+        <div class="art-teller-role">Paddy Commane · Historian &amp; Storyteller · of Ballymacooda</div>
+        <p class="art-teller-note">In the Gaelic tradition the <span class="irish">seanchaí</span> was the keeper of memory — the one who held the stories, the genealogies and the lore of the people, and told them aloud so they would not be lost. Paddy carries that office for the clan; what follows is the oldest story of all, told as he tells it.</p>
+      </div>
     </div>
 
     <div class="myth-frame-body">
