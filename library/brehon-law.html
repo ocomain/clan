@@ -144,6 +144,11 @@
     .art-callout-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0}
     .art-callout-body a{color:var(--burgundy);text-decoration:underline;text-decoration-color:rgba(140,30,30,.3);text-underline-offset:2px}
     .art-callout-body a:hover{text-decoration-color:var(--burgundy)}
+    .art-callout-bard{display:flex;gap:22px;align-items:flex-start}
+    .art-callout-bard-img{flex-shrink:0;width:108px;height:146px;object-fit:cover;object-position:center top;border-radius:54px 54px 4px 4px;border:1px solid var(--gold-border)}
+    .art-callout-bard-text{flex:1;min-width:0}
+    .art-callout-bard-who{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);margin-top:12px}
+    @media(max-width:600px){.art-callout-bard{flex-direction:column;align-items:center;text-align:center;gap:16px}.art-callout-bard-img{width:96px;height:130px}}
 
     /* SOURCES — small bibliography block at the bottom for
        credibility / SEO. Quieter than the body. */
@@ -447,7 +452,7 @@ function toggleMenu(){
   <div class="art-callout">
     <div class="art-callout-eyebrow">In Use Today</div>
     <h3 class="art-callout-title">The Oath of Standing</h3>
-    <p class="art-callout-body">Clan Ó Comáin has revived the year-and-a-day principle for the modern era. New members of the clan stand as <em>Observers</em> for their first year. At a year and a day on the Register, they pass to <em>Standing Members</em> — with voice and vote at the Annual General Meeting, and the option, if they wish, to take the <a href="/myth">Oath of Standing</a>. The principle behind it is the original Brehon one: standing is something time confers, not something money buys.</p>
+    <p class="art-callout-body">Clan Ó Comáin has revived the year-and-a-day principle for the modern era. New members of the clan stand as <em>Observers</em> for their first year. At a year and a day on the Register, they pass to <em>Standing Members</em> — with voice and vote at the Annual General Meeting, and the option, if they wish, to take the <a href="/membership">Oath of Standing</a>. The principle behind it is the original Brehon one: standing is something time confers, not something money buys.</p>
   </div>
 
   <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
@@ -554,10 +559,14 @@ function toggleMenu(){
 
   <p>None of this is play-acting at the medieval. It is the plainest thing in the world: to take the principles that once worked, in a people who thought long and carefully about how to live together, and to ask which of them have something to give us yet.</p>
 
-  <div class="art-callout">
-    <div class="art-callout-eyebrow">In the Members' Area</div>
-    <h3 class="art-callout-title">The Seanchaí tells it — the Bard sings it</h3>
-    <p class="art-callout-body">Where the Seanchaí keeps the clan's stories in the telling, the Clan Bard keeps them in song — the old tales and the heritage of Clan Ó Comáin, set to air. His music is being gathered in the members' area for the kindred to hear. <a href="/membership">Take your place on the Register</a>, and the Bard's Hearth is yours.</p>
+  <div class="art-callout art-callout-bard">
+    <img class="art-callout-bard-img" src="/images/people/paddy_commane_rockmount.jpg" alt="Paddy Commane, of Rockmount — Clan Bard">
+    <div class="art-callout-bard-text">
+      <div class="art-callout-eyebrow">In the Members' Area</div>
+      <h3 class="art-callout-title">The Seanchaí tells it — the Bard sings it</h3>
+      <p class="art-callout-body">Where the Seanchaí keeps the clan's stories in the telling, the Clan Bard keeps them in song — the old tales and the heritage of Clan Ó Comáin, set to air. His music is being gathered in the members' area for the kindred to hear. <a href="/membership">Take your place on the Register</a>, and the Bard's Hearth is yours.</p>
+      <div class="art-callout-bard-who">Paddy Commane · Clan Bard · <span class="irish">File an Chlan</span> · of Rockmount</div>
+    </div>
   </div>
 
   <p class="art-seanchai-close">So that is the law our people kept — the law of the kindred, the year and the day, the price of a person's face, the judges who were women, the copy that followed the book as a calf follows its cow. They ground it out four hundred years ago, and thought it gone. But a story does not die so easily as a statute. We are still here. We are still telling it. And every time someone new takes their place at the table — every time the kindred gathers and decides a thing together — a little more of it comes back. Pull your chair in. There is room.</p>

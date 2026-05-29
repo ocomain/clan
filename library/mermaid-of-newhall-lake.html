@@ -98,6 +98,11 @@
     .art-callout-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0}
     .art-callout-body a{color:var(--burgundy);text-decoration:underline;text-decoration-color:rgba(140,30,30,.3);text-underline-offset:2px}
     .art-callout-body a:hover{text-decoration-color:var(--burgundy)}
+    .art-callout-bard{display:flex;gap:22px;align-items:flex-start}
+    .art-callout-bard-img{flex-shrink:0;width:108px;height:146px;object-fit:cover;object-position:center top;border-radius:54px 54px 4px 4px;border:1px solid var(--gold-border)}
+    .art-callout-bard-text{flex:1;min-width:0}
+    .art-callout-bard-who{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);margin-top:12px}
+    @media(max-width:600px){.art-callout-bard{flex-direction:column;align-items:center;text-align:center;gap:16px}.art-callout-bard-img{width:96px;height:130px}}
 
     .art-sources{max-width:680px;margin:0 auto;padding:32px 24px 60px;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-muted);line-height:1.7;border-top:1px solid var(--gold-border)}
     .art-sources-h{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
@@ -474,10 +479,14 @@ function toggleMenu(){
 
   <p>In 1937 and 1938, when the schoolchildren of Ireland were set the task of writing down the old stories from their parents and grandparents, the children of Clare filled their copybooks with ninety-two tales of mermaids — and twenty-six of those were hers, the mermaid of Newhall. Every child along that shore knew her. That knowledge thinned, as such things do, over the generations that followed; but it never died. In our own day the people of Clarecastle and Ballyea have gathered her story up again and given it back to the parish, and a new generation of Clare musicians has set her to song. The lake still reddens after a dry summer. And the clan's own Bard has made music of her too — a song of Mary Finn that is kept, and heard, within the kindred.</p>
 
-  <div class="art-callout">
-    <div class="art-callout-eyebrow">In the Members' Area</div>
-    <h3 class="art-callout-title">The Seanchaí tells her tale — the Bard sings it</h3>
-    <p class="art-callout-body">The clan's own Bard has set Mary Finn to song. His ballad of the mermaid of Killone is kept for the kindred, in the members' area, where the stories the Seanchaí tells are given back as music. <a href="/membership">Take your place on the Register</a>, and the Bard's song is yours to hear.</p>
+  <div class="art-callout art-callout-bard">
+    <img class="art-callout-bard-img" src="/images/people/paddy_commane_rockmount.jpg" alt="Paddy Commane, of Rockmount — Clan Bard">
+    <div class="art-callout-bard-text">
+      <div class="art-callout-eyebrow">In the Members' Area</div>
+      <h3 class="art-callout-title">The Seanchaí tells her tale — the Bard sings it</h3>
+      <p class="art-callout-body">The clan's own Bard has set Mary Finn to song. His ballad of the mermaid of Killone is kept for the kindred, in the members' area, where the stories the Seanchaí tells are given back as music. <a href="/membership">Take your place on the Register</a>, and the Bard's song is yours to hear.</p>
+      <div class="art-callout-bard-who">Paddy Commane · Clan Bard · <span class="irish">File an Chlan</span> · of Rockmount</div>
+    </div>
   </div>
 
   <p class="art-seanchai-close">So that is Mary Finn — the maid in the dark water below Killone, who was caught and wronged and answered with a curse that emptied a great house of its name. The O'Briens are long gone from her shore; the well still flows; and on a dry evening, when the lake below the abbey turns the colour of rust, the old people will still tell you what it means. Now you can tell it too. Her tale is told here, by the fire, where anyone may sit and hear it. Her song is sung within the clan. Pull your chair in — there is room at this water for you.</p>
