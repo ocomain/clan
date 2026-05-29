@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Mermaid of Newhall Lake: the Legend of Killone · Clan Ó Comáin</title>
+  <meta name="description" content="May Finn, the mermaid of Killone Lake — caught, wronged, and avenged by a curse that drove the O'Briens from Newhall. The Clare legend, and the older Irish belief beneath it.">
+  <link rel="canonical" href="https://www.ocomain.org/library/mermaid-of-newhall-lake">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+
+  <!-- Open Graph -->
+  <!-- NOTE (asset gap): a bespoke og-library-mermaid.jpg should be made to
+       match og-library-brehon.jpg (Seanchaí face + title). Until it exists
+       this points at the generic Library card so the social preview is not
+       broken. -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.ocomain.org/library/mermaid-of-newhall-lake">
+  <meta property="og:title" content="The Mermaid of Newhall Lake: the Legend of Killone">
+  <meta property="og:description" content="A mermaid caught in the lake below Killone Abbey, and the curse that drove the O'Briens from Newhall. The Clare legend, and the deep Irish belief beneath it.">
+  <meta property="og:image" content="https://www.ocomain.org/og-library.jpg">
+  <meta property="og:site_name" content="Clan Ó Comáin">
+  <meta property="og:locale" content="en_IE">
+  <meta property="article:published_time" content="2026-05-29T12:00:00Z">
+  <meta property="article:author" content="Clan Ó Comáin">
+  <meta property="article:section" content="Folklore &amp; Legend">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Mermaid of Newhall Lake: the Legend of Killone">
+  <meta name="twitter:description" content="May Finn, the mermaid of Killone — caught, wronged, and avenged by a curse. The Clare legend, and the older Irish belief beneath it.">
+  <meta name="twitter:image" content="https://www.ocomain.org/og-library.jpg">
+
+  <style>
+    /* ARTICLE CHROME — shared with the Library's other articles (see
+       brehon-law.html). The article is the artefact; chrome stays out of
+       the way. Same typographic family + palette, restrained ornament. */
+
+    body{background:var(--cream);color:var(--ink)}
+
+    .art-hero{padding:64px 0 48px;background:linear-gradient(180deg, #FAF6EC 0%, var(--cream) 100%);border-bottom:1px solid var(--gold-border)}
+    .art-hero-inner{max-width:720px;margin:0 auto;padding:0 24px;text-align:center}
+    .art-back{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;margin-bottom:22px;padding:6px 14px;border:1px solid var(--gold-border);border-radius:100px;transition:background .15s,border-color .15s}
+    .art-back:hover{background:rgba(184,151,90,.10);border-color:var(--gold)}
+    .art-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+    .art-hero-title{font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,52px);font-weight:400;color:var(--ink);line-height:1.1;margin:0 0 20px}
+    .art-hero-title em{font-style:italic;color:var(--burgundy)}
+    .art-hero-dek{font-family:'EB Garamond',serif;font-size:clamp(18px,2vw,22px);color:var(--ink-soft);line-height:1.6;margin:0 auto 28px;max-width:580px;font-style:italic}
+    .art-hero-meta{display:inline-flex;align-items:center;gap:12px;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted)}
+    .art-hero-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--gold)}
+    .art-hero-art{margin:32px auto 0;max-width:240px}
+    .art-hero-art svg{display:block;width:100%;height:auto}
+
+    .art-body{max-width:680px;margin:0 auto;padding:48px 24px 60px;font-size:18.5px;line-height:1.85;color:var(--ink);font-family:'EB Garamond',serif}
+
+    .art-seanchai-open + p::first-letter{font-family:'EB Garamond',serif;font-size:64px;line-height:0.85;float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400}
+
+    .art-teller{display:flex;align-items:flex-start;gap:22px;padding:0 0 30px;margin-bottom:30px;border-bottom:1px solid var(--gold-border)}
+    .art-teller-portal{position:relative;flex-shrink:0;width:120px;height:166px;
+      border-radius:60px 60px 6px 6px;
+      padding:5px;background:linear-gradient(160deg, var(--gold-light), var(--gold-deep));
+      box-shadow:0 8px 24px rgba(12,26,12,.20)}
+    .art-teller-portal::after{content:'';position:absolute;inset:5px;
+      border-radius:56px 56px 3px 3px;border:1px solid rgba(255,253,247,.55);pointer-events:none;z-index:2}
+    .art-teller-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;
+      border-radius:56px 56px 3px 3px}
+    .art-teller-text{flex:1;min-width:0}
+    .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
+    .art-teller-name{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:4px}
+    .art-teller-pron{font-size:15px;color:var(--ink-faint);font-style:italic;letter-spacing:.02em;margin-left:4px}
+    .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:12px}
+    .art-teller-note{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0;font-style:italic}
+
+    .art-seanchai-open,.art-seanchai-close{font-family:'EB Garamond',serif;font-size:19.5px;line-height:1.8;color:var(--ink);font-style:italic;border-left:3px solid var(--burgundy);padding:4px 0 4px 24px;margin:0 0 28px}
+    .art-seanchai-open::first-letter{font-size:inherit;float:none;margin:0;color:inherit}
+    .art-seanchai-close{margin-top:8px;margin-bottom:0}
+
+    .art-body p{margin:0 0 22px}
+    .art-body p:last-child{margin-bottom:0}
+    .art-body strong{font-weight:500;color:var(--ink)}
+    .art-body em{font-style:italic}
+    .art-body .irish{font-style:italic;color:var(--burgundy)}
+    .art-body a{color:var(--gold-deep);text-decoration:underline;text-decoration-color:rgba(184,151,90,.3);text-underline-offset:2px}
+    .art-body a:hover{text-decoration-color:var(--gold)}
+
+    .art-h2{margin:48px 0 24px;text-align:left}
+    .art-h2-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px;display:block}
+    .art-h2-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,34px);font-weight:400;color:var(--ink);line-height:1.2;margin:0;font-style:italic}
+    .art-h2-title em{color:var(--burgundy)}
+
+    .art-pull{border-left:3px solid var(--gold);padding:8px 0 8px 28px;margin:32px 0;font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.55}
+
+    .art-divider{display:flex;justify-content:center;align-items:center;margin:42px 0;gap:14px;color:var(--gold);opacity:.7}
+    .art-divider::before,.art-divider::after{content:'';display:block;width:120px;height:1px;background:linear-gradient(90deg,transparent,rgba(184,151,90,.5) 50%,transparent)}
+    .art-divider-mark{width:6px;height:6px;background:var(--gold);border-radius:50%;flex-shrink:0}
+
+    .art-callout{background:rgba(140,30,30,.04);border-left:3px solid var(--burgundy);padding:24px 28px;border-radius:1px;margin:32px 0}
+    .art-callout-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .art-callout-title{font-family:'EB Garamond',serif;font-size:20px;color:var(--ink);font-weight:400;line-height:1.3;margin:0 0 12px;font-style:italic}
+    .art-callout-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0}
+    .art-callout-body a{color:var(--burgundy);text-decoration:underline;text-decoration-color:rgba(140,30,30,.3);text-underline-offset:2px}
+    .art-callout-body a:hover{text-decoration-color:var(--burgundy)}
+
+    .art-sources{max-width:680px;margin:0 auto;padding:32px 24px 60px;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-muted);line-height:1.7;border-top:1px solid var(--gold-border)}
+    .art-sources-h{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
+    .art-sources ul{list-style:none;padding:0;margin:0}
+    .art-sources li{margin-bottom:8px;font-style:italic}
+    .art-sources li::before{content:'·  ';color:var(--gold);font-style:normal}
+
+    .art-cta{background:linear-gradient(180deg, var(--cream) 0%, #F2EBD8 100%);padding:64px 0 72px;text-align:center;border-top:1px solid var(--gold-border)}
+    .art-cta-inner{max-width:580px;margin:0 auto;padding:0 24px}
+    .art-cta-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:16px}
+    .art-cta-title{font-family:'EB Garamond',serif;font-size:clamp(26px,4vw,34px);color:var(--ink);font-weight:400;line-height:1.25;margin:0 0 16px;font-style:italic}
+    .art-cta-sub{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.7;margin:0 0 28px;font-style:italic}
+    .art-cta-sub .irish{color:var(--gold-deep)}
+    .art-cta-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.20em;text-transform:uppercase;padding:14px 32px;text-decoration:none;border-radius:1px;border:1px solid var(--gold-deep);transition:background .15s,border-color .15s}
+    .art-cta-btn:hover{background:var(--gold-deep);border-color:var(--gold-deep);color:var(--gold-pale)}
+    .art-cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .art-cta-btn-ghost{background:transparent;color:var(--gold-deep);border:1px solid var(--gold)}
+    .art-cta-btn-ghost:hover{background:rgba(184,151,90,.12);color:var(--gold-deep);border-color:var(--gold-deep)}
+
+    .art-related{max-width:680px;margin:0 auto;padding:32px 24px 16px}
+    .art-related-h{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px;text-align:center}
+    a.art-related-h-link{display:block;text-decoration:none;transition:color .15s}
+    a.art-related-h-link:hover{color:var(--gold)}
+    .art-related-list{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px}
+    .art-related-item{background:#FFFDF7;border:1px solid var(--gold-border);border-top:2px solid var(--gold);padding:20px 22px;text-decoration:none;color:inherit;transition:transform .15s,border-color .15s;border-radius:2px}
+    .art-related-item:hover{transform:translateY(-2px);border-color:var(--gold)}
+    .art-related-item-eye{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
+    .art-related-item-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);line-height:1.3;font-style:italic}
+    .art-related-item.coming{opacity:.55;cursor:default}
+
+    @media (max-width:560px){
+      .art-hero{padding:42px 0 34px}
+      .art-back{margin-bottom:18px;font-size:10px}
+      .art-hero-dek{font-size:17px}
+      .art-hero-meta{font-size:10px;gap:8px;flex-wrap:wrap;justify-content:center}
+      .art-hero-art{max-width:180px;margin-top:24px}
+      .art-body{padding:30px 20px 36px;font-size:17.5px}
+      .art-seanchai-open + p::first-letter{font-size:50px;margin:6px 10px 0 0}
+      .art-callout{padding:18px 20px;margin:26px 0}
+      .art-callout-title{font-size:18px}
+      .art-callout-body{font-size:15.5px}
+      .art-teller{gap:15px;padding-bottom:22px;margin-bottom:24px}
+      .art-teller-portal{width:92px;height:126px;border-radius:46px 46px 5px 5px}
+      .art-teller-portal::after{border-radius:42px 42px 3px 3px}
+      .art-teller-img{border-radius:42px 42px 3px 3px}
+      .art-teller-name{font-size:20px}
+      .art-teller-role{font-size:13px}
+      .art-teller-note{font-size:13.5px;line-height:1.6}
+      .art-h2{margin:36px 0 18px}
+      .art-h2-title{font-size:27px}
+      .art-pull{font-size:19px;padding-left:20px;margin:26px 0;line-height:1.5}
+      .art-divider{margin:32px 0}
+      .art-divider::before,.art-divider::after{width:70px}
+      .art-seanchai-open,.art-seanchai-close{font-size:18px;padding-left:18px;line-height:1.75}
+      .art-sources{padding:28px 20px 48px}
+      .art-related{padding:28px 20px 12px}
+      .art-related-list{grid-template-columns:1fr;gap:12px}
+      .art-cta{padding:52px 0 60px}
+      .art-cta-title{font-size:25px}
+      .art-cta-sub{font-size:16px}
+      .art-cta-actions{flex-direction:column;gap:12px}
+      .art-cta-btn{display:block;width:100%;box-sizing:border-box;padding:15px 24px}
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "The Mermaid of Newhall Lake: the Legend of Killone",
+    "description": "May Finn, the mermaid of Killone Lake — caught, wronged, and avenged by a curse that drove the O'Briens from Newhall. The Clare legend, and the older Irish belief beneath it.",
+    "image": "https://www.ocomain.org/og-library.jpg",
+    "datePublished": "2026-05-29",
+    "dateModified": "2026-05-29",
+    "author": { "@type": "Organization", "name": "Clan Ó Comáin", "url": "https://www.ocomain.org" },
+    "publisher": { "@type": "Organization", "name": "Clan Ó Comáin", "logo": { "@type": "ImageObject", "url": "https://www.ocomain.org/coat_of_arms.png" } },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.ocomain.org/library/mermaid-of-newhall-lake" },
+    "articleSection": "Folklore & Legend"
+  }
+  </script>
+
+  <!-- Breadcrumb schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "The Library", "item": "https://www.ocomain.org/library/" },
+      { "@type": "ListItem", "position": 2, "name": "The Mermaid of Newhall Lake", "item": "https://www.ocomain.org/library/mermaid-of-newhall-lake" }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
+<!-- Analytics — Microsoft Clarity + Meta Pixel, deferred until first
+     user interaction (see /js/analytics-deferred.js). -->
+<script defer src="/js/analytics-deferred.js"></script>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
+    <a href="/" class="nav-brand"><img src="/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <div class="nav-links">
+      <a href="/myth" class="nav-link">Myth</a>
+      <a href="/surname-variants" class="nav-link">Variants</a>
+      <a href="/pedigree" class="nav-link">Pedigree</a>
+      <a href="/timeline" class="nav-link">Timeline</a>
+      <a href="/heartlands" class="nav-link">Heartlands</a>
+      <a href="/coat-of-arms" class="nav-link">Crest</a>
+      <a href="/clan-stories" class="nav-link">Stories</a>
+      <a href="/patrons" class="nav-link">Patrons</a>
+      <a href="/privy-council" class="nav-link">Council</a>
+      <a href="/members/login" class="nav-link">Members</a>
+    </div>
+    <a href="/membership" class="nav-cta">Join the clan</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a href="/myth" class="nav-mobile-link">Myth</a>
+  <a href="/surname-variants" class="nav-mobile-link">Variants</a>
+  <a href="/pedigree" class="nav-mobile-link">Pedigree</a>
+  <a href="/timeline" class="nav-mobile-link">Timeline</a>
+  <a href="/heartlands" class="nav-mobile-link">Heartlands</a>
+  <a href="/coat-of-arms" class="nav-mobile-link">Crest</a>
+  <a href="/clan-stories" class="nav-mobile-link">Stories</a>
+  <a href="/patrons" class="nav-mobile-link">Patrons</a>
+  <a href="/privy-council" class="nav-mobile-link">Council</a>
+  <a href="/members/login" class="nav-mobile-link">Members</a>
+  <a href="/membership" class="nav-mobile-cta">Join the clan</a>
+</div>
+<script>
+function toggleMenu(){
+  var m=document.getElementById("mobile-menu");
+  var b=document.querySelector(".nav-hamburger");
+  m.classList.toggle("open");b.classList.toggle("open");
+}
+</script>
+
+<!-- HERO -->
+<section class="art-hero">
+  <div class="art-hero-inner">
+    <a href="/library/" class="art-back">← The Library</a>
+    <div class="art-hero-eyebrow">Folklore &amp; Legend</div>
+    <h1 class="art-hero-title">The Mermaid of <em>Newhall Lake</em></h1>
+    <p class="art-hero-dek">On the dark water below Killone Abbey, the people remembered a mermaid — caught, wronged, and avenged by a curse that emptied a great house of its name. The story of May Finn, and the older Irish belief beneath it.</p>
+    <div class="art-hero-meta">
+      <span>14 minute read</span>
+      <span class="art-hero-meta-dot"></span>
+      <span>Curated by Clan Ó Comáin</span>
+    </div>
+    <!-- Decorative illustration — a mermaid combing her hair above the
+         ripples of a lake, framed by small Celtic flourishes. Pure SVG,
+         gold line-art, no photographic asset. -->
+    <div class="art-hero-art" aria-hidden="true">
+      <svg viewBox="0 0 240 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- lake surface ripples -->
+        <path d="M34 112 q9 -5 18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <path d="M42 120 q9 -4 18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0 t18 0" stroke="var(--gold)" stroke-width="0.8" opacity="0.4"/>
+        <!-- hair, flowing down the back -->
+        <path d="M116 25 C105 30, 101 42, 104 55 C105 64, 109 70, 110 78" stroke="var(--gold-deep)" stroke-width="1.1" stroke-linecap="round"/>
+        <path d="M121 24 C114 30, 112 39, 114 50" stroke="var(--gold-deep)" stroke-width="0.9" opacity="0.7" stroke-linecap="round"/>
+        <!-- head -->
+        <circle cx="122" cy="30" r="8.5" fill="rgba(184,151,90,0.07)" stroke="var(--gold-deep)" stroke-width="1.2"/>
+        <!-- arm raised to the hair (combing) -->
+        <path d="M120 45 C114 43, 110 39, 107 35" stroke="var(--gold-deep)" stroke-width="1.1" stroke-linecap="round"/>
+        <!-- a small comb in the raised hand -->
+        <g stroke="var(--gold-deep)" stroke-width="0.8" opacity="0.85">
+          <line x1="103" y1="35" x2="99" y2="31"/>
+          <line x1="105" y1="34" x2="101" y2="30"/>
+          <line x1="107" y1="33" x2="103" y2="29"/>
+        </g>
+        <!-- body and tail — one flowing line from neck to fluke -->
+        <path d="M122 39 C125 50, 132 58, 133 69 C134 80, 128 92, 118 100 C111 106, 106 112, 108 119"
+              fill="rgba(184,151,90,0.06)" stroke="var(--gold-deep)" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M115 46 C117 57, 121 66, 121 76 C121 88, 116 97, 108 105"
+              fill="none" stroke="var(--gold-deep)" stroke-width="1" opacity="0.8" stroke-linecap="round"/>
+        <!-- tail fluke, two soft lobes -->
+        <path d="M108 119 C101 114, 92 114, 87 121 C94 124, 103 123, 108 119 Z" fill="rgba(184,151,90,0.09)" stroke="var(--gold-deep)" stroke-width="1.1" stroke-linejoin="round"/>
+        <path d="M108 119 C112 124, 118 126, 124 124 C122 117, 116 113, 110 113" fill="rgba(184,151,90,0.09)" stroke="var(--gold-deep)" stroke-width="1.1" stroke-linejoin="round"/>
+        <!-- scale arcs along the tail -->
+        <path d="M124 72 q6 4 11 1" stroke="var(--gold)" stroke-width="0.7" opacity="0.6"/>
+        <path d="M120 84 q6 4 11 1" stroke="var(--gold)" stroke-width="0.7" opacity="0.6"/>
+        <path d="M113 95 q6 4 11 1" stroke="var(--gold)" stroke-width="0.7" opacity="0.6"/>
+        <!-- flanking flourishes -->
+        <g stroke="var(--gold)" stroke-width="1" opacity="0.5" stroke-linejoin="round">
+          <path d="M30 62 Q24 56, 30 52 Q36 56, 30 62 Z"/>
+          <path d="M30 62 Q36 68, 30 72 Q24 68, 30 62 Z"/>
+        </g>
+        <g stroke="var(--gold)" stroke-width="1" opacity="0.5" stroke-linejoin="round">
+          <path d="M210 62 Q204 56, 210 52 Q216 56, 210 62 Z"/>
+          <path d="M210 62 Q216 68, 210 72 Q204 68, 210 62 Z"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- BODY -->
+<article class="art-body">
+
+  <!-- Seanchaí host byline — Paddy Commane as the teller. -->
+  <div class="art-teller">
+    <div class="art-teller-portal">
+      <img class="art-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+    </div>
+    <div class="art-teller-text">
+      <div class="art-teller-label">Told by</div>
+      <div class="art-teller-name">The Seanchaí <span class="art-teller-pron">(SHAN-ə-khee)</span></div>
+      <div class="art-teller-role">Paddy Commane · Historian &amp; Storyteller · of Ballymacooda</div>
+      <p class="art-teller-note">In the Gaelic tradition the <span class="irish">seanchaí</span> was the keeper of memory — the one who held the stories, the laws and the lore of the people, and told them aloud so they would not be lost. Paddy carries that office for the clan, and when he tells, he becomes the tale.</p>
+    </div>
+  </div>
+
+  <p class="art-seanchai-open">Pull your chair to the fire. There is a lake I want to bring you to — a small, dark water in a hollow south of Ennis, with the broken walls of an old abbey standing over it and a holy well close by. By day it is one of the quietest places in all of County Clare. But the people who lived along its banks knew it was never only a lake. There was someone in the water. They called her <strong>May Finn</strong>, and this is her story — the way it was told to the children, and the way it was told to me. Some of it you can read in books two hundred years old. Some of it the books were never able to hold.</p>
+
+  <p>The lake is Killone — in the Irish, <span class="irish">Cill Eóin</span>, the church of Saint John. The church it is named for is still there, after a fashion: the roofless shell of an abbey on the water's edge, founded around the year 1190 by Donal Mór O'Brien, King of Thomond, for a community of nuns who followed the rule of Saint Augustine. It was dedicated to John the Baptist, and a holy well of his name survives on the land to this day, still visited for the saint's feast. The abbey and the lake and the well all stand now within the demesne of Newhall — a seventeenth-century house that is the seat of this clan. It is a gentle, wooded, water-fed corner of Clare. It is also, by the testimony of everyone who ever lived near it, one of the most enchanted.</p>
+
+  <p>Let me bring you down to the water, and tell you who was in it.</p>
+
+  <!-- I. THE PLACE -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">I. The Lake</span>
+    <h2 class="art-h2-title">A water that was never <em>only water</em></h2>
+  </div>
+
+  <p>When the great antiquarian John O'Donovan came through Clare in 1839, gathering the lore of every parish for the Ordnance Survey, he set down what the people told him of Killone: that the lake was <em>believed by the natives to be enchanted</em>. It was not an idle phrase. They held that a whole town lay drowned beneath the surface, and that once in a great while — on the right evening, in the right year — its roofs and walls could be seen down through the water by anyone with the eyes for it.</p>
+
+  <p>This is an old, deep Irish idea, the drowned country under the lake; you find it from Lough Neagh to the lost land off the Clare coast. A lake was a doorway. The surface was a skin between this world and another, and the things that lived on the far side of it could, on occasion, come through. Killone was such a place. The water gathers in a hollow between the townlands, dark under its wooded ridge, and drains away north and east by Ballybeg toward the River Fergus and the broad Shannon beyond. And in that water, the people said, there lived a mermaid.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- II. THE 1839 TELLING -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">II. The First Telling</span>
+    <h2 class="art-h2-title">The catching of the <em>maid in the lake</em></h2>
+  </div>
+
+  <p>Here is the older of the two versions — the one O'Donovan was given in 1839.</p>
+
+  <p>One day a man of the O'Briens was out fishing on the lake when he saw, on the northern bank, a beautiful woman sitting and combing her long hair. He stole up behind her, caught her in his arms, and carried her home. Only when he had her under his own roof did he understand what he had taken: from the waist down she was not a woman at all, but the tail of a great fish. He could not let such a creature go — and could not quite bear to keep her either — so he had her shut in a crib, and ordered that she be well fed and well attended, and there she stayed.</p>
+
+  <p>She would not speak. For all the months she was held there, she never said a word. Until one day a fool — one of those who lived on the O'Briens' bounty, as great houses always kept one — took it into his head that he could make her speak. He opened the door of her crib, and, for reasons known only to fools, he took a dish of boiling water and flung it over her. She screamed — a terrible, piteous screaming — and broke from the crib, and fled through the house and down to the lake. And as she went, she called out a curse on the family that had caught and kept and scalded her.</p>
+
+  <p>O'Donovan set the curse down in 1839 as it was remembered, in the Irish — it begins <span class="irish">Filleadh an bhradáin ón sruth</span>, "the return of the salmon from the stream." His own translation runs:</p>
+
+  <div class="art-pull">
+    As the return of the salmon from the stream,<br>
+    a return without flesh or blood,<br>
+    may such be the departure of the O'Briens,<br>
+    like the ears of wild corn from Killone.
+  </div>
+
+  <p>It is a strange, beautiful, pitiless little verse, and it repays a second reading. The salmon goes up the river full of life and comes back down it spent — thin, spawned-out, a husk of the fish that went up. The wild oat stands in the field and is good for nothing; you cannot eat the ears of it. <em>Let the O'Briens go like that</em>, she says — back down the river of their own history, emptied of substance; scattered like the chaff of a crop that was never worth the harvesting. It is a curse of slow dwindling, not sudden ruin. And, as we shall see, that is exactly the shape the tellers say it took.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- III. THE WESTROPP / SCHOOLS TELLING -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">III. The Second Telling</span>
+    <h2 class="art-h2-title">The butler, and the <em>wine in the cellar</em></h2>
+  </div>
+
+  <p>The second version is the one most people in Clare actually grew up on — the one the schoolchildren wrote down in their copybooks in the 1930s, and the one the great Clare folklorist Thomas Johnson Westropp recorded around the turn of the century. It is darker, and it has more blood in it.</p>
+
+  <p>In this telling, the trouble begins in the cellars. The wine at Newhall was going missing — vanishing from the casks, night after night, with no thief to be found. (In some versions it is the crypt beneath the old church the wine was kept in; in others the cellar of the house. It hardly matters: there is, to this day, a tunnel running from under Newhall down to the lake, and that passage between the wine and the water is surely the seed of the whole tale.) At last the butler resolved to catch the robber, and lay in wait in the dark of the cellar. What came up out of the water and in through the passage was no ordinary thief. He took it at first for a woman. Then he saw the truth of her — and he struck. He stabbed her, again and again. Some say he shot her.</p>
+
+  <p>Bleeding, screaming, she dragged herself back down the passage and into the lake, and as she went she put her curse on the house — that the O'Briens of Newhall would dwindle and die out of the place. Westropp gives the words of it in this version more starkly still:</p>
+
+  <div class="art-pull">
+    As the mermaid goes on the sea,<br>
+    so shall the race of O'Briens pass away,<br>
+    till they leave Killone in wild weeds.
+  </div>
+
+  <p>And her blood, they say, ran out into the lake and stained the whole of it red.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- IV. THE OMEN -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">IV. The Omen</span>
+    <h2 class="art-h2-title">The lake that turns <em>the colour of blood</em></h2>
+  </div>
+
+  <p>This is where the two tellings meet, and where the legend stops being a story about one unlucky family and becomes something stranger and longer-lived. For the lake at Killone does, in fact, turn red.</p>
+
+  <p>It happens at long intervals — the tellers say every seven years, or every forty, no one is quite sure — and most often after a dry summer. Westropp saw it for what it plainly is: the water reddens from iron in the mud and shale of the bed, the same way a stream he knew near Caherminaun reddened. He was a careful man and he wrote down the natural cause. But he also wrote down, without contradiction, what the people believed it <em>meant</em> — for the explanation and the belief have always lived side by side here, and neither has ever driven out the other. The red, they said, was the mermaid's blood, rising again. And it was a warning. It came, they told Westropp, to <strong>foretell a change of occupants at Newhall</strong> — and he was told that the last time it had happened was when the house passed into the hands of the O'Briens.</p>
+
+  <p>So she is more than a ghost in a story. She is an <em>omen</em>. The reddening lake is a sign-post set in the water, and what it points to is always the same thing: the fortunes of whoever holds the great house above it. She had said the O'Briens would go; and the lake has been quietly keeping the appointment ever since, turning the colour of old blood whenever the house is about to change hands.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- V. THE HISTORY / FRAMING -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">V. What the Curse Foretold</span>
+    <h2 class="art-h2-title">The O'Briens go from <em>Killone</em></h2>
+  </div>
+
+  <p>A curse, in an Irish story, is rarely just decoration. It is usually there to explain something that really happened — and behind this one is a piece of true history.</p>
+
+  <p>The O'Briens and Killone went back to the very beginning. It was an O'Brien king who had built the abbey by the lake in 1190; it was O'Briens who held the parish through the centuries that followed, and an O'Brien — Murrough, first Earl of Thomond — who received the dissolved abbey and its lands back from Henry VIII after the monasteries were suppressed. For the better part of six hundred years, to say "Killone" was very nearly to say "O'Brien." And then it ended. In 1764 the lands of Newhall and Killone passed out of O'Brien hands and into those of the MacDonnells, and no O'Brien ever held the place again. The tellers needed only to look at the empty abbey and the new family in the house to know that the maid in the lake had been as good as her word. <em>Like the ears of wild corn from Killone.</em></p>
+
+  <p>But hold the story at exactly this point, because two things matter, and they are easy to get wrong.</p>
+
+  <p>The first is that the curse fell on the O'Briens <strong>of Killone</strong>, and on them alone. It was never a curse on the name itself — the O'Briens were and remain one of the great houses of Ireland, and elsewhere in Clare and beyond they have flourished down to the present day. What the mermaid emptied was a single place of a single family's hold on it. That is all a curse like hers ever does.</p>
+
+  <p>The second is that <strong>May Finn was never the O'Briens' to begin with.</strong> She belonged to the lake, and the lake was old before any O'Brien came to fish in it. She is not the spirit of a family; she is the spirit of a <em>place</em>, and the families are only the people she finds living on her shore in their turn. When the water reddens it does not weep for the O'Briens. It speaks for the lake — for whoever holds it now, and whoever will hold it next. She has outlasted the nuns, and the earls, and the family her curse was aimed at, and she will outlast us too. The most a household by that water can hope to be is her good and careful neighbour for a while.</p>
+
+  <div class="art-callout">
+    <div class="art-callout-eyebrow">She is on the clan's own arms</div>
+    <h3 class="art-callout-title">The mermaid of Newhall Lake</h3>
+    <p class="art-callout-body">She is not a stranger to this clan. The mermaid of Newhall Lake is carried on the <a href="/coat-of-arms">coat of arms of Clan Ó Comáin</a> — alongside the Irish harp and the shamrocks of the clan's patron, Saint Commán — because she belongs to the seat, and the seat is hers as much as anyone's. The keepers of Killone are now the keepers of her story.</p>
+  </div>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- VI. WHY A MERMAID -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">VI. The Deeper Tradition</span>
+    <h2 class="art-h2-title">Why a <em>mermaid</em>?</h2>
+  </div>
+
+  <p>To a stranger, a mermaid in a small inland lake in Clare might seem an odd thing — mermaids belong to the sea. But May Finn stands in a tradition older and stranger than most people know, and once you see what she is, the lake makes perfect sense.</p>
+
+  <p>The Irish mermaid has her own name: the <span class="irish">murúch</span>, anglicised as <em>merrow</em>, which the poet Yeats took from <span class="irish">muir</span>, the sea, and <span class="irish">óigh</span>, a maid. In the old belief she wore a small red cap, the <span class="irish">cohuleen druith</span>, that let her pass beneath the waves; and if a man could steal and hide that cap, she could not return to the water, and he could keep her. The oldest and most famous of these tales — Crofton Croker's "Lady of Gollerus," from Kerry — turns on exactly this: a fisherman hides a merrow's cap, weds her, and they raise children with little webs between their fingers, until the day she finds the cap again and goes back to the sea forever. You will notice that this is the same story as May Finn's first telling — the supernatural woman caught and kept against her nature — and the same instinct runs through it: the sea-wife can be held for a while, but she always returns to the water in the end, and woe to the household that wronged her on the way. Fishermen, Yeats wrote, did not like to see a merrow at all, for the sight of one always meant coming gales. She was an omen even then.</p>
+
+  <p>And the merrow was never only of the salt sea. There are Irish tales of her rising from freshwater loughs, and her Scottish cousin, the <span class="irish">ceasg</span>, lives as readily in rivers and streams as in the ocean. A maid in a Clare lake is no anomaly at all. She is exactly where the tradition says she might be.</p>
+
+  <p>Ireland even has a mermaid-saint, and her story is the near twin of Killone's. <span class="irish">Lí Ban</span> was a woman who survived the flood that drowned her people and formed Lough Neagh; she lived a year alone beneath the water, was changed into a creature half-woman and half-salmon, and roamed the lake and the sea for three hundred years — until a monk's net took her, and Saint Comgall baptised her with the name Muirgen, "sea-born," and she is honoured as a saint to this day, with her feast on the twenty-seventh of January. A woman in a lake, beside a monastery, half a salmon: the same elements that gather at Killone, where the mermaid's water laps the wall of an abbey.</p>
+
+  <p>Even the salmon in May Finn's curse is no accident. It reaches back to the oldest water-story the Irish have — of the lady <span class="irish">Sinann</span>, granddaughter of the sea-god, who went to the Well of Wisdom at the world's edge, where nine hazel trees dropped their nuts into the water and the Salmon of Knowledge ate them. The well rose up and drowned her, and her body was carried down to become the River Shannon, which carries her name still. The salmon is the sacred creature of Irish water, the keeper of its wisdom — and Killone's own stream runs down, in the end, to that same Shannon. When the mermaid curses the O'Briens with the image of the spent salmon, she is speaking the deepest language the island has.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- VII. THE OMEN PATTERN + MELUSINE -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">VII. The Woman at the Water</span>
+    <h2 class="art-h2-title">The water-woman, and the <em>fall of houses</em></h2>
+  </div>
+
+  <p>The O'Briens, of all the families in Ireland, should have known that a woman at the water could speak their fate. For their line had heard such a voice before.</p>
+
+  <p>The guardian spirit of the O'Briens — of the whole Dál gCais, the kindred from which they spring — was <span class="irish">Aoibheall</span> of Craig Liath, the lady of the grey rock above the Shannon near Killaloe. She kept a golden harp, and the music of it was heard only by one who was about to die. On the night before the Battle of Clontarf, in the year 1014, the old High King Brian Boru heard Aoibheall's harp in the dark, and knew by it that he would win the day and not come home from it. Both came true. The O'Briens had a supernatural woman bound to their fortunes from the very beginning, and she told them when their greatest man would fall.</p>
+
+  <p>Nor is she the only such figure in Clare. Westropp records that in 1318, as the Norman lord Richard de Clare marched against the O'Briens and the O'Deas before the Battle of Dysert O'Dea, his army came to the River Fergus and found there a hideous hag, washing armour and bloodied robes in the water until the red gore ran churning through her hands. It was the oldest omen of all — the washer at the ford, who launders the gear of the men about to die — and within the day the Norman host was destroyed. A woman. At the water. And the colour red. Clare told this story over and over, across the centuries; and the mermaid of Killone is its last and gentlest telling, moved indoors to a great house and a stolen cask of wine, but the same tale at heart.</p>
+
+  <p>And she is not only Irish. Far away in France they told of <span class="irish">Mélusine</span>, the water-fairy who married a lord and built up his house into a mighty one — on a single condition, which in time he broke. When he did, she left him; and ever after, the story goes, she was heard wailing about the towers of the family's castle on the night before any of its lords died, and was seen there the very night the castle itself was thrown down. The folklorists have a name for her kind, and for May Finn with her: the <em>offended wife from the otherworld</em> — the water-woman who raises a house up, and who, when she is wronged, unmakes it. It is one of the great stories of Europe, and Clare has its own.</p>
+
+  <p>There is a last quiet detail worth keeping. All across the old Celtic world, the springs and lakes had women in them — guardians of the water — and when Christianity came, it did not so much banish them as set a saint beside them. So it is at Killone, where Saint John's holy well rises a few steps from the mermaid's lake: the new faith and the old water-spirit sharing the one place, drawing from the one source, without ever quite disturbing one another. The well and the mermaid have been neighbours for eight hundred years.</p>
+
+  <div class="art-divider" aria-hidden="true"><span class="art-divider-mark"></span></div>
+
+  <!-- VIII. LIVING TRADITION + CLOSE -->
+  <div class="art-h2">
+    <span class="art-h2-eyebrow">VIII. What Lives On</span>
+    <h2 class="art-h2-title">The story that <em>would not drown</em></h2>
+  </div>
+
+  <p>The abbey fell into ruin. The O'Briens went from Killone. But May Finn did not go anywhere.</p>
+
+  <p>In 1937 and 1938, when the schoolchildren of Ireland were set the task of writing down the old stories from their parents and grandparents, the children of Clare filled their copybooks with ninety-two tales of mermaids — and twenty-six of those were hers, the mermaid of Newhall. Every child along that shore knew her. That knowledge thinned, as such things do, over the generations that followed; but it never died. In our own day the people of Clarecastle and Ballyea have gathered her story up again and given it back to the parish, and a new generation of Clare musicians has set her to song. The lake still reddens after a dry summer. And the clan's own Bard has made music of her too — a song of May Finn that is kept, and heard, within the kindred.</p>
+
+  <p class="art-seanchai-close">So that is May Finn — the maid in the dark water below Killone, who was caught and wronged and answered with a curse that emptied a great house of its name. The O'Briens are long gone from her shore; the well still flows; and on a dry evening, when the lake below the abbey turns the colour of rust, the old people will still tell you what it means. Now you can tell it too. Her tale is told here, by the fire, where anyone may sit and hear it. Her song is sung within the clan. Pull your chair in — there is room at this water for you.</p>
+
+</article>
+
+<!-- SOURCES -->
+<section class="art-sources">
+  <div class="art-sources-h">Sources &amp; further reading</div>
+  <ul>
+    <li>John O'Donovan &amp; Eugene Curry, <em>Ordnance Survey Letters: County Clare</em> (1839) — the earliest written record of the legend and the "enchanted" lake</li>
+    <li>Thomas Johnson Westropp, articles in the <em>Journal of the Royal Society of Antiquaries of Ireland</em> (1900) and <em>A Folklore Survey of County Clare</em> (in <em>Folk-Lore</em>, 1910–13; repr. Clasp Press) — the fullest early collection</li>
+    <li>The Schools' Folklore Collection, 1937–39, Irish Folklore Commission (now on <em>dúchas.ie</em>) — twenty-six Clare tellings of the Mermaid of Newhall</li>
+    <li>T. Crofton Croker, <em>Fairy Legends and Traditions of the South of Ireland</em> (1825–28) — "The Lady of Gollerus" and the merrow tradition</li>
+    <li>W. B. Yeats, <em>Fairy and Folk Tales of the Irish Peasantry</em> (1888) — on the merrow, the <span class="irish">cohuleen druith</span>, and the colour red</li>
+    <li>The legend of Lí Ban / Saint Muirgen, from <em>Lebor na hUidre</em>; the lore of Sinann and the Shannon, from the <em>Dindshenchas</em></li>
+    <li>Clarecastle &amp; Ballyea Heritage &amp; Wildlife Group — the modern revival of the Mermaid of Killone</li>
+  </ul>
+</section>
+
+<!-- RELATED -->
+<section class="art-related">
+  <a href="/library/" class="art-related-h art-related-h-link">Continue in the Library →</a>
+  <div class="art-related-list">
+    <div class="art-related-item coming">
+      <div class="art-related-item-eye">Saints &amp; Wells · Coming soon</div>
+      <div class="art-related-item-title">Saint Commán, and the <em>well at Newhall</em></div>
+    </div>
+    <div class="art-related-item coming">
+      <div class="art-related-item-eye">Folklore · Coming soon</div>
+      <div class="art-related-item-title">The <em>merrow</em> — Ireland's mermaids</div>
+    </div>
+    <a href="/library/brehon-law" class="art-related-item">
+      <div class="art-related-item-eye">Irish Law &amp; Society</div>
+      <div class="art-related-item-title">What was <em>Brehon Law</em>?</div>
+    </a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="art-cta">
+  <div class="art-cta-inner">
+    <div class="art-cta-eyebrow">Join Clan Ó Comáin</div>
+    <h2 class="art-cta-title">A clan isn't for a surname — and this one is <em>open to you</em>.</h2>
+    <p class="art-cta-sub">People assume you need the name to belong. You don't, and you never did: a clan was never one family but a <span class="irish">túath</span>, a small nation joined by allegiance and place, long before surnames existed. So Clan Ó Comáin is <strong>not surname-gated</strong> — no particular name, no Irish grandparent, no descent to prove. If you love Ireland, you belong here. Take your place on the Register and become a Founder of the revival.</p>
+    <div class="art-cta-actions">
+      <a href="/membership" class="art-cta-btn">About membership →</a>
+      <a href="/gift" class="art-cta-btn art-cta-btn-ghost">🎁 &nbsp;Gift it to someone →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="si">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Clan <em>Ó Comáin</em></div>
+        <p class="footer-tagline">An ancient royal house in the Gaelic nobility of Ireland. Officially recognised by Clans of Ireland, 2025.</p>
+        <p class="footer-motto">Caithfidh an stair a bheith i réim</p>
+        <p class="footer-motto-en">History must prevail</p>
+      </div>
+      <div>
+        <div class="footer-heading">Explore</div>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/myth">Myth</a></li>
+          <li><a href="/pedigree">Pedigree</a></li>
+          <li><a href="/heartlands">Heartlands</a></li>
+          <li><a href="/library/">The Library</a></li>
+          <li><a href="/members/">Member's Area</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Clan</div>
+        <ul class="footer-links">
+          <li style="margin-bottom:4px"><a href="/membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
+          <li>Clan seat: Newhall House, County Clare</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2025&ndash;2026 Tigh U&iacute; Chom&aacute;in &middot; House of &Oacute; Com&aacute;in &middot; All rights reserved &middot; <a href="/terms" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Terms</a> &middot; <a href="/privacy" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Privacy</a> &middot; <a href="/refund" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">Refund</a> &middot; <a href="/about" style="color:inherit;text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">About</a></div>
+      <div class="footer-rec">Approved by the Chief of &Oacute; Com&aacute;in &middot; Recognised by Clans of Ireland &middot; Patronage of the President of Ireland</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
