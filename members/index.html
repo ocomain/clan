@@ -435,7 +435,7 @@
   <div id="dashboardContent" style="display:none"></div>
   <div id="errorState" style="display:none" class="merror">
     <p id="errorMessage">Something went wrong.</p>
-    <a href="/members/login.html" class="btn">Return to sign in →</a>
+    <a href="/members/login" class="btn">Return to sign in →</a>
   </div>
 </main>
 
@@ -517,7 +517,7 @@
 
     return `
       <section class="mstp" id="mstpSection">
-        <a href="/members/host-gathering.html?year=${targetYear}" class="mstp-link">
+        <a href="/members/host-gathering?year=${targetYear}" class="mstp-link">
           <div class="mstp-inner">
             <div class="mstp-text">
               <div class="mstp-eyebrow">St Patrick's Day · 17 March ${targetYear}</div>
@@ -725,11 +725,11 @@
         return '<span class="mbadge sworn" title="You have taken the Oath of Standing — voice and vote at the AGM.">Standing Member</span>';
       }
       if (isStanding) {
-        return '<a class="mbadge standing" href="/members/oath.html" title="A year and a day has passed — take the Oath of Standing.">Take the Oath →</a>';
+        return '<a class="mbadge standing" href="/members/oath" title="A year and a day has passed — take the Oath of Standing.">Take the Oath →</a>';
       }
       const daysRemaining = Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000));
       const daysLabel = daysRemaining === 1 ? '1 day' : `${daysRemaining} days`;
-      return `<a class="mbadge observer" href="/members/oath.html" title="Observer year — Standing Member at a year and a day on the Register.">Observer · ${daysLabel} →</a>`;
+      return `<a class="mbadge observer" href="/members/oath" title="Observer year — Standing Member at a year and a day on the Register.">Observer · ${daysLabel} →</a>`;
     })();
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
@@ -1284,7 +1284,7 @@
               <p style="margin:0 0 14px;text-align:center">A title of dignity conferred for bringing another into the clan — by invitation or by gift. From the moment of raising, the Chief recognises you in the dignity now held — borne before your name on the public Register, and addressed by the kindred.</p>
               <p style="text-align:center;margin:0 0 14px"><span class="mhonours-bridge-flourish">· · ·</span></p>
               <p class="mhonours-status">${statusLine}</p>
-              <div class="mhonours-bridge-cta"><a href="/members/honours.html" class="mhonours-bridge-link">Read the order of honours →</a></div>`;
+              <div class="mhonours-bridge-cta"><a href="/members/honours" class="mhonours-bridge-link">Read the order of honours →</a></div>`;
           })()}
         </div>
       </section>
@@ -1396,7 +1396,7 @@
       ${stPatricksFullSectionHtml(member)}
 
       <section class="mactions">
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/library.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/library">
           <span class="maction-icon">
             <!-- Open book — the library. Two pages with a centre spine
                  + suggestion of text lines. -->
@@ -1416,7 +1416,7 @@
           <div class="maction-desc">Private access to primary scholarship on the clan — including Gibson's 1990 UCLA doctoral dissertation <em>Tulach Commáin</em>, his 2008 peer-reviewed article, and Cotter's 1999 Cahercommaun re-assessment.</div>
           <span class="maction-btn">Open library →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/your-line.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/your-line">
           <span class="maction-icon">
             <!-- Branching tree of descent — your own line. -->
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1448,7 +1448,7 @@
           <div class="maction-desc">Record what you know of your line — parents, grandparents, earliest Ó Comáin ancestor, DNA status, family stories. Reviewed by the Office and, where the connection is clear, entered into the master pedigree.</div>
           <span class="maction-btn">Submit your line →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/year.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/year">
           <span class="maction-icon">
             <!-- Ribbon scroll — the year's chronicle. -->
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1469,7 +1469,7 @@
           <div class="maction-desc">A word from the Chief, the Council taking shape, the Dublin gathering, the library begun, the pedigree written, and what the second year is pointing toward.</div>
           <span class="maction-btn">Read the chronicle →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/pedigree.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/pedigree">
           <span class="maction-icon">
             <!-- Tall pedigree spine — the clan line, ancient and continuous.
                  Vertical lineage with branches at intervals, suggesting
@@ -1498,7 +1498,7 @@
           <div class="maction-desc">Eleven chapters of the clan line, from Bronze Age Ireland to today — navigate the full pedigree by era, with the spine of the line visible at a glance.</div>
           <span class="maction-btn">Open pedigree →</span>
         </a>
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/contact.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/members/contact">
           <span class="maction-icon">
             <!-- Quill on a scroll — formal correspondence. -->
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1553,7 +1553,7 @@
           }
 
           return `
-        <a class="maction ${hasSworn || isEligible ? 'live' : 'locked'}" style="text-decoration:none;color:inherit" href="/members/oath.html">
+        <a class="maction ${hasSworn || isEligible ? 'live' : 'locked'}" style="text-decoration:none;color:inherit" href="/members/oath">
           <span class="maction-icon">
             <!-- Hand raised in oath — single open palm, four fingers
                  and thumb, formal hand-raised-to-swear gesture. -->
@@ -1570,7 +1570,7 @@
           <span class="maction-btn">${btn}</span>
         </a>`;
         })()}
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/privy-council.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/privy-council">
           <span class="maction-icon">
             <!-- Heraldic shield — council authority, the clan's standing.
                  Cleaner than a crown for a "council" (collective body
@@ -1676,7 +1676,7 @@
              Icon: a single small flame above an open book — flame for
              remembrance (kept lit), book for the story being told.
              Quieter than the obituary card's book-and-candle. -->
-        <a class="maction live" style="text-decoration:none;color:inherit" href="/clan-stories.html">
+        <a class="maction live" style="text-decoration:none;color:inherit" href="/clan-stories">
           <span class="maction-icon">
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--gold-deep)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <!-- Single flame at the top — small, restrained -->
@@ -4037,7 +4037,7 @@
           return;
         }
         loading.style.display = 'none';
-        errorMsg.innerHTML = `The email <strong>${escHtml(member.email)}</strong> is signed in, but is not on the clan's register of members. If you believe this is an error, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>. Otherwise, you're welcome to <a href="/membership.html" style="color:var(--gold)">apply for membership</a>.`;
+        errorMsg.innerHTML = `The email <strong>${escHtml(member.email)}</strong> is signed in, but is not on the clan's register of members. If you believe this is an error, please write to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>. Otherwise, you're welcome to <a href="/membership" style="color:var(--gold)">apply for membership</a>.`;
         errorBox.style.display = 'block';
         return;
       }
