@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bear the Emblem — Clan Ó Comáin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="stylesheet" href="/shared.css">
+  <link rel="icon" href="/favicon.ico">
+
+  <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
+  <!-- Analytics — Clarity + Meta Pixel, deferred until first user
+       interaction so iOS Safari doesn't surface its 'Reduce Privacy
+       Protections' banner on initial paint. See /js/analytics-deferred.js
+       for the loader, rationale, and failsafe behaviour. -->
+  <script defer src="/js/analytics-deferred.js"></script>
+
+  <style>
+    body{background:var(--cream);min-height:100vh;margin:0}
+
+    /* HEADER — same chrome as the rest of /members. */
+    .mhdr{background:var(--ink);border-bottom:2px solid var(--gold);padding:18px 0}
+    .mhdr-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .mhdr-brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+    .mhdr-brand img{height:38px;width:auto}
+    .mhdr-brand-text{font-family:'EB Garamond',serif;font-size:20px;color:var(--gold-pale)}
+    .mhdr-brand-text em{color:var(--gold-light);font-style:italic}
+    .mhdr-nav{display:flex;align-items:center;gap:22px}
+    .mhdr-nav a{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(184,151,90,.7);text-decoration:none}
+    .mhdr-nav a:hover{color:var(--gold-light)}
+    .mhdr-back{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.7);background:transparent;border:1px solid rgba(184,151,90,.25);padding:8px 14px;border-radius:1px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:color .15s,border-color .15s}
+    .mhdr-back:hover{color:var(--gold-light);border-color:var(--gold)}
+    .mhdr-back-arrow{font-size:13px;line-height:1}
+    @media (max-width:520px){.mhdr-back-label{display:none} .mhdr-back{padding:8px 10px}}
+
+    /* PAGE LAYOUT */
+    .wrap{max-width:760px;margin:0 auto;padding:56px 24px 90px}
+    .page-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:12px;text-align:center}
+    .page-title{font-family:'EB Garamond',serif;font-size:clamp(34px,5vw,46px);font-weight:400;color:var(--ink);line-height:1.1;margin:0 0 16px;text-align:center}
+    .page-title em{font-style:italic;color:var(--burgundy)}
+    .page-sub{font-family:'EB Garamond',serif;font-size:19px;font-style:italic;color:var(--ink-muted);line-height:1.7;text-align:center;margin:0 auto 14px;max-width:600px}
+
+    /* WHY IT MATTERS — the network framing, kept warm and short */
+    .lede{font-family:'EB Garamond',serif;font-size:17.5px;line-height:1.85;color:var(--ink-soft);text-align:center;max-width:600px;margin:0 auto 46px}
+    .lede strong{color:var(--ink);font-weight:500}
+
+    /* LOADING / AUTH GATE */
+    .loading,.gate{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-muted);text-align:center;padding:80px 24px;font-style:italic}
+    .gate a{color:var(--gold-deep)}
+
+    /* EMBLEM CARD — one per downloadable asset */
+    .emblem{background:#FFF;border:1px solid var(--gold-faint);border-top:3px solid var(--gold);border-radius:2px;margin-bottom:30px;box-shadow:0 2px 8px rgba(20,5,5,.04);overflow:hidden}
+    .emblem-head{display:flex;align-items:center;gap:22px;padding:26px 30px;border-bottom:1px solid var(--gold-faint);flex-wrap:wrap}
+    .emblem-preview{width:104px;height:104px;flex:0 0 104px;border-radius:8px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .emblem-preview.round{border-radius:50%}
+    .emblem-preview img{width:100%;height:100%;object-fit:contain}
+    .emblem-preview.phone{width:78px;height:auto;flex:0 0 78px;border-radius:10px;border:2px solid #1a1a1a}
+    .emblem-preview.phone img{height:auto}
+    .emblem-head-text{flex:1;min-width:200px}
+    .emblem-kicker{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:7px}
+    .emblem-name{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-weight:400;line-height:1.25;margin:0 0 6px}
+    .emblem-for{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.5;margin:0}
+
+    .emblem-downloads{display:flex;gap:12px;flex-wrap:wrap;padding:22px 30px;background:rgba(184,151,90,.05)}
+    .dl-btn{display:inline-flex;align-items:center;gap:9px;font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#FFF;background:var(--burgundy);padding:15px 26px;border-radius:2px;text-decoration:none;transition:background .15s;line-height:1}
+    .dl-btn:hover{background:#7A1A1A}
+    .dl-btn .dl-arrow{font-size:15px}
+    .dl-btn.alt{background:transparent;color:var(--gold-deep);border:1.5px solid var(--gold-border)}
+    .dl-btn.alt:hover{background:rgba(184,151,90,.1);color:var(--ink)}
+
+    /* INSTRUCTIONS — the heart of the page. BIG and plain for older members. */
+    .steps-wrap{padding:8px 30px 30px}
+    .steps-group{margin-top:24px}
+    .steps-group:first-child{margin-top:8px}
+    .steps-device{display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin:0 0 14px;padding-bottom:10px;border-bottom:1px solid var(--gold-faint)}
+    .steps-device .dev-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);flex:0 0 9px}
+    ol.steps{list-style:none;counter-reset:step;margin:0;padding:0}
+    ol.steps li{counter-increment:step;position:relative;padding:0 0 18px 52px;font-family:'EB Garamond',serif;font-size:18.5px;line-height:1.6;color:var(--ink-soft)}
+    ol.steps li:last-child{padding-bottom:0}
+    ol.steps li::before{content:counter(step);position:absolute;left:0;top:-2px;width:34px;height:34px;background:var(--ink);color:var(--gold-light);font-family:'Jost',sans-serif;font-size:16px;font-weight:600;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    ol.steps li strong{color:var(--ink);font-weight:600}
+    ol.steps li em{font-style:normal;background:rgba(184,151,90,.16);padding:1px 6px;border-radius:2px;color:var(--ink);font-weight:500}
+
+    /* LICENCE / HONOUR LINE */
+    .licence{max-width:600px;margin:50px auto 0;text-align:center;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;line-height:1.8;color:var(--ink-muted);background:#FFFDF7;border:1px solid var(--gold-faint);border-left:3px solid var(--gold);padding:26px 30px;border-radius:1px}
+    .licence strong{color:var(--ink);font-style:normal;font-weight:500}
+
+    @media (max-width:560px){
+      .wrap{padding:40px 18px 70px}
+      .emblem-head{padding:22px 20px;gap:18px}
+      .emblem-downloads{padding:18px 20px}
+      .steps-wrap{padding:6px 20px 26px}
+      .dl-btn{flex:1;justify-content:center;padding:15px 16px}
+      ol.steps li{font-size:18px;padding-left:48px}
+      ol.steps li::before{width:32px;height:32px;font-size:15px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="mhdr">
+  <div class="mhdr-inner">
+    <a href="/members/" class="mhdr-back">
+      <span class="mhdr-back-arrow" aria-hidden="true">←</span>
+      <span class="mhdr-back-label">Back to dashboard</span>
+    </a>
+    <a href="/members/" class="mhdr-brand">
+      <img src="/images/brand/coat_of_arms.png" alt="Ó Comáin">
+      <span class="mhdr-brand-text">Clan <em>Ó Comáin</em></span>
+    </a>
+    <div class="mhdr-nav">
+      <a href="/members/">Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="page-eyebrow">For members of the kindred</div>
+  <h1 class="page-title">Bear the <em>Emblem</em></h1>
+  <p class="page-sub">The arms of Clan Ó Comáin, ready for your phone — as your picture on WhatsApp, or as the wallpaper you see each day.</p>
+  <p class="lede">When you set the emblem as your photo or your screen, everyone you know sees it. Quietly, every day, it says <strong>I belong to a clan</strong> — and that is how the kindred grows. No need to ask anyone to join. You simply fly the colours, and the curious come asking.</p>
+
+  <div id="loading" class="loading">Loading…</div>
+  <div id="gate" class="gate" style="display:none">Please <a href="/members/login">sign in</a> to download the clan emblem.</div>
+
+  <div id="content" style="display:none">
+
+    <!-- ── 1. PROFILE PICTURE (the round emblem) ───────────────────── -->
+    <section class="emblem">
+      <div class="emblem-head">
+        <div class="emblem-preview round">
+          <img src="/images/emblems/profile-roundel.png" alt="Round clan emblem">
+        </div>
+        <div class="emblem-head-text">
+          <div class="emblem-kicker">Profile picture</div>
+          <h2 class="emblem-name">The round emblem</h2>
+          <p class="emblem-for">For WhatsApp, Facebook, Messenger — anywhere you have a profile photo.</p>
+        </div>
+      </div>
+      <div class="emblem-downloads">
+        <a class="dl-btn" href="/images/emblems/profile-roundel.png" download>
+          <span class="dl-arrow" aria-hidden="true">↓</span> Download emblem
+        </a>
+      </div>
+      <div class="steps-wrap">
+        <div class="steps-group">
+          <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On an iPhone — WhatsApp</p>
+          <ol class="steps">
+            <li>First, tap <strong>Download emblem</strong> above. The picture saves to your <em>Photos</em>.</li>
+            <li>Open <strong>WhatsApp</strong>. Tap <em>Settings</em> at the bottom right.</li>
+            <li>Tap your <strong>name</strong> at the very top.</li>
+            <li>Tap <em>Edit</em>, then <strong>Choose Photo</strong>, and pick the clan emblem you just saved.</li>
+            <li>Tap <strong>Done</strong>. That's it — you're flying the colours.</li>
+          </ol>
+        </div>
+        <div class="steps-group">
+          <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On an Android phone — WhatsApp</p>
+          <ol class="steps">
+            <li>Tap <strong>Download emblem</strong> above. It saves to your phone.</li>
+            <li>Open <strong>WhatsApp</strong>. Tap the <em>three dots</em> at the top right, then <em>Settings</em>.</li>
+            <li>Tap your <strong>name and photo</strong> at the top.</li>
+            <li>Tap the small <strong>camera</strong> icon, choose <em>Gallery</em>, and pick the emblem.</li>
+            <li>Tap the <strong>tick</strong> to save. Done.</li>
+          </ol>
+        </div>
+        <div class="steps-group">
+          <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On Facebook</p>
+          <ol class="steps">
+            <li>Tap <strong>Download emblem</strong> above to save the picture.</li>
+            <li>Open <strong>Facebook</strong> and go to your <strong>profile</strong> (tap your own photo or name).</li>
+            <li>Tap your <strong>profile picture</strong>, then <em>Select Profile Picture</em>.</li>
+            <li>Choose the clan emblem, then tap <strong>Save</strong>.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. PHONE WALLPAPER (the full crest) ─────────────────────── -->
+    <section class="emblem">
+      <div class="emblem-head">
+        <div class="emblem-preview phone">
+          <img src="/images/emblems/wallpaper-iphone.png" alt="Clan crest phone wallpaper">
+        </div>
+        <div class="emblem-head-text">
+          <div class="emblem-kicker">Phone wallpaper</div>
+          <h2 class="emblem-name">The full crest</h2>
+          <p class="emblem-for">The clan arms on a dark background — for the screen you see when you pick up your phone.</p>
+        </div>
+      </div>
+      <div class="emblem-downloads">
+        <a class="dl-btn" href="/images/emblems/wallpaper-iphone.png" download>
+          <span class="dl-arrow" aria-hidden="true">↓</span> iPhone wallpaper
+        </a>
+        <a class="dl-btn alt" href="/images/emblems/wallpaper-android.png" download>
+          <span class="dl-arrow" aria-hidden="true">↓</span> Android wallpaper
+        </a>
+      </div>
+      <div class="steps-wrap">
+        <div class="steps-group">
+          <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On an iPhone</p>
+          <ol class="steps">
+            <li>Tap <strong>iPhone wallpaper</strong> above. The picture saves to your <em>Photos</em>.</li>
+            <li>Open the <strong>Photos</strong> app and tap the wallpaper you just saved.</li>
+            <li>Tap the <strong>share button</strong> (the square with an arrow going up), at the bottom left.</li>
+            <li>Scroll down the list and tap <strong>Use as Wallpaper</strong>.</li>
+            <li>Tap <strong>Add</strong> at the top right, then choose <em>Set as Wallpaper Pair</em>. Done.</li>
+          </ol>
+        </div>
+        <div class="steps-group">
+          <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On an Android phone</p>
+          <ol class="steps">
+            <li>Tap <strong>Android wallpaper</strong> above to save the picture.</li>
+            <li>Open your <strong>Photos</strong> or <strong>Gallery</strong> app and open the saved wallpaper.</li>
+            <li>Tap the <strong>three dots</strong> at the top right, then <em>Use as</em> or <em>Set as wallpaper</em>.</li>
+            <li>Choose <strong>Lock screen</strong>, <strong>Home screen</strong>, or both.</li>
+            <li>Tap <strong>Set wallpaper</strong>. Done.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <p class="licence">The emblem is the mark of the clan, given to its members to bear with pride. <strong>Please keep these for your own use</strong> — they are a courtesy of membership, not for passing on or printing for sale. Bear them well.</p>
+
+  </div>
+</main>
+
+<script type="module">
+  import { currentSession } from './auth.js';
+
+  const loadingEl = document.getElementById('loading');
+  const gateEl    = document.getElementById('gate');
+  const contentEl = document.getElementById('content');
+
+  (async () => {
+    let session = null;
+    try {
+      session = await currentSession();
+    } catch (e) {
+      console.warn('session check failed:', e.message);
+    }
+    loadingEl.style.display = 'none';
+    if (session) {
+      contentEl.style.display = 'block';
+    } else {
+      gateEl.style.display = 'block';
+    }
+  })().catch(err => {
+    console.error('emblems init failed:', err);
+    loadingEl.style.display = 'none';
+    gateEl.style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
