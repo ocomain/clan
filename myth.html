@@ -283,6 +283,30 @@
     .myth-cta-sub{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.7);line-height:1.7;margin:0 0 32px;font-style:italic}
     .myth-cta-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:16px 36px;text-decoration:none;border-radius:1px;transition:background .15s}
     .myth-cta-btn:hover{background:var(--gold-pale)}
+    /* 'Join Clan Ó Comáin' band — same as the Library (replaces the old myth-cta) */
+    .lib-join{background:var(--ink);padding:72px 0 80px;border-top:2px solid var(--gold);margin-top:0;position:relative;overflow:hidden}
+    .lib-join::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%, rgba(184,151,90,.10), transparent 55%),radial-gradient(ellipse at 80% 90%, rgba(140,30,30,.08), transparent 60%);pointer-events:none}
+    .lib-join-inner{position:relative;z-index:2;max-width:640px;margin:0 auto;padding:0 24px;text-align:center}
+    .lib-join-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .lib-join-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4.5vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin:0 0 22px;font-style:italic}
+    .lib-join-title br{display:none}
+    @media (min-width:600px){ .lib-join-title br{display:inline} }
+    .lib-join-title em{color:var(--gold-light);font-style:italic}
+    .lib-join-lead{font-family:'EB Garamond',serif;font-size:18.5px;color:rgba(225,238,225,.92);line-height:1.75;margin:0 0 18px}
+    .lib-join-lead .irish,.lib-join-sub .irish{font-style:italic;color:var(--gold-light)}
+    .lib-join-sub{font-family:'EB Garamond',serif;font-size:15.5px;color:rgba(200,220,200,.7);line-height:1.7;margin:0 0 30px;font-style:italic}
+    .lib-join-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .lib-join-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:15px 34px;text-decoration:none;border-radius:1px;border:1px solid var(--gold);transition:background .15s,border-color .15s}
+    .lib-join-btn:hover{background:var(--gold-pale);border-color:var(--gold-pale)}
+    .lib-join-btn-ghost{background:transparent;color:var(--gold-light);border:1px solid var(--gold)}
+    .lib-join-btn-ghost:hover{background:rgba(184,151,90,.16);color:var(--gold-pale);border-color:var(--gold-light)}
+    @media(max-width:600px){
+      .lib-join{padding:56px 0 60px}
+      .lib-join-lead{font-size:17px}
+      .lib-join-sub{font-size:14.5px}
+      .lib-join-actions{flex-direction:column;gap:12px}
+      .lib-join-btn{display:block;width:100%;box-sizing:border-box;padding:15px 24px}
+    }
 
     /* Placeholder note styles removed 2026-05-24 — every section is
        now written in full; the dashed-burgundy cards are no longer
@@ -800,13 +824,17 @@ function toggleMenu(){
   </div>
 </section>
 
-<!-- CTA — the implicit affinity door, made explicit. -->
-<section class="myth-cta">
-  <div class="myth-cta-inner">
-    <div class="myth-cta-eyebrow">Join the kindred</div>
-    <h2 class="myth-cta-title">You do not need to carry the <em>surname</em>.</h2>
-    <p class="myth-cta-sub">You do not need an Irish grandparent. You do not need to prove descent. If this story makes you feel something — if you would rather belong to a kindred than not — the door is the same door. The mermaid is on the gate, and the gate is open.</p>
-    <a href="/membership" class="myth-cta-btn">See the membership tiers →</a>
+<!-- JOIN BAND — the same "Join Clan Ó Comáin" band used across the Library -->
+<section class="lib-join">
+  <div class="lib-join-inner">
+    <div class="lib-join-eyebrow">Join Clan Ó Comáin</div>
+    <h2 class="lib-join-title">A clan isn't for a surname.<br>And this one is <em>open to you</em>.</h2>
+    <p class="lib-join-lead">People assume you need the name to belong to a clan. You don't — and you never did. A clan was never one family; in the old Gaelic order it was a <span class="irish">túath</span>, a small nation joined by allegiance and place, in an age before surnames even existed.</p>
+    <p class="lib-join-sub">So Clan Ó Comáin is <strong>not surname-gated</strong>. No particular name, no Irish grandparent, no line of descent to prove. If you love Ireland, you belong here — take your place on the Register and become a Founder of the revival.</p>
+    <div class="lib-join-actions">
+      <a href="/membership" class="lib-join-btn">About membership →</a>
+      <a href="/gift" class="lib-join-btn lib-join-btn-ghost">🎁 &nbsp;Gift it to someone →</a>
+    </div>
   </div>
 </section>
 
