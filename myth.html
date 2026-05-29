@@ -186,6 +186,26 @@
     .art-teller-pron{font-size:15px;color:var(--ink-faint);font-style:italic;letter-spacing:.02em;margin-left:4px}
     .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:12px}
     .art-teller-note{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0;font-style:italic}
+    /* Bard members-area CTA — matches the Library articles */
+    .myth-bard-cta{max-width:680px;margin:0 auto;padding:0 24px}
+    .art-callout{background:rgba(140,30,30,.04);border-left:3px solid var(--burgundy);padding:24px 28px;border-radius:1px;margin:32px 0}
+    .art-callout-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .art-callout-title{font-family:'EB Garamond',serif;font-size:20px;color:var(--ink);font-weight:400;line-height:1.3;margin:0 0 12px;font-style:italic}
+    .art-callout-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0}
+    .art-callout-body a{color:var(--burgundy);text-decoration:underline;text-decoration-color:rgba(140,30,30,.3);text-underline-offset:2px}
+    .art-callout-body a:hover{text-decoration-color:var(--burgundy)}
+    .art-callout-bard{display:flex;gap:22px;align-items:flex-start}
+    .art-callout-bard-img{flex-shrink:0;width:108px;height:146px;object-fit:cover;object-position:center top;border-radius:54px 54px 4px 4px;border:1px solid var(--gold-border)}
+    .art-callout-bard-text{flex:1;min-width:0}
+    .art-callout-bard-who{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);margin-top:12px}
+    .art-callout-bard-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);line-height:1.6;margin-top:8px}
+    @media(max-width:600px){
+      .art-callout{padding:18px 20px;margin:26px 0}
+      .art-callout-title{font-size:18px}
+      .art-callout-body{font-size:15.5px}
+      .art-callout-bard{flex-direction:column;align-items:center;text-align:center;gap:16px}
+      .art-callout-bard-img{width:96px;height:130px}
+    }
     @media(max-width:600px){
       .art-teller{gap:15px;padding-bottom:22px;margin-bottom:24px}
       .art-teller-portal{width:92px;height:126px;border-radius:46px 46px 5px 5px}
@@ -758,6 +778,20 @@ function toggleMenu(){
 
       <p>The mermaid is still on the gate at Newhall. The kindred still gather under her. The story is not finished.</p>
 
+    </div>
+  </div>
+</section>
+
+<!-- BARD CTA — the Seanchaí tells it, the Bard sings it; members-area music sign-up -->
+<section class="myth-bard-cta">
+  <div class="art-callout art-callout-bard">
+    <img class="art-callout-bard-img" src="/images/people/paddy_commane_rockmount.jpg" alt="Paddy Commane, of Rockmount — Clan Bard">
+    <div class="art-callout-bard-text">
+      <div class="art-callout-eyebrow">In the Members' Area</div>
+      <h3 class="art-callout-title">The Seanchaí tells it — the Bard sings it</h3>
+      <p class="art-callout-body">The story you have just heard is carried in song, too. The clan's own Bard sets the kindred's history and heritage to music, and his songs are kept in the members' area for those who belong. <a href="/membership">Take your place on the Register</a>, and the Bard's Hearth is yours to hear.</p>
+      <div class="art-callout-bard-who">Paddy Commane · Clan Bard · <span class="irish">File an Chlan</span> · of Rockmount</div>
+      <div class="art-callout-bard-note">In Gaelic Ireland the <span class="irish">file</span> — the clan's poet — was honoured as highly as a king: his verse could lift a name to the heavens, and his satire was feared as keenly as any blade.</div>
     </div>
   </div>
 </section>
