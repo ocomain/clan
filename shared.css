@@ -45,6 +45,11 @@ html{
 }
 body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
+/* In-body text link — visible gold + underline. For cross-links inside
+   prose (e.g. into Library articles), since the global rule above strips
+   colour and underline from all anchors. */
+a.inline-link{color:var(--gold-deep);text-decoration:underline;text-decoration-color:var(--gold-deep);text-underline-offset:2px;font-weight:500;transition:color .15s,text-decoration-color .15s}
+a.inline-link:hover{color:var(--gold);text-decoration-color:var(--gold)}
 .si{max-width:1120px;margin:0 auto;padding:0 40px}
 .eyebrow{font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
 .gold-rule{width:48px;height:2px;background:var(--gold);margin:22px 0}
