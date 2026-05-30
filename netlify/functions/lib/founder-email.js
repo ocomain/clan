@@ -288,8 +288,7 @@ function buildFounderReminderHtml(pendingGift) {
     <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto;text-align:center;max-width:120px">Ó COMÁIN</p>
   </div>
   <div style="padding:40px">
-    <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">The founding year</p>
-    <h1 style="font-family:'Georgia',serif;font-size:30px;font-weight:400;color:#2C1A0C;margin:0 0 24px;line-height:1.15">A Final Notice</h1>
+    <h1 style="font-family:'Georgia',serif;font-size:30px;font-weight:400;letter-spacing:0.04em;text-transform:uppercase;color:#B8975A;margin:0 0 24px;line-height:1.2">A Final Notice</h1>
     <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">A month has passed since the Chief offered you a founding place in Clan Ó Comáin. This is the last note you will receive on the matter.</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The founding-place gift is a one-time courtesy from the Chief's own hand, given in this founding year only. It is not re-offered. Should you wish to join Clan Ó Comáin in future, the door remains open through the standard membership of the clan (pricing on website). Membership is a contribution to the heritage and cultural revival of Ó Comáin and the ways of Gaelic Ireland &mdash; but the founding place set down in your name today will not be set down again.</p>
