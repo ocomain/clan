@@ -47,11 +47,11 @@ function escapeHtml(s) {
 function buildCertReminderHtml({ member, suggestedName, signInUrl }) {
   const firstName = (member.name || '').split(' ')[0] || 'friend';
   const familyDetails = member.tier_family && (member.partner_name || (member.children_first_names && member.children_first_names.length))
-    ? `<p style="margin:0 0 4px"><strong style="color:#0C1A0C">Family on certificate:</strong> ${escapeHtml(member.partner_name || '—')}${member.children_first_names && member.children_first_names.length ? ' and ' + escapeHtml(member.children_first_names.join(', ')) : ''}</p>`
+    ? `<p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Family on certificate:</strong> ${escapeHtml(member.partner_name || '—')}${member.children_first_names && member.children_first_names.length ? ' and ' + escapeHtml(member.children_first_names.join(', ')) : ''}</p>`
     : '';
   const ancestor = member.ancestor_dedication
-    ? `<p style="margin:0 0 4px"><strong style="color:#0C1A0C">Ancestor dedication:</strong> ${escapeHtml(member.ancestor_dedication)}</p>`
-    : `<p style="margin:0 0 4px"><strong style="color:#0C1A0C">Ancestor dedication:</strong> <em>(none — your certificate will not include a dedication)</em></p>`;
+    ? `<p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Ancestor dedication:</strong> ${escapeHtml(member.ancestor_dedication)}</p>`
+    : `<p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Ancestor dedication:</strong> <em>(none — your certificate will not include a dedication)</em></p>`;
 
   const nameWillFix = suggestedName !== member.name;
 
@@ -72,8 +72,8 @@ function buildCertReminderHtml({ member, suggestedName, signInUrl }) {
 
     <div style="background:#FFF9EC;border:1px solid #E6D4A3;border-top:3px solid #B8975A;padding:22px 24px;margin:0 0 24px;border-radius:2px">
       <p style="font-family:'Georgia',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#B8975A;margin:0 0 14px">Your certificate will read</p>
-      <p style="font-family:'Georgia',serif;font-size:13.5px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Name on certificate:</strong> ${escapeHtml(suggestedName)}${nameWillFix ? ` <em style="color:#8C7A64">(auto-corrected from "${escapeHtml(member.name || '')}")</em>` : ''}</p>
-      <p style="font-family:'Georgia',serif;font-size:13.5px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Tier:</strong> ${escapeHtml(member.tier_label || 'Member')}</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Name on certificate:</strong> ${escapeHtml(suggestedName)}${nameWillFix ? ` <em style="color:#8C7A64">(auto-corrected from "${escapeHtml(member.name || '')}")</em>` : ''}</p>
+      <p style="font-family:'Georgia',serif;font-size:15px;color:#3C2A1A;line-height:1.75;margin:0 0 4px"><strong style="color:#0C1A0C">Tier:</strong> ${escapeHtml(member.tier_label || 'Member')}</p>
       ${familyDetails}
       ${ancestor}
     </div>

@@ -292,7 +292,19 @@ function buildFounderReminderHtml(pendingGift) {
     <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${escapeHtml(firstName)},</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">A month has passed since the Chief offered you a founding place in Clan Ó Comáin. This is the last note you will receive on the matter.</p>
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">The founding-place gift is a one-time courtesy from the Chief's own hand, given in this founding year only. It is not re-offered. Should you wish to join Clan Ó Comáin in future, the door remains open through the standard membership of the clan (pricing on website). Membership is a contribution to the heritage and cultural revival of Ó Comáin and the ways of Gaelic Ireland &mdash; but the founding place set down in your name today will not be set down again.</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 32px">If you wish to take it up &mdash; <strong>${escapeHtml(tierLabel)}</strong>, complimentary &mdash; click below.</p>
+    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 24px">If you wish to take it up &mdash; <strong>${escapeHtml(tierLabel)}</strong>, complimentary &mdash; click below.</p>
+
+    <!-- 'Not surname-gated' reassurance (added 2026-05-30). Placed at
+         the decision point because the most common reason a founder
+         hesitates is the quiet assumption that they don't "really"
+         qualify — wrong surname, no Irish grandparent, no provable
+         line. Addressing it here, right before the CTA, removes the
+         objection at the moment it matters. Condensed from the
+         website's fuller 'This clan is not for a surname' passage. -->
+    <div style="background:#FFF9EC;border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 32px">
+      <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.75;margin:0 0 12px"><strong style="color:#0C1A0C">And should you wonder whether the place is truly meant for you &mdash; it is.</strong> A clan was never one family. In the old Gaelic order it was a <em>túath</em>: a small nation joined by allegiance and place, in an age before surnames even existed.</p>
+      <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.75;margin:0">So Clan Ó Comáin asks for no particular name, no Irish grandparent, no line of descent to prove. If you love Ireland, you belong here &mdash; and your place on the Register makes you a Founder of the revival.</p>
+    </div>
 
     <!-- Primary CTA: take up the founding place. Burgundy fill,
          visually dominant. -->
