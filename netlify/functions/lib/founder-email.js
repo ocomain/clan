@@ -303,7 +303,7 @@ function buildFounderReminderHtml(pendingGift) {
          website's fuller 'This clan is not for a surname' passage. -->
     <div style="background:#FFF9EC;border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 32px">
       <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.75;margin:0 0 12px"><strong style="color:#0C1A0C">And should you wonder whether the place is truly meant for you &mdash; it is.</strong> A clan was never one family. In the old Gaelic order it was a <em>túath</em>: a small nation joined by allegiance and place, in an age before surnames even existed.</p>
-      <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.75;margin:0">So Clan Ó Comáin asks for no particular name, no Irish grandparent, no line of descent to prove. If you love Ireland, you belong here &mdash; and your place on the Register makes you a Founder of the revival.</p>
+      <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.75;margin:0">So Clan Ó Comáin asks for no particular name, no Irish grandparent, no line of descent to prove. If you love Ireland, you belong here &mdash; and your place on the Register at Newhall makes you a Founder of the revival.</p>
     </div>
 
     <!-- Primary CTA: take up the founding place. Burgundy fill,
