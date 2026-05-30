@@ -36,6 +36,7 @@
 // Netlify edge.
 
 const { supa, clanId } = require('./lib/supabase');
+const { highestAwardedTitle, formatAddressForm } = require('./lib/sponsor-service');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'GET') {
@@ -100,6 +101,7 @@ exports.handler = async (event) => {
       .from('gatherings')
       .select(`
         id,
+        host_member_id,
         host_display_name,
         host_avatar_url,
         message,
@@ -137,12 +139,62 @@ exports.handler = async (event) => {
       }
     }
 
+    // ── Fetch host dignities for the title-bearing display name ───────
+    // The map's "Hosted by" line should carry the host's dignity if
+    // they hold one — 'Hosted by Cara Antóin' rather than just
+    // 'Hosted by Antóin'. We batch-fetch the sponsor_titles_awarded
+    // for every distinct host member, compute each one's highest
+    // dignity, and build the speech-form address ('Cara Antóin',
+    // 'Onóir James', or bare 'Antóin' if untitled) via the same
+    // formatAddressForm helper the email salutations use. This keeps
+    // the map consistent with how the household addresses titled
+    // members everywhere else.
+    const hostMemberIds = [...new Set(
+      (gatherings || []).map(g => g.host_member_id).filter(Boolean)
+    )];
+    const dignityByMemberId = {};
+    if (hostMemberIds.length > 0) {
+      const { data: hostMembers, error: hmErr } = await supa()
+        .from('members')
+        .select('id, name, sponsor_titles_awarded')
+        .in('id', hostMemberIds);
+      if (hmErr) throw hmErr;
+      for (const m of hostMembers || []) {
+        const title = highestAwardedTitle(m.sponsor_titles_awarded);
+        dignityByMemberId[m.id] = {
+          name: m.name,
+          title, // null if untitled
+        };
+      }
+    }
+
     // ── Decorate output rows ──────────────────────────────────────────
     const out = (gatherings || []).map(g => {
       const r = rsvpsByGathering[g.id] || { rows: 0, attending: 0 };
+
+      // Compute the title-bearing address form for the "Hosted by"
+      // line. Prefer the host member's registered name + dignity
+      // (so a raised Cara always shows the title even if their pin's
+      // stored host_display_name predates the raising). Fall back to
+      // the stored host_display_name (a bare first name) if there's
+      // no member link or the member lookup found nothing.
+      let hostDisplay = g.host_display_name || null;
+      const dignityInfo = g.host_member_id ? dignityByMemberId[g.host_member_id] : null;
+      if (dignityInfo && dignityInfo.name) {
+        // formatAddressForm extracts the first name from the full
+        // registered name and prefixes the dignity if present.
+        // 'Cara Antóin' / 'Onóir James' / bare 'Antóin'.
+        hostDisplay = formatAddressForm({ name: dignityInfo.name }, dignityInfo.title);
+      } else if (hostDisplay) {
+        // No member link, but we have a stored display name — if it
+        // happens to be a multi-word string, keep only the first
+        // word to stay consistent with the first-name-only policy.
+        hostDisplay = String(hostDisplay).trim().split(/\s+/)[0];
+      }
+
       return {
         id:                g.id,
-        host_display_name: g.host_display_name || null,
+        host_display_name: hostDisplay,
         host_avatar_url:   g.host_avatar_url || null,
         message:           g.message || null,
         // Venue specifics — only revealed to active members. Public
