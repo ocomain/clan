@@ -93,13 +93,12 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 @media(max-width:768px){
   .nav{position:fixed;top:0;left:0;right:0}
   body{padding-top:58px}
-  /* Hero tagline sizing on mobile. At 18px (desktop) the final word
-     'here.' spilled to a 5th line on phone widths. Two levers pulled
-     to land it in 4 lines: drop font to 15px AND narrow the hero
-     side-padding from 32px to 20px to recover ~24px of text width.
-     Desktop keeps 18px (the enlarged size DDW's uncle asked for). */
-  .hero-inner{padding:0 20px}
-  .hero-desc{font-size:15px;line-height:1.75}
+  /* Hero tagline on mobile: 14px + narrowed hero padding (32→18px)
+     to fit the whole tagline in ~4 lines. At 18px 'here.' orphaned
+     onto a 5th line; progressively smaller mobile sizing + wider
+     usable width brings it back. Desktop keeps the larger 18px. */
+  .hero-inner{padding:0 18px}
+  .hero-desc{font-size:14px;line-height:1.7}
 }
 .nav .si{height:58px;display:flex;align-items:center;justify-content:space-between}
 .nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none;white-space:nowrap}
@@ -688,7 +687,7 @@ function toggleMenu(){
     <p class="hero-irish">Caithfidh an stair a bheith i réim — History must prevail</p>
     <p class="hero-year" style="font-family:'Jost',sans-serif;font-size:clamp(9px,1vw,11px);font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:rgba(184,151,90,.72);margin:-18px 0 24px">· Year One of the Revival · 2026 ·</p>
     <div class="hero-div"></div>
-    <p class="hero-desc">An ancient Gaelic royal house, awake after centuries of silence — from an age before surnames existed, so this clan is open to every name. If you love Ireland, you belong here.</p>
+    <p class="hero-desc">An ancient Gaelic royal house, awake after centuries of silence — from an age before surnames existed, a clan open to every name. If you love Ireland, you belong here.</p>
     <div class="hero-ctas">
       <a href="membership" class="btn-p">Join the clan</a>
       <a href="#videos" class="btn-g">Explore our heritage</a>
