@@ -93,6 +93,11 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 @media(max-width:768px){
   .nav{position:fixed;top:0;left:0;right:0}
   body{padding-top:58px}
+  /* Hero tagline a touch smaller on mobile (16px vs 18px desktop) so
+     it lands in 4 lines max — at 18px the final 'here.' was spilling
+     onto a fifth line on phone widths. Desktop keeps the larger 18px
+     that DDW's uncle asked for. */
+  .hero-desc{font-size:16px;line-height:1.8}
 }
 .nav .si{height:58px;display:flex;align-items:center;justify-content:space-between}
 .nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none;white-space:nowrap}
