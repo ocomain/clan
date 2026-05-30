@@ -93,11 +93,13 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 @media(max-width:768px){
   .nav{position:fixed;top:0;left:0;right:0}
   body{padding-top:58px}
-  /* Hero tagline a touch smaller on mobile (16px vs 18px desktop) so
-     it lands in 4 lines max — at 18px the final 'here.' was spilling
-     onto a fifth line on phone widths. Desktop keeps the larger 18px
-     that DDW's uncle asked for. */
-  .hero-desc{font-size:16px;line-height:1.8}
+  /* Hero tagline sizing on mobile. At 18px (desktop) the final word
+     'here.' spilled to a 5th line on phone widths. Two levers pulled
+     to land it in 4 lines: drop font to 15px AND narrow the hero
+     side-padding from 32px to 20px to recover ~24px of text width.
+     Desktop keeps 18px (the enlarged size DDW's uncle asked for). */
+  .hero-inner{padding:0 20px}
+  .hero-desc{font-size:15px;line-height:1.75}
 }
 .nav .si{height:58px;display:flex;align-items:center;justify-content:space-between}
 .nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none;white-space:nowrap}
