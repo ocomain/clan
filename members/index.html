@@ -52,9 +52,17 @@
     .mstp-link:hover .mstp-cta{background:var(--gold-light)}
     .mstp-link:hover .mstp-preview{border-color:var(--gold);transform:translateY(-2px)}
     .mstp-link:hover .mstp-title{color:var(--gold-deep)}
-    @media (max-width:560px){
-      .mstp-inner{gap:18px}
-      .mstp-preview{width:100%;max-width:280px;height:auto;aspect-ratio:5/4;order:2}
+    @media (max-width:720px){
+      /* Stack the card vertically on mobile/tablet. Without
+         flex-direction:column the row layout persisted and the 'order'
+         properties just reordered items inside a squeezed row —
+         crushing the heading text into a thin vertical column beside
+         the map (DDW reported). Column direction makes text sit ABOVE
+         a full-width map. Breakpoint raised to 720px (the card's own
+         max-width) so the side-by-side row only applies when there's
+         genuinely room for it. */
+      .mstp-inner{flex-direction:column;align-items:stretch;gap:18px}
+      .mstp-preview{width:100%;max-width:none;height:auto;aspect-ratio:5/4;order:2}
       .mstp-text{order:1;min-width:0}
       .mstp-cta{order:3;width:100%;text-align:center;box-sizing:border-box}
     }
