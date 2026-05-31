@@ -151,7 +151,7 @@
         <div class="steps-group">
           <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On an iPhone — WhatsApp</p>
           <ol class="steps">
-            <li>First, tap <strong>Download emblem</strong> above. The picture saves to your <em>Photos</em>.</li>
+            <li>Tap <strong>Download emblem</strong> above, then tap <strong>Save Image</strong> in the menu that appears. The picture saves to your <em>Photos</em>.</li>
             <li>Open <strong>WhatsApp</strong>. Tap <em>Settings</em> at the bottom right.</li>
             <li>Tap your <strong>name</strong> at the very top.</li>
             <li>Tap <em>Edit</em>, then <strong>Choose Photo</strong>, and pick the clan emblem you just saved.</li>
@@ -204,7 +204,7 @@
         <div class="steps-group">
           <p class="steps-device"><span class="dev-dot" aria-hidden="true"></span> On an iPhone</p>
           <ol class="steps">
-            <li>Tap <strong>iPhone wallpaper</strong> above. The picture saves to your <em>Photos</em>.</li>
+            <li>Tap <strong>iPhone wallpaper</strong> above, then tap <strong>Save Image</strong> in the menu that appears. The picture saves to your <em>Photos</em>.</li>
             <li>Open the <strong>Photos</strong> app and tap the wallpaper you just saved.</li>
             <li>Tap the <strong>share button</strong> (the square with an arrow going up), at the bottom left.</li>
             <li>Scroll down the list and tap <strong>Use as Wallpaper</strong>.</li>
@@ -336,6 +336,55 @@
     loadingEl.style.display = 'none';
     gateEl.style.display = 'block';
   });
+
+  // ── iOS "Save to Photos" handler ────────────────────────────────
+  // The download buttons use the HTML `download` attribute, which on
+  // iOS Safari forces the file into Files/Downloads — NOT Photos —
+  // even though the on-page instructions tell users the image "saves
+  // to your Photos". To make that true, intercept clicks on iOS and
+  // route the image through the Web Share API, whose sheet includes
+  // a native "Save Image" action that lands in Photos.
+  //
+  // Detection: iOS/iPadOS (incl. iPadOS reporting as Mac with touch).
+  // Fallback: if share isn't available, or the file can't be fetched,
+  // or the user is on desktop, we let the normal download proceed.
+  (function setupIosPhotoSave() {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (!isIOS) return; // desktop + Android: native download is fine
+
+    document.querySelectorAll('a.dl-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const url = btn.getAttribute('href');
+        if (!url) return;
+        // Only intercept if the browser can share files at all.
+        if (!navigator.canShare) return; // fall through to download
+        e.preventDefault();
+        try {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          const filename = url.split('/').pop() || 'clan-emblem.png';
+          const file = new File([blob], filename, { type: blob.type || 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file] });
+            // User picked an action (Save Image / share target) — done.
+          } else {
+            // Can't share files — fall back to opening inline so the
+            // user can long-press → Save to Photos.
+            window.location.href = url;
+          }
+        } catch (err) {
+          // Share cancelled or fetch failed — open inline as fallback.
+          // (A cancelled share throws AbortError; in that case do
+          // nothing so we don't yank them away from the page.)
+          if (err && err.name === 'AbortError') return;
+          console.warn('emblem share failed, opening inline:', err);
+          window.open(url, '_blank');
+        }
+      });
+    });
+  })();
 </script>
 
 </body>
