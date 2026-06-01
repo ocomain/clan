@@ -44,9 +44,15 @@ exports.handler = async () => {
     let failed = 0;
 
     // ── (A) Day-29 reminder ──────────────────────────────────────────
-    // joined between (now - 30 days) and (now - 29 days), reminder not sent.
+    // Window: joined between (now - 30 days) and (now - 28 days),
+    // reminder not yet sent. Widened from a 1-day window (29→30) to a
+    // 2-day window (28→30) on 2026-06-01 so that a single missed cron
+    // run doesn't permanently skip a member's 24h warning — if the
+    // sweep doesn't fire on their exact day-29, the next run still
+    // catches them. The cert_publish_reminder_sent_at IS NULL gate
+    // keeps it idempotent (never sends twice).
     const reminderEarliest = new Date(now.getTime() - AUTO_PUBLISH_DAY * DAY_MS).toISOString();
-    const reminderLatest   = new Date(now.getTime() - REMINDER_DAY * DAY_MS).toISOString();
+    const reminderLatest   = new Date(now.getTime() - (REMINDER_DAY - 1) * DAY_MS).toISOString();
 
     const { data: reminderTargets, error: reminderErr } = await supa()
       .from('members')
