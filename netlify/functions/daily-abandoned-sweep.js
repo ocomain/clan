@@ -70,6 +70,31 @@ exports.handler = async () => {
         }
 
         const tierInfo = normaliseTier(app.tier);
+
+        // Email-format guard (added 2026-06-01). Two application rows
+        // (3f98f156…, 4ce34d69…) had malformed emails that failed the
+        // Resend send with a 422 every single day — the sweep retried
+        // them on every run because the failure threw before
+        // reminder_sent_at could be set, leaving them perpetually
+        // eligible. Validate first: if the address can't be a valid
+        // email, mark it sent (to quarantine it out of future sweeps)
+        // and log it for review rather than retrying forever.
+        const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailKey || !EMAIL_RE.test(emailKey)) {
+          console.warn(`sweep: skipping application ${app.id} — malformed email "${app.email}"`);
+          await supa()
+            .from('applications')
+            .update({ reminder_sent_at: new Date().toISOString() })
+            .eq('id', app.id);
+          await logEvent({
+            clan_id,
+            event_type: 'abandoned_reminder_skipped_bad_email',
+            payload: { application_id: app.id, email: app.email },
+          });
+          failed++;
+          continue;
+        }
+
         await sendReminder(app.email, app.name, tierInfo.label);
         // Mark as sent. Status stays 'pending' so if they still complete,
         // the webhook picks it up. If they never do, next sweep skips them

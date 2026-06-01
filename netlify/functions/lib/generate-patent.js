@@ -59,10 +59,10 @@ let _imageCache = null;
 function loadImageBuffers() {
   if (_imageCache) return _imageCache;
   _imageCache = {
-    arms:      fs.readFileSync(path.join(ASSETS_DIR, 'images/brand/coat_of_arms.png')),
-    chiefSeal: fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_commane_seal.png')),
-    heraldSeal:fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_herald_seal.png')),
-    signature: fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_commane_signature.png')),
+    arms:      fs.readFileSync(path.join(ASSETS_DIR, 'coat_of_arms.png')),
+    chiefSeal: fs.readFileSync(path.join(ASSETS_DIR, 'the_commane_seal.png')),
+    heraldSeal:fs.readFileSync(path.join(ASSETS_DIR, 'the_herald_seal.png')),
+    signature: fs.readFileSync(path.join(ASSETS_DIR, 'the_commane_signature.png')),
   };
   return _imageCache;
 }

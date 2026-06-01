@@ -91,17 +91,27 @@ function loadFontBuffers() {
 }
 
 // Asset cache — coat of arms, signature, chancery stamp PNGs.
-// Loaded from netlify/functions/assets/ to match the cert generator
-// convention. The /assets/ glob is in netlify.toml's included_files
-// so these ship with the function bundle.
+// Loaded from netlify/functions/assets/ (flat layout — these are
+// bundled copies kept separately from the site's /images/ tree).
+// The /assets/ glob is in netlify.toml's included_files so these
+// ship with the function bundle.
+//
+// NOTE (2026-06-01): these paths are FLAT (assets/coat_of_arms.png),
+// NOT nested under images/brand/. The site-wide image reorg moved
+// the public /images/ copies into category folders and a stale edit
+// had pointed this loader at assets/images/brand/... — which doesn't
+// exist in the bundle, so every Chief's-letter PDF silently failed
+// with ENOENT (caught as non-fatal, so members got the post-signup
+// email WITHOUT the Chief's letter attached). Reverted to the flat
+// paths that actually ship.
 const ASSETS_DIR = path.join(__dirname, '..', 'assets');
 let _assetCache = null;
 function loadAssetBuffers() {
   if (_assetCache) return _assetCache;
   _assetCache = {
-    coatOfArms: fs.readFileSync(path.join(ASSETS_DIR, 'images/brand/coat_of_arms.png')),
-    signature:  fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_commane_signature.png')),
-    chancerySeal: fs.readFileSync(path.join(ASSETS_DIR, 'images/archive/the_commane_seal.png')),
+    coatOfArms: fs.readFileSync(path.join(ASSETS_DIR, 'coat_of_arms.png')),
+    signature:  fs.readFileSync(path.join(ASSETS_DIR, 'the_commane_signature.png')),
+    chancerySeal: fs.readFileSync(path.join(ASSETS_DIR, 'the_commane_seal.png')),
   };
   return _assetCache;
 }
