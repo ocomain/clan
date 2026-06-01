@@ -71,12 +71,22 @@ exports.handler = async () => {
     };
 
     // (A) FOUNDER GIFT REMINDERS — table: pending_founder_gifts
-    //     Window: created 30 days ago, status='pending', no reminder yet.
-    //     Defensive: also exclude rows where expires_at has passed
-    //     (those go straight to lapse, not reminder — though normally
-    //     the day-30 window is well within the 1-year expiry).
+    //     Window: created between 29 and 365 days ago, status='pending',
+    //     no reminder yet.
+    //
+    //     Boundary fix (2026-06-01): the window end was REMINDER_DAY (30)
+    //     exactly, i.e. created_at < (now - 30d). Invites created exactly
+    //     30 calendar days ago sat right on that timestamp boundary and
+    //     were NOT caught (their creation TIME wasn't strictly < the
+    //     cutoff TIME on the same day) — five pending day-30 invites
+    //     (Patrick, Oisin, Alfie, Ela-Jay, John Commane) were stuck
+    //     un-reminded for exactly this reason. Firing at (REMINDER_DAY - 1)
+    //     = 29 days catches the day-30 cohort reliably regardless of
+    //     time-of-day, and a day-29/30 "final notice" is the right window
+    //     anyway. The reminder_sent_at IS NULL gate keeps it idempotent;
+    //     the 365-day far edge is unchanged.
     const reminderWindowStart = new Date(now.getTime() - LAPSE_DAY * DAY_MS).toISOString();
-    const reminderWindowEnd   = new Date(now.getTime() - REMINDER_DAY * DAY_MS).toISOString();
+    const reminderWindowEnd   = new Date(now.getTime() - (REMINDER_DAY - 1) * DAY_MS).toISOString();
 
     try {
       const { data: founderTargets, error: fqErr } = await supa()
