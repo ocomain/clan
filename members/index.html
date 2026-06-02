@@ -163,8 +163,9 @@
     /* Custom tooltip for the standing/observer badges. Replaces the
        native title= tooltip, which was tiny, slow, and — critically —
        INVISIBLE on touch devices (no hover). This bubble is styled in
-       clan colours, sized to read, and is shown on hover (desktop) +
-       tap (mobile, via the .tip-open class toggled in JS). */
+       clan colours, sized to read, and shows on hover (desktop). On
+       touch devices it doesn't show — taps on the link badges just
+       navigate to the oath page, which explains everything in full. */
     .mbadge[data-tip]{position:relative;cursor:pointer}
     .mbadge[data-tip] .mbadge-tip{
       position:absolute;
@@ -205,12 +206,12 @@
     }
     .mbadge[data-tip] .mbadge-tip strong{color:var(--gold-pale, #D4B87A);font-weight:600}
     .mbadge[data-tip] .mbadge-tip em{color:#F3EFE4;font-style:italic}
-    /* Show on hover (desktop, fine pointer only) and when .tip-open
-       is set (mobile tap). */
+    /* Show on hover (desktop, fine pointer only). On touch devices
+       there's no hover and we don't intercept taps — the link badges
+       just navigate to the oath page, which explains everything. */
     @media (hover:hover){
       .mbadge[data-tip]:hover .mbadge-tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
     }
-    .mbadge[data-tip].tip-open .mbadge-tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
     /* On narrow screens, keep the bubble from spilling off-edge by
        letting it size down a little. */
     @media (max-width:520px){
@@ -4164,34 +4165,18 @@
     }
   })();
 
-  // ── Badge tooltip — tap-to-show on touch devices ──────────────────
-  // Desktop hover is handled purely in CSS (@media hover:hover). On
-  // touch devices there's no hover, so the first tap on a badge opens
-  // its tooltip (and, for the link badges, suppresses navigation that
-  // one time); a second tap follows the link. Tapping anything else
-  // closes any open tooltip. This makes the Observer/Standing
-  // descriptions reachable on mobile, where the old native title=
-  // tooltip never appeared at all.
-  (function badgeTooltipTouch() {
-    const hasHover = window.matchMedia && window.matchMedia('(hover:hover)').matches;
-    if (hasHover) return; // desktop: CSS hover handles it
-
-    document.addEventListener('click', (e) => {
-      const badge = e.target.closest('.mbadge[data-tip]');
-      if (!badge) {
-        document.querySelectorAll('.mbadge[data-tip].tip-open').forEach(b => b.classList.remove('tip-open'));
-        return;
-      }
-      if (badge.classList.contains('tip-open')) {
-        return; // already open → let the tap proceed (link navigates)
-      }
-      e.preventDefault(); // first tap → open tooltip, don't navigate yet
-      document.querySelectorAll('.mbadge[data-tip].tip-open').forEach(b => {
-        if (b !== badge) b.classList.remove('tip-open');
-      });
-      badge.classList.add('tip-open');
-    });
-  })();
+  // ── Badge tooltip — desktop hover only ────────────────────────────
+  // The Observer/Standing tooltip shows on hover via CSS
+  // (@media hover:hover). On mobile we deliberately do NOT intercept
+  // taps: the badges that are links (Observer, Take the Oath) simply
+  // navigate to /members/oath on first tap — which is the intuitive
+  // behaviour for something that looks like a link, and the oath page
+  // explains the Observer→Standing journey in full anyway. (An earlier
+  // version showed the tooltip on first tap and required a second tap
+  // to follow the link — that double-tap was confusing, so it's gone.)
+  // The only badge that ISN'T a link is the 'sworn' state (a span);
+  // it has no destination, so on mobile its tooltip simply doesn't
+  // show — acceptable, since 'Standing Member' is self-explanatory.
 </script>
 
 </body>
