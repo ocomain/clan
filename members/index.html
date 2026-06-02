@@ -160,6 +160,62 @@
     .mbadge.standing{background:rgba(184,151,90,.14);color:var(--gold-deep);border:1px solid rgba(184,151,90,.4);text-decoration:none}
     .mbadge.observer{background:rgba(120,120,120,.10);color:#5A5A5A;border:1px solid rgba(120,120,120,.28);text-decoration:none}
     a.mbadge.standing:hover,a.mbadge.observer:hover{background:rgba(184,151,90,.22);color:var(--ink);border-color:var(--gold)}
+    /* Custom tooltip for the standing/observer badges. Replaces the
+       native title= tooltip, which was tiny, slow, and — critically —
+       INVISIBLE on touch devices (no hover). This bubble is styled in
+       clan colours, sized to read, and is shown on hover (desktop) +
+       tap (mobile, via the .tip-open class toggled in JS). */
+    .mbadge[data-tip]{position:relative;cursor:pointer}
+    .mbadge[data-tip] .mbadge-tip{
+      position:absolute;
+      bottom:calc(100% + 10px);
+      left:50%;
+      transform:translateX(-50%) translateY(4px);
+      width:max-content;
+      max-width:280px;
+      background:var(--ink, #1a2a1a);
+      color:#F3EFE4;
+      font-family:'EB Garamond',serif;
+      font-size:14px;
+      font-style:normal;
+      line-height:1.5;
+      letter-spacing:0;
+      text-transform:none;
+      font-weight:400;
+      text-align:left;
+      padding:12px 15px;
+      border-radius:3px;
+      border:1px solid var(--gold, #B8975A);
+      box-shadow:0 8px 28px rgba(0,0,0,.32);
+      opacity:0;
+      visibility:hidden;
+      transition:opacity .16s ease, transform .16s ease;
+      z-index:60;
+      pointer-events:none;
+      white-space:normal;
+    }
+    .mbadge[data-tip] .mbadge-tip::after{
+      content:'';
+      position:absolute;
+      top:100%;
+      left:50%;
+      transform:translateX(-50%);
+      border:6px solid transparent;
+      border-top-color:var(--gold, #B8975A);
+    }
+    .mbadge[data-tip] .mbadge-tip strong{color:var(--gold-pale, #D4B87A);font-weight:600}
+    .mbadge[data-tip] .mbadge-tip em{color:#F3EFE4;font-style:italic}
+    /* Show on hover (desktop, fine pointer only) and when .tip-open
+       is set (mobile tap). */
+    @media (hover:hover){
+      .mbadge[data-tip]:hover .mbadge-tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+    }
+    .mbadge[data-tip].tip-open .mbadge-tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+    /* On narrow screens, keep the bubble from spilling off-edge by
+       letting it size down a little. */
+    @media (max-width:520px){
+      .mbadge[data-tip] .mbadge-tip{max-width:240px;font-size:13.5px}
+    }
     .mstatus-rows{display:grid;grid-template-columns:1fr 1fr;gap:20px 32px;margin-top:24px}
     @media (max-width:520px){.mstatus-rows{grid-template-columns:1fr}}
     .mstatus-row-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px}
@@ -730,14 +786,14 @@
       const hasSworn   = !!member.oath_sworn_at;
       const isStanding = now >= eligibleAt;
       if (hasSworn) {
-        return '<span class="mbadge sworn" title="You have taken the Oath of Standing — voice and vote at the AGM.">Standing Member</span>';
+        return '<span class="mbadge sworn" data-tip><span class="mbadge-tip">You have taken the <em>Oath of Standing</em> — you hold voice and vote at the AGM of Clan Ó Comáin.</span>Standing Member</span>';
       }
       if (isStanding) {
-        return '<a class="mbadge standing" href="/members/oath" title="A year and a day has passed — take the Oath of Standing.">Take the Oath →</a>';
+        return '<a class="mbadge standing" href="/members/oath" data-tip><span class="mbadge-tip">A year and a day has passed. You may now take the <em>Oath of Standing</em> — the voluntary rite by which you pass from Observer to Standing Member. <strong>Tap to begin →</strong></span>Take the Oath →</a>';
       }
       const daysRemaining = Math.ceil((eligibleAt - now) / (24 * 60 * 60 * 1000));
       const daysLabel = daysRemaining === 1 ? '1 day' : `${daysRemaining} days`;
-      return `<a class="mbadge observer" href="/members/oath" title="Observer year — Standing Member at a year and a day on the Register.">Observer · ${daysLabel} →</a>`;
+      return `<a class="mbadge observer" href="/members/oath" data-tip><span class="mbadge-tip">In the Brehon law of the old kingdoms, <em>a year and a day</em> marked the threshold of standing. After your first year on the Register you may take the <em>Oath of Standing</em> and pass from Observer to Standing Member — gaining voice and vote at the AGM. <strong>${daysLabel} remaining.</strong></span>Observer · ${daysLabel} →</a>`;
     })();
     // Cert published = the cert PDF exists and has been sealed. Both
     // cert_published_at (canonical) and cert_locked_at (legacy alias)
@@ -4106,6 +4162,35 @@
       errorMsg.textContent = 'Unable to load your membership details. Please try again in a moment.';
       errorBox.style.display = 'block';
     }
+  })();
+
+  // ── Badge tooltip — tap-to-show on touch devices ──────────────────
+  // Desktop hover is handled purely in CSS (@media hover:hover). On
+  // touch devices there's no hover, so the first tap on a badge opens
+  // its tooltip (and, for the link badges, suppresses navigation that
+  // one time); a second tap follows the link. Tapping anything else
+  // closes any open tooltip. This makes the Observer/Standing
+  // descriptions reachable on mobile, where the old native title=
+  // tooltip never appeared at all.
+  (function badgeTooltipTouch() {
+    const hasHover = window.matchMedia && window.matchMedia('(hover:hover)').matches;
+    if (hasHover) return; // desktop: CSS hover handles it
+
+    document.addEventListener('click', (e) => {
+      const badge = e.target.closest('.mbadge[data-tip]');
+      if (!badge) {
+        document.querySelectorAll('.mbadge[data-tip].tip-open').forEach(b => b.classList.remove('tip-open'));
+        return;
+      }
+      if (badge.classList.contains('tip-open')) {
+        return; // already open → let the tap proceed (link navigates)
+      }
+      e.preventDefault(); // first tap → open tooltip, don't navigate yet
+      document.querySelectorAll('.mbadge[data-tip].tip-open').forEach(b => {
+        if (b !== badge) b.classList.remove('tip-open');
+      });
+      badge.classList.add('tip-open');
+    });
   })();
 </script>
 
