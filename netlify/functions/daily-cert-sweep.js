@@ -124,9 +124,21 @@ exports.handler = async () => {
           // Stamp publication BEFORE generation so concurrent webhooks
           // (unlikely but possible) see consistent state. cert_locked_at
           // also set as the legacy alias.
+          //
+          // ATOMIC CLAIM (2026-06-05): this UPDATE is conditional on
+          // cert_published_at STILL being null (.is('cert_published_at',
+          // null) in the WHERE). If two sweep runs overlap — e.g. the
+          // 15:00 cron racing a manual trigger — both can SELECT the
+          // same member while cert_published_at is null (check-then-act
+          // race), and previously both would stamp + send, producing a
+          // duplicate 'certificate has been published' email (which is
+          // exactly what happened to two members). Now only ONE run wins
+          // the conditional update; the loser's update matches zero rows.
+          // We select the stamped row back and only proceed to generate
+          // + email if THIS run actually set it.
           const publishedAt = now.toISOString();
           const newVersion = (m.cert_version || 1);
-          await supa()
+          const { data: claimedRows, error: claimErr } = await supa()
             .from('members')
             .update({
               cert_published_at: publishedAt,
@@ -134,7 +146,21 @@ exports.handler = async () => {
               cert_version: newVersion,
               updated_at: publishedAt,
             })
-            .eq('id', m.id);
+            .eq('id', m.id)
+            .is('cert_published_at', null)   // ← only if still unpublished
+            .select('id');
+
+          if (claimErr) {
+            console.error(`auto-publish claim failed for ${m.email}:`, claimErr.message);
+            failed++;
+            continue;
+          }
+          if (!claimedRows || claimedRows.length === 0) {
+            // Another run already claimed + published this member in the
+            // overlap window. Skip silently — no second email.
+            console.log(`auto-publish: ${m.email} already claimed by a concurrent run — skipping`);
+            continue;
+          }
 
           // Generate the PDF.
           const updated = { ...m, cert_version: newVersion };
