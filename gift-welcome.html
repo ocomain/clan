@@ -384,7 +384,7 @@ async function resolveByToken() {
       // for the full rationale.
       if (data.recipient_email) {
         window.location.replace(
-          '/members/login.html?email=' + encodeURIComponent(data.recipient_email) + '&claimed=1'
+          '/members/login?email=' + encodeURIComponent(data.recipient_email) + '&claimed=1'
         );
         return;
       }
@@ -460,7 +460,7 @@ async function claimGift(email) {
     }
 
     if (res.status === 409 && data.recipient_email) {
-      window.location.href = '/members/login.html?email=' +
+      window.location.href = '/members/login?email=' +
         encodeURIComponent(data.recipient_email) + '&claimed=1';
       return;
     }
@@ -471,7 +471,7 @@ async function claimGift(email) {
     }
 
     if (data.recipient_email) {
-      window.location.href = '/members/login.html?email=' +
+      window.location.href = '/members/login?email=' +
         encodeURIComponent(data.recipient_email) + '&claimed=1';
       return;
     }
@@ -498,7 +498,7 @@ function resolveLegacy() {
   // intermediate and redirect straight to login with email pre-fill.
   if (isEmailLike(legacyEmail)) {
     window.location.replace(
-      '/members/login.html?email=' + encodeURIComponent(legacyEmail) + '&claimed=1'
+      '/members/login?email=' + encodeURIComponent(legacyEmail) + '&claimed=1'
     );
     return;
   }

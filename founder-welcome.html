@@ -362,7 +362,7 @@ async function resolveByToken() {
       // clicks.
       if (data.recipient_email) {
         window.location.replace(
-          '/members/login.html?email=' + encodeURIComponent(data.recipient_email) + '&claimed=1'
+          '/members/login?email=' + encodeURIComponent(data.recipient_email) + '&claimed=1'
         );
         return;
       }
@@ -430,7 +430,7 @@ async function claimGift(email) {
     // post-claim). Pre-fill login form and route there for a fresh
     // magic link to the recipient's inbox.
     if (res.status === 409 && data.recipient_email) {
-      window.location.href = '/members/login.html?email=' +
+      window.location.href = '/members/login?email=' +
         encodeURIComponent(data.recipient_email) + '&claimed=1';
       return;
     }
@@ -445,7 +445,7 @@ async function claimGift(email) {
     // fallback to magic-link-by-email so the recipient can still get
     // in. The 'claimed=1' banner on the login page handles this.
     if (data.recipient_email) {
-      window.location.href = '/members/login.html?email=' +
+      window.location.href = '/members/login?email=' +
         encodeURIComponent(data.recipient_email) + '&claimed=1';
       return;
     }
@@ -473,7 +473,7 @@ function resolveLegacy() {
   // intermediate and redirect straight to login with email pre-fill.
   if (isEmailLike(legacyEmail)) {
     window.location.replace(
-      '/members/login.html?email=' + encodeURIComponent(legacyEmail) + '&claimed=1'
+      '/members/login?email=' + encodeURIComponent(legacyEmail) + '&claimed=1'
     );
     return;
   }
