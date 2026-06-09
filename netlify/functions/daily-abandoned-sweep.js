@@ -95,7 +95,7 @@ exports.handler = async () => {
           continue;
         }
 
-        await sendReminder(app.email, app.name, tierInfo.label);
+        await sendReminder(app.email, app.name, tierInfo.label, tierInfo.tier);
         // Mark as sent. Status stays 'pending' so if they still complete,
         // the webhook picks it up. If they never do, next sweep skips them
         // because reminder_sent_at is no longer null.
@@ -119,8 +119,21 @@ exports.handler = async () => {
   }
 };
 
-async function sendReminder(email, name, tierName) {
+async function sendReminder(email, name, tierName, tierSlug) {
   const firstName = name ? name.split(' ')[0] : 'friend';
+  // CTA target: link STRAIGHT to a pre-filled Stripe checkout via
+  // /api/create-checkout?tier=<slug>&email=<email>, rather than the
+  // /membership pricing page (which made an applicant start the whole
+  // flow over). The applicant already chose a tier and gave their
+  // email; this one-click link drops them back into checkout with both
+  // pre-filled — the right path for someone whose payment failed or
+  // who simply didn't finish. Each click mints a fresh checkout
+  // session, so it works even after a previous 3D-Secure/decline
+  // failure. Falls back to the pricing page only if we somehow lack a
+  // tier slug or email.
+  const ctaUrl = (tierSlug && email)
+    ? `https://www.ocomain.org/api/create-checkout?tier=${encodeURIComponent(tierSlug)}&email=${encodeURIComponent(email)}`
+    : 'https://www.ocomain.org/membership';
   const html = `<!DOCTYPE html>
 <html><body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
 <div style="max-width:580px;margin:0 auto;background:#F8F4EC">
@@ -134,9 +147,9 @@ async function sendReminder(email, name, tierName) {
     <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 14px">A place is still held for you in the Register of Clan Members${tierName ? ` as <strong>${tierName}</strong>` : ''}. When you are ready, the door remains open.</p>
     <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 32px;padding:14px 18px;background:rgba(184,151,90,.08);border-left:3px solid #B8975A">This is the <strong>first year of the revival</strong>. Those who join now are inscribed as <strong>Founding Members</strong> of Clan Ó Comáin — a designation that carries no price in any later year. From the second year onward, members join as members; this distinction will not be offered again.</p>
     <div style="text-align:center;margin-bottom:32px">
-      <a href="https://www.ocomain.org/membership.html" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px">Complete your membership</a>
+      <a href="${ctaUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px">Complete your membership</a>
     </div>
-    <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If something went wrong with your payment or you have questions, please write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> — the office will be happy to help.</p>
+    <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">If your payment did not go through, the link above will take you straight back to a secure checkout with your details already in place — simply try again, or use a different card. Any trouble at all, write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and the office will be happy to help.</p>
   </div>
   <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
     <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Caithfidh an stair a bheith i réim</p>
