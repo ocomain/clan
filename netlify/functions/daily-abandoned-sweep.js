@@ -8,6 +8,7 @@
 // only fires if they actually got to the Stripe page).
 
 const { supa, clanId, normaliseTier, logEvent, filterEmailsAlreadyMembers } = require('./lib/supabase');
+const { buildAbandonedReminderHtml } = require('./lib/checkout-email');
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
@@ -134,31 +135,13 @@ async function sendReminder(email, name, tierName, tierSlug) {
   const ctaUrl = (tierSlug && email)
     ? `https://www.ocomain.org/api/create-checkout?tier=${encodeURIComponent(tierSlug)}&email=${encodeURIComponent(email)}`
     : 'https://www.ocomain.org/membership';
-  const html = `<!DOCTYPE html>
-<html><body style="margin:0;padding:0;background:#F8F4EC;font-family:'Georgia',serif">
-<div style="max-width:580px;margin:0 auto;background:#F8F4EC">
-  <div style="background:#0C1A0C;padding:36px 40px;text-align:center;border-bottom:2px solid #B8975A">
-    <img src="https://www.ocomain.org/images/brand/coat_of_arms.png" width="80" alt="Ó Comáin" style="display:block;margin:0 auto 6px;height:auto">
-    <p style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:0.20em;color:#B8975A;margin:0 auto;text-align:center;max-width:80px">Ó COMÁIN</p>
-  </div>
-  <div style="padding:40px">
-    <p style="font-family:'Georgia',serif;font-size:18px;color:#2C1A0C;margin:0 0 20px">Dear ${firstName},</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 20px">We tried to take payment for your membership of Clan Ó Comáin${tierName ? ` as <strong>${tierName}</strong>` : ''}, but it did not go through — so the payment was not completed and nothing has been charged to your card.</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 14px">This is usually a small technical matter rather than anything to do with your balance — most often the bank's security check (the one-time code or app approval some cards require) was not completed, or the bank declined an unfamiliar online payment. Your place in the Register is still held; only this last step remains.</p>
-    <p style="font-family:'Georgia',serif;font-size:17px;color:#3C2A1A;line-height:1.8;margin:0 0 28px">You do not need to fill anything in again. The button below takes you straight back to a secure checkout with your details already in place:</p>
-    <div style="text-align:center;margin-bottom:14px">
-      <a href="${ctaUrl}" style="display:inline-block;background:#B8975A;color:#0C1A0C;font-family:sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 36px;border-radius:1px">Try your payment again</a>
-    </div>
-    <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7;text-align:center;margin:0 0 28px">When the bank's security screen appears, do wait for the code or app prompt and approve it — that is the step that completes everything.</p>
-    <p style="font-family:'Georgia',serif;font-size:16px;color:#3C2A1A;line-height:1.8;margin:0 0 24px;padding:14px 18px;background:rgba(184,151,90,.08);border-left:3px solid #B8975A">If it is declined again, it often helps to <strong>use a different card</strong>, or to <strong>telephone your bank first</strong> — a new online payment of this kind sometimes needs their go-ahead. And if any trouble remains, simply reply to this email or write to <a href="mailto:clan@ocomain.org" style="color:#B8975A">clan@ocomain.org</a> and the office will see you through it personally.</p>
-    <p style="font-family:'Georgia',serif;font-size:15px;color:#666;line-height:1.7">This is the <strong>first year of the revival</strong>, and those who join now are inscribed as <strong>Founding Members</strong> of Clan Ó Comáin — a designation offered in no later year.</p>
-  </div>
-  <div style="background:#0C1A0C;padding:20px 40px;text-align:center;border-top:1px solid rgba(184,151,90,.2)">
-    <p style="font-family:'Georgia',serif;font-size:12px;font-style:italic;color:#C8A875;margin:0">Caithfidh an stair a bheith i réim</p>
-    <p style="font-family:'Georgia',serif;font-size:10px;color:#A88B57;margin:4px 0 0">History must prevail</p>
-  </div>
-</div>
-</body></html>`;
+  // Single source of truth: the email HTML is built by
+  // buildAbandonedReminderHtml in lib/checkout-email.js, the same
+  // function the preview generator uses. Previously this function had
+  // its own inline duplicate of the markup, which drifted out of sync
+  // with the preview. Pass the per-recipient pre-filled checkout link
+  // as ctaUrl.
+  const html = buildAbandonedReminderHtml({ firstName, tierName, ctaUrl });
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
