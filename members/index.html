@@ -171,7 +171,7 @@
       position:absolute;
       bottom:calc(100% + 10px);
       left:50%;
-      transform:translateX(-50%) translateY(4px);
+      transform:translateX(-50%);
       width:max-content;
       max-width:280px;
       background:var(--ink, #1a2a1a);
@@ -188,12 +188,20 @@
       border-radius:3px;
       border:1px solid var(--gold, #B8975A);
       box-shadow:0 4px 14px rgba(0,0,0,.28);
-      opacity:0;
-      visibility:hidden;
-      transition:opacity .16s ease, transform .16s ease;
       z-index:60;
       pointer-events:none;
       white-space:normal;
+      /* display:none keeps the hidden bubble entirely OUT of the
+         render tree — not merely transparent. With the old
+         opacity:0/visibility:hidden it still occupied layout near the
+         card's top edge and was composited on every scroll frame
+         (large shadow + absolute position), which produced a paint
+         artifact at the card's gold top-border AND a repaint storm
+         that made the page grey-out / near-crash while scrolling on
+         some devices. Hidden = display:none; shown (hover) flips it
+         back to block. No fade, deliberately — a transition needs the
+         element painted, which reintroduces the cost. */
+      display:none;
     }
     .mbadge[data-tip] .mbadge-tip::after{
       content:'';
@@ -210,7 +218,7 @@
        there's no hover and we don't intercept taps — the link badges
        just navigate to the oath page, which explains everything. */
     @media (hover:hover){
-      .mbadge[data-tip]:hover .mbadge-tip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+      .mbadge[data-tip]:hover .mbadge-tip{display:block}
     }
     /* On narrow screens, keep the bubble from spilling off-edge by
        letting it size down a little. */
