@@ -33,6 +33,7 @@
 // convention adapted for the speaker's role.
 
 const { sendEmail } = require('./email');
+const { normaliseTier } = require('./supabase');
 
 const SITE = process.env.SITE_URL || 'https://www.ocomain.org';
 
@@ -51,7 +52,19 @@ function firstNameOf(application) {
   return ((application.name || '').trim().split(/\s+/)[0]) || 'friend';
 }
 function resumeUrl(application) {
-  return `${SITE}/resume?token=${encodeURIComponent(application.resume_token || '')}`;
+  // Tokenless resume: link straight to a pre-filled Stripe checkout
+  // built from the application's tier + email. The original design
+  // relied on a resume_token column that never existed in the DB, so
+  // /resume?token= could never work and this whole sequence silently
+  // failed. /api/create-checkout?tier=<slug>&email=<email> needs no
+  // token — it 302s to a fresh checkout with both pre-filled, and a
+  // new session each click (so it works after a prior failure too).
+  const slug = (normaliseTier(application.tier) || {}).tier;
+  const email = application.email;
+  if (slug && email) {
+    return `${SITE}/api/create-checkout?tier=${encodeURIComponent(slug)}&email=${encodeURIComponent(email)}`;
+  }
+  return `${SITE}/membership`;
 }
 function pedigreeUrl() { return `${SITE}/pedigree`; }
 

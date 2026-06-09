@@ -43,7 +43,7 @@ async function processBucket({ clan_id, now, ageDays, trackingColumn, sendFn, bu
 
   const { data: targets, error } = await supa()
     .from('applications')
-    .select('id, email, name, tier, status, resume_token, reminder_sent_at')
+    .select('id, email, name, tier, status, reminder_sent_at')
     .eq('clan_id', clan_id)
     .eq('status', 'pending')
     .not('reminder_sent_at', 'is', null)
