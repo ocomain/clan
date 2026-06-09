@@ -1066,7 +1066,7 @@ exports.handler = async (event) => {
         console.log(`[abandoned] skipping — reminder already sent at ${appRow.reminder_sent_at} for ${customerEmail}`);
       } else {
         try {
-          await sendAbandonedReminder(customerEmail, customerName, tier.name);
+          await sendAbandonedReminder(customerEmail, customerName, tier.name, session.metadata?.tier);
           if (appRow) {
             await supa()
               .from('applications')
@@ -1251,10 +1251,17 @@ async function sendGiftConfirmations(session, buyerEmail, buyerName, productName
   await sendEmail({ to: buyerEmail, subject: 'Your gift membership of Clan Ó Comáin — confirmed', html });
 }
 
-async function sendAbandonedReminder(email, name, tierName) {
+async function sendAbandonedReminder(email, name, tierName, tierSlug) {
   const firstName = name ? name.split(' ')[0] : 'friend';
-  const html = buildAbandonedReminderHtml({ firstName, tierName });
-  await sendEmail({ to: email, subject: 'Your place in Clan Ó Comáin is still open', html });
+  // Per-recipient pre-filled checkout link, same as the cron sweep
+  // (daily-abandoned-sweep.js). Built from the tier slug (from session
+  // metadata.tier) + email; falls back to the pricing page if either
+  // is missing.
+  const ctaUrl = (tierSlug && email)
+    ? `https://www.ocomain.org/api/create-checkout?tier=${encodeURIComponent(tierSlug)}&email=${encodeURIComponent(email)}`
+    : 'https://www.ocomain.org/membership';
+  const html = buildAbandonedReminderHtml({ firstName, tierName, ctaUrl });
+  await sendEmail({ to: email, subject: 'Your payment didn’t go through — let’s try again', html });
 }
 
 async function notifyClan(email, name, product, amount, currency, isGift, session) {
