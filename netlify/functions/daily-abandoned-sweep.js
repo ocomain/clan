@@ -53,9 +53,24 @@ exports.handler = async () => {
     let processed = 0;
     let failed = 0;
     let superseded = 0;
+    // Dedup within this run: one person can have multiple pending rows
+    // (double form submission). Email each address at most once.
+    const seenEmails = new Set();
     for (const app of apps) {
       try {
         const emailKey = (app.email || '').toLowerCase().trim();
+        if (emailKey && seenEmails.has(emailKey)) {
+          await supa()
+            .from('applications')
+            .update({ reminder_sent_at: new Date().toISOString() })
+            .eq('id', app.id);
+          await logEvent({
+            clan_id,
+            event_type: 'abandoned_reminder_skipped_duplicate_email',
+            payload: { application_id: app.id, email: app.email },
+          });
+          continue;
+        }
         if (memberEmails.has(emailKey)) {
           await supa()
             .from('applications')
@@ -97,13 +112,22 @@ exports.handler = async () => {
         }
 
         await sendReminder(app.email, app.name, tierInfo.label, tierInfo.tier);
+        seenEmails.add(emailKey);
         // Mark as sent. Status stays 'pending' so if they still complete,
         // the webhook picks it up. If they never do, next sweep skips them
         // because reminder_sent_at is no longer null.
+        // Stamp by EMAIL (not just this row id): if the person has
+        // other pending rows from a double submission — including ones
+        // submitted later, not yet in this sweep's age window — they
+        // are all marked reminded now, so no future run can send the
+        // same person a second decline email from a sibling row.
         await supa()
           .from('applications')
           .update({ reminder_sent_at: new Date().toISOString() })
-          .eq('id', app.id);
+          .eq('clan_id', clan_id)
+          .eq('status', 'pending')
+          .is('reminder_sent_at', null)
+          .ilike('email', emailKey);
         await logEvent({ clan_id, event_type: 'abandoned_reminder_sent', payload: { application_id: app.id, email: app.email } });
         processed++;
       } catch (e) {

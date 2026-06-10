@@ -132,6 +132,22 @@ async function processBucket({ clan_id, now, ageDays, trackingColumn, sendFn, bu
         // so the cron will not pick this row up for any further bucket.
         if (isFinal) update.reengage_complete_at = new Date().toISOString();
         await supa().from('applications').update(update).eq('id', app.id);
+        // Close out any SIBLING pending rows for the same address
+        // (double submissions, possibly in different age buckets).
+        // Without this, a second row submitted hours later — landing
+        // in tomorrow's bucket — would send this person the same
+        // stage again. The emailed row above carries the sequence;
+        // the siblings are marked complete and go quiet.
+        if (emailKey) {
+          await supa()
+            .from('applications')
+            .update({ reengage_complete_at: new Date().toISOString() })
+            .eq('clan_id', clan_id)
+            .eq('status', 'pending')
+            .is('reengage_complete_at', null)
+            .neq('id', app.id)
+            .ilike('email', emailKey);
+        }
         await logEvent({
           clan_id,
           event_type: 'cart_reengage_email_sent',
