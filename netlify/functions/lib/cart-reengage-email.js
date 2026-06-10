@@ -192,7 +192,7 @@ function buildRe1Html(application) {
   const body = `
 ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`The Chief has asked me to write.`)}
-${p(`Your application to take a place in the Register of Clan Ó Comáin sits unfinished in the Office's pending file. It has been there now for some weeks. The Chief has asked me to put one practical note in front of you, in case there was a small difficulty in completing the process — a payment that did not go through, an interruption at the moment, an email lost in the rush of a working day.`)}
+${p(`Your application to take a place in the Register of Clan Ó Comáin sits unfinished in the Office's pending file. It has been there now for a couple of days. The Chief has asked me to put one practical note in front of you, in case there was a small difficulty in completing the process — a payment that did not go through, an interruption at the moment, an email lost in the rush of a working day.`)}
 ${p(`Your details remain on file at Newhall. The tier you had begun to choose, the form of your name as you wished it inscribed, the line you were tracing — all of it is still here. <strong>A single click resumes where you left off</strong>, and no further detail need be re-entered.`)}
 ${ctaButtonHtml('Resume my application', resumeUrl(application))}
 ${p(`If something else stayed your hand — a question, a hesitation, a need to consult someone before going further — please write back to me directly. The Office is small enough that real replies still come from real hands, and there is no question too small.`)}
@@ -262,7 +262,7 @@ ${p(`Dear ${escapeHtml(firstName)},`)}
 ${p(`Antoin Commane writing — <em>Tánaiste</em> of Clan Ó Comáin. The role is the elected successor to the Chief in the Brehon line, and one part of it is to speak for what the clan is making of itself in the years to come. The Office has told me your application stands unfinished, and the Chief has asked that I write to you on this.`)}
 ${p(`I want to put one thing plainly, because it is the part that does not always come across in the form-filling.`)}
 ${p(`Membership of Clan Ó Comáin is <strong>an act of cultural stewardship</strong>, not a subscription. The €49 of the first tier — and the €150 of the Guardian, and the €750 of Life — does not buy a service. It funds the work of an Irish Gaelic clan in active revival. The summer festivals at Newhall and Cahercommane. The academic and heritage research. The preservation of our ancestral lands, which is on no one's budget but ours. The Chronicle and the publications carrying the ancient story to new readers. The Privy Council's standing meetings. The seal on every certificate. None of this happens without the kindred's hand on it.`)}
-${p(`If your application sits unfinished because the question was <strong>is it worth €49</strong> — the truer question is what your hand on this work would mean, and what it could enable for the clan in the years your name appears beside ours.`)}
+${p(`If your application sits unfinished because the question was <strong>is it worth the price</strong> — the truer question is what your hand on this work would mean, and what it could enable for the clan in the years your name appears beside ours.`)}
 ${p(`The clan has work to do. Your hand on it would matter.`)}
 ${ctaButtonHtml('Complete my application', resumeUrl(application))}
 ${p(`Yours, in clan and kindred,`)}
