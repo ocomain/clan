@@ -80,6 +80,14 @@ async function processBucket({ clan_id, now, ageDays, trackingColumn, sendFn, bu
   const memberEmails = await filterEmailsAlreadyMembers(clan_id, (targets || []).map(t => t.email));
 
   let sent = 0, failed = 0, superseded = 0;
+  // Dedup within this bucket run: a single person can have more than
+  // one pending application row (e.g. they submitted the herald form
+  // twice). Without this, each row triggers its own copy of the same
+  // re-engagement email — the person receives duplicates. Email the
+  // FIRST row for a given address; for any later row with the same
+  // email, stamp it complete (so it won't linger or re-fire) but send
+  // nothing.
+  const seenEmails = new Set();
 
   for (const app of targets || []) {
     try {
@@ -101,8 +109,24 @@ async function processBucket({ clan_id, now, ageDays, trackingColumn, sendFn, bu
         continue;
       }
 
+      if (emailKey && seenEmails.has(emailKey)) {
+        // Duplicate pending row for an address we've already emailed
+        // this run — close it out without sending again.
+        await supa()
+          .from('applications')
+          .update({ reengage_complete_at: new Date().toISOString() })
+          .eq('id', app.id);
+        await logEvent({
+          clan_id,
+          event_type: 'cart_reengage_skipped_duplicate_email',
+          payload: { application_id: app.id, email: app.email, bucket: bucketLabel },
+        });
+        continue;
+      }
+
       const ok = await sendFn(app);
       if (ok) {
+        seenEmails.add(emailKey);
         const update = { [trackingColumn]: new Date().toISOString() };
         // RE-4 is the terminal email — also stamp reengage_complete_at
         // so the cron will not pick this row up for any further bucket.
