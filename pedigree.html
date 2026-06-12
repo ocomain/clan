@@ -1492,5 +1492,38 @@ function toggleMenu(){
 </footer>
 
 <script defer src="/js/nav-menu-autoclose.js"></script>
+<script>
+/* Deep-link anchor correction. Many images on this page have no
+   explicit width/height, so the browser's native jump to #conclusion
+   (or #chiefdom etc.) lands at the anchor's PRE-image-load position;
+   the images then load and push the real section further down — on
+   mobile you end up a section short (e.g. at #dna instead of
+   #conclusion). Re-scroll to the hash once the page has fully loaded
+   (layout final), plus one delayed pass for reveal effects. If the
+   user has already begun scrolling themselves, do nothing — never
+   yank the page out from under them. */
+(function () {
+  if (!location.hash) return;
+  var userMoved = false;
+  function noteMove() { userMoved = true; }
+  ['wheel', 'touchstart', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, noteMove, { passive: true, once: true });
+  });
+  function jump() {
+    if (userMoved) return;
+    var el = document.getElementById(location.hash.slice(1));
+    if (el) el.scrollIntoView();
+  }
+  if (document.readyState === 'complete') {
+    jump();
+    setTimeout(jump, 350);
+  } else {
+    window.addEventListener('load', function () {
+      jump();
+      setTimeout(jump, 350);
+    });
+  }
+})();
+</script>
 </body>
 </html>
