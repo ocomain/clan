@@ -351,20 +351,18 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .crest-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
 .crest-img-wrap{text-align:center;padding:32px}
 .crest-img{max-width:260px;width:100%;display:inline-block}
-/* Pixel-assembly scroll animation for the coat of arms. The arms is a
-   solid silhouette SVG (shield filled; mermaid/harp/shamrocks are
-   negative space) — filled dark navy it reads like the original crest
-   (dark shield, figures showing through). Tiles use the dark svg
-   variant as a CSS background-image (currentColor can't inherit
-   through a background, so the colour is baked into
-   coat_of_arms_mark_dark.svg). Degrades to a static crest if JS is
-   off or reduced-motion. */
+/* Pixel-assembly scroll animation for the coat of arms. Tiles the
+   original full-colour crest PNG (dark navy shield, light-silver
+   mermaid/harp/shamrocks) into a grid that scatters/assembles on
+   scroll — so the assembled result is the real crest, not a flat
+   silhouette. Degrades to the static crest if JS is off or
+   reduced-motion. */
 .koa{position:relative;display:inline-block;width:260px;max-width:100%;line-height:0}
 .koa-fallback{width:100%;height:auto;display:block}
 .koa-px{position:absolute;inset:0;display:none}
 .koa.js-px .koa-fallback{visibility:hidden}
 .koa.js-px .koa-px{display:block}
-.koa-px .t{position:absolute;background-image:url(images/brand/coat_of_arms_mark_dark.svg);background-repeat:no-repeat;transform-origin:center;will-change:transform,opacity;
+.koa-px .t{position:absolute;background-image:url(images/brand/coat_of_arms.png);background-repeat:no-repeat;transform-origin:center;will-change:transform,opacity;
   --cw:calc(var(--bw,260px)/12);--ch:calc(var(--bh,298px)/14);
   left:calc(var(--i)*var(--cw));top:calc(var(--j)*var(--ch));
   width:calc(var(--cw) + 1.5px);height:calc(var(--ch) + 1.5px);
@@ -1245,7 +1243,7 @@ function closeModal2(e){
       </div>
       <div class="crest-img-wrap">
         <div class="koa crest-img" role="img" aria-label="Coat of arms of Clan Ó Comáin — the mermaid of Newhall Lake playing an Irish harp, ringed with shamrocks">
-          <img class="koa-fallback" src="images/brand/coat_of_arms_mark_dark.svg" alt="" loading="lazy">
+          <img class="koa-fallback" src="images/brand/coat_of_arms.png" alt="" loading="lazy">
           <div class="koa-px" aria-hidden="true"></div>
         </div>
         <div style="font-family:'EB Garamond',serif;font-size:clamp(30px,3.4vw,42px);font-weight:400;color:var(--gold);letter-spacing:.02em;margin-top:20px;line-height:1">Ó Comáin</div>
@@ -1561,7 +1559,7 @@ function closeModal2(e){
     if(reduce){px.style.setProperty('--p','1'); return;}
     px.style.setProperty('--p','0');
     var ticking=false;
-    function upd(){ticking=false; var r=koa.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight, c=r.top+r.height/2, p=(vh*1.05-c)/(vh*0.35); p=Math.max(0,Math.min(1,p)); px.style.setProperty('--p',p.toFixed(4));}
+    function upd(){ticking=false; var r=koa.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight, c=r.top+r.height/2, p=(vh*1.05-c)/(vh*0.39); p=Math.max(0,Math.min(1,p)); px.style.setProperty('--p',p.toFixed(4));}
     function ons(){if(!ticking){ticking=true; requestAnimationFrame(upd);}}
     window.addEventListener('scroll',ons,{passive:true}); window.addEventListener('resize',function(){measure();ons();},{passive:true}); upd();
   });
