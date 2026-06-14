@@ -351,6 +351,27 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
 .crest-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
 .crest-img-wrap{text-align:center;padding:32px}
 .crest-img{max-width:260px;width:100%;display:inline-block}
+/* Pixel-assembly scroll animation for the coat of arms. The arms is a
+   monochrome silhouette SVG; on scroll it assembles from scattered
+   tiles and disperses on scroll up. Tiles use the GOLD svg variant as
+   a CSS background-image (currentColor can't inherit through a
+   background, so the colour is baked into coat_of_arms_mark_gold.svg).
+   Degrades to a static gold crest if JS is off or reduced-motion. */
+.koa{position:relative;display:inline-block;width:260px;max-width:100%;line-height:0}
+.koa-fallback{width:100%;height:auto;display:block}
+.koa-px{position:absolute;inset:0;display:none}
+.koa.js-px .koa-fallback{visibility:hidden}
+.koa.js-px .koa-px{display:block}
+.koa-px .t{position:absolute;background-image:url(images/brand/coat_of_arms_mark_gold.svg);background-repeat:no-repeat;transform-origin:center;will-change:transform,opacity;
+  --cw:calc(var(--bw,260px)/12);--ch:calc(var(--bh,298px)/14);
+  left:calc(var(--i)*var(--cw));top:calc(var(--j)*var(--ch));
+  width:calc(var(--cw) + 1.5px);height:calc(var(--ch) + 1.5px);
+  background-size:var(--bw,260px) var(--bh,298px);
+  background-position:calc(var(--i)*var(--cw)*-1) calc(var(--j)*var(--ch)*-1);
+  --t:clamp(0,calc((var(--p) - var(--d))*2.6),1);
+  opacity:var(--t);
+  transform:translate(calc(var(--dx)*(1 - var(--t))),calc(var(--dy)*(1 - var(--t)))) rotate(calc(var(--r)*(1 - var(--t)))) scale(calc(.32 + .68*var(--t)))}
+@media(prefers-reduced-motion:reduce){.koa-px{--p:1 !important}}
 .crest-cap{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted);margin-top:14px}
 
 /* FOOTER */
@@ -1221,7 +1242,10 @@ function closeModal2(e){
         <a href="membership" class="btn-p">Apply for membership</a>
       </div>
       <div class="crest-img-wrap">
-        <img class="crest-img" src="images/brand/coat_of_arms.png" alt="Ó Comáin" loading="lazy">
+        <div class="koa crest-img" role="img" aria-label="Coat of arms of Clan Ó Comáin — the mermaid of Newhall Lake playing an Irish harp, ringed with shamrocks">
+          <img class="koa-fallback" src="images/brand/coat_of_arms_mark_gold.svg" alt="" loading="lazy">
+          <div class="koa-px" aria-hidden="true"></div>
+        </div>
         <div style="font-family:'EB Garamond',serif;font-size:clamp(30px,3.4vw,42px);font-weight:400;color:var(--gold);letter-spacing:.02em;margin-top:20px;line-height:1">Ó Comáin</div>
         <!-- HERALDIC MOTTO BANNER — single flowing ribbon, Gaelic primary -->
         <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg" style="width:min(460px,96%);height:auto;display:block;margin:18px auto 0" aria-label="Caithfidh an stair a bheith i réim — History must prevail">
@@ -1506,5 +1530,40 @@ function closeModal2(e){
   </div>
 </footer>
 
+<script>
+/* Coat-of-arms pixel-assembly scroll animation. Self-contained, no
+   libraries. Slices the gold svg into a 12x14 grid of tiles that fly
+   in/out with scroll position (fully reversible). Degrades to the
+   static gold crest if JS is off or reduced-motion is set. */
+(function(){
+  document.querySelectorAll('.koa').forEach(function(koa){
+    var px=koa.querySelector('.koa-px'); if(!px) return;
+    var img=koa.querySelector('.koa-fallback');
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var COLS=12, ROWS=14;
+    function rnd(s){var x=Math.sin(s*99.13)*43758.5453;return x-Math.floor(x);}
+    var frag=document.createDocumentFragment();
+    for(var j=0;j<ROWS;j++)for(var i=0;i<COLS;i++){
+      var idx=j*COLS+i, t=document.createElement('span'); t.className='t';
+      t.style.setProperty('--i',''+i); t.style.setProperty('--j',''+j);
+      var a=rnd(idx)*6.283, dist=42+rnd(idx+7)*72;
+      t.style.setProperty('--dx',(Math.cos(a)*dist).toFixed(1)+'px');
+      t.style.setProperty('--dy',(Math.sin(a)*dist).toFixed(1)+'px');
+      t.style.setProperty('--r',((rnd(idx+3)-0.5)*90).toFixed(1)+'deg');
+      t.style.setProperty('--d',(rnd(idx+11)*0.5).toFixed(3));
+      frag.appendChild(t);
+    }
+    px.appendChild(frag); koa.classList.add('js-px');
+    function measure(){var w=koa.getBoundingClientRect(); if(w.width){px.style.setProperty('--bw',w.width+'px'); px.style.setProperty('--bh',w.height+'px');}}
+    measure(); if(img && !img.complete) img.addEventListener('load',measure);
+    if(reduce){px.style.setProperty('--p','1'); return;}
+    px.style.setProperty('--p','0');
+    var ticking=false;
+    function upd(){ticking=false; var r=koa.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight, c=r.top+r.height/2, p=(vh*0.95-c)/(vh*0.75); p=Math.max(0,Math.min(1,p)); px.style.setProperty('--p',p.toFixed(4));}
+    function ons(){if(!ticking){ticking=true; requestAnimationFrame(upd);}}
+    window.addEventListener('scroll',ons,{passive:true}); window.addEventListener('resize',function(){measure();ons();},{passive:true}); upd();
+  });
+})();
+</script>
 </body>
 </html>
