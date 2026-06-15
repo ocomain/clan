@@ -166,7 +166,7 @@
        clan colours, sized to read, and shows on hover (desktop). On
        touch devices it doesn't show — taps on the link badges just
        navigate to the oath page, which explains everything in full. */
-    .mbadge[data-tip]{position:relative;cursor:pointer}
+    .mbadge[data-tip]{position:relative;cursor:pointer;isolation:isolate}
     .mbadge[data-tip] .mbadge-tip{
       position:absolute;
       bottom:calc(100% + 10px);
@@ -191,16 +191,16 @@
       z-index:60;
       pointer-events:none;
       white-space:normal;
+      /* contain: stop this element's paint/layout from invalidating
+         anything outside its own box. Combined with isolation on the
+         badge, showing the tooltip can no longer force the browser to
+         re-composite the whole page (which on some machines blanked
+         the screen for a frame). It stays display:none when hidden so
+         it costs nothing on scroll. */
+      contain:layout paint style;
       /* display:none keeps the hidden bubble entirely OUT of the
-         render tree — not merely transparent. With the old
-         opacity:0/visibility:hidden it still occupied layout near the
-         card's top edge and was composited on every scroll frame
-         (large shadow + absolute position), which produced a paint
-         artifact at the card's gold top-border AND a repaint storm
-         that made the page grey-out / near-crash while scrolling on
-         some devices. Hidden = display:none; shown (hover) flips it
-         back to block. No fade, deliberately — a transition needs the
-         element painted, which reintroduces the cost. */
+         render tree — not merely transparent. Shown (hover) flips to
+         block. No fade — a transition needs the element painted. */
       display:none;
     }
     .mbadge[data-tip] .mbadge-tip::after{
