@@ -41,7 +41,7 @@
 // consented to publish at sealing time.
 
 const { supa, clanId } = require('./lib/supabase');
-const { computeRegisterDisplay } = require('./lib/generate-cert');
+const { computeRegisterDisplay } = require('./lib/register-display');
 const { highestAwardedTitle } = require('./lib/sponsor-service');
 
 const REGISTER_TIERS = [
