@@ -170,8 +170,16 @@
     .mbadge[data-tip] .mbadge-tip{
       position:absolute;
       bottom:calc(100% + 10px);
-      left:50%;
-      transform:translateX(-50%);
+      /* Anchor by the right edge (the badge sits at the card's
+         top-right) rather than left:50% + translateX(-50%). The old
+         transform promoted the bubble to its own compositing layer;
+         Chrome retained that layer after the first hover, and on the
+         SECOND hover re-composited it so its paint boundary fell on
+         the card's gold top-border — rendering a doubled line. With
+         no transform there is no separate layer, so the artifact
+         cannot form. Right-anchoring also keeps the bubble from
+         overflowing the card's right edge under a top-right badge. */
+      right:0;
       width:max-content;
       max-width:280px;
       background:var(--ink, #1a2a1a);
@@ -193,23 +201,17 @@
       white-space:normal;
       /* display:none keeps the hidden bubble entirely OUT of the
          render tree — not merely transparent — so it costs nothing on
-         scroll and cannot paint a stray artifact at the card edge.
-         Shown (hover) flips to block. No fade (a transition needs the
-         element painted). NB: an earlier attempt added
-         contain:layout paint style + isolation:isolate here as a
-         belt-and-braces guard against a hover-time full-page repaint;
-         those were removed because they created a paint/stacking
-         boundary at the card's top-right that rendered as a doubled,
-         asymmetric gold top-border. display:none alone is sufficient
-         for the scroll/hover fix without that side effect. */
+         scroll. Shown (hover) flips to block. No transform anywhere on
+         this element or its arrow: a transform creates a composited
+         layer that Chrome retains between hovers and re-paints onto
+         the card's top border on the second hover. */
       display:none;
     }
     .mbadge[data-tip] .mbadge-tip::after{
       content:'';
       position:absolute;
       top:100%;
-      left:50%;
-      transform:translateX(-50%);
+      right:22px;
       border:6px solid transparent;
       border-top-color:var(--gold, #B8975A);
     }
