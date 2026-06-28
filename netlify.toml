@@ -163,3 +163,21 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Long-lived caching for static media. Images and fonts are effectively
+# immutable (a changed image gets a new filename in practice), so a
+# one-year cache means repeat visitors and within-session navigation
+# re-use the browser's copy instead of re-downloading multi-hundred-KB
+# assets on every page. This is a sitewide performance win independent
+# of format/size optimisation: the fastest image request is the one the
+# browser never makes. Netlify Image CDN transforms (/.netlify/images)
+# are cached separately at the edge.
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
