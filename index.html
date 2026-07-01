@@ -108,6 +108,17 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   .hero-inner{padding:0 18px}
   .hero-desc{font-size:14px;line-height:1.7;margin-bottom:24px}
 }
+/* The mobile scroll bars (#giftStrip / #mobileActions) switch on at
+   max-width:900px, but the nav's fixed positioning previously only
+   applied at max-width:768px. In the 769–900px band (landscape phones /
+   small tablets) the nav stayed position:sticky while the fixed gift
+   strip was active — so the sticky nav could scroll away while the
+   gift bar stayed pinned, leaving the page with no top navigation.
+   Fixing the nav at the SAME 900px breakpoint keeps them consistent. */
+@media(max-width:900px){
+  .nav{position:fixed;top:0;left:0;right:0}
+  body{padding-top:58px}
+}
 .nav .si{height:58px;display:flex;align-items:center;justify-content:space-between}
 .nav-brand{font-family:'EB Garamond',serif;font-size:21px;color:var(--gold-light);letter-spacing:.03em;text-decoration:none;white-space:nowrap}
 .nav-brand em{font-style:italic}
