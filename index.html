@@ -426,10 +426,16 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
   .stats,.mem-grid,.gallery-grid{grid-template-columns:1fr}
   .hero-eyebrow::before,.hero-eyebrow::after{display:none}
   .letter-card{padding:28px 20px}
-  /* Letter image full screen readable on mobile */
+  /* Letter image full screen readable on mobile. Use 100% (not 100vw)
+     so it never exceeds the content width — 100vw counts the scrollbar
+     gutter and overflowed by a sliver, which under overflow-x:hidden
+     left the dark html background showing as a black line down the
+     right edge. width:100% + the negative margin still reads full-bleed
+     within the 24px section padding, without any overflow. */
   .letter-section img[src="images/people/chief_letter.png"]{
-    width:100vw !important;
-    margin-left:calc(-24px) !important;
+    width:calc(100% + 48px) !important;
+    margin-left:-24px !important;
+    margin-right:-24px !important;
     max-width:none !important;
   }
 }
