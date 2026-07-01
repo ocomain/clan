@@ -845,27 +845,47 @@ function toggleMenu(){
     .stp-strip-cta{width:100%;text-align:center;box-sizing:border-box}
   }
 </style>
-<section class="stp-strip">
-  <a href="/st-patricks-day" class="stp-strip-link">
-    <div class="stp-strip-inner">
-      <div class="stp-strip-text">
-        <div class="stp-strip-eyebrow">St Patrick's Day · 17 March</div>
-        <h2 class="stp-strip-title">See where the kindred are gathering.</h2>
-        <p class="stp-strip-sub">A live map of Ó Comáin pubs.</p>
-      </div>
-      <!-- Preview is a real screenshot of the live map showing Linda's
-           (Perth) + Antóin's (London) avatar pins — instantly readable
-           as "this is what you'll get when you click", which the
-           hand-traced SVG version was not. Decorative for screen-reader
-           purposes since the anchor + title already carry the link
-           context; alt left empty. -->
-      <div class="stp-strip-preview">
-        <img src="/images/brand/stp_homepage_preview.jpg" alt="" loading="lazy">
-      </div>
-      <span class="stp-strip-cta">View live map →</span>
+<!-- IN THE PRESS — moved into this high slot (June 2026); the St Patrick's
+     Day live-map strip that sat here was moved down under 'The ancestral
+     capital', as it draws no clicks nine months out from the event. Press
+     coverage is evergreen credibility and earns the prominent position. -->
+<section class="press-section" style="background:var(--cream-dark);padding:64px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="si">
+    <div style="text-align:center;max-width:720px;margin:0 auto 40px">
+      <div class="eyebrow">In the press</div>
+      <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.2vw,38px);font-weight:400;color:var(--ink);line-height:1.18;margin-bottom:16px">The revival, reported across County Clare</h2>
+      <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-soft);line-height:1.6;margin:0 auto;max-width:600px">The first Annual Gathering at Killone Abbey — marking Year One of the clan's revival after eight centuries — was covered by two of Clare's established newspapers, with the outgoing Mayor of Ennis as guest of honour.</p>
     </div>
-  </a>
+
+    <div class="press-photos" style="display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:end;margin-bottom:36px">
+      <figure style="margin:0">
+        <img src="/.netlify/images?url=/images/events/gathering_chief_mayor.webp&w=900" alt="The Chief of Clan Ó Comáin with Cllr Mary Howard, Mayor of Ennis, at Killone Abbey" loading="lazy" style="width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border)">
+        <figcaption class="img-cap">The Chief with Cllr Mary Howard, Mayor of Ennis — guest of honour at the Gathering</figcaption>
+      </figure>
+      <figure style="margin:0">
+        <img src="/.netlify/images?url=/images/events/gathering_group.webp&w=1200" alt="Members of Clan Ó Comáin gathered at Killone Abbey for the first Annual Gathering" loading="lazy" style="width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border)">
+        <figcaption class="img-cap">The kindred gathered at Killone Abbey, June 2026 — held in loving memory of Ronan Commane</figcaption>
+      </figure>
+    </div>
+
+    <div class="press-links" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center">
+      <a href="https://www.clareecho.ie/a-noble-irish-clan-reunites-in-county-clare/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:var(--white,#fff);border:1px solid var(--gold-border);border-radius:2px;padding:16px 24px;text-decoration:none;transition:border-color .2s">
+        <span style="font-family:'EB Garamond',serif;font-size:17px;color:var(--ink)">“A noble Irish clan reunites in County Clare”</span>
+        <span style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Clare Echo →</span>
+      </a>
+      <a href="https://clarechampion.ie/keeping-up-with-the-o-comains/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:var(--white,#fff);border:1px solid var(--gold-border);border-radius:2px;padding:16px 24px;text-decoration:none;transition:border-color .2s">
+        <span style="font-family:'EB Garamond',serif;font-size:17px;color:var(--ink)">“Keeping up with the Ó Comáins”</span>
+        <span style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Clare Champion →</span>
+      </a>
+    </div>
+  </div>
 </section>
+<style>
+  @media(max-width:640px){
+    .press-photos{grid-template-columns:1fr !important;gap:20px !important}
+    .press-links a{width:100%;justify-content:space-between}
+  }
+</style>
 
 <!-- VIDEO MODAL -->
 <div id="videoModal" onclick="closeModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;align-items:center;justify-content:center;padding:24px">
@@ -1125,6 +1145,25 @@ function closeModal2(e){
   </div>
 </section>
 
+<!-- ST PATRICK'S DAY LIVE-MAP STRIP — moved here (June 2026) from the high
+     slot near the hero, which now holds the 'In the Press' section. The
+     St Patrick's map is seasonal and draws no clicks nine months out, so
+     it sits lower until it becomes timely again. -->
+<section class="stp-strip">
+  <a href="/st-patricks-day" class="stp-strip-link">
+    <div class="stp-strip-inner">
+      <div class="stp-strip-text">
+        <div class="stp-strip-eyebrow">St Patrick's Day · 17 March</div>
+        <h2 class="stp-strip-title">See where the kindred are gathering.</h2>
+        <p class="stp-strip-sub">A live map of Ó Comáin pubs.</p>
+      </div>
+      <div class="stp-strip-preview">
+        <img src="/images/brand/stp_homepage_preview.jpg" alt="" loading="lazy">
+      </div>
+      <span class="stp-strip-cta">View live map →</span>
+    </div>
+  </a>
+</section>
 
 
 
