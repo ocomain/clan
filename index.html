@@ -63,7 +63,7 @@
 </noscript>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;background:#080F08}
+html{scroll-behavior:smooth;background:#080F08;overflow-x:clip}
 /* html background is set to hero's dark green so when iOS users
    rubber-band overscroll past the top of the page, they see green
    matching the hero rather than the cream body background — which
@@ -444,9 +444,9 @@ body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--ink);line
      right edge. width:100% + the negative margin still reads full-bleed
      within the 24px section padding, without any overflow. */
   .letter-section img[src="images/people/chief_letter.png"]{
-    width:calc(100% + 48px) !important;
-    margin-left:-24px !important;
-    margin-right:-24px !important;
+    width:calc(100% + 40px) !important;
+    margin-left:-20px !important;
+    margin-right:-20px !important;
     max-width:none !important;
   }
 }
