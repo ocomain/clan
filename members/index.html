@@ -195,10 +195,16 @@
       padding:12px 15px;
       border-radius:3px;
       border:1px solid var(--gold, #B8975A);
-      box-shadow:0 4px 14px rgba(0,0,0,.28);
       z-index:60;
       pointer-events:none;
       white-space:normal;
+      /* box-shadow removed: on some displays its soft edge painted as
+         a faint second line against the card's gold top-border when the
+         tooltip appeared on hover (the long-standing 'double gold line'
+         report). The gold border on the bubble already separates it
+         from the card. */
+      display:none;
+    }
       /* display:none keeps the hidden bubble entirely OUT of the
          render tree — not merely transparent — so it costs nothing on
          scroll. Shown (hover) flips to block. No transform anywhere on
