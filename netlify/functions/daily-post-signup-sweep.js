@@ -169,7 +169,11 @@ const SENDER_READY = {
   e1_herald:  true,
   e2_chief:   true,
   e3_antoin:  true,
-  e3b_antoin: true,
+  // Email 3B ("I forgot to attach this") removed from the sequence
+  // July 2026. Flag flipped rather than deleting the block so it can
+  // be reinstated by flipping back to true; the sweep skips it
+  // entirely while false.
+  e3b_antoin: false,
   e4_linda:   true,
   e5_herald:  true,
   e6_michael: true,
