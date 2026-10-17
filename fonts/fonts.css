@@ -12,6 +12,20 @@
  *
  * font-display:swap so text renders in fallback fonts first, then
  * swaps in (same behaviour as the previous Google Fonts loader).
+ *
+ * 17 Oct 2026: the WOFF2 files are now SUBSETS of the TTFs, produced by
+ * scripts/subset-web-fonts.sh. EB Garamond ships ~3,000 glyphs (Cyrillic,
+ * Greek, Vietnamese, small caps, swashes, seven stylistic sets…); the
+ * site uses Latin + Irish fadas + punctuation + a handful of arrows and
+ * symbols, and only the default-on OpenType features (plus tnum, which
+ * two pages ask for). Subsetting cut EBGaramond-Regular from 151 KB to
+ * 53 KB, the three EB Garamond faces together from 469 KB to 166 KB —
+ * all of it on the critical path of the hero heading on every page.
+ * Every character present in any page of the site was verified to
+ * survive the subset. If you add text in a script the subset does not
+ * cover (e.g. Greek), re-run the script with a wider --unicodes list.
+ * The .ttf files are untouched: the certificate / patent PDF generators
+ * in netlify/functions/lib embed those directly and need the full set.
  */
 
 @font-face {
@@ -75,4 +89,47 @@
   font-display: swap;
   src: url('/fonts/Jost-SemiBold.woff2') format('woff2'),
        url('/fonts/Jost-SemiBold.ttf') format('truetype');
+}
+
+/* ------------------------------------------------------------------
+ * Metric-matched fallback faces — the fix for font-swap layout shift.
+ *
+ * With font-display:swap the page first paints in the system font and
+ * then re-flows when the web font arrives. Arial and Times New Roman
+ * (and their Mac/Linux metric twins Helvetica and Liberation) are
+ * ~4–5% wider than Jost / EB Garamond, so paragraphs lose a line at
+ * the swap and everything below jumps. On /membership, whose hero
+ * carries three paragraphs plus the CTA row, that measured as a
+ * layout-shift score of 0.27 — the "poor" band of Google's Core Web
+ * Vitals — on an otherwise stable page.
+ *
+ * These two faces wrap the local system font and scale it so its
+ * average advance width and line box match the web font exactly
+ * (size-adjust = mean advance of the web font over real site copy ÷
+ * mean advance of the fallback; the ascent/descent overrides are the
+ * web font's hhea metrics divided by that same factor, so line height
+ * is identical before and after the swap). They are listed second in
+ * every font stack — 'Jost','Jost Fallback',sans-serif — so browsers
+ * that lack the descriptors, or devices without Arial/Times, simply
+ * fall through to the generic family as before.
+ *
+ * Regenerate the numbers if the web fonts ever change:
+ *   python3 scripts/font-fallback-metrics.py
+ * ---------------------------------------------------------------- */
+@font-face {
+  font-family: 'Jost Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Helvetica'), local('Liberation Sans');
+  size-adjust: 96.0%;
+  ascent-override: 111.45%;
+  descent-override: 39.06%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'EB Garamond Fallback';
+  src: local('Times New Roman'), local('Times'), local('Liberation Serif');
+  size-adjust: 94.8%;
+  ascent-override: 106.22%;
+  descent-override: 31.43%;
+  line-gap-override: 0%;
 }

@@ -27,41 +27,43 @@
   <title>Benefactors — Clan Ó Comáin</title>
   <meta name="description" content="For those who wish to fund the work of the revival. Clan Ó Comáin Benefactor levels — supporting the conservation of Killone Abbey, the pedigree research, and the festivals at Newhall.">
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared.css">
   <link rel="icon" href="/favicon.ico">
   <style>
     /* ── HERO ── */
     .ben-hero{position:relative;min-height:54vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:80px 0}
-    .ben-hero-bg{position:absolute;inset:0;background:url('images/heritage/killone_abbey_lake.png') center/cover no-repeat;opacity:.12;filter:saturate(.5)}
+    .ben-hero-bg{position:absolute;inset:0;background:url('/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280') center/cover no-repeat;opacity:.12;filter:saturate(.5)}
     .ben-hero-content{max-width:780px;position:relative;z-index:2}
-    .ben-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
-    .ben-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,5.4vw,64px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:24px}
-    .ben-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,22px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:640px;margin-bottom:18px}
+    .ben-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:13px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
+    .ben-hero-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(38px,5.4vw,64px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:24px}
+    .ben-hero-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(17px,2vw,22px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:640px;margin-bottom:18px}
 
     /* ── THE WORK ── */
     .ben-work-section{background:var(--ink-mid);padding:80px 0;border-bottom:1px solid var(--border)}
-    .ben-work-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:18px}
-    .ben-work-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.6vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.15;text-align:center;margin-bottom:36px;max-width:680px;margin-left:auto;margin-right:auto}
-    .ben-work-body{font-family:'EB Garamond',serif;font-size:clamp(17px,1.6vw,19px);color:rgba(215,235,215,.82);line-height:1.8;max-width:680px;margin:0 auto}
+    .ben-work-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:18px}
+    .ben-work-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3.6vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.15;text-align:center;margin-bottom:36px;max-width:680px;margin-left:auto;margin-right:auto}
+    .ben-work-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(17px,1.6vw,19px);color:rgba(215,235,215,.82);line-height:1.8;max-width:680px;margin:0 auto}
     .ben-work-body p{margin-bottom:18px}
 
     /* ── THREE LEVELS ── */
     .ben-levels-section{background:var(--ink);padding:90px 0;border-bottom:1px solid var(--border)}
     .ben-levels-intro{text-align:center;max-width:680px;margin:0 auto 60px}
     .ben-levels-intro .ben-eyebrow{color:var(--gold)}
-    .ben-levels-intro h2{font-family:'EB Garamond',serif;font-size:clamp(28px,3.6vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:18px}
-    .ben-levels-intro p{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.72);line-height:1.75}
+    .ben-levels-intro h2{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3.6vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:18px}
+    .ben-levels-intro p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.72);line-height:1.75}
     .ben-levels{display:grid;grid-template-columns:1fr;gap:32px;max-width:880px;margin:0 auto}
     .ben-level{background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.22);border-left:3px solid var(--gold);padding:40px 44px;position:relative}
     .ben-level-head{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;flex-wrap:wrap;margin-bottom:22px}
-    .ben-level-name-ga{font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,34px);font-weight:400;color:var(--gold-pale);line-height:1.15;font-style:italic;margin-bottom:4px}
-    .ben-level-name-en{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.85}
-    .ben-level-amount{font-family:'EB Garamond',serif;font-size:clamp(30px,3.4vw,40px);font-weight:400;color:var(--gold-pale);line-height:1;text-align:right;white-space:nowrap}
-    .ben-level-cadence{font-family:'Jost',sans-serif;font-size:10px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.55);text-align:right;margin-top:6px}
-    .ben-level-body{font-family:'EB Garamond',serif;font-size:16.5px;color:rgba(215,235,215,.82);line-height:1.75;margin-bottom:16px}
+    .ben-level-name-ga{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3vw,34px);font-weight:400;color:var(--gold-pale);line-height:1.15;font-style:italic;margin-bottom:4px}
+    .ben-level-name-en{font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.85}
+    .ben-level-amount{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(30px,3.4vw,40px);font-weight:400;color:var(--gold-pale);line-height:1;text-align:right;white-space:nowrap}
+    .ben-level-cadence{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.55);text-align:right;margin-top:6px}
+    .ben-level-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16.5px;color:rgba(215,235,215,.82);line-height:1.75;margin-bottom:16px}
     .ben-level-body p{margin-bottom:14px}
     .ben-level-body p:last-child{margin-bottom:0}
-    .ben-level-recognition{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.65);line-height:1.7;font-style:italic;padding-top:18px;border-top:1px solid rgba(184,151,90,.18);margin-top:6px}
+    .ben-level-recognition{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.65);line-height:1.7;font-style:italic;padding-top:18px;border-top:1px solid rgba(184,151,90,.18);margin-top:6px}
     .ben-level-recognition strong{color:var(--gold-pale);font-weight:500;font-style:normal}
 
     /* ── BY BEQUEATHAL — prominent mid-page section for the
@@ -72,9 +74,9 @@
     .ben-bequest-mode-section{background:var(--ink);padding:70px 0;border-top:1px solid rgba(184,151,90,.18);border-bottom:1px solid var(--border)}
     .ben-bequest-mode-inner{max-width:780px;margin:0 auto}
     .ben-bequest-mode-card{background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.22);border-left:3px solid rgba(184,151,90,.5);padding:44px 48px;position:relative}
-    .ben-bequest-mode-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;opacity:.85}
-    .ben-bequest-mode-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.2vw,36px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:22px;font-style:italic}
-    .ben-bequest-mode-body{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.82);line-height:1.8}
+    .ben-bequest-mode-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;opacity:.85}
+    .ben-bequest-mode-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.2vw,36px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:22px;font-style:italic}
+    .ben-bequest-mode-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:rgba(215,235,215,.82);line-height:1.8}
     .ben-bequest-mode-body p{margin-bottom:14px}
     .ben-bequest-mode-body p:last-child{margin-bottom:0}
     .ben-bequest-mode-body strong{color:var(--gold-pale);font-weight:500}
@@ -82,17 +84,17 @@
     /* ── BEQUEATHAL — pure estate-only, the smaller quiet section ── */
     .ben-bequest-section{background:var(--ink-mid);padding:64px 0;border-bottom:1px solid var(--border)}
     .ben-bequest-inner{max-width:640px;margin:0 auto;text-align:center}
-    .ben-bequest-eyebrow{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.85}
-    .ben-bequest-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.6vw,28px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:18px;font-style:italic}
-    .ben-bequest-body{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.7);line-height:1.85;font-style:italic}
+    .ben-bequest-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.85}
+    .ben-bequest-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(22px,2.6vw,28px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:18px;font-style:italic}
+    .ben-bequest-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;color:rgba(215,235,215,.7);line-height:1.85;font-style:italic}
 
     /* ── CLOSING ── */
     .ben-closing-section{background:var(--ink);padding:80px 0}
     .ben-closing-inner{max-width:600px;margin:0 auto;text-align:center}
-    .ben-closing-eyebrow{font-family:'Jost',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
-    .ben-closing-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.4vw,38px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:18px}
-    .ben-closing-body{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.78);line-height:1.75;margin-bottom:32px;font-style:italic}
-    .ben-closing-contact{font-family:'EB Garamond',serif;font-size:19px;color:var(--gold-pale);line-height:1.7}
+    .ben-closing-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:13px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .ben-closing-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.4vw,38px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:18px}
+    .ben-closing-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:rgba(215,235,215,.78);line-height:1.75;margin-bottom:32px;font-style:italic}
+    .ben-closing-contact{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:19px;color:var(--gold-pale);line-height:1.7}
     .ben-closing-contact a{color:var(--gold);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(184,151,90,.4)}
     .ben-closing-contact a:hover{text-decoration-color:var(--gold)}
 
@@ -130,20 +132,20 @@
   #ben-gate.hidden{display:none}
   #ben-gate-card{max-width:420px;width:100%;background:rgba(184,151,90,.04);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:42px 36px;text-align:center}
   #ben-gate-crest{display:block;width:42px;height:auto;margin:0 auto 22px;opacity:.85}
-  #ben-gate-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
-  #ben-gate-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:10px;font-style:italic}
-  #ben-gate-sub{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.7);line-height:1.65;margin-bottom:26px;font-style:italic}
-  #ben-gate-input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(184,151,90,.4);font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale);padding:10px 4px;text-align:center;letter-spacing:.04em;outline:none;margin-bottom:18px}
+  #ben-gate-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  #ben-gate-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:10px;font-style:italic}
+  #ben-gate-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;color:rgba(215,235,215,.7);line-height:1.65;margin-bottom:26px;font-style:italic}
+  #ben-gate-input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(184,151,90,.4);font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--gold-pale);padding:10px 4px;text-align:center;letter-spacing:.04em;outline:none;margin-bottom:18px}
   #ben-gate-input:focus{border-bottom-color:var(--gold)}
   #ben-gate-input::placeholder{color:rgba(184,151,90,.45);font-style:italic}
-  #ben-gate-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:background .15s}
+  #ben-gate-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;padding:14px 24px;cursor:pointer;transition:background .15s}
   #ben-gate-btn:hover{background:var(--gold-pale)}
-  #ben-gate-err{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:#E07474;margin-top:14px;min-height:18px}
+  #ben-gate-err{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:#E07474;margin-top:14px;min-height:18px}
   body.ben-locked > *:not(#ben-gate):not(script){display:none !important}
 </style>
 <div id="ben-gate">
   <div id="ben-gate-card">
-    <img src="images/brand/coat_of_arms.png" alt="" id="ben-gate-crest">
+    <img src="/images/brand/coat_of_arms_192.png" alt="" id="ben-gate-crest" width="192" height="220" decoding="async">
     <div id="ben-gate-eyebrow">Benefactors</div>
     <div id="ben-gate-title">By introduction only</div>
     <div id="ben-gate-sub">If you have been given a passphrase by the Office of the Chancellor, you may enter it below — or write to <a href="mailto:clan@ocomain.org" style="color:var(--gold);text-decoration:underline;text-decoration-color:rgba(184,151,90,.4);text-underline-offset:2px">clan@ocomain.org</a> to enquire.</div>
@@ -190,7 +192,7 @@
 <!-- NAV — mirrors gift.html/membership.html for consistency -->
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="membership" class="nav-link">Membership</a>
       <a href="join" class="nav-link">Why Join</a>
@@ -397,8 +399,8 @@
         <div class="footer-heading">Contact</div>
         <ul class="footer-links">
           <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
     </div>

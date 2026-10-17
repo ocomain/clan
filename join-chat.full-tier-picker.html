@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!-- BACKUP — full tier picker version (pre-2026-04-28).
      This file is NOT linked from anywhere. It exists as the
      editable canonical of the tier-picker completion panel that
@@ -9,9 +10,9 @@
      applicant (Hannah Commins) completed Herald but bailed at the
      picker. Restore this file's logic into join-chat.html when the
      full picker is wanted again. -->
-<!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex,nofollow">
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,8 +27,8 @@
     :root{
       --ink:#0C1A0C;--ink-mid:#182818;--gold:#B8975A;--gold-pale:#D4B87A;
       --gold-light:#C4A45A;--cream:#F8F4EC;--green-dark:#0F1F0F;
-      --border:rgba(184,151,90,.2);--font-serif:'EB Garamond',serif;
-      --font-sans:'Jost',sans-serif;
+      --border:rgba(184,151,90,.2);--font-serif:'EB Garamond','EB Garamond Fallback',serif;
+      --font-sans:'Jost','Jost Fallback',sans-serif;
     }
     html,body{height:100%}
     body{font-family:var(--font-sans);background:var(--ink);color:var(--cream);display:flex;flex-direction:column}
@@ -154,8 +155,8 @@
 <!-- Minimal exit bar: gives the user a way to return to the main site mid-chat -->
 <a href="/" style="display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--ink);border-bottom:1px solid var(--border);text-decoration:none;transition:background .2s" onmouseover="this.style.background='rgba(184,151,90,.05)'" onmouseout="this.style.background='var(--ink)'">
   <img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin" style="width:32px;height:auto;display:block">
-  <span style="font-family:'EB Garamond',serif;font-size:16px;color:var(--gold);letter-spacing:.01em">Clan <em>Ó Comáin</em></span>
-  <span style="margin-left:auto;font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.5)">Return to site</span>
+  <span style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;color:var(--gold);letter-spacing:.01em">Clan <em>Ó Comáin</em></span>
+  <span style="margin-left:auto;font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.5)">Return to site</span>
 </a>
 
 <div class="chat-wrapper">

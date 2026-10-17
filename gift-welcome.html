@@ -9,11 +9,13 @@
 <meta name="robots" content="noindex,nofollow">
 <title>A gift awaits — Clan Ó Comáin</title>
 <meta name="description" content="A gift of clan membership awaits — claim it now at Clan Ó Comáin.">
-<link rel="icon" type="image/png" href="/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/cormorant.css">
 <style>
+img{height:auto}
 :root{
   --cream:#F7F4ED;
   --cream-warm:#F0EADC;
@@ -28,7 +30,7 @@
   --rule:rgba(26,20,16,.12);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;min-height:100vh}
+html,body{background:var(--cream);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;min-height:100vh}
 /* Body removed flex-center alignment 2026-04-30 — adding the brand
    nav bar (non-link, recognition only) means the page now has
    structure that competes with full-page vertical centring. The
@@ -47,7 +49,7 @@ body{padding:0}
 .welcome-nav{background:var(--ink);border-bottom:2px solid var(--gold);padding:16px 0}
 .welcome-nav-inner{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:14px}
 .welcome-nav-shield{height:34px;width:auto;display:block}
-.welcome-nav-text{font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale,#F5ECD8);letter-spacing:.01em}
+.welcome-nav-text{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--gold-pale,#F5ECD8);letter-spacing:.01em}
 .welcome-nav-text em{color:var(--gold-light,#D4B483);font-style:italic}
 
 /* Page wrapper — replaces what body used to be. Centers content
@@ -65,7 +67,7 @@ body{padding:0}
    the right place'. */
 .welcome-seal{margin:0 auto 36px;display:block}
 
-.welcome-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+.welcome-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
 
 /* The headline. 'Welcome home, [Name]' is the emotional payoff of
    the entire founder-email flow. Personalised via JS from the
@@ -87,20 +89,20 @@ body{padding:0}
 
 .welcome-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:24px auto;max-width:200px}
 .welcome-rule-line{flex:1;height:1px;background:var(--ink);opacity:.25}
-.welcome-rule-mark{color:var(--gold);font-family:'EB Garamond',serif;font-size:14px;font-style:italic}
+.welcome-rule-mark{color:var(--gold);font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic}
 
 /* The body — Herald-voiced italic prose, same family as the email,
    intentionally short. The recipient has just read the long email;
    the landing page is the single-beat acknowledgement, not a
    second telling. */
-.welcome-body{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.85;margin-bottom:14px;max-width:480px;margin-left:auto;margin-right:auto}
+.welcome-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.85;margin-bottom:14px;max-width:480px;margin-left:auto;margin-right:auto}
 .welcome-body + .welcome-body{margin-top:14px}
 
 /* The single CTA — burgundy, central, generous padding. This is
    the ONLY action on the page. No secondary links, no nav, no
    footer link maze — just one button. */
 .welcome-cta-block{margin:32px auto 0;display:flex;flex-direction:column;align-items:center;gap:14px}
-.welcome-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:18px 40px;border-radius:1px;text-decoration:none;transition:background .2s;border:1px solid var(--burgundy-deep);cursor:pointer;line-height:1}
+.welcome-cta{display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:18px 40px;border-radius:1px;text-decoration:none;transition:background .2s;border:1px solid var(--burgundy-deep);cursor:pointer;line-height:1}
 .welcome-cta:hover{background:var(--burgundy-deep)}
 .welcome-cta:disabled{opacity:.5;cursor:wait}
 /* Style reset for when .welcome-cta is applied to a <button>
@@ -108,9 +110,9 @@ body{padding:0}
    of navigating). Without these resets browsers add their own
    border/font-inherit behaviour that breaks the visual parity with
    the <a> variant used by the Continue link. */
-button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appearance:none}
+button.welcome-cta{font-family:'Jost','Jost Fallback',sans-serif;-webkit-appearance:none;appearance:none}
 
-.welcome-cta-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:380px;line-height:1.6;margin-top:4px}
+.welcome-cta-note{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:380px;line-height:1.6;margin-top:4px}
 
 /* Footer — minimal. Just the motto, gives the page closure
    without nav-spaghetti. margin:80px auto 0 horizontally
@@ -118,7 +120,7 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
    the auto, max-width:380px would just sit flush left). */
 .welcome-foot{margin:80px auto 0;padding-top:36px;border-top:1px solid var(--rule);max-width:380px;width:100%;text-align:center}
 .welcome-foot-quote{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--ink);line-height:1.4;margin:0 0 6px;font-weight:500}
-.welcome-foot-trans{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--gold-deep)}
+.welcome-foot-trans{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:var(--gold-deep)}
 
 /* MOBILE — title scaling already handled by clamp(); just tighten
    page padding on narrow screens. */
@@ -148,7 +150,7 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
      this page is forwards through the claim, not sideways. -->
 <div class="welcome-nav" role="banner" aria-label="Clan Ó Comáin">
   <div class="welcome-nav-inner">
-    <img src="/images/brand/coat_of_arms.png" alt="" class="welcome-nav-shield" aria-hidden="true">
+    <img src="/images/brand/coat_of_arms_192.png" alt="" class="welcome-nav-shield" aria-hidden="true" width="192" height="220" decoding="async">
     <span class="welcome-nav-text">Clan <em>Ó Comáin</em></span>
   </div>
 </div>
@@ -226,8 +228,8 @@ button.welcome-cta{font-family:'Jost',sans-serif;-webkit-appearance:none;appeara
          by default; JS unhides + populates if a message is present
          in the gift row. -->
     <div id="personalMessageBlock" hidden style="background:rgba(184,151,90,.08);border-left:3px solid var(--gold);padding:18px 22px;margin:0 auto 24px;max-width:480px;border-radius:0 2px 2px 0;text-align:left">
-      <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 10px">A personal note from <span id="personalMessageGiver"></span></p>
-      <p id="personalMessageText" style="font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink);line-height:1.7;margin:0;white-space:pre-wrap"></p>
+      <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 10px">A personal note from <span id="personalMessageGiver"></span></p>
+      <p id="personalMessageText" style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink);line-height:1.7;margin:0;white-space:pre-wrap"></p>
     </div>
 
     <p class="welcome-body">

@@ -8,6 +8,8 @@
   <meta name="description" content="Brehon law was the native legal system of Gaelic Ireland for over a thousand years — the year-and-a-day rule, the honour-price, women who served as judges.">
   <link rel="canonical" href="https://www.ocomain.org/library/brehon-law">
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/shared.css">
   <link rel="icon" href="/favicon.ico">
 
@@ -51,13 +53,13 @@
        hero so a reader (especially one who arrived from search and
        has no browser history into the site) can always get back to
        the Library index. Also functions as a breadcrumb. */
-    .art-back{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;margin-bottom:22px;padding:6px 14px;border:1px solid var(--gold-border);border-radius:100px;transition:background .15s,border-color .15s}
+    .art-back{display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;margin-bottom:22px;padding:6px 14px;border:1px solid var(--gold-border);border-radius:100px;transition:background .15s,border-color .15s}
     .art-back:hover{background:rgba(184,151,90,.10);border-color:var(--gold)}
-    .art-hero-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
-    .art-hero-title{font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,52px);font-weight:400;color:var(--ink);line-height:1.1;margin:0 0 20px}
+    .art-hero-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+    .art-hero-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(36px,5vw,52px);font-weight:400;color:var(--ink);line-height:1.1;margin:0 0 20px}
     .art-hero-title em{font-style:italic;color:var(--burgundy)}
-    .art-hero-dek{font-family:'EB Garamond',serif;font-size:clamp(18px,2vw,22px);color:var(--ink-soft);line-height:1.6;margin:0 auto 28px;max-width:580px;font-style:italic}
-    .art-hero-meta{display:inline-flex;align-items:center;gap:12px;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted)}
+    .art-hero-dek{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(18px,2vw,22px);color:var(--ink-soft);line-height:1.6;margin:0 auto 28px;max-width:580px;font-style:italic}
+    .art-hero-meta{display:inline-flex;align-items:center;gap:12px;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted)}
     .art-hero-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--gold)}
     /* Hero illustration — open manuscript + quill. Sits below the meta
        row, gives the hero a visual anchor without a photographic asset. */
@@ -67,12 +69,12 @@
     /* BODY — reading-room column. Slightly generous line-height
        (1.85) and 18.5px base size; print-quality reading on a phone
        AND a desktop. */
-    .art-body{max-width:680px;margin:0 auto;padding:48px 24px 60px;font-size:18.5px;line-height:1.85;color:var(--ink);font-family:'EB Garamond',serif}
+    .art-body{max-width:680px;margin:0 auto;padding:48px 24px 60px;font-size:18.5px;line-height:1.85;color:var(--ink);font-family:'EB Garamond','EB Garamond Fallback',serif}
 
     /* Drop-cap — lands on the first regular body paragraph (the one
        right after the Seanchaí opening frame). Targets the paragraph
        immediately following .art-seanchai-open. */
-    .art-seanchai-open + p::first-letter{font-family:'EB Garamond',serif;font-size:64px;line-height:0.85;float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400}
+    .art-seanchai-open + p::first-letter{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:64px;line-height:0.85;float:left;margin:8px 12px 0 0;color:var(--gold-deep);font-weight:400}
 
     /* SEANCHAÍ host byline — Paddy Commane as the teller, shown
        mid-performance. Portrait image (not a circle — the pose is
@@ -94,17 +96,17 @@
     .art-teller-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;
       border-radius:56px 56px 3px 3px}
     .art-teller-text{flex:1;min-width:0}
-    .art-teller-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
-    .art-teller-name{font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:4px}
+    .art-teller-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
+    .art-teller-name{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:24px;color:var(--ink);font-style:italic;line-height:1.1;margin-bottom:4px}
     .art-teller-pron{font-size:15px;color:var(--ink-faint);font-style:italic;letter-spacing:.02em;margin-left:4px}
-    .art-teller-role{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:12px}
-    .art-teller-note{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0;font-style:italic}
+    .art-teller-role{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;color:var(--ink-muted);font-style:italic;margin-bottom:12px}
+    .art-teller-note{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:var(--ink-soft);line-height:1.65;margin:0;font-style:italic}
 
     /* Seanchaí first-person frame paragraphs — warm storyteller voice
        at open and close. Burgundy left-rule, slightly larger, so they
        read as Paddy speaking rather than as body prose. Drop-cap
        suppressed here so it lands on the first real body paragraph. */
-    .art-seanchai-open,.art-seanchai-close{font-family:'EB Garamond',serif;font-size:19.5px;line-height:1.8;color:var(--ink);font-style:italic;border-left:3px solid var(--burgundy);padding:4px 0 4px 24px;margin:0 0 28px}
+    .art-seanchai-open,.art-seanchai-close{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:19.5px;line-height:1.8;color:var(--ink);font-style:italic;border-left:3px solid var(--burgundy);padding:4px 0 4px 24px;margin:0 0 28px}
     .art-seanchai-open::first-letter{font-size:inherit;float:none;margin:0;color:inherit}
     .art-seanchai-close{margin-top:8px;margin-bottom:0}
 
@@ -120,13 +122,13 @@
        a clean italic title. Used to subdivide the long-form prose
        so a reader can scan-then-dive. */
     .art-h2{margin:48px 0 24px;text-align:left}
-    .art-h2-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px;display:block}
-    .art-h2-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,34px);font-weight:400;color:var(--ink);line-height:1.2;margin:0;font-style:italic}
+    .art-h2-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px;display:block}
+    .art-h2-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.5vw,34px);font-weight:400;color:var(--ink);line-height:1.2;margin:0;font-style:italic}
     .art-h2-title em{color:var(--burgundy)}
 
     /* Pull quote — used sparingly. Italic, large, indented, gold
        left-rule. Same treatment as Myth. */
-    .art-pull{border-left:3px solid var(--gold);padding:8px 0 8px 28px;margin:32px 0;font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.55}
+    .art-pull{border-left:3px solid var(--gold);padding:8px 0 8px 28px;margin:32px 0;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.55}
 
     /* Section divider — single gold dot. Quieter than the Myth
        trefoil; appropriate for an article. */
@@ -139,22 +141,22 @@
        Standing'). Cream card, burgundy left-rule, italic header,
        internal links. */
     .art-callout{background:rgba(140,30,30,.04);border-left:3px solid var(--burgundy);padding:24px 28px;border-radius:1px;margin:32px 0}
-    .art-callout-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
-    .art-callout-title{font-family:'EB Garamond',serif;font-size:20px;color:var(--ink);font-weight:400;line-height:1.3;margin:0 0 12px;font-style:italic}
-    .art-callout-body{font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0}
+    .art-callout-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--burgundy);margin-bottom:10px}
+    .art-callout-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:20px;color:var(--ink);font-weight:400;line-height:1.3;margin:0 0 12px;font-style:italic}
+    .art-callout-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0}
     .art-callout-body a{color:var(--burgundy);text-decoration:underline;text-decoration-color:rgba(140,30,30,.3);text-underline-offset:2px}
     .art-callout-body a:hover{text-decoration-color:var(--burgundy)}
     .art-callout-bard{display:flex;gap:22px;align-items:flex-start}
     .art-callout-bard-img{flex-shrink:0;width:108px;height:146px;object-fit:cover;object-position:center top;border-radius:54px 54px 4px 4px;border:1px solid var(--gold-border)}
     .art-callout-bard-text{flex:1;min-width:0}
-    .art-callout-bard-who{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);margin-top:12px}
-    .art-callout-bard-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);line-height:1.6;margin-top:8px}
+    .art-callout-bard-who{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13.5px;font-style:italic;color:var(--ink-muted);margin-top:12px}
+    .art-callout-bard-note{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-soft);line-height:1.6;margin-top:8px}
     @media(max-width:600px){.art-callout-bard{flex-direction:column;align-items:center;text-align:center;gap:16px}.art-callout-bard-img{width:96px;height:130px}}
 
     /* SOURCES — small bibliography block at the bottom for
        credibility / SEO. Quieter than the body. */
-    .art-sources{max-width:680px;margin:0 auto;padding:32px 24px 60px;font-family:'EB Garamond',serif;font-size:15px;color:var(--ink-muted);line-height:1.7;border-top:1px solid var(--gold-border)}
-    .art-sources-h{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
+    .art-sources{max-width:680px;margin:0 auto;padding:32px 24px 60px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:var(--ink-muted);line-height:1.7;border-top:1px solid var(--gold-border)}
+    .art-sources-h{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
     .art-sources ul{list-style:none;padding:0;margin:0}
     .art-sources li{margin-bottom:8px;font-style:italic}
     .art-sources li::before{content:'·  ';color:var(--gold);font-style:normal}
@@ -165,15 +167,15 @@
     /* RELATED — links to other library articles. Lives between
        article body and CTA. Subtle. */
     .art-related{max-width:680px;margin:0 auto;padding:32px 24px 16px}
-    .art-related-h{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px;text-align:center}
+    .art-related-h{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px;text-align:center}
     /* When the heading is a link back to the Library index */
     a.art-related-h-link{display:block;text-decoration:none;transition:color .15s}
     a.art-related-h-link:hover{color:var(--gold)}
     .art-related-list{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px}
     .art-related-item{background:#FFFDF7;border:1px solid var(--gold-border);border-top:2px solid var(--gold);padding:20px 22px;text-decoration:none;color:inherit;transition:transform .15s,border-color .15s;border-radius:2px}
     .art-related-item:hover{transform:translateY(-2px);border-color:var(--gold)}
-    .art-related-item-eye{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
-    .art-related-item-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);line-height:1.3;font-style:italic}
+    .art-related-item-eye{font-family:'Jost','Jost Fallback',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
+    .art-related-item-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--ink);line-height:1.3;font-style:italic}
     .art-related-item.coming{opacity:.55;cursor:default}
 
     @media (max-width:560px){
@@ -216,16 +218,16 @@
     .lib-join{background:var(--ink);padding:72px 0 80px;border-top:2px solid var(--gold);margin-top:24px;position:relative;overflow:hidden}
     .lib-join::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%, rgba(184,151,90,.10), transparent 55%),radial-gradient(ellipse at 80% 90%, rgba(140,30,30,.08), transparent 60%);pointer-events:none}
     .lib-join-inner{position:relative;z-index:2;max-width:640px;margin:0 auto;padding:0 24px;text-align:center}
-    .lib-join-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
-    .lib-join-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4.5vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin:0 0 22px;font-style:italic}
+    .lib-join-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .lib-join-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,4.5vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin:0 0 22px;font-style:italic}
     .lib-join-title br{display:none}
     @media (min-width:600px){ .lib-join-title br{display:inline} }
     .lib-join-title em{color:var(--gold-light);font-style:italic}
-    .lib-join-lead{font-family:'EB Garamond',serif;font-size:18.5px;color:rgba(225,238,225,.92);line-height:1.75;margin:0 0 18px}
+    .lib-join-lead{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18.5px;color:rgba(225,238,225,.92);line-height:1.75;margin:0 0 18px}
     .lib-join-lead .irish,.lib-join-sub .irish{font-style:italic;color:var(--gold-light)}
-    .lib-join-sub{font-family:'EB Garamond',serif;font-size:15.5px;color:rgba(200,220,200,.7);line-height:1.7;margin:0 0 30px;font-style:italic}
+    .lib-join-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15.5px;color:rgba(200,220,200,.7);line-height:1.7;margin:0 0 30px;font-style:italic}
     .lib-join-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-    .lib-join-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:15px 34px;text-decoration:none;border-radius:1px;border:1px solid var(--gold);transition:background .15s,border-color .15s}
+    .lib-join-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:15px 34px;text-decoration:none;border-radius:1px;border:1px solid var(--gold);transition:background .15s,border-color .15s}
     .lib-join-btn:hover{background:var(--gold-pale);border-color:var(--gold-pale)}
     .lib-join-btn-ghost{background:transparent;color:var(--gold-light);border:1px solid var(--gold)}
     .lib-join-btn-ghost:hover{background:rgba(184,151,90,.16);color:var(--gold-pale);border-color:var(--gold-light)}
@@ -281,7 +283,7 @@
 <!-- NAV -->
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="/myth" class="nav-link">Myth</a>
       <a href="/surname-variants" class="nav-link">Variants</a>
@@ -382,7 +384,7 @@ function toggleMenu(){
        avatar — the performance pose is the point. -->
   <div class="art-teller">
     <div class="art-teller-portal">
-      <img class="art-teller-img" src="/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance">
+      <img class="art-teller-img" src="/images/people/paddy_commane_seanchai.jpg" alt="Paddy Commane, Seanchaí of Clan Ó Comáin, mid-performance" width="480" height="640" decoding="async">
     </div>
     <div class="art-teller-text">
       <div class="art-teller-label">Told by</div>
@@ -561,7 +563,7 @@ function toggleMenu(){
   <p>None of this is play-acting at the medieval. It is the plainest thing in the world: to take the principles that once worked, in a people who thought long and carefully about how to live together, and to ask which of them have something to give us yet.</p>
 
   <div class="art-callout art-callout-bard">
-    <img class="art-callout-bard-img" src="/images/people/paddy_commane_rockmount.jpg" alt="Paddy Commane, of Rockmount — Clan Bard">
+    <img class="art-callout-bard-img" src="/.netlify/images?url=/images/people/paddy_commane_rockmount.jpg&w=750" alt="Paddy Commane, of Rockmount — Clan Bard" srcset="/.netlify/images?url=/images/people/paddy_commane_rockmount.jpg&w=480 480w, /.netlify/images?url=/images/people/paddy_commane_rockmount.jpg&w=750 750w" sizes="108px" width="750" height="780" loading="lazy" decoding="async">
     <div class="art-callout-bard-text">
       <div class="art-callout-eyebrow">In the Members' Area</div>
       <h3 class="art-callout-title">The Seanchaí tells it — the Bard sings it</h3>
@@ -645,7 +647,7 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="/membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
         </ul>
       </div>
       <div>

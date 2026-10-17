@@ -8,28 +8,30 @@
   <meta name="description" content="Welcome to Clan Ó Comáin. Your application has been received and your place in the clan is confirmed.">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared.css">
   <link rel="icon" href="/favicon.ico">
   <style>
     /* ── HERO ── */
     .wel-hero{position:relative;min-height:62vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);text-align:center}
-    .wel-hero-bg{position:absolute;inset:0;background:url('images/heritage/killone_abbey_lake.png') center/cover no-repeat;opacity:.13;filter:saturate(.5)}
+    .wel-hero-bg{position:absolute;inset:0;background:url('/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280') center/cover no-repeat;opacity:.13;filter:saturate(.5)}
     .wel-hero-inner{position:relative;z-index:2;max-width:720px;margin:0 auto;padding:60px 24px}
     .wel-crest{width:96px;margin:0 auto 18px;display:block}
     .wel-crest img{width:96px;height:auto;display:block}
-    .wel-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
-    .wel-title{font-family:'EB Garamond',serif;font-size:clamp(40px,6vw,70px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:14px}
-    .wel-translate{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:24px}
-    .wel-sub{font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,21px);color:rgba(215,235,215,.85);line-height:1.65;max-width:560px;margin:0 auto}
+    .wel-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .wel-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(40px,6vw,70px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:14px}
+    .wel-translate{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:24px}
+    .wel-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(17px,2vw,21px);color:rgba(215,235,215,.85);line-height:1.65;max-width:560px;margin:0 auto}
 
     /* ── CONFIRMATION CARD ── */
     .wel-confirm{background:var(--cream);padding:72px 0;border-bottom:1px solid var(--border)}
     .wel-confirm-card{max-width:680px;margin:0 auto;background:var(--white);border:1px solid var(--gold-border);border-top:3px solid var(--gold);padding:44px 48px;border-radius:2px;box-shadow:0 6px 28px rgba(12,26,12,.08)}
-    .wel-confirm-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
-    .wel-confirm-tier{font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,36px);font-weight:400;color:var(--ink);text-align:center;line-height:1.15;margin-bottom:10px}
+    .wel-confirm-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
+    .wel-confirm-tier{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.5vw,36px);font-weight:400;color:var(--ink);text-align:center;line-height:1.15;margin-bottom:10px}
     .wel-confirm-tier em{color:var(--gold)}
     .wel-confirm-rule{width:48px;height:1px;background:var(--gold);margin:18px auto 22px;opacity:.5}
-    .wel-confirm-body{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.75;text-align:center;margin-bottom:0}
+    .wel-confirm-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink-soft);line-height:1.75;text-align:center;margin-bottom:0}
     @keyframes welBounce{
       0%,20%,50%,80%,100%{transform:translateY(0)}
       40%{transform:translateY(6px)}
@@ -38,23 +40,23 @@
 
     /* ── NEXT STEPS ── */
     .wel-next{background:var(--ink);padding:80px 0;color:var(--gold-pale)}
-    .wel-next-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
-    .wel-next-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:50px;text-align:center}
+    .wel-next-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
+    .wel-next-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.15;margin-bottom:50px;text-align:center}
     .wel-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1040px;margin:0 auto}
     .wel-step{text-align:center;padding:0 12px}
-    .wel-step-num{font-family:'EB Garamond',serif;font-size:42px;font-weight:400;color:var(--gold);line-height:1;margin-bottom:14px;font-style:italic}
-    .wel-step-title{font-family:'EB Garamond',serif;font-size:21px;font-weight:400;color:var(--gold-pale);line-height:1.25;margin-bottom:12px}
-    .wel-step-desc{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.72);line-height:1.7}
+    .wel-step-num{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:42px;font-weight:400;color:var(--gold);line-height:1;margin-bottom:14px;font-style:italic}
+    .wel-step-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:21px;font-weight:400;color:var(--gold-pale);line-height:1.25;margin-bottom:12px}
+    .wel-step-desc{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.72);line-height:1.7}
 
     /* ── PRIVATE SECRETARY SIGN-OFF ── */
     .wel-sig{background:var(--cream-mid);padding:56px 0;text-align:center;border-bottom:1px solid var(--border)}
-    .wel-sig-text{max-width:560px;margin:0 auto 28px;font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-soft);line-height:1.7}
+    .wel-sig-text{max-width:560px;margin:0 auto 28px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:var(--ink-soft);line-height:1.7}
     .wel-sig-author{display:inline-flex;align-items:center;gap:18px;text-align:left;max-width:520px}
     .wel-sig-photo{width:76px;height:76px;border-radius:50%;display:block;flex-shrink:0;object-fit:cover;border:1px solid rgba(184,151,90,.3)}
     .wel-sig-author-text{display:flex;flex-direction:column;gap:3px}
-    .wel-sig-author-name{font-family:'EB Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);margin:0;line-height:1.2}
-    .wel-sig-author-title{font-family:'EB Garamond',serif;font-size:14.5px;color:var(--ink-soft);margin:0;line-height:1.4}
-    .wel-sig-irish{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(60,42,26,.6);margin:0;line-height:1.4}
+    .wel-sig-author-name{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-weight:500;color:var(--ink);margin:0;line-height:1.2}
+    .wel-sig-author-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;color:var(--ink-soft);margin:0;line-height:1.4}
+    .wel-sig-irish{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:rgba(60,42,26,.6);margin:0;line-height:1.4}
     @media(max-width:560px){
       .wel-sig-author{flex-direction:column;gap:14px;text-align:center}
       .wel-sig-author-text{align-items:center}
@@ -63,35 +65,35 @@
     /* ── UPSELL / FORWARD-LOOKING ── */
     .wel-look{background:var(--cream);padding:80px 0;border-bottom:1px solid var(--border)}
     .wel-look-inner{max-width:1040px;margin:0 auto;padding:0 24px}
-    .wel-look-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
-    .wel-look-title{font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,38px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:14px;text-align:center}
-    .wel-look-sub{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-soft);text-align:center;max-width:520px;margin:0 auto 48px;line-height:1.6}
+    .wel-look-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;text-align:center}
+    .wel-look-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.5vw,38px);font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:14px;text-align:center}
+    .wel-look-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink-soft);text-align:center;max-width:520px;margin:0 auto 48px;line-height:1.6}
     .wel-look-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
     .wel-look-card{background:var(--white);border:1px solid var(--gold-border);padding:28px 24px;border-radius:2px;text-align:center;transition:border-color .2s,transform .15s}
     .wel-look-card.live{cursor:pointer}
     .wel-look-card.live:hover{border-color:var(--gold);transform:translateY(-2px)}
-    .wel-look-card-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .wel-look-card-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
     .wel-look-card.coming .wel-look-card-eyebrow{color:rgba(184,151,90,.55)}
-    .wel-look-card-title{font-family:'EB Garamond',serif;font-size:19px;font-weight:400;color:var(--ink);margin-bottom:8px;line-height:1.3}
-    .wel-look-card-desc{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-soft);line-height:1.6}
+    .wel-look-card-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:19px;font-weight:400;color:var(--ink);margin-bottom:8px;line-height:1.3}
+    .wel-look-card-desc{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;color:var(--ink-soft);line-height:1.6}
 
     /* ── MEMBERS AREA CTA STRIP ── */
     .wel-mbr{background:var(--cream-mid);padding:56px 0;border-bottom:1px solid var(--border);text-align:center}
     .wel-mbr-inner{max-width:680px;margin:0 auto;padding:0 24px}
-    .wel-mbr-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
-    .wel-mbr-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,34px);font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:14px}
+    .wel-mbr-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .wel-mbr-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,34px);font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:14px}
     .wel-mbr-title em{color:var(--gold);font-style:italic}
-    .wel-mbr-sub{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink-soft);line-height:1.75;margin-bottom:24px}
-    .wel-mbr-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
+    .wel-mbr-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;color:var(--ink-soft);line-height:1.75;margin-bottom:24px}
+    .wel-mbr-btn{display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:16px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
     .wel-mbr-btn:hover{background:var(--gold-light)}
-    .wel-mbr-note{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(60,42,26,.55);margin-top:14px}
+    .wel-mbr-note{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:rgba(60,42,26,.55);margin-top:14px}
 
     /* ── FINAL CTA ── */
     .wel-final{background:var(--ink);padding:64px 24px;text-align:center;border-bottom:1px solid var(--gold-border)}
-    .wel-final-text{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.75);max-width:520px;margin:0 auto 28px;line-height:1.7}
-    .wel-final-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:16px 38px;border-radius:1px;text-decoration:none;transition:background .2s}
+    .wel-final-text{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.75);max-width:520px;margin:0 auto 28px;line-height:1.7}
+    .wel-final-btn{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:16px 38px;border-radius:1px;text-decoration:none;transition:background .2s}
     .wel-final-btn:hover{background:var(--gold-light)}
-    .wel-final-gift{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:rgba(215,235,215,.55);max-width:540px;margin:24px auto 0;line-height:1.65}
+    .wel-final-gift{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;font-style:italic;color:rgba(215,235,215,.55);max-width:540px;margin:24px auto 0;line-height:1.65}
     .wel-final-gift a{color:var(--gold);text-decoration:underline;font-style:normal}
 
     @media(max-width:780px){
@@ -127,7 +129,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="pedigree" class="nav-link">Pedigree</a>
       <a href="heartlands" class="nav-link">Heartlands</a>
@@ -150,7 +152,7 @@
 <section class="wel-hero">
   <div class="wel-hero-bg"></div>
   <div class="wel-hero-inner">
-    <div class="wel-crest"><img src="images/brand/coat_of_arms.png" alt="Ó Comáin"></div>
+    <div class="wel-crest"><img src="/images/brand/coat_of_arms_192.png" alt="Ó Comáin" width="192" height="220" decoding="async"></div>
     <div class="wel-eyebrow" id="welEyebrow">Ó Comáin</div>
     <h1 class="wel-title">Céad míle fáilte</h1>
     <p class="wel-translate">A hundred thousand welcomes</p>
@@ -201,7 +203,7 @@
   <div class="si">
     <p class="wel-sig-text">As is the custom in the household of the Chief, all correspondence with the clan passes through this office. Direct access to the Chief is reserved — but you have been welcomed in his name, and your name now stands among those of the clan he leads.</p>
     <div class="wel-sig-author">
-      <img src="/images/people/linda_cryan_bubble.png" alt="Linda Cryan" class="wel-sig-photo">
+      <img src="/.netlify/images?url=/images/people/linda_cryan_bubble.png&w=400" alt="Linda Cryan" class="wel-sig-photo" width="400" height="400" decoding="async">
       <div class="wel-sig-author-text">
         <p class="wel-sig-author-name">Linda Cryan</p>
         <p class="wel-sig-author-title">Office of the Private Secretary to the Chief</p>
@@ -243,7 +245,7 @@
       <a href="/members/login" class="wel-mbr-btn">
         Open my Member's Area to share →
       </a>
-      <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-soft);margin:18px auto 0;max-width:420px;line-height:1.6">
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-soft);margin:18px auto 0;max-width:420px;line-height:1.6">
         The Chief writes personally to every new member you bring into the clan.
       </p>
     </div>

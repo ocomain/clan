@@ -14,9 +14,10 @@
 <link rel="icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/images/brand/favicon-16x16.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/cormorant.css">
 <!-- shared.css carries the standard site nav + footer styles
      (.nav, .nav-brand, .nav-link, .nav-cta, .footer, .footer-grid
      etc). Loaded BEFORE the page-local <style> below so the
@@ -52,12 +53,12 @@
   --rule:rgba(26,20,16,.12);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+html,body{background:var(--cream);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
 .wrap{max-width:740px;margin:0 auto;padding:0 28px}
 
 /* HERO */
 .hero{padding:80px 0 60px;text-align:center}
-.hero-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
+.hero-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.36em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
 .hero-eyebrow .sep{color:var(--gold);margin:0 12px;opacity:.55}
 .hero-seal{margin:0 auto 38px;display:block}
 .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,7vw,58px);font-weight:500;line-height:.96;letter-spacing:-0.022em;color:var(--ink);margin-bottom:14px;
@@ -98,12 +99,12 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-title-irish{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(20px,2.4vw,26px);color:var(--gold-deep);font-weight:400;letter-spacing:.005em;margin-top:6px}
 .hero-rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:34px auto;max-width:240px}
 .hero-rule-line{flex:1;height:1px;background:var(--ink);opacity:.25}
-.hero-rule-mark{color:var(--gold);font-family:'EB Garamond',serif;font-size:14px;font-style:italic}
+.hero-rule-mark{color:var(--gold);font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic}
 
 .herald-block{max-width:580px;margin:0 auto 44px;text-align:left;padding:8px 0}
 .herald-greet{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;font-weight:500;color:var(--burgundy);line-height:1.3;margin-bottom:18px;letter-spacing:-0.005em}
 .herald-greet .greet-eng{color:var(--ink-soft);font-weight:400}
-.herald-body{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.78;margin-bottom:14px}
+.herald-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:var(--ink-soft);line-height:1.78;margin-bottom:14px}
 .herald-body + .herald-body{margin-top:14px}
 /* Privacy postscript — its OWN beat, separate from the Herald's address.
    Sits centred between the Herald block (which closes with his signature)
@@ -116,7 +117,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .herald-sign{display:flex;align-items:center;gap:14px;margin-top:32px;padding-top:24px;border-top:1px solid var(--rule)}
 .herald-sign-mark{flex-shrink:0;display:block}
 .herald-sign-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:var(--ink);line-height:1.3;font-weight:500}
-.herald-sign-role{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold-deep);margin-top:4px}
+.herald-sign-role{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:var(--gold-deep);margin-top:4px}
 
 /* Counts panel — two stacked stat blocks with a midpoint dot between
    them. Each block: large italic number, small-caps label below, then
@@ -124,7 +125,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .hero-counts{display:flex;align-items:flex-start;justify-content:center;gap:34px;margin-top:6px}
 .hero-count{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center}
 .hero-count strong{color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:0;font-style:italic;line-height:1}
-.hero-count-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-deep);margin-top:6px}
+.hero-count-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-deep);margin-top:6px}
 /* Breakdown line: smaller, italic, muted, sits below the small-caps
    label. Uses Cormorant Garamond italic to harmonise with the headline
    above rather than the small-caps label. Empty by default — populated
@@ -137,11 +138,11 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .section{padding:54px 0 60px}
 .section + .section{border-top:1px solid var(--rule);padding-top:60px}
 .section-head{text-align:center;margin-bottom:48px}
-.section-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
+.section-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:6px}
 .section-eyebrow-irish{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;font-weight:500;color:var(--gold);letter-spacing:0.04em;margin-bottom:18px}
 .section-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500;color:var(--ink);line-height:1.1;letter-spacing:-0.012em}
 .section-title em{font-style:italic;color:var(--burgundy);font-weight:500}
-.section-blurb{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:14px auto 0}
+.section-blurb{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:14px auto 0}
 
 /* ENTRIES */
 .entries{margin-top:8px}
@@ -155,17 +156,17 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 .entry:hover{background:rgba(184,151,90,.04)}
 .entry-row{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:baseline}
 .entry-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--ink);line-height:1.2;letter-spacing:-0.005em}
-.entry-meta{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-deep);text-align:right;line-height:1.5;white-space:nowrap}
+.entry-meta{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-deep);text-align:right;line-height:1.5;white-space:nowrap}
 .entry-tier{display:block}
 .entry-year{display:block;color:var(--ink-muted);font-weight:400;margin-top:4px;letter-spacing:0.12em}
-.entry-dedication{font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:var(--burgundy);line-height:1.7;margin-top:14px;max-width:560px}
+.entry-dedication{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15.5px;font-style:italic;color:var(--burgundy);line-height:1.7;margin-top:14px;max-width:560px}
 /* Family credit line — italic muted serif, sits just below the display
    name. Mirrors the cert PDF's credit line ('with Anita, and Saoirse,
    Cillian, and Eabha'). Same italic voice as the cert. Less prominent
    than the ancestor dedication (which is burgundy + larger) so it
    reads as a quiet annotation on the family entry, not as the
    emotional focus of the row. */
-.entry-credit{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
+.entry-credit{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:var(--ink-muted);line-height:1.6;margin-top:8px;max-width:560px}
 /* Dignity prefix — sits before the headline name as a gold italic
    honorific (Cara / Ardchara / Onóir), at the same size as the name.
    Hover or keyboard-focus reveals a dark-ink tooltip giving the
@@ -180,31 +181,31 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
    with that convention. */
 .entry-dignity-prefix{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;color:var(--gold-deep);position:relative;cursor:help;outline:none}
 .entry-dignity-prefix:focus-visible{box-shadow:0 0 0 2px var(--gold-faint);border-radius:2px}
-.entry-dignity-prefix::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:0;background:var(--ink);color:var(--cream);padding:11px 15px 12px;font-family:'EB Garamond',serif;font-style:italic;font-weight:400;font-size:13.5px;line-height:1.55;white-space:pre-line;width:max-content;max-width:300px;border-radius:2px;box-shadow:0 6px 22px rgba(0,0,0,.18);letter-spacing:0;text-align:left;opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s,transform .15s,visibility 0s linear .15s;pointer-events:none;z-index:20}
+.entry-dignity-prefix::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:0;background:var(--ink);color:var(--cream);padding:11px 15px 12px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-weight:400;font-size:13.5px;line-height:1.55;white-space:pre-line;width:max-content;max-width:300px;border-radius:2px;box-shadow:0 6px 22px rgba(0,0,0,.18);letter-spacing:0;text-align:left;opacity:0;visibility:hidden;transform:translateY(-3px);transition:opacity .15s,transform .15s,visibility 0s linear .15s;pointer-events:none;z-index:20}
 .entry-dignity-prefix::before{content:'';position:absolute;top:calc(100% + 4px);left:14px;width:0;height:0;border:6px solid transparent;border-bottom-color:var(--ink);opacity:0;visibility:hidden;transition:opacity .15s,visibility 0s linear .15s;z-index:21}
 .entry-dignity-prefix:hover::after,.entry-dignity-prefix:focus-visible::after,.entry-dignity-prefix.is-open::after,.entry-dignity-prefix:hover::before,.entry-dignity-prefix:focus-visible::before,.entry-dignity-prefix.is-open::before{opacity:1;visibility:visible;transform:translateY(0);transition:opacity .15s,transform .15s,visibility 0s}
 /* .entry-founder lives in the right meta column, immediately under
    'Joined 2026'. Drops the redundant '· 2026' from the mark text since
    the year is right above. Burgundy + small caps + leading flourish
    stay — they're the visual signature of the founder distinction. */
-.entry-founder{display:block;font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--burgundy);margin-top:8px}
+.entry-founder{display:block;font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:var(--burgundy);margin-top:8px}
 .entry-founder::before{content:'✦';margin-right:7px;color:var(--gold)}
 
 /* EMPTY STATE — for sections with zero members */
-.section-empty{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);text-align:center;padding:32px 20px;line-height:1.7;max-width:480px;margin:0 auto;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.section-empty{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:var(--ink-muted);text-align:center;padding:32px 20px;line-height:1.7;max-width:480px;margin:0 auto;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 
 /* LOADING + ERROR STATES */
-.loading{text-align:center;padding:60px 20px;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted)}
-.load-error{text-align:center;padding:40px 20px;font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--burgundy);max-width:480px;margin:0 auto;line-height:1.7}
+.loading{text-align:center;padding:60px 20px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink-muted)}
+.load-error{text-align:center;padding:40px 20px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:var(--burgundy);max-width:480px;margin:0 auto;line-height:1.7}
 
 /* FOOTER */
 .foot{padding:80px 0 100px;text-align:center;border-top:1px solid var(--rule);margin-top:50px}
 .foot-quote{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;color:var(--ink);line-height:1.55;max-width:540px;margin:30px auto 8px;font-weight:500}
-.foot-trans{font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--gold-deep);margin-bottom:48px}
-.foot-warrant{font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:0 auto 26px}
+.foot-trans{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:var(--gold-deep);margin-bottom:48px}
+.foot-warrant{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;max-width:480px;margin:0 auto 26px}
 .foot-warrant strong{color:var(--ink);font-style:normal;font-weight:500;font-family:'Cormorant Garamond',serif;font-size:16px}
-.foot-loc{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
-.foot-cta{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:14px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
+.foot-loc{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:36px}
+.foot-cta{display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--cream);background:var(--burgundy);padding:14px 36px;border-radius:1px;text-decoration:none;transition:background .2s}
 .foot-cta:hover{background:var(--burgundy-deep)}
 
 /* MOBILE — REGISTER ENTRY REDESIGN
@@ -296,14 +297,14 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
   }
   .entry-tier{
     display:inline;
-    font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;
+    font-family:'Jost','Jost Fallback',sans-serif;font-size:10.5px;font-weight:600;
     letter-spacing:0.18em;text-transform:uppercase;
     color:var(--gold-deep);
     margin-top:0;
   }
   .entry-year{
     display:inline;
-    font-family:'Jost',sans-serif;
+    font-family:'Jost','Jost Fallback',sans-serif;
     font-size:10.5px;font-weight:400;letter-spacing:0.14em;
     color:var(--ink-muted);
     margin-top:0;
@@ -380,7 +381,7 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
      to navigate elsewhere). -->
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -427,14 +428,14 @@ html,body{background:var(--cream);color:var(--ink);font-family:'Jost',sans-serif
 </style>
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -649,7 +650,7 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
         </ul>
       </div>
       <div>

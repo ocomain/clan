@@ -163,6 +163,16 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # HSTS: the site is HTTPS-only (every page already carries an
+    # upgrade-insecure-requests CSP and https canonicals), so tell
+    # browsers to skip the http:// round-trip for a year. Deliberately
+    # no includeSubDomains / preload — subdomains aren't ours to vouch for.
+    Strict-Transport-Security = "max-age=31536000"
+    # No page uses the camera, microphone or geolocation (the St Patrick's
+    # map is pin-your-town, not locate-me). Declaring that explicitly is
+    # a Lighthouse best-practice check and blocks any injected script
+    # from prompting for them.
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 # Long-lived caching for static media. Images and fonts are effectively
 # immutable (a changed image gets a new filename in practice), so a
@@ -181,3 +191,134 @@
   for = "/fonts/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000"
+
+# Re-encoded homepage videos (see /videos/). Same reasoning as /images/:
+# a new encode gets a new filename, so the files are immutable.
+[[headers]]
+  for = "/videos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Email preview galleries are internal review tooling regenerated on every
+# deploy. The generators inject <meta name="robots" noindex> into most
+# files, but the gallery index pages and any future template without the
+# tag would still be eligible for Google's index. An X-Robots-Tag header
+# covers every response under these paths regardless of markup.
+[[headers]]
+  for = "/email-previews/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-transactional/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-founder/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-member-invitation/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-gift-flow/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-pdf-lead/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-cart-reengage/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-fergus-mockup/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-review/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-assets/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# ---------------------------------------------------------------------------
+# Keep repository internals off the public site.
+#
+# publish = "." deploys the whole repo, so function source, SQL migrations,
+# build scripts, the handover docs and package.json were all reachable by
+# URL (and crawlable). Nothing on the site links to any of these paths —
+# the functions are invoked via /.netlify/functions/ and /api/, never via
+# /netlify/. force = true is required so the rule wins over the real file.
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/supabase/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/scripts/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/node_modules/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/HANDOVER-network-and-features.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/project-context-asof-27april2026-late-evening.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/build-letters-patent.py"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/404.html"
+  status = 404
+  force = true

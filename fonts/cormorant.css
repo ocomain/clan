@@ -1,0 +1,24 @@
+/* Cormorant Garamond — self-hosted, loaded ONLY by the three pages that
+ * use it (founder-welcome, gift-welcome, register). Kept out of fonts.css
+ * so the other ~40 pages don't parse @font-face rules they never use.
+ *
+ * Previously these pages pulled Cormorant (plus duplicate copies of
+ * EB Garamond and Jost) from fonts.googleapis.com — a render-blocking
+ * third-party stylesheet plus a second connection to fonts.gstatic.com
+ * on the gift-recipient landing pages. Both files are Google's own
+ * variable-weight (300–700) latin builds, ~38 KB each, so every weight
+ * the pages use (400/500 italic, 500/600 roman) comes from one file. */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/CormorantGaramond-Roman.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/CormorantGaramond-Italic.woff2') format('woff2');
+}

@@ -7,6 +7,8 @@
   <title>Clan Relics & Regalia — Clan Ó Comáin</title>
   <meta name="description" content="The sacred objects and instruments of authority of Clan Ó Comáin — the White Rod of the Chief, and the ancient regalia of Gaelic chieftainship.">
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared.css">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/brand/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
@@ -19,30 +21,30 @@
     /* ROD FEATURE SECTION */
     .rod-section{padding:84px 0;background:var(--cream)}
     .rod-grid{display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:start}
-    .rod-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-    .rod-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:12px}
-    .rod-irish{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:var(--ink-muted);margin-bottom:20px}
+    .rod-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+    .rod-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--ink);line-height:1.1;margin-bottom:12px}
+    .rod-irish{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:var(--ink-muted);margin-bottom:20px}
     .rod-rule{width:48px;height:2px;background:var(--gold);margin-bottom:28px}
-    .rod-body p{font-family:'EB Garamond',serif;font-size:17px;line-height:1.8;color:var(--ink-soft);margin-bottom:18px}
+    .rod-body p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.8;color:var(--ink-soft);margin-bottom:18px}
     .rod-body p:last-child{margin-bottom:0}
 
     /* PULL QUOTE */
     .rod-quote{border-left:4px solid var(--gold);padding:18px 24px;margin:28px 0;background:var(--cream-mid)}
-    .rod-quote p{font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.6;margin:0}
+    .rod-quote p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.6;margin:0}
 
     /* IMAGE PANEL */
     .rod-img-panel{position:sticky;top:100px}
     .rod-img{width:100%;display:block;border-radius:2px;border:1px solid var(--border)}
-    .rod-img-cap{font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:var(--ink-muted);letter-spacing:.06em;margin-top:10px;text-align:center}
+    .rod-img-cap{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:300;color:var(--ink-muted);letter-spacing:.06em;margin-top:10px;text-align:center}
 
     /* INAUGURATION SECTION */
     .inaug-info{background:var(--ink);padding:80px 0}
     .inaug-info-inner{max-width:860px;margin:0 auto}
-    .inaug-info-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--gold-pale);margin-bottom:10px;line-height:1.2}
-    .inaug-info-body p{font-family:'EB Garamond',serif;font-size:16px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:16px}
+    .inaug-info-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--gold-pale);margin-bottom:10px;line-height:1.2}
+    .inaug-info-body p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:16px}
     .inaug-info-body p:last-child{margin-bottom:0}
     .inaug-highlight{border-left:3px solid var(--gold);background:rgba(184,151,90,.1);padding:20px 24px;margin:28px 0;border-radius:0 2px 2px 0}
-    .inaug-highlight p{font-family:'EB Garamond',serif;font-size:16px;color:rgba(215,235,215,.9);line-height:1.7;margin:0}
+    .inaug-highlight p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;color:rgba(215,235,215,.9);line-height:1.7;margin:0}
 
     /* FUTURE RELICS */
     .future-section{background:var(--cream-dark);padding:72px 0;border-top:1px solid var(--border)}
@@ -146,7 +148,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -183,15 +185,15 @@
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <!-- Mobile two-bar strip -->
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -224,8 +226,8 @@
 <div class="relics-hero">
   <div class="si">
     <div class="eyebrow" style="color:var(--gold)">The sacred objects</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(32px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:12px">Clan Relics &amp; Regalia</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">The sacred objects of Clan Ó Comáin</p>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(32px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:12px">Clan Relics &amp; Regalia</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">The sacred objects of Clan Ó Comáin</p>
   </div>
 </div>
 
@@ -256,7 +258,7 @@
 
       <!-- RIGHT: IMAGE -->
       <div class="rod-img-panel">
-        <img src="images/archive/white_rod.webp" alt="The White Rod of Clan Ó Comáin — An Slat Bhán, rod of sovereignty" class="rod-img" loading="lazy">
+        <img src="/.netlify/images?url=/images/archive/white_rod.webp&w=1400" alt="The White Rod of Clan Ó Comáin — An Slat Bhán, rod of sovereignty" class="rod-img" loading="lazy" srcset="/.netlify/images?url=/images/archive/white_rod.webp&w=480 480w, /.netlify/images?url=/images/archive/white_rod.webp&w=768 768w, /.netlify/images?url=/images/archive/white_rod.webp&w=1024 1024w, /.netlify/images?url=/images/archive/white_rod.webp&w=1400 1400w" sizes="(max-width: 900px) 100vw, 1120px" width="1597" height="1600" decoding="async">
         <div class="rod-img-cap">The White Rod of Clan Ó Comáin · An Slat Bhán<br>Crystal-tipped · leather-bound · rod of sovereignty</div>
       </div>
 
@@ -296,7 +298,7 @@
 
       <!-- LEFT: IMAGE -->
       <div>
-        <img src="images/editorial/ceremonial_sword.png" alt="The Ceremonial Sword of Clan Ó Comáin — Claidheamh Ceilteach" style="width:100%;display:block;border-radius:2px;border:1px solid var(--border)" loading="lazy">
+        <img src="/.netlify/images?url=/images/editorial/ceremonial_sword.png&w=1000" alt="The Ceremonial Sword of Clan Ó Comáin — Claidheamh Ceilteach" style="width:100%;display:block;border-radius:2px;border:1px solid var(--border)" loading="lazy" srcset="/.netlify/images?url=/images/editorial/ceremonial_sword.png&w=480 480w, /.netlify/images?url=/images/editorial/ceremonial_sword.png&w=768 768w, /.netlify/images?url=/images/editorial/ceremonial_sword.png&w=1000 1000w" sizes="(max-width: 900px) 100vw, 1120px" width="1000" height="1000" decoding="async">
         <div class="rod-img-cap" style="text-align:center;margin-top:10px">The Ceremonial Sword of Clan Ó Comáin · Claidheamh Ceilteach<br>Celtic iron blade · bronze guard and pommel · leather scabbard</div>
       </div>
 
@@ -332,7 +334,7 @@
 <section class="future-section">
   <div class="si" style="max-width:720px">
     <div class="eyebrow">Growing the collection</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Further Relics of the Clan</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(22px,2.5vw,32px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Further Relics of the Clan</h2>
     <div class="gold-rule"></div>
     <p class="body-text" style="margin-bottom:16px">The White Rod is the first of the clan's formal regalia. As the clan continues its revival, further objects of authority and ceremony will be added to the collection — the clan banner, the seal of the Chief, and other instruments of the clan's formal life.</p>
     <p class="body-text">Each relic will be commissioned or consecrated in accordance with the ancient traditions of the Gaelic world, grounded in the scholarship that has guided the clan's revival. Members of the clan wishing to contribute to the creation of the clan's regalia are invited to write to the Office of the Private Secretary, who receives correspondence on the Chief's behalf.</p>
@@ -369,8 +371,8 @@
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

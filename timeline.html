@@ -5,7 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clan Ó Comáin — A Timeline</title>
+<meta name="description" content="A timeline of Clan Ó Comáin from its legendary horizon and the kings of Déisi Muman, through the Chiefdom of Tulach Commáin in County Clare, to the modern clan revival at Newhall.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -39,7 +42,7 @@
   }
 
   body {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Jost', 'Jost Fallback', sans-serif;
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
@@ -56,7 +59,7 @@
   }
 
   .header-eyebrow {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Jost', 'Jost Fallback', sans-serif;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.2em;
@@ -66,7 +69,7 @@
   }
 
   .header h1 {
-    font-family: 'EB Garamond', serif;
+    font-family: 'EB Garamond', 'EB Garamond Fallback', serif;
     font-size: clamp(28px, 5vw, 42px);
     font-weight: 400;
     color: var(--gold-pale);
@@ -101,7 +104,7 @@
   }
 
   .filter-btn {
-    font-family: 'Jost', sans-serif;
+    font-family: 'Jost', 'Jost Fallback', sans-serif;
     font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.08em;
@@ -265,7 +268,7 @@
     padding: 22px 28px;
     margin: 0 0 26px;
     border-radius: 1px;
-    font-family: 'EB Garamond', serif;
+    font-family: 'EB Garamond', 'EB Garamond Fallback', serif;
     font-size: 15.5px;
     line-height: 1.75;
     color: var(--ink-mid);
@@ -296,7 +299,7 @@
   }
 
   .tl-title {
-    font-family: 'EB Garamond', serif;
+    font-family: 'EB Garamond', 'EB Garamond Fallback', serif;
     font-size: 17px;
     font-weight: 400;
     color: var(--ink);
@@ -452,14 +455,14 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.ocomain.org/timeline">
   <meta property="og:title" content="Clan Ó Comáin — A Timeline">
-  <meta property="og:description" content="Clan Ó Comáin — An ancient royal house in the Gaelic nobility of Ireland.">
+  <meta property="og:description" content="A timeline of Clan Ó Comáin from its legendary horizon and the kings of Déisi Muman, through the Chiefdom of Tulach Commáin in County Clare, to the modern clan revival at Newhall.">
   <meta property="og:image" content="https://www.ocomain.org/images/brand/coat_of_arms.png">
   <meta property="og:site_name" content="Clan Ó Comáin">
   <meta property="og:locale" content="en_IE">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Clan Ó Comáin — A Timeline">
-  <meta name="twitter:description" content="Clan Ó Comáin — An ancient royal house in the Gaelic nobility of Ireland.">
+  <meta name="twitter:description" content="A timeline of Clan Ó Comáin from its legendary horizon and the kings of Déisi Muman, through the Chiefdom of Tulach Commáin in County Clare, to the modern clan revival at Newhall.">
   <meta name="twitter:image" content="https://www.ocomain.org/images/brand/coat_of_arms.png">
 <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
@@ -472,7 +475,7 @@
 <body>
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -509,15 +512,15 @@
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <!-- Mobile two-bar strip -->
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -598,9 +601,9 @@ function toggleMenu(){
 
   <!-- Membership hook — sits at the natural reading endpoint of the timeline -->
   <div style="max-width:680px;margin:80px auto 20px;background:var(--bg-card);border:1px solid var(--border);border-top:3px solid var(--gold);padding:36px 40px;border-radius:2px;box-shadow:0 6px 28px rgba(28,26,23,.06)">
-    <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Beyond the public timeline</div>
-    <div style="font-family:'EB Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);line-height:1.25;margin-bottom:18px">The full scholarly record sits in the clan library</div>
-    <p style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink-mid);margin:0 0 28px">Members of Clan Ó Comáin have access to the primary scholarship behind the entries on this page — Gibson's 1990 UCLA dissertation on the Tulach Commáin chiefdom, Cotter's 1999 reassessment of Cahercommaun, Pender's <em>Déssi Genealogies</em>, and a long-form scholarly essay surveying every primary source on the Commán-name tradition. Plus a personalised pedigree, the family's full DNA story, and the year-on-year clan record.</p>
+    <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Beyond the public timeline</div>
+    <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:24px;font-weight:400;color:var(--ink);line-height:1.25;margin-bottom:18px">The full scholarly record sits in the clan library</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.7;color:var(--ink-mid);margin:0 0 28px">Members of Clan Ó Comáin have access to the primary scholarship behind the entries on this page — Gibson's 1990 UCLA dissertation on the Tulach Commáin chiefdom, Cotter's 1999 reassessment of Cahercommaun, Pender's <em>Déssi Genealogies</em>, and a long-form scholarly essay surveying every primary source on the Commán-name tradition. Plus a personalised pedigree, the family's full DNA story, and the year-on-year clan record.</p>
     <div style="text-align:center">
       <a href="membership" class="btn-p" style="font-size:13px;padding:18px 38px;letter-spacing:.18em">Become a clan member &#8594;</a>
     </div>
@@ -1031,8 +1034,8 @@ renderTimeline();
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>
