@@ -7,6 +7,8 @@
 <title>The reason behind the rebirth of Clan Ó Comáin — Maria Kinfauns · Clan Ó Comáin</title>
 <meta name="description" content="Maria Kinfauns, wife of the Chief, has told the founding story of the clan revival — a personal account of the loss of their son Ronan in 2023, and the family's choice to honour him not through anger but through building.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/shared.css">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/brand/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
@@ -79,12 +81,12 @@
 .cs-featured{padding:80px 0 60px;background:var(--cream-light)}
 .cs-featured-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start;max-width:1080px;margin:0 auto}
 .cs-featured-portrait{aspect-ratio:3/4;background:var(--ink) center/cover no-repeat;border:1px solid var(--gold-border);box-shadow:0 8px 32px rgba(12,26,12,.18)}
-.cs-featured-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
-.cs-featured-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,44px);font-weight:400;line-height:1.18;color:var(--ink);margin-bottom:14px}
-.cs-featured-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--ink-muted);margin-bottom:32px}
-.cs-featured-body p{font-family:'EB Garamond',serif;font-size:18px;line-height:1.75;color:var(--ink);margin-bottom:18px}
-.cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
-.cs-featured-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
+.cs-featured-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+.cs-featured-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3.5vw,44px);font-weight:400;line-height:1.18;color:var(--ink);margin-bottom:14px}
+.cs-featured-byline{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:16px;color:var(--ink-muted);margin-bottom:32px}
+.cs-featured-body p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.75;color:var(--ink);margin-bottom:18px}
+.cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
+.cs-featured-pullquote{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
 
 /* Landscape banner layout — used on this page (Maria's founding
    story) where the formal photo is landscape rather than portrait.
@@ -113,16 +115,16 @@
    between the piece body and the footer, pointing the reader at
    another story. Whole card is clickable. Stacks on mobile. */
 .cs-next-story{padding:56px 0;background:var(--cream-mid);border-top:1px solid var(--gold-border)}
-.cs-next-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:24px}
+.cs-next-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:24px}
 .cs-next-card{display:flex;gap:24px;align-items:center;max-width:680px;margin:0 auto;background:var(--white);border:1px solid var(--gold-border);text-decoration:none;color:inherit;padding:20px;transition:box-shadow .25s ease,transform .25s ease}
 .cs-next-card:hover{box-shadow:0 10px 30px rgba(12,26,12,.14);transform:translateY(-2px)}
 .cs-next-card:hover .cs-next-title{color:var(--burgundy)}
 .cs-next-portrait{width:140px;height:180px;flex-shrink:0;background:var(--ink) center/cover no-repeat}
 .cs-next-content{flex:1;min-width:0}
-.cs-next-card-eyebrow{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:8px}
-.cs-next-title{font-family:'EB Garamond',serif;font-size:22px;font-weight:400;line-height:1.25;color:var(--ink);margin-bottom:6px;transition:color .2s ease}
-.cs-next-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:13.5px;color:var(--ink-muted);margin-bottom:14px;line-height:1.5}
-.cs-next-cta{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+.cs-next-card-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:8px}
+.cs-next-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;font-weight:400;line-height:1.25;color:var(--ink);margin-bottom:6px;transition:color .2s ease}
+.cs-next-byline{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:13.5px;color:var(--ink-muted);margin-bottom:14px;line-height:1.5}
+.cs-next-cta{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
 
 @media (max-width:780px){
   .cs-featured-grid{grid-template-columns:1fr;gap:32px}
@@ -145,7 +147,7 @@
 <body>
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="/surname-variants" class="nav-link">Variants</a>
       <a href="/pedigree" class="nav-link">Pedigree</a>
@@ -188,7 +190,7 @@ function toggleMenu(){
 <div class="page-hero" style="background:var(--ink);padding:48px 0 36px;text-align:center;border-bottom:2px solid var(--gold)">
   <div class="si">
     <div class="eyebrow"><a href="/clan-stories" style="color:var(--gold);text-decoration:none">&larr; Clan Stories</a></div>
-    <p style="font-family:'EB Garamond',serif;font-size:15.5px;font-style:italic;color:rgba(160,210,160,.55);max-width:520px;margin:14px auto 0">The founding story of the clan revival, told by the wife of the Chief.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15.5px;font-style:italic;color:rgba(160,210,160,.55);max-width:520px;margin:14px auto 0">The founding story of the clan revival, told by the wife of the Chief.</p>
   </div>
 </div>
 
@@ -204,7 +206,7 @@ function toggleMenu(){
      ============================================================ -->
 <section class="cs-banner">
   <div class="si">
-    <div class="cs-banner-image" style="background-image:url('/images/people/maria_and_ronan_blacktie_landscape.jpg')" role="img" aria-label="Maria Kinfauns with her son Ronan"></div>
+    <div class="cs-banner-image" style="background-image:url('/.netlify/images?url=/images/people/maria_and_ronan_blacktie_landscape.jpg&w=1200')" role="img" aria-label="Maria Kinfauns with her son Ronan"></div>
     <div class="cs-banner-content">
       <div class="cs-featured-eyebrow">Story № 1 · The Founding</div>
       <h1 class="cs-featured-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h1>
@@ -277,8 +279,8 @@ function toggleMenu(){
                URL points at this page (the canonical permalink) so re-shares
                carry the same OG metadata. -->
           <div style="margin-top:48px;padding-top:32px;border-top:1px solid var(--gold-light)">
-            <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px">Share this story</div>
-            <div style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink)">
+            <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px">Share this story</div>
+            <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.7;color:var(--ink)">
               <a href="#" id="csShareFb" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Facebook</a>
               <span style="color:var(--gold-light);margin:0 12px">·</span>
               <a href="#" id="csShareEmail" style="color:var(--ink);text-decoration:underline;text-decoration-color:rgba(184,151,90,.5);text-underline-offset:4px">Email</a>
@@ -348,7 +350,7 @@ function toggleMenu(){
   <div class="si">
     <div class="cs-next-eyebrow">Another voice of the clan</div>
     <a class="cs-next-card" href="/stories/stephen-clarke">
-      <div class="cs-next-portrait" style="background-image:url('/images/people/stephen_clarke.jpg');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke"></div>
+      <div class="cs-next-portrait" style="background-image:url('/.netlify/images?url=/images/people/stephen_clarke.jpg&w=1100');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke"></div>
       <div class="cs-next-content">
         <div class="cs-next-card-eyebrow">Story № 2 · The Return</div>
         <h3 class="cs-next-title">My blood remembers the north</h3>
@@ -374,6 +376,7 @@ function toggleMenu(){
         <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="/surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="/pedigree">Pedigree</a></li>
           <li><a href="/timeline">Timeline</a></li>
           <li><a href="/heartlands">Heartlands</a></li>
@@ -389,8 +392,8 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="/membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

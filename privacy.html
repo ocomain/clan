@@ -8,6 +8,8 @@
 <meta name="description" content="Privacy Policy for the Clan Ó Comáin membership platform, operated by Moohane LLC.">
 <meta name="robots" content="noindex,follow">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="shared.css">
 <link rel="apple-touch-icon" sizes="180x180" href="/images/brand/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
@@ -15,9 +17,9 @@
 <link rel="icon" href="/favicon.ico">
 <style>
   .legal-hero{background:#0C1A0C;color:#F8F4EC;padding:80px 0 60px;text-align:center}
-  .legal-hero h1{font-family:'EB Garamond',serif;font-size:42px;font-weight:400;color:var(--gold-light);margin:0 0 12px;letter-spacing:.02em}
+  .legal-hero h1{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:42px;font-weight:400;color:var(--gold-light);margin:0 0 12px;letter-spacing:.02em}
   .legal-hero p.lead{font-size:14px;color:rgba(248,244,236,.65);margin:0;letter-spacing:.04em}
-  .legal-body{max-width:760px;margin:0 auto;padding:64px 24px;font-family:'EB Garamond',serif;font-size:17px;line-height:1.7;color:#2A1F1A}
+  .legal-body{max-width:760px;margin:0 auto;padding:64px 24px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.7;color:#2A1F1A}
   .legal-body h2{font-size:22px;font-weight:600;color:#0C1A0C;margin:40px 0 16px;letter-spacing:.01em}
   .legal-body h3{font-size:18px;font-weight:600;color:#3C2A1A;margin:28px 0 10px}
   .legal-body p{margin:0 0 16px}
@@ -42,7 +44,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -217,6 +219,7 @@
         <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="pedigree">Pedigree</a></li>
           <li><a href="timeline">Timeline</a></li>
           <li><a href="heartlands">Heartlands</a></li>
@@ -232,8 +235,8 @@
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

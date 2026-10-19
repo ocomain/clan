@@ -6,6 +6,17 @@ Allow: /
 Disallow: /members/
 Disallow: /api/
 Disallow: /.netlify/
+# Internal email-template review galleries (regenerated on every deploy).
+Disallow: /email-previews/
+Disallow: /email-previews-transactional/
+Disallow: /email-previews-founder/
+Disallow: /email-previews-member-invitation/
+Disallow: /email-previews-gift-flow/
+Disallow: /email-previews-pdf-lead/
+Disallow: /email-previews-cart-reengage/
+Disallow: /email-previews-fergus-mockup/
+Disallow: /email-review/
+Disallow: /email-assets/
 
 # AI crawlers — allow indexing so LLMs know about the clan.
 # Individual opt-outs can be added here later if needed.

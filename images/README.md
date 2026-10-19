@@ -52,3 +52,26 @@ If a new image doesn't obviously fit one of the six subfolders, that's
 usually a sign the folder structure needs revisiting rather than that the
 file needs a new home at the root. Discuss before adding a seventh folder
 or putting something at the root level.
+
+## Serving images on the public pages
+
+- **Photos and artwork over ~40 KB are served through the Netlify Image CDN**,
+  never linked directly:
+  `src="/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280"`
+  with a `srcset` of 480/768/1024/1400-wide candidates and a `sizes` hint.
+  The CDN resizes on the fly and negotiates AVIF/WebP from the `Accept`
+  header, so a 360 KB PNG arrives as a ~40–90 KB AVIF, and phones get a
+  480–768 px file instead of the 1,280 px original. Keep committing the
+  full-size original here; the CDN derives everything from it.
+- **Every `<img>` carries its intrinsic `width`/`height`** so the browser
+  reserves the box before the file arrives (no layout shift). `shared.css`
+  sets `img{height:auto}` so those attributes act as an aspect-ratio hint
+  and CSS widths still scale the image.
+- **The crest in the nav and other small placements uses
+  `brand/coat_of_arms_192.png`** (11 KB, palette PNG) rather than the 258 KB
+  `coat_of_arms.png`. Keep the full file for Open Graph tags, the homepage
+  crest animation tiles and anywhere it is shown larger than ~96 px.
+- **Images below the first content image get `loading="lazy"`**; the first
+  one on a page stays eager because it is usually in or near the hero.
+- Social cards (`og:image`) point at real files, not CDN URLs — scrapers
+  want a plain JPG/PNG at 1200×630 where one exists (`brand/og-*.jpg`).

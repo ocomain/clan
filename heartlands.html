@@ -7,6 +7,8 @@
 <title>Heartlands — Clan Ó Comáin</title>
 <meta name="description" content="The ancestral lands and sites of Clan Ó Comáin — Cahercommane, Newhall House, Killone Abbey, the Holy Well of St John the Baptist, Doonbeg Castle and Ballymacooda.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="shared.css">
 <style>
 /* HEARTLANDS PAGE */
@@ -17,10 +19,10 @@
 .inaug-section::before{content:'';position:absolute;inset:0;background:url('images/heritage/cahercommaun_3d.jpeg') center/cover no-repeat;opacity:.18}
 .inaug-inner{position:relative;z-index:2;max-width:880px;margin:0 auto;padding:0 40px;text-align:center}
 .inaug-eyebrow{font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
-.inaug-title{font-family:'EB Garamond',serif;font-size:clamp(32px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:24px}
+.inaug-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(32px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:24px}
 .inaug-rule{width:60px;height:2px;background:var(--gold);margin:0 auto 28px;opacity:.6}
 .inaug-text{font-size:15px;font-weight:300;color:rgba(210,235,210,.82);line-height:1.95;margin-bottom:20px}
-.inaug-quote{font-family:'EB Garamond',serif;font-size:clamp(17px,2.2vw,22px);font-style:italic;color:var(--gold-pale);line-height:1.7;border-left:3px solid var(--gold);padding-left:24px;text-align:left;margin:36px 0;opacity:.9}
+.inaug-quote{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(17px,2.2vw,22px);font-style:italic;color:var(--gold-pale);line-height:1.7;border-left:3px solid var(--gold);padding-left:24px;text-align:left;margin:36px 0;opacity:.9}
 
 /* Property cards */
 .property-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:0}
@@ -31,7 +33,7 @@
 .prop-card.light{background:var(--white)}
 .prop-card.cream{background:var(--cream)}
 .prop-eyebrow{font-size:9.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.prop-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.8vw,32px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2}
+.prop-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(22px,2.8vw,32px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2}
 .prop-date{font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px}
 .prop-rule{width:36px;height:1px;background:var(--gold);margin-bottom:20px;opacity:.6}
 .prop-img{width:100%;height:220px;object-fit:cover;border-radius:2px;margin-bottom:20px;display:block;border:1px solid var(--border)}
@@ -153,14 +155,16 @@
   <meta property="og:url" content="https://www.ocomain.org/heartlands">
   <meta property="og:title" content="Heartlands — Clan Ó Comáin">
   <meta property="og:description" content="The ancestral lands and sites of Clan Ó Comáin — Cahercommane, Newhall House, Killone Abbey, the Holy Well of St John the Baptist, Doonbeg Castle and Ballymacooda.">
-  <meta property="og:image" content="https://www.ocomain.org/heartlands/kinvara-church.jpg">
+  <meta property="og:image" content="https://www.ocomain.org/images/heritage/killone_abbey_lake.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="719">
   <meta property="og:site_name" content="Clan Ó Comáin">
   <meta property="og:locale" content="en_IE">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Heartlands — Clan Ó Comáin">
   <meta name="twitter:description" content="The ancestral lands and sites of Clan Ó Comáin — Cahercommane, Newhall House, Killone Abbey, the Holy Well of St John the Baptist, Doonbeg Castle and Ballymacooda.">
-  <meta name="twitter:image" content="https://www.ocomain.org/heartlands/kinvara-church.jpg">
+  <meta name="twitter:image" content="https://www.ocomain.org/images/heritage/killone_abbey_lake.png">
 <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="fcaec995-b333-4ecf-bc51-c01ad9cf934a"></script>
 <!-- Analytics — Clarity + Meta Pixel, deferred until first user
@@ -173,7 +177,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -210,15 +214,15 @@
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <!-- Mobile two-bar strip -->
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -256,8 +260,8 @@ function toggleMenu(){
 <div class="hl-hero">
   <div class="si">
     <div class="eyebrow">The clan territory</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(32px,5vw,54px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:12px">Ancestral Lands &amp; Sacred Sites<br>of the Clan</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.55)">County Clare, Ireland — from the Burren to the Atlantic</p>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(32px,5vw,54px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:12px">Ancestral Lands &amp; Sacred Sites<br>of the Clan</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.55)">County Clare, Ireland — from the Burren to the Atlantic</p>
   </div>
 </div>
 
@@ -282,21 +286,21 @@ function toggleMenu(){
   <div class="si">
     <div class="hl-two-col">
       <div>
-        <img src="images/heritage/cahercommane_aerial.png"
+        <img src="/.netlify/images?url=/images/heritage/cahercommane_aerial.png&w=640"
              alt="Cahercommane — the ancestral capital of Clan Ó Comáin, Burren, County Clare"
-             style="width:100%;display:block;height:auto;border:1px solid rgba(184,151,90,.2)">
+             style="width:100%;display:block;height:auto;border:1px solid rgba(184,151,90,.2)" srcset="/.netlify/images?url=/images/heritage/cahercommane_aerial.png&w=480 480w, /.netlify/images?url=/images/heritage/cahercommane_aerial.png&w=640 640w" sizes="(max-width: 900px) 100vw, 1120px" width="640" height="426" decoding="async">
         <div style="padding:10px 0 0;text-align:center">
-          <span style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);letter-spacing:.04em">
+          <span style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:var(--ink-muted);letter-spacing:.04em">
             Cahercommane, the Burren, County Clare — the ancestral capital and inauguration site of the Chiefdom of Tulach Commáin, 8th–9th century AD
           </span>
         </div>
       </div>
       <div>
-        <img src="images/editorial/gaelic_ceremony.png"
+        <img src="/.netlify/images?url=/images/editorial/gaelic_ceremony.png&w=1280"
              alt="A Gaelic ceremonial gathering — the ancient tradition of clan assembly"
-             style="width:100%;display:block;height:auto;border:1px solid rgba(184,151,90,.2)">
+             style="width:100%;display:block;height:auto;border:1px solid rgba(184,151,90,.2)" srcset="/.netlify/images?url=/images/editorial/gaelic_ceremony.png&w=480 480w, /.netlify/images?url=/images/editorial/gaelic_ceremony.png&w=768 768w, /.netlify/images?url=/images/editorial/gaelic_ceremony.png&w=1024 1024w, /.netlify/images?url=/images/editorial/gaelic_ceremony.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 1120px" width="1280" height="952" loading="lazy" decoding="async">
         <div style="padding:10px 0 0;text-align:center">
-          <span style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:var(--ink-muted);letter-spacing:.04em">
+          <span style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:var(--ink-muted);letter-spacing:.04em">
             A ceremonial gathering in the ancient Gaelic tradition — the assembled clan, the Chief and the sacred rite of consecration
           </span>
         </div>
@@ -309,7 +313,7 @@ function toggleMenu(){
 <section class="hl-intro">
   <div class="si">
     <div class="eyebrow">The ancestral territory</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Five sites of the clan's heartland</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Five sites of the clan's heartland</h2>
     <div class="gold-rule"></div>
     <p class="body-text" style="max-width:720px;margin-bottom:0">From the Augustinian ruins on the shores of Killone Lake to the Atlantic tower of Doonbeg, the sites of the clan's heartland span the breadth of Munster — places of prayer, of power, of memory and of lineage. Each site carries its own chapter of the clan's history, inscribed in stone and water and sacred ground.</p>
   </div>
@@ -324,7 +328,7 @@ function toggleMenu(){
     <h2 class="prop-title">Newhall House</h2>
     <div class="prop-date">17th century · County Clare · Seat of the Chief</div>
     <div class="prop-rule"></div>
-    <img class="prop-img" style="height:clamp(300px,55vw,440px)" src="/.netlify/images?url=/images/heritage/newhall_landscape_goldenhour.webp&w=1400" alt="Newhall House, County Clare — seat of Clan Ó Comáin" loading="lazy">
+    <img class="prop-img" style="height:clamp(300px,55vw,440px)" src="/.netlify/images?url=/images/heritage/newhall_landscape_goldenhour.webp&w=1400" alt="Newhall House, County Clare — seat of Clan Ó Comáin" loading="lazy" width="1611" height="2000" decoding="async">
     <p class="prop-text">Newhall House is the seat of Clan Ó Comáin and the residence of the Commane's Fergus and Maria Kinfauns. A handsome house set in mature demesne lands in the parish of Killone, County Clare, it stands on the site of the former Killone Castle — Newhall House is said to have been built with stones from Killone Castle, and the basement of the house is believed to incorporate part of the original castle structure.</p>
     <p class="prop-text">The estate encompasses Killone Abbey, the Holy Well of St John the Baptist, Killone Lake and extensive agricultural and woodland grounds. The estate is the administrative and spiritual centre of the clan's revival. The gate lodges and estate walls date to the same Georgian period as the house.</p>
     <p class="prop-text">Clan gatherings, revival festivals and formal clan occasions are held on the estate, which is in active private use. Access to Killone Abbey is available with the owner's permission.</p>
@@ -336,11 +340,11 @@ function toggleMenu(){
     <h2 class="prop-title">Killone Abbey</h2>
     <div class="prop-date">Founded 1190 AD · Augustinian · Cill Eoin</div>
     <div class="prop-rule"></div>
-    <img class="prop-img" src="images/heritage/killone_abbey_lake.png" alt="Killone Abbey with Killone Lake, County Clare" loading="lazy">
+    <img class="prop-img" src="/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280" alt="Killone Abbey with Killone Lake, County Clare" loading="lazy" srcset="/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=480 480w, /.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=768 768w, /.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1024 1024w, /.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 540px" width="1280" height="719" decoding="async">
     <p class="prop-text">Killone Abbey — <em>Mainistir Chill Eoin</em>, the Church of John — was founded in 1190 by Donal Mór O'Brien, King of Thomond and Munster, for Augustinian canonesses. It was the first convent of Augustinian nuns in County Clare and one of only three cloistered nunneries remaining in Ireland. Its ruins stand on the northern shoreline of Killone Lake within the Newhall Estate.</p>
     <p class="prop-text">The abbey became closely associated with the O'Brien dynasty — several abbesses were drawn from their ranks. Among them was Slaney O'Brien (d. 1260), daughter of the King of Thomond, described in the Annals of Inisfallen as "the most pious, most charitable, and most generous woman in all Munster." The abbey was suppressed in 1584 and recorded in ruins by 1617.</p>
     <p class="prop-text">The Pilgrim's Path links Killone Abbey to Clare Abbey to the north. The site is protected under the National Monuments Acts, with guardianship vested in the Office of Public Works. It is privately owned by the Commane family — the custodians of its silence.</p>
-    <a href="https://heritageireland.ie/unguided-sites/killone-augustinian-abbey/" target="_blank" class="prop-link">Heritage Ireland — Killone Abbey ↗</a>
+    <a href="https://heritageireland.ie/unguided-sites/killone-augustinian-abbey/" target="_blank" class="prop-link" rel="noopener">Heritage Ireland — Killone Abbey ↗</a>
   </div>
 
   <!-- HOLY WELL -->
@@ -349,7 +353,7 @@ function toggleMenu(){
     <h2 class="prop-title">Holy Well of St John the Baptist</h2>
     <div class="prop-date">Ancient · Inscriptions from 1600 · Newhall Estate</div>
     <div class="prop-rule"></div>
-    <img class="prop-img" src="images/heritage/holy_well_newhall.png" alt="Holy Well of St John the Baptist, Newhall Estate" loading="lazy">
+    <img class="prop-img" src="/.netlify/images?url=/images/heritage/holy_well_newhall.png&w=1280" alt="Holy Well of St John the Baptist, Newhall Estate" loading="lazy" srcset="/.netlify/images?url=/images/heritage/holy_well_newhall.png&w=480 480w, /.netlify/images?url=/images/heritage/holy_well_newhall.png&w=768 768w, /.netlify/images?url=/images/heritage/holy_well_newhall.png&w=1024 1024w, /.netlify/images?url=/images/heritage/holy_well_newhall.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 540px" width="1280" height="719" decoding="async">
     <p class="prop-text">Adjacent to Killone Abbey on the northern shore of Killone Lake stands the Holy Well of St John the Baptist — a site of continuous veneration since at least the 6th century. The well is adorned with inscriptions, some dating to 1600, left by pilgrims across the centuries. Lord Walter Fitzgerald documented its inscriptions for the Royal Society of Antiquaries of Ireland in 1899.</p>
     <p class="prop-text">The well is the sacred heart of the Newhall landscape. Each year on the Feast of St John the Baptist, an outdoor Mass is held at the well, continuing a tradition of pilgrimage that predates the Norman arrival in Ireland. It is deeply bound to the spiritual life of the clan's territory — the waters that sustained the nuns of Killone, the pilgrims of the Burren, and the people of the chiefdom before them.</p>
     <p class="prop-text">The well, the abbey and the lake together form a sacred triangle within the estate — one of the most atmospherically complete early Christian landscapes in County Clare. The Commane family are its custodians.</p>
@@ -362,11 +366,11 @@ function toggleMenu(){
     <h2 class="prop-title">St Commán's Church, Kinvara</h2>
     <div class="prop-date">Early medieval · Ceann Mara · Abandoned 19th century</div>
     <div class="prop-rule"></div>
-    <img class="prop-img" src="images/heritage/kinvara_church.jpg" alt="The ruined gable of St Commán's Church, Kinvara — the abandoned foundation of Saint Commán above Galway Bay" loading="lazy">
+    <img class="prop-img" src="/.netlify/images?url=/images/heritage/kinvara_church.jpg&w=900" alt="The ruined gable of St Commán's Church, Kinvara — the abandoned foundation of Saint Commán above Galway Bay" loading="lazy" srcset="/.netlify/images?url=/images/heritage/kinvara_church.jpg&w=480 480w, /.netlify/images?url=/images/heritage/kinvara_church.jpg&w=768 768w, /.netlify/images?url=/images/heritage/kinvara_church.jpg&w=900 900w" sizes="(max-width: 900px) 100vw, 540px" width="900" height="257" decoding="async">
     <p class="prop-text">On a hillock above the harbour village of Kinvara — <em>Ceann Mara</em>, "head of the sea" — stands the abandoned ruin of St Commán's Church, the ancient foundation of Saint Commán, patron of Clan Ó Comáin. The Dictionary of National Biography (1887) records that Saint Commán "also founded the church of Ceann Mara, now Kinvara" — placing this foundation directly at the southern edge of Galway Bay, within sight of the Burren and the ancestral landscape of the clan.</p>
     <p class="prop-text">The church's antiquity is confirmed by the Annals of the Four Masters, which record the death of Ailbhe of Ceann Mhara in 814 AD — establishing that a church was already built and dedicated at this site by the early 9th century at the very latest. The 11th-century <em>Voyage of the Uí Chorra</em> describes the destruction of "the church of the holy old man Coman of Kinvara" at the hands of sea marauders — and records that the penitent brothers rebuilt it as an act of restitution, a testament to the church's significance.</p>
     <p class="prop-text">The site commands a remarkable position above Kinvara Bay, looking north across the waters of Galway Bay towards the Aran Islands. Dunguaire Castle, whose foundations date to the royal house of Guaire Aidne mac Colmáin, stands a few hundred yards away. St Commán's Church has been abandoned since the late 19th century and is severely neglected — a reminder of the urgent need for the clan's revival and stewardship of its sacred heritage.</p>
-    <a href="https://en.wikipedia.org/wiki/Coman_of_Kinvara" target="_blank" class="prop-link">Wikipedia — Coman of Kinvara ↗</a>
+    <a href="https://en.wikipedia.org/wiki/Coman_of_Kinvara" target="_blank" class="prop-link" rel="noopener">Wikipedia — Coman of Kinvara ↗</a>
   </div>
 
   <!-- DOONBEG CASTLE -->
@@ -375,7 +379,7 @@ function toggleMenu(){
     <h2 class="prop-title">Doonbeg Castle</h2>
     <div class="prop-date">16th century · West Clare · Atlantic coast</div>
     <div class="prop-rule"></div>
-    <img class="prop-img" src="images/heritage/doonbeg_castle.jpg" alt="Doonbeg Castle, County Clare — 16th century tower house granted to James Comyn in 1619" loading="lazy">
+    <img class="prop-img" src="/.netlify/images?url=/images/heritage/doonbeg_castle.jpg&w=1200" alt="Doonbeg Castle, County Clare — 16th century tower house granted to James Comyn in 1619" loading="lazy" srcset="/.netlify/images?url=/images/heritage/doonbeg_castle.jpg&w=480 480w, /.netlify/images?url=/images/heritage/doonbeg_castle.jpg&w=768 768w, /.netlify/images?url=/images/heritage/doonbeg_castle.jpg&w=1024 1024w, /.netlify/images?url=/images/heritage/doonbeg_castle.jpg&w=1200 1200w" sizes="(max-width: 900px) 100vw, 540px" width="1200" height="799" decoding="async">
     <p class="prop-text">Doonbeg Castle — <em>Dún Beag</em>, the small fort — is a four-storey 16th century tower house on the Atlantic coast of west Clare, overlooking the Doonbeg River and Doughmore Bay. In 1619, Daniel O'Brien, Earl of Thomond, conveyed Doonbeg Castle to <strong>James Comyn</strong> — evidence that a family bearing the Comyn name held standing in Clare in the early 17th century to receive a castle from the O'Brien lordship.</p>
     <p class="prop-text">The castle's history reflects the turbulence of Gaelic Clare. Originally associated with the MacMahon lords of Corca Baiscinn, it was seized by Turlough MacMahon in 1585, reclaimed by the O'Briens in 1595 after a fierce siege, and granted to James Comyn in 1619. The Crown confiscated it in 1688 and it was sold in 1703. By the 19th century it had become a ruin, though local families continued to inhabit its floors into the 1930s.</p>
     <p class="prop-text">The castle stands today as a ruin in the village of Doonbeg. The 1619 grant is one of the documented presences of the Comyn name in 17th-century Clare and an enduring landmark of the period in which the Comyn name held standing in the county.</p>
@@ -389,7 +393,7 @@ function toggleMenu(){
       <p class="prop-text">Ballymacooda — <em>Baile Mhic Uada</em> — is a townland in the Civil Parish of Kilmaley, in the Barony of Islands, County Clare: the same barony as Newhall House and Killone Abbey. The townland of 510 acres lies in the heart of the clan's ancestral territory, in the landscape between Ennis and the Burren that the chiefdom called home.</p>
       <p class="prop-text">The townland is recorded in the Landed Estates database of the University of Galway — a resource documenting the landholding history of Irish estates from the 17th to the 20th century. Its Irish name, <em>Baile Mhic Uada</em>, preserves the Gaelic form of a family association with this land across the centuries.</p>
       <p class="prop-text">Ballymacooda sits within the Barony of Islands — the same administrative unit that encompasses Newhall and Killone — in the landscape between Ennis and the Burren long associated with the Ó Comáin sept. The townland of Tullycommon (Tulach Commáin), in Killinaboy civil parish in the Barony of Inchiquin to the north — the historic Uí Fhearmaic / Cenél Fearmaic territory — preserves the name of the chiefdom in its toponymy.</p>
-      <a href="https://landedestates.ie/property/1843" target="_blank" class="prop-link">Landed Estates database — Ballymacooda ↗</a>
+      <a href="https://landedestates.ie/property/1843" target="_blank" class="prop-link" rel="noopener">Landed Estates database — Ballymacooda ↗</a>
   </div>
 
   <!-- ROCK OF CASHEL — FULL WIDTH CONTEXT -->
@@ -403,7 +407,7 @@ function toggleMenu(){
       <p class="prop-text">The Chiefdom of Tulach Commáin, and the Ó Comáin sept's role as kings of the Déisi Muman (the Déisi of Munster), places them within the broader political world of Munster over which Cashel presided. The historian David Blair Gibson, in his landmark study of the chiefdom, and Claire Cotter (2012) in the Western Stone Forts Project, both note evidence suggesting a possible short-lived Éoganacht chiefdom centred at Cahercommane itself. The Uí Fidgeinti — the branch of Munster from which Cotter identifies the sub-king Commán who named the fort — were closely associated with the Éoganacht political world.</p>
       <p class="prop-text">The connection between the Chiefdom of Tulach Commáin and the Kingdom of Cashel reflects the layered political geography of early medieval Munster — where local chiefdoms operated within, and owed allegiance to, the great royal dynasties whose seat was the Rock. Cashel is not a clan holding — it is the seat of the overlords under whose umbrella the clan's ancestors exercised their own power in north Clare.</p>
     </div>
-    <img class="prop-dark-img" src="images/heritage/rock_of_cashel.png" alt="Rock of Cashel — St Patrick's Rock, seat of the Éoganacht kings of Munster" loading="lazy">
+    <img class="prop-dark-img" src="/.netlify/images?url=/images/heritage/rock_of_cashel.png&w=911" alt="Rock of Cashel — St Patrick's Rock, seat of the Éoganacht kings of Munster" loading="lazy" srcset="/.netlify/images?url=/images/heritage/rock_of_cashel.png&w=480 480w, /.netlify/images?url=/images/heritage/rock_of_cashel.png&w=768 768w, /.netlify/images?url=/images/heritage/rock_of_cashel.png&w=911 911w" sizes="(max-width: 900px) 100vw, 1120px" width="911" height="683" decoding="async">
   </div>
 
 
@@ -414,7 +418,7 @@ function toggleMenu(){
 <section id="kerry-cork" style="background:var(--cream);padding:80px 0;border-top:1px solid var(--border);scroll-margin-top:80px">
   <div class="si">
     <div class="eyebrow">The wider Munster reach</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Kerry &amp; Cork — the name in the landscape</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Kerry &amp; Cork — the name in the landscape</h2>
     <div class="gold-rule"></div>
     <p class="body-text" style="max-width:720px;margin-bottom:48px">Place names are among the most durable evidence of a clan's historical presence — they survive conquest, plantation and anglicisation, embedded in the landscape long after documents have been lost. The Ó Comáin name is preserved not only in County Clare but across the ancient province of Munster, from Kerry to Cork.</p>
 
@@ -422,7 +426,7 @@ function toggleMenu(){
 
       <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:40px">
         <div class="eyebrow">Kerry · Iveragh Barony</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Na Comáin — The Commanes</h3>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Na Comáin — The Commanes</h3>
         <div style="font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px">Townland · Barony of Iveragh · County Kerry</div>
         <div class="gold-rule"></div>
         <p class="body-text" style="margin-bottom:16px">In the Barony of Iveragh, County Kerry, a townland bears the Irish name <em>Na Comáin</em> — meaning simply "The Commanes." The survival of the sept name as a place name in Kerry's ancient Iveragh peninsula is striking evidence of a related branch that retained territory there, geographically separated from the Clare line but sharing the same ancient origin.</p>
@@ -431,7 +435,7 @@ function toggleMenu(){
 
       <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:40px">
         <div class="eyebrow">Cork · Barony of Fermoy</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Commane — Monanimy Lower</h3>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Commane — Monanimy Lower</h3>
         <div style="font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px">Local place name · Barony of Fermoy · County Cork</div>
         <div class="gold-rule"></div>
         <p class="body-text" style="margin-bottom:16px">In Monanimy Lower, in the Barony of Fermoy, County Cork — the ancient heartland of Munster — a local place name records "Commane," embedding the sept name in the Cork landscape. The Barony of Fermoy lies in the deep interior of Munster, far from the Atlantic coast but within the same broad province over which the Éoganacht kings of Cashel presided.</p>
@@ -440,11 +444,11 @@ function toggleMenu(){
 
       <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:40px">
         <div class="eyebrow">Cork · West Carbery</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Ballycommane — Baile Uí Chomáin</h3>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.5vw,26px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Ballycommane — Baile Uí Chomáin</h3>
         <div style="font-size:10.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px">Townland · Durrus Civil Parish · West Carbery · County Cork</div>
         <div class="gold-rule"></div>
         <p class="body-text" style="margin-bottom:16px">In the Civil Parish of Durrus on the Mizen Peninsula of West Cork, the townland of <strong>Ballycommane</strong> carries the Irish name <em>Baile Uí Chomáin</em> — literally <strong>"Townland of the descendants of Comán (clan of Ó Comáin)."</strong> The Gaelic naming records a once-resident Ó Comáin family in this corner of West Carbery, deep in the south-western reach of Munster.</p>
-        <p class="body-text">By the time of the <strong>1901 census</strong>, the most common surname recorded in the townland was <strong>Hurley</strong> — the same anglicisation MacLysaght identified as a Munster mistranslation of Ó Comáin. The landscape preserved the Gaelic original (<em>Baile Uí Chomáin</em>) while the documentary record gave the residents the pseudo-translated form. Three counties of Munster, one ancient sept: <strong>Clare, Kerry and Cork</strong> all carry the name into the modern map.</p>
+        <p class="body-text">By the time of the <strong>1901 census</strong>, the most common surname recorded in the townland was <strong><a href="/hurley-heritage" class="sn-link">Hurley</a></strong> — the same anglicisation MacLysaght identified as a Munster mistranslation of Ó Comáin. The landscape preserved the Gaelic original (<em>Baile Uí Chomáin</em>) while the documentary record gave the residents the pseudo-translated form. Three counties of Munster, one ancient sept: <strong>Clare, Kerry and Cork</strong> all carry the name into the modern map.</p>
         <p class="body-text" style="margin-top:18px;padding-top:18px;border-top:1px solid rgba(184,151,90,.2);font-size:14px">Read the full scholarly case for the Hurley mistranslation, including MacLysaght's rejection of the <em>cam</em> derivation, on the <a href="surname-variants#hurley" style="color:var(--gold-deep);text-decoration:none;border-bottom:1px solid rgba(184,151,90,.4)">Variants page &rarr;</a></p>
       </div>
 
@@ -458,20 +462,20 @@ function toggleMenu(){
 <section style="background:var(--ink);padding:84px 0;border-top:2px solid var(--gold)">
   <div class="si">
     <div class="eyebrow" style="color:var(--gold)">The diaspora</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:14px">The name beyond Ireland</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.5vw,42px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:14px">The name beyond Ireland</h2>
     <div style="width:48px;height:2px;background:var(--gold);margin-bottom:36px"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start" class="diaspora-grid">
 
       <div>
         <div class="eyebrow" style="color:var(--gold);margin-bottom:12px">America · The Famine emigration</div>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:18px">The story of Ó Comáin did not end at the Irish shore. A <strong style="color:var(--gold-pale)">Commane Road in Baldwinsville, New York</strong> — in Onondaga County, upstate New York — testifies to the sept's Famine-era emigration to America in the 1840s and 1850s, when the name was carried west across the Atlantic along with hundreds of thousands of Clare families.</p>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82)">John Commane, recorded as a tenant in Ballyea townland, Killone parish in 1828, is absent from Griffith's Valuation of 1855 — indicating he either died in the Great Famine or emigrated in those years. In the American landscape, the sept left a road name as their legacy — an echo of the ancient Clare chiefdom, embedded now in upstate New York.</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:18px">The story of Ó Comáin did not end at the Irish shore. A <strong style="color:var(--gold-pale)">Commane Road in Baldwinsville, New York</strong> — in Onondaga County, upstate New York — testifies to the sept's Famine-era emigration to America in the 1840s and 1850s, when the name was carried west across the Atlantic along with hundreds of thousands of Clare families.</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82)">John Commane, recorded as a tenant in Ballyea townland, Killone parish in 1828, is absent from Griffith's Valuation of 1855 — indicating he either died in the Great Famine or emigrated in those years. In the American landscape, the sept left a road name as their legacy — an echo of the ancient Clare chiefdom, embedded now in upstate New York.</p>
       </div>
 
       <div>
         <div class="eyebrow" style="color:var(--gold);margin-bottom:12px">France · The Wild Geese exile</div>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:18px">Further still, the name appears in several locations in France — a legacy of the <strong style="color:var(--gold-pale)">Wild Geese</strong>, the Irish Gaelic soldiers and nobles who fled into exile after the Jacobite defeat of 1691. These were the last defenders of the old Gaelic order, and among them were families of Ó Comáin descent who carried the name into the courts and regiments of continental Europe, where traces of it remain to this day.</p>
-        <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82)">A name that began in the stone forts of the Burren — that survived the Normans, the Plantation, the Penal Laws and the Famine — now lives on three continents. The diaspora of Ó Comáin is the diaspora of Gaelic Ireland itself.</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82);margin-bottom:18px">Further still, the name appears in several locations in France — a legacy of the <strong style="color:var(--gold-pale)">Wild Geese</strong>, the Irish Gaelic soldiers and nobles who fled into exile after the Jacobite defeat of 1691. These were the last defenders of the old Gaelic order, and among them were families of Ó Comáin descent who carried the name into the courts and regiments of continental Europe, where traces of it remain to this day.</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.85;color:rgba(215,235,215,.82)">A name that began in the stone forts of the Burren — that survived the Normans, the Plantation, the Penal Laws and the Famine — now lives on three continents. The diaspora of Ó Comáin is the diaspora of Gaelic Ireland itself.</p>
       </div>
 
     </div>
@@ -482,7 +486,7 @@ function toggleMenu(){
 <section style="background:var(--cream-dark);padding:80px 0;border-top:1px solid var(--border)">
   <div class="si" style="max-width:760px;margin:0 auto;text-align:center">
     <div class="eyebrow">The living land</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.5vw,40px);font-weight:400;color:var(--ink);margin-bottom:16px;line-height:1.2">These places remember what documents cannot</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.5vw,40px);font-weight:400;color:var(--ink);margin-bottom:16px;line-height:1.2">These places remember what documents cannot</h2>
     <div class="gold-rule" style="margin:0 auto 28px"></div>
     <p class="body-text" style="margin-bottom:20px">A triple-ring fort on a cliff edge. A lakeside abbey where O'Brien abbesses prayed. A holy well whose waters have run for a thousand years. A tower on the Atlantic coast held by a Comyn in 1619. These are not merely properties — they are the physical memory of the clan, the landscape that shaped it, and the territory it remembers.</p>
     <p class="body-text" style="margin-bottom:36px">Clan Ó Comáin holds Newhall House and its demesne — the abbey, the well, the lake and the gate lodges — as a living inheritance. The revival of the clan is inseparable from the revival of these places as sites of pilgrimage, gathering and cultural memory for all who carry the name.</p>
@@ -504,6 +508,7 @@ function toggleMenu(){
         <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="pedigree">Pedigree</a></li>
           <li><a href="timeline">Timeline</a></li>
           <li><a href="heartlands">Heartlands</a></li>
@@ -519,8 +524,8 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

@@ -7,6 +7,8 @@
 <title>Clan Stories — Clan Ó Comáin</title>
 <meta name="description" content="The voices of Clan Ó Comáin — members and family across the Irish diaspora telling the stories that brought them home to the clan.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="shared.css">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/brand/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
@@ -96,12 +98,12 @@
 .cs-featured{padding:80px 0 60px;background:var(--cream-light)}
 .cs-featured-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start;max-width:1080px;margin:0 auto}
 .cs-featured-portrait{aspect-ratio:3/4;background:var(--ink) center/cover no-repeat;border:1px solid var(--gold-border);box-shadow:0 8px 32px rgba(12,26,12,.18)}
-.cs-featured-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
-.cs-featured-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.5vw,44px);font-weight:400;line-height:1.18;color:var(--ink);margin-bottom:14px}
-.cs-featured-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:var(--ink-muted);margin-bottom:32px}
-.cs-featured-body p{font-family:'EB Garamond',serif;font-size:18px;line-height:1.75;color:var(--ink);margin-bottom:18px}
-.cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
-.cs-featured-pullquote{font-family:'EB Garamond',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
+.cs-featured-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:18px}
+.cs-featured-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3.5vw,44px);font-weight:400;line-height:1.18;color:var(--ink);margin-bottom:14px}
+.cs-featured-byline{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:16px;color:var(--ink-muted);margin-bottom:32px}
+.cs-featured-body p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.75;color:var(--ink);margin-bottom:18px}
+.cs-featured-body p:first-of-type::first-letter{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:62px;font-weight:400;float:left;line-height:.9;margin-right:10px;margin-top:6px;color:var(--burgundy)}
+.cs-featured-pullquote{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:22px;line-height:1.55;color:var(--burgundy);border-left:3px solid var(--gold);padding:8px 0 8px 22px;margin:32px 0;max-width:560px}
 
 /* Magazine-style index cards. Each card is a clickable link to a
    dedicated /stories/[slug].html page. Two-up on desktop, stacked
@@ -114,31 +116,31 @@
 .cs-magazine-card:hover .cs-magazine-title{color:var(--burgundy)}
 .cs-magazine-portrait{aspect-ratio:3/4;background:var(--ink) center/cover no-repeat}
 .cs-magazine-content{padding:28px 28px 26px}
-.cs-magazine-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
-.cs-magazine-title{font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;line-height:1.22;color:var(--ink);margin-bottom:10px;transition:color .2s ease}
-.cs-magazine-byline{font-family:'EB Garamond',serif;font-style:italic;font-size:14.5px;color:var(--ink-muted);margin-bottom:18px;line-height:1.45}
-.cs-magazine-excerpt{font-family:'EB Garamond',serif;font-size:16px;line-height:1.65;color:var(--ink-soft);margin-bottom:22px}
-.cs-magazine-cta{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+.cs-magazine-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
+.cs-magazine-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(22px,2.4vw,28px);font-weight:400;line-height:1.22;color:var(--ink);margin-bottom:10px;transition:color .2s ease}
+.cs-magazine-byline{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:14.5px;color:var(--ink-muted);margin-bottom:18px;line-height:1.45}
+.cs-magazine-excerpt{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.65;color:var(--ink-soft);margin-bottom:22px}
+.cs-magazine-cta{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
 
 .cs-grid-section{padding:72px 0;background:var(--cream)}
-.cs-grid-eyebrow{font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:14px}
-.cs-grid-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3vw,38px);font-weight:400;text-align:center;color:var(--ink);margin-bottom:48px}
+.cs-grid-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-deep);text-align:center;margin-bottom:14px}
+.cs-grid-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3vw,38px);font-weight:400;text-align:center;color:var(--ink);margin-bottom:48px}
 .cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1000px;margin:0 auto}
 .cs-card{background:var(--white);border:1px solid var(--gold-border);padding:24px}
 .cs-card-portrait{aspect-ratio:1/1;background:var(--cream-mid) center/cover no-repeat;margin-bottom:18px}
-.cs-card-name{font-family:'EB Garamond',serif;font-size:20px;color:var(--ink);margin-bottom:4px;line-height:1.25}
-.cs-card-meta{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
-.cs-card-body{font-family:'EB Garamond',serif;font-size:14.5px;line-height:1.65;color:var(--ink-soft)}
+.cs-card-name{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:20px;color:var(--ink);margin-bottom:4px;line-height:1.25}
+.cs-card-meta{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:14px}
+.cs-card-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;line-height:1.65;color:var(--ink-soft)}
 
 .cs-empty{max-width:560px;margin:0 auto;text-align:center;padding:48px 24px;background:var(--cream-mid);border:1px dashed var(--gold-border)}
-.cs-empty-title{font-family:'EB Garamond',serif;font-style:italic;font-size:20px;color:var(--ink);margin-bottom:10px}
-.cs-empty-body{font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.65;color:var(--ink-muted)}
+.cs-empty-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:20px;color:var(--ink);margin-bottom:10px}
+.cs-empty-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15.5px;line-height:1.65;color:var(--ink-muted)}
 
 .cs-cta{padding:64px 0;background:var(--ink);text-align:center}
-.cs-cta-title{font-family:'EB Garamond',serif;font-size:clamp(24px,2.6vw,32px);font-weight:400;color:var(--gold-pale);margin-bottom:14px}
-.cs-cta-body{font-family:'EB Garamond',serif;font-style:italic;font-size:17px;line-height:1.7;color:rgba(215,235,215,.7);max-width:580px;margin:0 auto 28px}
+.cs-cta-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,2.6vw,32px);font-weight:400;color:var(--gold-pale);margin-bottom:14px}
+.cs-cta-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:17px;line-height:1.7;color:rgba(215,235,215,.7);max-width:580px;margin:0 auto 28px}
 .cs-cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.cs-cta-btn{display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:14px 28px;text-decoration:none;border-radius:1px;transition:all .2s}
+.cs-cta-btn{display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:14px 28px;text-decoration:none;border-radius:1px;transition:all .2s}
 .cs-cta-btn.primary{background:var(--gold);color:var(--ink)}
 .cs-cta-btn.primary:hover{background:var(--gold-pale)}
 .cs-cta-btn.secondary{background:transparent;color:var(--gold-pale);border:1px solid var(--gold-border)}
@@ -159,7 +161,7 @@
 <body>
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -205,8 +207,8 @@ function toggleMenu(){
 <div class="page-hero" style="background:var(--ink);padding:72px 0 56px;text-align:center;border-bottom:2px solid var(--gold)">
   <div class="si">
     <div class="eyebrow">The voices of the clan</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Clan Stories</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6);max-width:560px;margin:0 auto">Members across the world tell the stories that brought them home to Clan Ó Comáin.</p>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Clan Stories</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6);max-width:560px;margin:0 auto">Members across the world tell the stories that brought them home to Clan Ó Comáin.</p>
   </div>
 </div>
 
@@ -240,7 +242,7 @@ function toggleMenu(){
 
       <!-- Story № 1 · The Founding — Maria Kinfauns -->
       <a class="cs-magazine-card" href="/stories/maria-kinfauns">
-        <div class="cs-magazine-portrait" style="background-image:url('images/people/maria_and_ronan_blacktie_landscape.jpg');background-position:center top" role="img" aria-label="Maria Kinfauns with her son Ronan"></div>
+        <div class="cs-magazine-portrait" style="background-image:url('/.netlify/images?url=/images/people/maria_and_ronan_blacktie_landscape.jpg&w=1200');background-position:center top" role="img" aria-label="Maria Kinfauns with her son Ronan"></div>
         <div class="cs-magazine-content">
           <div class="cs-magazine-eyebrow">Story № 1 · The Founding</div>
           <h2 class="cs-magazine-title">The reason behind the rebirth of Clan Ó Comáin after eight centuries of silence</h2>
@@ -252,7 +254,7 @@ function toggleMenu(){
 
       <!-- Story № 2 · The Return — Stephen Clarke -->
       <a class="cs-magazine-card" href="/stories/stephen-clarke">
-        <div class="cs-magazine-portrait" style="background-image:url('images/people/stephen_clarke.jpg');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke in a young tree plantation in North West Tasmania, Australia"></div>
+        <div class="cs-magazine-portrait" style="background-image:url('/.netlify/images?url=/images/people/stephen_clarke.jpg&w=1100');background-position:center center" role="img" aria-label="Portrait of Stephen Clarke in a young tree plantation in North West Tasmania, Australia"></div>
         <div class="cs-magazine-content">
           <div class="cs-magazine-eyebrow">Story № 2 · The Return</div>
           <h2 class="cs-magazine-title">My blood remembers the north</h2>
@@ -278,12 +280,12 @@ function toggleMenu(){
      treatment as the matching CTAs on / and /pedigree. -->
 <section style="background:var(--cream);padding:64px 24px 56px;text-align:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div class="si">
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,2.6vw,32px);font-weight:400;font-style:italic;color:var(--ink);margin-bottom:14px;line-height:1.3">Your family belongs in <em style="font-style:italic">this story</em>.</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,2.6vw,32px);font-weight:400;font-style:italic;color:var(--ink);margin-bottom:14px;line-height:1.3">Your family belongs in <em style="font-style:italic">this story</em>.</h2>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:24px">
       <a href="/membership" class="btn-p">Join the revival — from €49/year</a>
       <a href="/membership#tiers" class="btn-g">See membership tiers</a>
     </div>
-    <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:540px;margin:24px auto 0;line-height:1.55">In the Brehon tradition, kin was chosen as much as born. The doors of Ó Comáin are still open — whatever name you carry.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-muted);max-width:540px;margin:24px auto 0;line-height:1.55">In the Brehon tradition, kin was chosen as much as born. The doors of Ó Comáin are still open — whatever name you carry.</p>
   </div>
 </section>
 
@@ -314,9 +316,9 @@ function toggleMenu(){
      the clan invites public submissions. -->
 <div id="storyPitchModal" style="display:none;position:fixed;inset:0;background:rgba(12,26,12,.82);align-items:center;justify-content:center;padding:20px;z-index:1000;overflow-y:auto">
   <div style="max-width:560px;width:100%;background:var(--cream);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-top:3px solid var(--gold);padding:36px 36px 32px;border-radius:2px;max-height:90vh;overflow-y:auto">
-    <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Pitch your story</div>
-    <h3 style="font-family:'EB Garamond',serif;font-size:24px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 10px">Story pitch</h3>
-    <p style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">Your account is received by the Office of the Private Secretary, who handles correspondence on the Chief's behalf. The Office will reply by email within a few days.</p>
+    <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Pitch your story</div>
+    <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:24px;color:var(--ink);font-weight:400;line-height:1.2;margin:0 0 10px">Story pitch</h3>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;font-style:italic;color:var(--ink-muted);line-height:1.7;margin:0 0 22px">Your account is received by the Office of the Private Secretary, who handles correspondence on the Chief's behalf. The Office will reply by email within a few days.</p>
 
     <!-- Honeypot — hidden from real users via inline display:none.
          Bots filling every visible field will set this; the server
@@ -327,14 +329,14 @@ function toggleMenu(){
       </label>
     </div>
 
-    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name</label>
-    <input type="text" id="spName" maxlength="160" placeholder="Your full name" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
+    <label style="display:block;font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your name</label>
+    <input type="text" id="spName" maxlength="160" placeholder="Your full name" style="width:100%;box-sizing:border-box;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
 
-    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your email</label>
-    <input type="email" id="spEmail" maxlength="320" placeholder="name@example.com" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
+    <label style="display:block;font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">Your email</label>
+    <input type="email" id="spEmail" maxlength="320" placeholder="name@example.com" style="width:100%;box-sizing:border-box;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
 
-    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">How are you connected to the clan? (optional)</label>
-    <select id="spConnection" style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
+    <label style="display:block;font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">How are you connected to the clan? (optional)</label>
+    <select id="spConnection" style="width:100%;box-sizing:border-box;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;margin-bottom:14px">
       <option value="">Not stated</option>
       <option value="member">I am a member of the clan</option>
       <option value="descendant">I carry the line / a clan surname</option>
@@ -345,13 +347,13 @@ function toggleMenu(){
       <option value="other">Other</option>
     </select>
 
-    <label style="display:block;font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">A brief account of your story</label>
-    <textarea id="spMessage" rows="6" maxlength="4000" placeholder="A few short paragraphs &mdash; what you'd like to share, how it touches the clan, anything else the Office should know." style="width:100%;box-sizing:border-box;font-family:'EB Garamond',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;resize:vertical;line-height:1.6;margin-bottom:18px"></textarea>
+    <label style="display:block;font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px">A brief account of your story</label>
+    <textarea id="spMessage" rows="6" maxlength="4000" placeholder="A few short paragraphs &mdash; what you'd like to share, how it touches the clan, anything else the Office should know." style="width:100%;box-sizing:border-box;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;padding:12px 14px;background:var(--white);border:1px solid var(--gold-border,rgba(184,151,90,.45));border-radius:1px;color:var(--ink);outline:none;resize:vertical;line-height:1.6;margin-bottom:18px"></textarea>
 
-    <div id="spStatus" style="display:none;padding:12px 14px;margin-bottom:16px;border-radius:1px;font-family:'EB Garamond',serif;font-size:14px"></div>
+    <div id="spStatus" style="display:none;padding:12px 14px;margin-bottom:16px;border-radius:1px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button type="button" id="spCancel" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:1px solid var(--border);padding:11px 22px;border-radius:1px;cursor:pointer">Cancel</button>
-      <button type="button" id="spSend" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:12px 26px;border-radius:1px;cursor:pointer">Send to the Office</button>
+      <button type="button" id="spCancel" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);background:transparent;border:1px solid var(--border);padding:11px 22px;border-radius:1px;cursor:pointer">Cancel</button>
+      <button type="button" id="spSend" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:12px 26px;border-radius:1px;cursor:pointer">Send to the Office</button>
     </div>
   </div>
 </div>
@@ -456,6 +458,7 @@ function toggleMenu(){
         <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="pedigree">Pedigree</a></li>
           <li><a href="timeline">Timeline</a></li>
           <li><a href="heartlands">Heartlands</a></li>
@@ -471,8 +474,8 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

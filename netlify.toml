@@ -132,7 +132,7 @@
 # Google's existing index of /history.html + any external links by 301-ing permanently.
 [[redirects]]
   from = "/history.html"
-  to = "/pedigree.html"
+  to = "/pedigree"
   status = 301
   force = true
 
@@ -143,7 +143,7 @@
 # review-share URLs we already sent out.
 [[redirects]]
   from = "/la-fheile-padraig.html"
-  to = "/st-patricks-day.html"
+  to = "/st-patricks-day"
   status = 301
   force = true
 
@@ -153,7 +153,215 @@
 # external links and bookmarks during the migration.
 [[redirects]]
   from = "/hurley-o-comain.html"
-  to = "/hurley-heritage.html"
+  to = "/hurley-heritage"
+  status = 301
+  force = true
+
+
+# ---------------------------------------------------------------------------
+# .html -> extensionless, permanently.
+#
+# Every canonical tag, internal link and sitemap entry has used the
+# extensionless form since the May/June 2026 migration, but the .html URLs
+# kept answering 200, so Google held two copies of each page and had to pick
+# one on its own (it was still showing coman-heritage.html in October). A 301
+# tells it which copy to keep and moves the old URL's history across.
+# force = true is required because the .html file exists on disk.
+#
+# Deliberately NOT redirected: pages that read a query string (membership,
+# gift, gift-form, gift-welcome, founder-welcome, welcome, join-chat,
+# st-patricks-day) — invite and gift tokens travel in their URLs and those
+# pages are noindex or transactional anyway — and everything under /members/.
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from = "/about.html"
+  to = "/about"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/benefactors.html"
+  to = "/benefactors"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/celtic-heritage-clan.html"
+  to = "/celtic-heritage-clan"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/clan-stories.html"
+  to = "/clan-stories"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/coat-of-arms.html"
+  to = "/coat-of-arms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/coman-heritage.html"
+  to = "/coman-heritage"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/commins-ireland.html"
+  to = "/commins-ireland"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/commons-ireland.html"
+  to = "/commons-ireland"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cummins-heritage.html"
+  to = "/cummins-heritage"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/heartlands.html"
+  to = "/heartlands"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hurley-heritage.html"
+  to = "/hurley-heritage"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/irish-diaspora-clan.html"
+  to = "/irish-diaspora-clan"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/irish-surnames.html"
+  to = "/irish-surnames"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/join.html"
+  to = "/join"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/library/brehon-law.html"
+  to = "/library/brehon-law"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/library/index.html"
+  to = "/library/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/library/mermaid-of-newhall-lake.html"
+  to = "/library/mermaid-of-newhall-lake"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/myth.html"
+  to = "/myth"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/patrons.html"
+  to = "/patrons"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/pedigree.html"
+  to = "/pedigree"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy.html"
+  to = "/privacy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privy-council.html"
+  to = "/privy-council"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/refund.html"
+  to = "/refund"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/register.html"
+  to = "/register"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/relics.html"
+  to = "/relics"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/roots.html"
+  to = "/roots"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/stories/maria-kinfauns.html"
+  to = "/stories/maria-kinfauns"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/stories/stephen-clarke.html"
+  to = "/stories/stephen-clarke"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/surname-variants.html"
+  to = "/surname-variants"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/terms.html"
+  to = "/terms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/timeline.html"
+  to = "/timeline"
   status = 301
   force = true
 
@@ -163,6 +371,16 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # HSTS: the site is HTTPS-only (every page already carries an
+    # upgrade-insecure-requests CSP and https canonicals), so tell
+    # browsers to skip the http:// round-trip for a year. Deliberately
+    # no includeSubDomains / preload — subdomains aren't ours to vouch for.
+    Strict-Transport-Security = "max-age=31536000"
+    # No page uses the camera, microphone or geolocation (the St Patrick's
+    # map is pin-your-town, not locate-me). Declaring that explicitly is
+    # a Lighthouse best-practice check and blocks any injected script
+    # from prompting for them.
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 # Long-lived caching for static media. Images and fonts are effectively
 # immutable (a changed image gets a new filename in practice), so a
@@ -181,3 +399,134 @@
   for = "/fonts/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000"
+
+# Re-encoded homepage videos (see /videos/). Same reasoning as /images/:
+# a new encode gets a new filename, so the files are immutable.
+[[headers]]
+  for = "/videos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Email preview galleries are internal review tooling regenerated on every
+# deploy. The generators inject <meta name="robots" noindex> into most
+# files, but the gallery index pages and any future template without the
+# tag would still be eligible for Google's index. An X-Robots-Tag header
+# covers every response under these paths regardless of markup.
+[[headers]]
+  for = "/email-previews/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-transactional/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-founder/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-member-invitation/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-gift-flow/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-pdf-lead/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-cart-reengage/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-previews-fergus-mockup/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-review/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/email-assets/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# ---------------------------------------------------------------------------
+# Keep repository internals off the public site.
+#
+# publish = "." deploys the whole repo, so function source, SQL migrations,
+# build scripts, the handover docs and package.json were all reachable by
+# URL (and crawlable). Nothing on the site links to any of these paths —
+# the functions are invoked via /.netlify/functions/ and /api/, never via
+# /netlify/. force = true is required so the rule wins over the real file.
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/supabase/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/scripts/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/node_modules/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/HANDOVER-network-and-features.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/project-context-asof-27april2026-late-evening.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/build-letters-patent.py"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/404.html"
+  status = 404
+  force = true

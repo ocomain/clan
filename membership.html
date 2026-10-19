@@ -7,39 +7,41 @@
   <title>Membership — Clan Ó Comáin</title>
   <meta name="description" content="Join Clan Ó Comáin — individual and family membership tiers for those who love Ireland and wish to protect its ancient Gaelic culture. Signed by the Chief. Summer festivals at Newhall.">
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared.css">
   <link rel="icon" href="/favicon.ico">
   <style>
 
     /* ── HERO ── */
     .mem-hero{position:relative;min-height:72vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:60px 0}
-    .mem-hero-bg{position:absolute;inset:0;background:url('images/heritage/killone_abbey_lake.png') center/cover no-repeat;opacity:.15;filter:saturate(.6)}
+    .mem-hero-bg{position:absolute;inset:0;background:url('/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280') center/cover no-repeat;opacity:.15;filter:saturate(.6)}
     .mem-hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center;position:relative;z-index:2}
     .mem-hero-content{max-width:780px}
-    .mem-eyebrow{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
-    .mem-hero-title{font-family:'EB Garamond',serif;font-size:clamp(38px,5.4vw,68px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
-    .mem-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:620px;margin-bottom:10px}
-    .mem-hero-note{font-family:'Jost',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-top:28px}
+    .mem-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;opacity:.9}
+    .mem-hero-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(38px,5.4vw,68px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:20px}
+    .mem-hero-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(160,210,160,.78);line-height:1.7;max-width:620px;margin-bottom:10px}
+    .mem-hero-note{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-top:28px}
     /* Hero CTA: anchor link down to the tiers grid. Mirrors the
        gift-hero-cta pattern on /gift.html so the two hero
        experiences feel consistent. Gold-fill button for primary
        action, with a quiet right-aligned note pairing it. */
     .mem-hero-cta-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:28px;margin-bottom:8px}
-    .mem-hero-cta{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .22s;box-shadow:0 1px 0 rgba(0,0,0,.35),0 6px 24px rgba(184,151,90,.18)}
+    .mem-hero-cta{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .22s;box-shadow:0 1px 0 rgba(0,0,0,.35),0 6px 24px rgba(184,151,90,.18)}
     .mem-hero-cta:hover{background:var(--gold-pale);transform:translateY(-1px);box-shadow:0 1px 0 rgba(0,0,0,.35),0 10px 32px rgba(184,151,90,.28)}
-    .mem-hero-cta-tag{display:inline-flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-size:11px;font-weight:300;letter-spacing:.1em;color:rgba(184,151,90,.62)}
+    .mem-hero-cta-tag{display:inline-flex;align-items:center;gap:10px;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:300;letter-spacing:.1em;color:rgba(184,151,90,.62)}
     /* mini cert visual in hero — mirrors gift.html */
     .hero-fund-wrap{position:relative}
     .hero-fund-card{background:var(--cream);border:1px solid rgba(184,151,90,.55);padding:40px 36px;position:relative;box-shadow:0 12px 48px rgba(0,0,0,.35);max-width:400px;margin-left:auto}
     .hero-fund-card::before{content:'';position:absolute;inset:6px;border:1px solid rgba(184,151,90,.32);pointer-events:none}
     .hero-fund-card > *{position:relative;z-index:2}
     .hero-fund-crest{display:block;width:auto;height:48px;margin:0 auto 18px;opacity:.85}
-    .hero-fund-eyebrow{font-family:'Jost',sans-serif;font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-strong);text-align:center;margin-bottom:18px}
+    .hero-fund-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-strong);text-align:center;margin-bottom:18px}
     .hero-fund-rule{width:32px;height:1px;background:var(--gold);margin:0 auto 22px;opacity:.55}
-    .hero-fund-body{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink);text-align:center;line-height:1.7;margin-bottom:16px;font-style:italic}
-    .hero-fund-coda{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-muted);text-align:center;line-height:1.65;margin-bottom:20px;font-style:italic}
-    .hero-fund-motto-ga{font-family:'EB Garamond',serif;font-size:17px;color:var(--gold-strong);text-align:center;letter-spacing:.04em;font-style:italic;margin-top:16px;padding-top:16px;border-top:1px solid rgba(184,151,90,.2)}
-    .hero-fund-motto-en{font-family:'EB Garamond',serif;font-size:13.5px;color:var(--ink-muted);text-align:center;font-style:italic;margin-top:5px;letter-spacing:.02em}
+    .hero-fund-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--ink);text-align:center;line-height:1.7;margin-bottom:16px;font-style:italic}
+    .hero-fund-coda{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink-muted);text-align:center;line-height:1.65;margin-bottom:20px;font-style:italic}
+    .hero-fund-motto-ga{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--gold-strong);text-align:center;letter-spacing:.04em;font-style:italic;margin-top:16px;padding-top:16px;border-top:1px solid rgba(184,151,90,.2)}
+    .hero-fund-motto-en{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13.5px;color:var(--ink-muted);text-align:center;font-style:italic;margin-top:5px;letter-spacing:.02em}
 
     /* ── WHAT THIS FUNDS ── */
     .funds-section{background:var(--ink-mid);padding:64px 0;border-bottom:1px solid var(--border)}
@@ -47,17 +49,17 @@
     .fund-item{flex:1;min-width:200px;padding:28px 32px;border-right:1px solid var(--border);text-align:center}
     .fund-item:last-child{border-right:none}
     .fund-icon{font-size:22px;margin-bottom:10px}
-    .fund-label{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-    .fund-desc{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.72);line-height:1.65}
+    .fund-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+    .fund-desc{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:rgba(215,235,215,.72);line-height:1.65}
     @media(max-width:700px){.fund-item{border-right:none;border-bottom:1px solid var(--border)}}
 
     /* ── TOGGLE ── */
     .toggle-wrap{text-align:center;padding:52px 0 32px}
-    .toggle-label{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(184,151,90,.85);margin-bottom:18px}
+    .toggle-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(184,151,90,.85);margin-bottom:18px}
     .toggle{display:inline-flex;background:rgba(184,151,90,.08);border:1px solid var(--border);border-radius:2px;overflow:hidden}
-    .toggle-btn{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:11px 28px;border:none;cursor:pointer;background:none;color:rgba(184,151,90,.55);transition:all .2s}
+    .toggle-btn{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:11px 28px;border:none;cursor:pointer;background:none;color:rgba(184,151,90,.55);transition:all .2s}
     .toggle-btn.active{background:var(--gold);color:var(--ink)}
-    .toggle-save{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-top:10px;line-height:1.5;padding:0 16px}
+    .toggle-save{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-top:10px;line-height:1.5;padding:0 16px}
 
     /* ── TIERS ── */
     .tiers-section{background:var(--cream);padding:0 0 80px;scroll-margin-top:72px}
@@ -91,22 +93,22 @@
     .tier.featured:hover{transform:translateY(-4px)}
     .tier:last-child{border-right:none}
     .tier.featured{background:var(--ink);border:2px solid var(--gold);margin:-2px;z-index:2}
-    .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:14px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:5px 16px;white-space:nowrap}
-    .tier-name{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:5px 16px;white-space:nowrap}
+    .tier-name{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
     .tier.featured .tier-name{color:var(--gold-pale)}
-    .tier-price{font-family:'EB Garamond',serif;font-size:52px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:4px}
+    .tier-price{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:52px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:4px}
     .tier.featured .tier-price{color:var(--gold-pale)}
-    .tier-cadence{font-family:'Jost',sans-serif;font-size:15px;font-weight:300;color:var(--ink-muted);letter-spacing:.08em;margin-bottom:6px}
+    .tier-cadence{font-family:'Jost','Jost Fallback',sans-serif;font-size:15px;font-weight:300;color:var(--ink-muted);letter-spacing:.08em;margin-bottom:6px}
     .tier.featured .tier-cadence{color:rgba(184,151,90,.6)}
-    .tier-family-price{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-bottom:20px;min-height:22px}
+    .tier-family-price{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-bottom:20px;min-height:22px}
     .tier-div{width:36px;height:1px;background:var(--gold);opacity:.4;margin:20px 0}
-    .tier-desc{font-family:'EB Garamond',serif;font-size:18px;line-height:1.8;color:var(--ink-soft);margin-bottom:24px}
+    .tier-desc{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.8;color:var(--ink-soft);margin-bottom:24px}
     .tier.featured .tier-desc{color:rgba(215,235,215,.78)}
     .tier-perks{list-style:none;padding:0;margin:0 0 32px;display:flex;flex-direction:column;gap:10px}
-    .tier-perk{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink-soft);display:flex;gap:10px;align-items:start;line-height:1.6}
+    .tier-perk{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--ink-soft);display:flex;gap:10px;align-items:start;line-height:1.6}
     .tier.featured .tier-perk{color:rgba(215,235,215,.82)}
     .perk-check{color:var(--gold);flex-shrink:0;margin-top:2px;font-size:15px}
-    .tier-cta{display:block;text-align:center;padding:14px 24px;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .2s}
+    .tier-cta{display:block;text-align:center;padding:14px 24px;font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:all .2s}
     .tier-cta.outline{border:1px solid var(--gold);color:var(--gold);background:none}
     .tier-cta.outline:hover{background:rgba(184,151,90,.08)}
     .tier-cta.solid{background:var(--gold);color:var(--ink);border:1px solid var(--gold)}
@@ -117,36 +119,36 @@
     /* ── LIFE MEMBERSHIP ── */
     .life-section{background:var(--ink-deep,#060E06);padding:80px 0;border-top:2px solid var(--gold)}
     .life-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-    .life-eyebrow{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
-    .life-title{font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px}
-    .life-sub{font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.7);line-height:1.75;margin-bottom:28px}
+    .life-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+    .life-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px}
+    .life-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.7);line-height:1.75;margin-bottom:28px}
     .life-perks{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
     .life-perk{display:flex;gap:14px;align-items:start}
-    .life-perk-num{font-family:'EB Garamond',serif;font-size:22px;color:var(--gold);opacity:.5;line-height:1;flex-shrink:0;width:28px}
-    .life-perk-text{font-family:'EB Garamond',serif;font-size:18px;color:rgba(215,235,215,.82);line-height:1.7}
+    .life-perk-num{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;color:var(--gold);opacity:.5;line-height:1;flex-shrink:0;width:28px}
+    .life-perk-text{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:rgba(215,235,215,.82);line-height:1.7}
     .life-price-box{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-top:2px solid var(--gold);padding:32px;text-align:center}
-    .life-price{font-family:'EB Garamond',serif;font-size:64px;color:var(--gold-pale);line-height:1;margin-bottom:6px}
-    .life-price-note{font-family:'Jost',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-bottom:6px}
-    .life-family{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:28px}
-    .life-cta{display:block;background:var(--gold);color:var(--ink);padding:16px 32px;font-family:'Jost',sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
+    .life-price{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:64px;color:var(--gold-pale);line-height:1;margin-bottom:6px}
+    .life-price-note{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.55);letter-spacing:.1em;margin-bottom:6px}
+    .life-family{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:28px}
+    .life-cta{display:block;background:var(--gold);color:var(--ink);padding:16px 32px;font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
     .life-cta:hover{background:var(--gold-pale)}
-    .life-cta-family{display:block;margin-top:10px;text-align:center;font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:rgba(184,151,90,.6);text-decoration:none}
+    .life-cta-family{display:block;margin-top:10px;text-align:center;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:rgba(184,151,90,.6);text-decoration:none}
     .life-cta-family:hover{color:var(--gold)}
 
     /* ── CHIEF SECTION ── */
     .chief-section{background:var(--cream-mid);padding:80px 0;border-top:1px solid var(--border)}
     .chief-grid{display:grid;grid-template-columns:380px 1fr;gap:56px;align-items:center}
     .chief-img{width:100%;display:block;border-radius:2px;border:1px solid var(--border)}
-    .chief-quote{font-family:'EB Garamond',serif;font-size:clamp(20px,2.8vw,30px);font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:20px}
-    .chief-sig{font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-muted)}
+    .chief-quote{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.8vw,30px);font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:20px}
+    .chief-sig{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink-muted)}
     .chief-sig strong{color:var(--ink);font-weight:500}
 
     /* ── FAQ ── */
     .faq-section{background:var(--cream);padding:72px 0}
     .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
     .faq-item{border-top:1px solid var(--border);padding-top:20px}
-    .faq-q{font-family:'EB Garamond',serif;font-size:20px;font-weight:500;color:var(--ink);margin-bottom:10px;line-height:1.35}
-    .faq-a{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink-soft);line-height:1.8}
+    .faq-q{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:20px;font-weight:500;color:var(--ink);margin-bottom:10px;line-height:1.35}
+    .faq-a{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--ink-soft);line-height:1.8}
 
     /* ── RESPONSIVE ── */
     @media(max-width:900px){
@@ -214,7 +216,7 @@
         justify-content:flex-end;
         gap:4px;
         min-height:78px;
-        font-family:'Jost',sans-serif;
+        font-family:'Jost','Jost Fallback',sans-serif;
         transition:background-color .15s;
         -webkit-tap-highlight-color:transparent;
       }
@@ -229,7 +231,7 @@
         line-height:1.2;
       }
       .tier-tab-price{
-        font-family:'EB Garamond',serif;
+        font-family:'EB Garamond','EB Garamond Fallback',serif;
         font-size:20px;
         font-weight:400;
         color:var(--ink-muted);
@@ -350,7 +352,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="pedigree" class="nav-link">Pedigree</a>
       <a href="heartlands" class="nav-link">Heartlands</a>
@@ -404,14 +406,14 @@
         <h1 class="mem-hero-title">Join the revival of an ancient Gaelic clan.</h1>
         <p class="mem-hero-sub">Your membership helps to fund the clan's revival — the summer festivals at Newhall, the preservation of one of Ireland's oldest Gaelic lineages, academic and heritage research, and the books and publications that will bring the ancient Irish Gaelic story to new generations.</p>
         <div class="gold-rule"></div>
-        <p style="font-family:'EB Garamond',serif;font-size:18px;color:rgba(215,235,215,.75);line-height:1.75;max-width:600px">This is not a subscription. It is an act of cultural stewardship — a commitment to keep alive something ancient and irreplaceable that was almost lost to history.</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:rgba(215,235,215,.75);line-height:1.75;max-width:600px">This is not a subscription. It is an act of cultural stewardship — a commitment to keep alive something ancient and irreplaceable that was almost lost to history.</p>
 
         <!-- Founding-story acknowledgement (added 6 May 2026 with Maria's
              approval): the page someone joins from now acknowledges that
              the revival is rooted in remembrance, not just heritage. Same
              italic register as the cultural-stewardship line above, with
              a quiet link to Maria's account. -->
-        <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:rgba(215,235,215,.6);line-height:1.75;max-width:600px;margin-top:14px">
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:15px;color:rgba(215,235,215,.6);line-height:1.75;max-width:600px;margin-top:14px">
           The revival was begun in the memory of the Chief&rsquo;s son Ronan. Maria has told <a href="/clan-stories" style="color:rgba(184,151,90,.85);text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">the founding story</a> in her own words.
         </p>
         <div class="mem-hero-cta-row">
@@ -422,7 +424,7 @@
       </div>
       <div class="hero-fund-wrap">
         <div class="hero-fund-card">
-          <img src="images/brand/coat_of_arms.png" alt="Ó Comáin" class="hero-fund-crest" loading="lazy">
+          <img src="/images/brand/coat_of_arms_192.png" alt="Ó Comáin" class="hero-fund-crest" loading="lazy" width="192" height="220" decoding="async">
           <div class="hero-fund-eyebrow">On Membership</div>
           <div class="hero-fund-rule"></div>
           <div class="hero-fund-body">Membership of Clan Ó Comáin is a contribution to a wider revival — of Gaelic Ireland, of Brehon law, of the clan tradition itself.</div>
@@ -438,11 +440,11 @@
 <!-- FOUR FACES OF BELONGING -->
 <section style="background:var(--cream);padding:72px 0 60px;border-bottom:1px solid var(--border)">
   <div class="si" style="max-width:820px;text-align:center">
-    <p style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.4vw,30px);font-style:italic;color:var(--ink);letter-spacing:.005em;line-height:1.3;margin:0 auto 22px;max-width:720px">
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(22px,2.4vw,30px);font-style:italic;color:var(--ink);letter-spacing:.005em;line-height:1.3;margin:0 auto 22px;max-width:720px">
       A modern clan is a family that cares for its own.
     </p>
     <div style="width:40px;height:1px;background:var(--gold);margin:0 auto 22px;opacity:.45"></div>
-    <p style="font-family:'EB Garamond',serif;font-size:clamp(14px,1.35vw,17px);font-style:italic;color:var(--ink-muted);letter-spacing:.02em;line-height:1.65;margin:0 auto;max-width:720px">
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(14px,1.35vw,17px);font-style:italic;color:var(--ink-muted);letter-spacing:.02em;line-height:1.65;margin:0 auto;max-width:720px">
       <span style="color:var(--gold);font-style:normal;font-weight:500;letter-spacing:.06em">Spirit · Mind · Body · Bloodline</span> — the four ways Ó Comáin cares for its people
     </p>
   </div>
@@ -456,7 +458,7 @@
   <div class="si">
     <div style="text-align:center;margin-bottom:32px">
       <div class="eyebrow" style="color:var(--gold)">The revival in practice</div>
-      <p style="font-family:'EB Garamond',serif;font-style:italic;font-size:clamp(15px,1.4vw,17px);color:var(--ink-muted);line-height:1.65;max-width:620px;margin:14px auto 0">
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:clamp(15px,1.4vw,17px);color:var(--ink-muted);line-height:1.65;max-width:620px;margin:14px auto 0">
         The revival is held up by particular work in particular places. Your contribution funds it.
       </p>
     </div>
@@ -502,24 +504,24 @@
 <section style="background:var(--ink);padding:clamp(72px,10vw,120px) 0;border-top:1px solid rgba(184,151,90,.2);border-bottom:1px solid rgba(184,151,90,.2)">
   <div class="si" style="max-width:760px;margin:0 auto;text-align:center">
     <div class="eyebrow" style="color:var(--gold)">A place in the clan, kept for life</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(30px,4.2vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.12;margin-bottom:22px">Three generations<br><em style="color:var(--gold)">remembered</em></h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(30px,4.2vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.12;margin-bottom:22px">Three generations<br><em style="color:var(--gold)">remembered</em></h2>
     <div class="gold-rule" style="margin:0 auto 28px"></div>
 
-    <p style="font-family:'EB Garamond',serif;font-size:clamp(18px,2.1vw,22px);line-height:1.65;color:rgba(215,235,215,.92);margin:0 auto 22px;max-width:620px">The most enduring Irish heirloom there is. Your place in Clan Ó Comáin becomes yours for life — and, in time, <em style="color:var(--gold-pale)">inherited by your children in their own right</em>. Their parents' names remain on the certificate in perpetuity, honoured always.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(18px,2.1vw,22px);line-height:1.65;color:rgba(215,235,215,.92);margin:0 auto 22px;max-width:620px">The most enduring Irish heirloom there is. Your place in Clan Ó Comáin becomes yours for life — and, in time, <em style="color:var(--gold-pale)">inherited by your children in their own right</em>. Their parents' names remain on the certificate in perpetuity, honoured always.</p>
 
-    <p style="font-family:'EB Garamond',serif;font-size:clamp(17px,2vw,20px);font-style:italic;line-height:1.7;color:rgba(215,235,215,.78);margin:0 auto 32px;max-width:560px">One moment of joining. Three generations carried by a single heraldic instrument.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(17px,2vw,20px);font-style:italic;line-height:1.7;color:rgba(215,235,215,.78);margin:0 auto 32px;max-width:560px">One moment of joining. Three generations carried by a single heraldic instrument.</p>
 
     <!-- The cert sell -->
     <div style="background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);padding:28px 32px;margin:0 auto 32px;max-width:620px;border-radius:2px">
-      <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 14px">The certificate, issued once</p>
-      <p style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.75;color:rgba(215,235,215,.88);margin:0">A hand-signed heraldic instrument bearing your name as primary grantee, each family member named below in letters patent tradition, a dedication line honouring a forebear of your choosing, and the inheritance clause by which your children shall continue the membership in their own right. One cert. One clan. One family, three generations deep.</p>
+      <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 14px">The certificate, issued once</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.75;color:rgba(215,235,215,.88);margin:0">A hand-signed heraldic instrument bearing your name as primary grantee, each family member named below in letters patent tradition, a dedication line honouring a forebear of your choosing, and the inheritance clause by which your children shall continue the membership in their own right. One cert. One clan. One family, three generations deep.</p>
     </div>
 
     <!-- Soft downward nudge to the tier cards — membership page has its
          actual conversion trigger in the toggle+tiers section below, so
          this is a gesture, not a CTA. Lets the reader know the choice
          follows immediately. -->
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:rgba(215,235,215,.58);margin:0;letter-spacing:.03em">Choose your tier below.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:rgba(215,235,215,.58);margin:0;letter-spacing:.03em">Choose your tier below.</p>
   </div>
 </section>
 
@@ -569,7 +571,7 @@
         <div class="tier-family-price family-price">Family · 2 adults + children</div>
         <a href="join-chat?tier=clan-ind" class="tier-cta outline individual-price" style="margin:12px 0 4px;font-size:11px">Join as Individual — €49</a>
         <a href="join-chat?tier=clan-fam" class="tier-cta dark family-price" style="margin:12px 0 4px;font-size:11px">Join as Family — €79</a>
-        <p style="font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:rgba(12,26,12,.45);letter-spacing:.06em;text-align:center;margin-top:6px">Cancel anytime</p>
+        <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:300;color:rgba(12,26,12,.45);letter-spacing:.06em;text-align:center;margin-top:6px">Cancel anytime</p>
         <div class="tier-div"></div>
         <div class="tier-desc">For all who love Ireland and wish to belong to a living Gaelic clan. The foundation of the revival.</div>
         <ul class="tier-perks">
@@ -597,7 +599,7 @@
         <div class="tier-family-price family-price">Family · 2 adults + children</div>
         <a href="join-chat?tier=guardian-ind" class="tier-cta solid individual-price" style="margin:12px 0 4px;font-size:11px">Join as Individual — €150</a>
         <a href="join-chat?tier=guardian-fam" class="tier-cta solid family-price" style="margin:12px 0 4px;font-size:11px;opacity:.85">Join as Family — €220</a>
-        <p style="font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:rgba(215,235,215,.5);letter-spacing:.06em;text-align:center;margin-top:6px">Cancel anytime</p>
+        <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:300;color:rgba(215,235,215,.5);letter-spacing:.06em;text-align:center;margin-top:6px">Cancel anytime</p>
         <div class="tier-div"></div>
         <div class="tier-desc">For those who want to be genuinely part of the revival — not just receive it. The most complete clan experience.</div>
         <ul class="tier-perks">
@@ -623,7 +625,7 @@
         <div class="tier-family-price family-price">Family · 2 adults + children</div>
         <a href="join-chat?tier=steward-ind" class="tier-cta outline individual-price" style="margin:12px 0 4px;font-size:11px">Join as Individual — €350</a>
         <a href="join-chat?tier=steward-fam" class="tier-cta dark family-price" style="margin:12px 0 4px;font-size:11px">Join as Family — €480</a>
-        <p style="font-family:'Jost',sans-serif;font-size:11px;font-weight:300;color:rgba(12,26,12,.45);letter-spacing:.06em;text-align:center;margin-top:6px">Cancel anytime</p>
+        <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:300;color:rgba(12,26,12,.45);letter-spacing:.06em;text-align:center;margin-top:6px">Cancel anytime</p>
         <div class="tier-div"></div>
         <div class="tier-desc">The highest annual commitment — for those who wish to be counted among the great benefactors of the clan's revival.</div>
         <ul class="tier-perks">
@@ -642,13 +644,13 @@
 
     </div>
 
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:20px">Annual memberships renew each year — cancel anytime.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:20px">Annual memberships renew each year — cancel anytime.</p>
     <!-- TRUST BLOCK -->
     <div class="trust-block">
       <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" aria-hidden="true" style="flex-shrink:0;margin-top:3px;color:var(--gold)"><path d="M8 1a3 3 0 0 0-3 3v3H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1V4a3 3 0 0 0-3-3zm2 6H6V4a2 2 0 0 1 4 0v3z"/></svg>
       <div>Payment processed by <strong>Stripe Ireland Ltd</strong>, regulated by the Central Bank of Ireland. Your card details are never seen or stored by the clan. SCA / 3D Secure authenticated end-to-end.</div>
     </div>
-    <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:14px;line-height:1.5">All amounts shown in euro, cards in other currencies convert automatically.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-muted);text-align:center;margin-top:14px;line-height:1.5">All amounts shown in euro, cards in other currencies convert automatically.</p>
   </div>
 </section>
 
@@ -671,15 +673,15 @@
       <div>
         <div class="life-price-box">
           <div class="life-eyebrow" style="margin-bottom:8px">Life Founder</div>
-          <p style="font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#B91C1C;text-align:center;margin:0 0 16px">Available during the 2026 founding period only</p>
+          <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#B91C1C;text-align:center;margin:0 0 16px">Available during the 2026 founding period only</p>
           <div class="life-price individual-price">€750</div>
           <div class="life-price family-price">€1,100</div>
           <p class="life-price-note" style="text-align:center;margin-bottom:16px">One-time contribution · No renewal · For life</p>
           <a href="join-chat?tier=life-ind" class="life-cta" style="margin-bottom:10px">Join as Individual — €750</a>
           <a href="join-chat?tier=life-fam" class="life-cta" style="background:rgba(184,151,90,.55)">Join as Family — €1,100</a>
-          <p style="font-family:'EB Garamond',serif;font-size:14.5px;font-style:italic;color:rgba(184,151,90,.78);text-align:center;letter-spacing:.02em;margin:14px 0 0">Family · 2 adults + children</p>
+          <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;font-style:italic;color:rgba(184,151,90,.78);text-align:center;letter-spacing:.02em;margin:14px 0 0">Family · 2 adults + children</p>
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(184,151,90,.2)">
-            <p style="font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:rgba(184,151,90,.8);line-height:1.5">"A name entered in the Register of Clan Ó Comáin is a name entered in the history of Gaelic Ireland."</p>
+            <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;font-style:italic;color:rgba(184,151,90,.8);line-height:1.5">"A name entered in the Register of Clan Ó Comáin is a name entered in the history of Gaelic Ireland."</p>
           </div>
         </div>
       </div>
@@ -692,7 +694,7 @@
   <div class="si">
     <div class="chief-grid">
       <div>
-        <img src="images/people/fergus_at_killone.png" alt="Fergus Commane Kinfauns — Chief of Ó Comáin" class="chief-img" loading="lazy">
+        <img src="/.netlify/images?url=/images/people/fergus_at_killone.png&w=1280" alt="Fergus Commane Kinfauns — Chief of Ó Comáin" class="chief-img" loading="lazy" srcset="/.netlify/images?url=/images/people/fergus_at_killone.png&w=480 480w, /.netlify/images?url=/images/people/fergus_at_killone.png&w=768 768w, /.netlify/images?url=/images/people/fergus_at_killone.png&w=1024 1024w, /.netlify/images?url=/images/people/fergus_at_killone.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 380px" width="1280" height="1038" decoding="async">
         <div class="img-cap" style="margin-top:8px">Fergus Commane Kinfauns — Chief of Ó Comáin · Killone Abbey, County Clare</div>
       </div>
       <div>
@@ -718,16 +720,16 @@
     <div style="flex-shrink:0">
       <div style="width:108px;height:108px;border:2.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--white);box-shadow:0 6px 22px rgba(184,151,90,0.22)">
         <div style="text-align:center;line-height:1.05">
-          <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Year</div>
-          <div style="font-family:'EB Garamond',serif;font-size:32px;color:var(--ink);font-weight:500;line-height:1">I</div>
-          <div style="font-family:'EB Garamond',serif;font-size:11px;color:var(--gold-strong);font-style:italic;margin-top:3px">2026</div>
+          <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Year</div>
+          <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:32px;color:var(--ink);font-weight:500;line-height:1">I</div>
+          <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:11px;color:var(--gold-strong);font-style:italic;margin-top:3px">2026</div>
         </div>
       </div>
     </div>
     <div>
-      <div style="font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Year One of the Revival</div>
-      <h3 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3.2vw,36px);color:var(--ink);font-weight:400;line-height:1.2;margin-bottom:14px">Join now, and carry <em style="color:var(--gold);font-style:italic">Founder since 2026</em> for life.</h3>
-      <p style="font-family:'EB Garamond',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0">Members who join in the first year of the revival are recorded in the clan Register as <strong style="color:var(--ink);font-weight:600">Founders of the Revival</strong> — a distinction that appears on your certificate as a gold seal, stays with your record for the lifetime of the clan, and can only be earned this year. <em style="color:var(--ink);font-style:italic;font-weight:500">History remembers who was there at the beginning.</em></p>
+      <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Year One of the Revival</div>
+      <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3.2vw,36px);color:var(--ink);font-weight:400;line-height:1.2;margin-bottom:14px">Join now, and carry <em style="color:var(--gold);font-style:italic">Founder since 2026</em> for life.</h3>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16.5px;color:var(--ink-soft);line-height:1.75;margin:0">Members who join in the first year of the revival are recorded in the clan Register as <strong style="color:var(--ink);font-weight:600">Founders of the Revival</strong> — a distinction that appears on your certificate as a gold seal, stays with your record for the lifetime of the clan, and can only be earned this year. <em style="color:var(--ink);font-style:italic;font-weight:500">History remembers who was there at the beginning.</em></p>
     </div>
   </div>
 </section>
@@ -736,14 +738,14 @@
 <section style="background:var(--cream-mid);padding:72px 0;border-bottom:1px solid var(--border)">
   <div class="si" style="max-width:760px">
     <div class="eyebrow" style="text-align:center;color:var(--gold);margin-bottom:18px">Wondering whether the clan is for you?</div>
-    <p style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.2vw,26px);font-style:italic;color:var(--ink);line-height:1.5;text-align:center;margin:0 auto 32px;max-width:680px">
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.2vw,26px);font-style:italic;color:var(--ink);line-height:1.5;text-align:center;margin:0 auto 32px;max-width:680px">
       The bond is what matters, not the bloodline. All who answer the call are welcome.
     </p>
     <div style="width:40px;height:1px;background:var(--gold);margin:0 auto 32px;opacity:.45"></div>
-    <p style="font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.85;margin-bottom:18px">
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink);line-height:1.85;margin-bottom:18px">
       This is not a modern softening of an ancient idea — it is a return to one. The Gaelic clan was never purely a matter of blood. Every clan kept its <em>céile</em> — sworn clients who pledged service to the chief — and its <em>muintir</em>, the wider household of those who lived under his protection. Foster-bonds, surety-bonds, and chosen allegiance were all recognised ways of belonging. A man's place in a clan could be earned as well as inherited, and the chief's word was what made it real.
     </p>
-    <p style="font-family:'EB Garamond',serif;font-size:17px;color:var(--ink);line-height:1.85;margin-bottom:0">
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink);line-height:1.85;margin-bottom:0">
       That older way is the way Clan Ó Comáin welcomes its members today. All are entered into the same Register, signed by the same Chief, recognised by the same Council. What matters is the bond you choose to make.
     </p>
   </div>
@@ -753,7 +755,7 @@
 <section class="faq-section">
   <div class="si">
     <div class="eyebrow">Common questions</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:4px;line-height:1.2">Everything you need to know</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:4px;line-height:1.2">Everything you need to know</h2>
     <div class="gold-rule"></div>
     <div class="faq-grid">
       <div class="faq-item">
@@ -799,10 +801,10 @@
     <div style="display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;background:rgba(184,151,90,.07);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);padding:32px 36px">
       <div>
         <div class="eyebrow" style="color:var(--gold);margin-bottom:8px">Buying for someone else?</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.5vw,28px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:8px">Give the gift of belonging to an ancient Irish clan.</h3>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:rgba(215,235,215,.65);line-height:1.6">A signed certificate from the Chief, posted anywhere in the world. The most meaningful Irish gift you can give.</p>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.5vw,28px);font-weight:400;color:var(--gold-pale);line-height:1.2;margin-bottom:8px">Give the gift of belonging to an ancient Irish clan.</h3>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:rgba(215,235,215,.65);line-height:1.6">A signed certificate from the Chief, posted anywhere in the world. The most meaningful Irish gift you can give.</p>
       </div>
-      <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;background:var(--gold);padding:14px 28px;white-space:nowrap;flex-shrink:0;border-radius:1px;cursor:pointer">Gift a membership →</div>
+      <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;background:var(--gold);padding:14px 28px;white-space:nowrap;flex-shrink:0;border-radius:1px;cursor:pointer">Gift a membership →</div>
     </div>
   </div>
 </section>
@@ -811,10 +813,10 @@
 <section style="background:var(--ink);padding:84px 0;border-top:2px solid var(--gold);text-align:center">
   <div class="si" style="max-width:640px;margin:0 auto">
     <div class="eyebrow" style="color:var(--gold)">The clan is growing</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px">In a world that has forgotten where it came from, this clan remembers.</h2>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:36px;line-height:1.7">Your name belongs in this story. The application takes less than two minutes.</p>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,4vw,48px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:16px">In a world that has forgotten where it came from, this clan remembers.</h2>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:36px;line-height:1.7">Your name belongs in this story. The application takes less than two minutes.</p>
     <a href="join-chat" class="btn-p" style="font-size:14px;padding:18px 56px;display:inline-block">Begin your application</a>
-    <p style="font-family:'Jost',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:20px">Open to all who love Ireland · Signed by the Chief · Recognised by Clans of Ireland</p>
+    <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:20px">Open to all who love Ireland · Signed by the Chief · Recognised by Clans of Ireland</p>
   </div>
 </section>
 
@@ -849,8 +851,8 @@
         <div class="footer-heading">Contact</div>
         <ul class="footer-links">
           <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
     </div>

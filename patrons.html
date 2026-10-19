@@ -7,6 +7,8 @@
 <title>Patrons & Obituaries — Clan Ó Comáin</title>
 <meta name="description" content="The patrons of Clan Ó Comáin — Saint Commán, founder of Roscommon and Kinvara, and in loving memory of Ronan Commane.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="shared.css">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/brand/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/brand/favicon-32x32.png">
@@ -100,7 +102,7 @@
 <body>
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -137,15 +139,15 @@
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <!-- Mobile two-bar strip -->
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -182,8 +184,8 @@ function toggleMenu(){
 <div class="page-hero" style="background:var(--ink);padding:72px 0 56px;text-align:center;border-bottom:2px solid var(--gold)">
   <div class="si">
     <div class="eyebrow">Saints & memory</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Patrons & Obituaries</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">Those who inspire us, those we remember</p>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Patrons & Obituaries</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">Those who inspire us, those we remember</p>
   </div>
 </div>
 
@@ -199,7 +201,7 @@ function toggleMenu(){
 <section style="background:var(--cream);padding:36px 0 32px;border-bottom:1px solid var(--border)">
   <div class="si">
     <div style="max-width:760px;margin:0 auto;border-left:3px solid var(--gold-light);padding:6px 0 6px 24px">
-      <p style="font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.7;margin:0">Three things are kept on this page: the clan's patron saint, the in-memoriam tribute to <strong>Ronan Commane</strong> — whose loss in 2023 prompted the rebirth of Clan Ó Comáin — and the ongoing roll of obituaries for members of the clan who have passed.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink-soft);line-height:1.7;margin:0">Three things are kept on this page: the clan's patron saint, the in-memoriam tribute to <strong>Ronan Commane</strong> — whose loss in 2023 prompted the rebirth of Clan Ó Comáin — and the ongoing roll of obituaries for members of the clan who have passed.</p>
     </div>
   </div>
 </section>
@@ -208,7 +210,7 @@ function toggleMenu(){
 <section style="padding:80px 0">
   <div class="si">
     <div class="eyebrow">Patron saint</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Saint Commán — patron of the clan</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Saint Commán — patron of the clan</h2>
     <div class="gold-rule"></div>
     <p class="body-text" style="margin-bottom:24px;max-width:700px">The Ó Comáin name is bound to one of Ireland's great early medieval saints — Saint Commán — whose legacy is written in stone, in place names and in the living tradition of the Irish church across Connacht and Munster.</p>
 
@@ -221,30 +223,30 @@ function toggleMenu(){
          in the same place. -->
     <div style="background:var(--cream);border-left:3px solid var(--gold-light);padding:6px 0 6px 24px;margin-bottom:40px;max-width:760px">
       <div class="eyebrow" style="margin-bottom:10px;color:var(--gold-deep)">A note on the sources</div>
-      <p style="font-family:'EB Garamond',serif;font-size:17px;color:var(--ink-soft);line-height:1.7;margin:0">You may encounter references to "Saint Commán of Roscommon" and "Saint Commán of Kinvara" as if they were two distinct individuals. The Dictionary of National Biography (1887) is clear on this point: these are one and the same saint. The entry for Commán of Roscommon explicitly states that he <em>"also founded the church of Ceann Mara, now Kinvara"</em> — placing both foundations with a single person. His death is recorded in the Annals of Ulster at 747 AD. The Kinvara church simply represents a second foundation by the same saint, whose ministry extended from Roscommon to the very shores of the Burren, the heartland of the ancient Chiefdom of Tulach Commáin.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:var(--ink-soft);line-height:1.7;margin:0">You may encounter references to "Saint Commán of Roscommon" and "Saint Commán of Kinvara" as if they were two distinct individuals. The Dictionary of National Biography (1887) is clear on this point: these are one and the same saint. The entry for Commán of Roscommon explicitly states that he <em>"also founded the church of Ceann Mara, now Kinvara"</em> — placing both foundations with a single person. His death is recorded in the Annals of Ulster at 747 AD. The Kinvara church simply represents a second foundation by the same saint, whose ministry extended from Roscommon to the very shores of the Burren, the heartland of the ancient Chiefdom of Tulach Commáin.</p>
     </div>
 
     <div class="two-col" style="gap:72px;align-items:start">
       <div>
         <div style="background:var(--cream-mid);border:1px solid var(--border);border-top:2px solid var(--gold);padding:44px;margin-bottom:24px">
           <div class="eyebrow">Founder of Roscommon</div>
-          <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.5vw,28px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Saint Commán of Roscommon</h3>
+          <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.5vw,28px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2">Saint Commán of Roscommon</h3>
           <div style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px">Died 747 AD · Annals of Ulster</div>
           <div class="gold-rule"></div>
           <p class="body-text" style="margin-bottom:16px">Saint Commán is the founder of Roscommon — <em>Ros Commáin</em>, meaning "Commán's Wood" — and patron saint of County Roscommon, whose name the county and town carry to this day. His death is recorded in the Annals of Ulster at 747 AD, making him one of the most firmly dateable saints of early medieval Ireland.</p>
           <p class="body-text" style="margin-bottom:16px">The Dictionary of National Biography (1887) records that Saint Commán "also founded the church of Ceann Mara, now Kinvara" — placing his foundation directly on the southern edge of the Burren, within sight of the ancestral chiefdom capital of Cahercommane. Whether the saint and the chief shared family ties or merely the ancient name Commán, the convergence of saint and chiefdom in the same landscape is a remarkable feature of the clan's heritage.</p>
           <p class="body-text" style="margin-bottom:24px">His memory is preserved in the dedicated book <em>Remembering St. Comán — Patron Saint of Ros Comáin</em> by Noel Hoare, published by the Rathcroghan Heritage Centre.</p>
-          <a href="https://www.rathcroghan.ie/product/remembering-st-coman-patron-saint-of-ros-comain/" target="_blank" class="btn-g" style="font-size:10.5px">Remembering St. Comán — Noel Hoare</a>
+          <a href="https://www.rathcroghan.ie/product/remembering-st-coman-patron-saint-of-ros-comain/" target="_blank" class="btn-g" style="font-size:10.5px" rel="noopener">Remembering St. Comán — Noel Hoare</a>
         </div>
         <div style="background:var(--cream-mid);border:1px solid var(--border);padding:28px">
           <div class="eyebrow">Further reading</div>
-          <h3 style="font-family:'EB Garamond',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:10px">Saint Commán of Kinvara</h3>
+          <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:10px">Saint Commán of Kinvara</h3>
           <p class="body-text" style="font-size:13px;margin-bottom:16px">The Grokipedia article on Saint Commán of Kinvara explores the saint's ancient church foundation at Kinvara on the southern shore of Galway Bay — the ecclesiastical site most directly connected to the Burren landscape of the chiefdom.</p>
-          <a href="https://grokipedia.com/page/coman_of_kinvara" target="_blank" class="btn-g" style="font-size:10px;padding:10px 20px">Grokipedia — Saint Commán of Kinvara</a>
+          <a href="https://grokipedia.com/page/coman_of_kinvara" target="_blank" class="btn-g" style="font-size:10px;padding:10px 20px" rel="noopener">Grokipedia — Saint Commán of Kinvara</a>
         </div>
       </div>
       <div>
-        <img src="images/archive/saint_comman_manuscript.png" alt="Saint Commán" style="width:100%;border-radius:2px;border:1px solid var(--border);margin-bottom:12px" loading="lazy">
+        <img src="/.netlify/images?url=/images/archive/saint_comman_manuscript.png&w=490" alt="Saint Commán" style="width:100%;border-radius:2px;border:1px solid var(--border);margin-bottom:12px" loading="lazy" srcset="/.netlify/images?url=/images/archive/saint_comman_manuscript.png&w=480 480w, /.netlify/images?url=/images/archive/saint_comman_manuscript.png&w=490 490w" sizes="(max-width: 900px) 100vw, 1120px" width="490" height="750" decoding="async">
         <div class="img-cap">Saint Commán — founder of Roscommon and Kinvara</div>
 
       </div>
@@ -256,23 +258,23 @@ function toggleMenu(){
 <section style="background:var(--ink);padding:80px 0">
   <div class="si" style="max-width:760px;text-align:center">
     <div style="text-align:center;margin-bottom:32px">
-        <img src="images/people/ronan_commane.png" alt="Ronan James Patrick Commane" style="max-width:320px;width:100%;border-radius:2px;border:1px solid rgba(184,151,90,.2)" loading="lazy">
+        <img src="/.netlify/images?url=/images/people/ronan_commane.png&w=1161" alt="Ronan James Patrick Commane" style="max-width:320px;width:100%;border-radius:2px;border:1px solid rgba(184,151,90,.2)" loading="lazy" srcset="/.netlify/images?url=/images/people/ronan_commane.png&w=480 480w, /.netlify/images?url=/images/people/ronan_commane.png&w=768 768w, /.netlify/images?url=/images/people/ronan_commane.png&w=1024 1024w, /.netlify/images?url=/images/people/ronan_commane.png&w=1161 1161w" sizes="(max-width: 900px) 100vw, 320px" width="1161" height="1127" decoding="async">
       </div>
       <div class="eyebrow" style="color:var(--gold)">In memoriam</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:400;color:var(--gold-pale);margin-bottom:10px;line-height:1.15">Ronan James Patrick Commane</h2>
-    <div style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:32px">1989 — 2023</div>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,4vw,44px);font-weight:400;color:var(--gold-pale);margin-bottom:10px;line-height:1.15">Ronan James Patrick Commane</h2>
+    <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(184,151,90,.7);margin-bottom:32px">1989 — 2023</div>
     <div style="width:1px;height:60px;background:rgba(184,151,90,.3);margin:0 auto 32px"></div>
-    <p style="font-size:16px;font-weight:300;color:rgba(215,235,215,.85);line-height:1.9;margin-bottom:20px;font-family:'EB Garamond',serif;font-style:italic;font-size:20px">His greatest joy was making others happy.<br>His philosophy: love.</p>
+    <p style="font-size:16px;font-weight:300;color:rgba(215,235,215,.85);line-height:1.9;margin-bottom:20px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:20px">His greatest joy was making others happy.<br>His philosophy: love.</p>
     <p style="font-size:14px;font-weight:300;color:rgba(210,235,210,.72);line-height:1.9;margin-bottom:20px">Ronan's love for his extended family, and for all people, inspired the rebirth of Clan Ó Comáin. It is in his memory and in his spirit of joy and connection that this clan has been revived — bringing together the descendants and friends of the Ó Comáin name from across the world.</p>
     <p style="font-size:14px;font-weight:300;color:rgba(210,235,210,.72);line-height:1.9;margin-bottom:32px">Ronan was the second son of Maria and Fergus Commane, Chief of Clan Ó Comáin. He passed to his eternal reward in 2023. He is remembered in every gathering of this clan, and in every act of welcome extended to those who join us.</p>
-    <div style="font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:rgba(184,151,90,.6)">Ar dheis Dé go raibh a anam</div>
+    <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:20px;font-style:italic;color:rgba(184,151,90,.6)">Ar dheis Dé go raibh a anam</div>
     <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(184,151,90,.4);margin-top:8px">May his soul be at God's right hand</div>
 
     <!-- Quiet cross-link to Maria's piece on the clan-stories page (added 6 May 2026
          when Maria's piece was published as Story No. 1, the founding story).
          Italic, muted, set apart by extra top margin so it reads as an aside
          beneath the blessing rather than as a CTA pinned to it. -->
-    <div style="margin-top:48px;font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:rgba(210,235,210,.55);line-height:1.7">
+    <div style="margin-top:48px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:14px;color:rgba(210,235,210,.55);line-height:1.7">
       Maria has told the family's story in her own words on the <a href="/stories/maria-kinfauns" style="color:rgba(184,151,90,.85);text-decoration:underline;text-decoration-color:rgba(184,151,90,.3)">clan stories page</a>.
     </div>
   </div>
@@ -282,11 +284,11 @@ function toggleMenu(){
 <section style="padding:80px 0;background:var(--cream-mid)">
   <div class="si">
     <div class="eyebrow">Clan obituaries</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,34px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Remembering our clan members</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,34px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Remembering our clan members</h2>
     <div class="gold-rule"></div>
     <p class="body-text" style="margin-bottom:32px;max-width:560px">Clan Ó Comáin maintains a record of members of the clan who have passed. To submit an obituary notice for a clan member, please contact us at <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a>.</p>
     <div style="background:var(--white);border:1px solid var(--border);padding:48px;text-align:center;max-width:600px">
-      <div style="font-family:'EB Garamond',serif;font-size:22px;color:var(--ink-muted);margin-bottom:12px;font-style:italic">Obituary notices</div>
+      <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;color:var(--ink-muted);margin-bottom:12px;font-style:italic">Obituary notices</div>
       <p class="body-text" style="font-size:13px;margin-bottom:20px">To add an obituary for a clan member, please email the name, dates and a brief tribute to <a href="mailto:clan@ocomain.org" style="color:var(--gold)">clan@ocomain.org</a> and it will be added to this page.</p>
       <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted)">— Currently no additional notices —</div>
     </div>
@@ -307,6 +309,7 @@ function toggleMenu(){
                 <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="pedigree">Pedigree</a></li>
           <li><a href="timeline">Timeline</a></li>
           <li><a href="heartlands">Heartlands</a></li>
@@ -322,8 +325,8 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

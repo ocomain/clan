@@ -71,29 +71,32 @@
   <meta name="twitter:image:alt" content="Lá Fhéile Pádraig — Clan Ó Comáin. 17 March 2027.">
 
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/shared.css">
   <link rel="icon" href="/favicon.ico">
 
   <!-- Leaflet 1.9.4 — pinned. CSS first so the map loads correctly. -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 
   <style>
     /* ── HERO ─────────────────────────────────────────────────────── */
     .lf-hero{position:relative;min-height:46vh;display:flex;align-items:center;background:var(--ink);overflow:hidden;border-bottom:2px solid var(--gold);padding:70px 0}
-    .lf-hero-bg{position:absolute;inset:0;background:url('images/brand/coat_of_arms.png') center/240px no-repeat;opacity:.05;filter:saturate(.4)}
+    .lf-hero-bg{position:absolute;inset:0;background:url('/.netlify/images?url=/images/brand/coat_of_arms.png&w=480') center/240px no-repeat;opacity:.05;filter:saturate(.4)}
     .lf-hero-content{max-width:780px;position:relative;z-index:2}
-    .lf-eyebrow{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.92}
-    .lf-hero-title{font-family:'EB Garamond',serif;font-size:clamp(40px,5.8vw,72px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:18px;font-style:italic}
-    .lf-hero-when{font-family:'Jost',sans-serif;font-size:15px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);margin-bottom:24px;opacity:.85}
-    .lf-hero-sub{font-family:'EB Garamond',serif;font-size:clamp(19px,2.2vw,24px);font-style:italic;color:rgba(160,210,160,.82);line-height:1.75;max-width:680px}
+    .lf-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;opacity:.92}
+    .lf-hero-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(40px,5.8vw,72px);font-weight:400;color:var(--gold-pale);line-height:1.02;margin-bottom:18px;font-style:italic}
+    .lf-hero-when{font-family:'Jost','Jost Fallback',sans-serif;font-size:15px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-light);margin-bottom:24px;opacity:.85}
+    .lf-hero-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(19px,2.2vw,24px);font-style:italic;color:rgba(160,210,160,.82);line-height:1.75;max-width:680px}
 
     /* ── STATS STRIP ──────────────────────────────────────────────── */
     .lf-stats{background:var(--ink-mid);padding:48px 0;border-bottom:1px solid var(--border);text-align:center}
     .lf-stats-grid{display:flex;justify-content:center;gap:clamp(40px,8vw,80px);max-width:720px;margin:0 auto;flex-wrap:wrap}
     .lf-stat{display:flex;flex-direction:column;align-items:center}
-    .lf-stat-num{font-family:'EB Garamond',serif;font-size:clamp(40px,5vw,56px);font-weight:400;color:var(--gold-pale);line-height:1;margin-bottom:8px}
-    .lf-stat-label{font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.88}
+    .lf-stat-num{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(40px,5vw,56px);font-weight:400;color:var(--gold-pale);line-height:1;margin-bottom:8px}
+    .lf-stat-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);opacity:.88}
 
     /* ── INVITATION COPY ─────────────────────────────────────────── */
 
@@ -109,7 +112,7 @@
     .lf-map-row{display:flex;gap:18px;align-items:stretch}
     .lf-map-row > .lf-map{flex:1;min-width:0}
     .lf-sidebar{width:280px;flex-shrink:0;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid var(--gold);display:flex;flex-direction:column;max-height:440px;overflow:hidden}
-    .lf-sidebar-title{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
+    .lf-sidebar-title{font-family:'Jost','Jost Fallback',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);padding:18px 20px 12px;border-bottom:1px solid rgba(184,151,90,.2)}
     /* JS-DRIVEN FAKE SCROLLBAR
        ─────────────────────────────────────────────────────────────────
        iOS Safari strips ::-webkit-scrollbar styling on inner scroll
@@ -180,13 +183,13 @@
       pointer-events:none;
       z-index:1;
     }
-    .lf-sidebar-item{display:block;width:100%;background:transparent;border:none;border-left:3px solid transparent;text-align:left;padding:14px 20px;cursor:pointer;font-family:'EB Garamond',serif;color:var(--gold-pale);transition:background .12s,border-color .12s}
+    .lf-sidebar-item{display:block;width:100%;background:transparent;border:none;border-left:3px solid transparent;text-align:left;padding:14px 20px;cursor:pointer;font-family:'EB Garamond','EB Garamond Fallback',serif;color:var(--gold-pale);transition:background .12s,border-color .12s}
     .lf-sidebar-item:hover{background:rgba(184,151,90,.08);border-left-color:var(--gold)}
     .lf-sidebar-item.active{background:rgba(184,151,90,.13);border-left-color:var(--gold)}
-    .lf-sidebar-item-city{font-family:'EB Garamond',serif;font-size:17px;font-weight:500;color:var(--gold-pale);margin-bottom:2px;line-height:1.25}
-    .lf-sidebar-item-region{font-family:'EB Garamond',serif;font-size:13.5px;font-style:italic;color:rgba(215,235,215,.6);margin-bottom:6px}
-    .lf-sidebar-item-meta{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.1em;color:var(--gold);text-transform:uppercase}
-    .lf-sidebar-item-host{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(215,235,215,.65);margin-top:4px}
+    .lf-sidebar-item-city{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-weight:500;color:var(--gold-pale);margin-bottom:2px;line-height:1.25}
+    .lf-sidebar-item-region{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13.5px;font-style:italic;color:rgba(215,235,215,.6);margin-bottom:6px}
+    .lf-sidebar-item-meta{font-family:'Jost','Jost Fallback',sans-serif;font-size:10.5px;font-weight:500;letter-spacing:.1em;color:var(--gold);text-transform:uppercase}
+    .lf-sidebar-item-host{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:rgba(215,235,215,.65);margin-top:4px}
     @media (max-width:760px){
       .lf-map-row{flex-direction:column}
       /* In column flex direction, the desktop `flex:1` (= flex:1 1 0%)
@@ -201,22 +204,22 @@
     /* Member-only shortcut banner — sits above the map, only visible
        when a Supabase session is detected client-side. */
     .lf-member-banner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 24px;margin-bottom:18px;background:rgba(184,151,90,.1);border:1px solid rgba(184,151,90,.35);border-left:3px solid var(--gold);border-radius:1px;flex-wrap:wrap}
-    .lf-member-banner-text{font-family:'EB Garamond',serif;font-size:16px;color:var(--gold-pale);line-height:1.55;flex:1;min-width:240px}
+    .lf-member-banner-text{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;color:var(--gold-pale);line-height:1.55;flex:1;min-width:240px}
     .lf-member-banner-text strong{color:var(--gold-pale);font-weight:500;font-style:italic}
-    .lf-member-banner-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;text-decoration:none;border-radius:1px;flex-shrink:0;transition:background .15s}
+    .lf-member-banner-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:12px 22px;text-decoration:none;border-radius:1px;flex-shrink:0;transition:background .15s}
     .lf-member-banner-cta:hover{background:var(--gold-pale)}
     @media (max-width:560px){
       .lf-member-banner{padding:16px 18px}
       .lf-member-banner-cta{width:100%;text-align:center;box-sizing:border-box}
     }
     .lf-map{width:100%;height:440px;border:1px solid var(--gold-border);background:var(--ink-mid);position:relative}
-    .lf-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-family:'EB Garamond',serif;font-style:italic;font-size:17px;background:var(--ink-mid);z-index:401;opacity:.85}
+    .lf-map-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:17px;background:var(--ink-mid);z-index:401;opacity:.85}
     .lf-map-empty{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,31,15,.72);z-index:402;padding:24px}
     .lf-map-empty.show{display:flex}
     .lf-map-empty-card{max-width:460px;text-align:center;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.3);border-left:3px solid var(--gold);padding:36px 32px}
-    .lf-map-empty-title{font-family:'EB Garamond',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:14px;font-style:italic}
-    .lf-map-empty-body{font-family:'EB Garamond',serif;font-size:17px;color:rgba(215,235,215,.82);line-height:1.75;margin-bottom:24px}
-    .lf-map-empty-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;text-decoration:none}
+    .lf-map-empty-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:24px;color:var(--gold-pale);line-height:1.25;margin-bottom:14px;font-style:italic}
+    .lf-map-empty-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;color:rgba(215,235,215,.82);line-height:1.75;margin-bottom:24px}
+    .lf-map-empty-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:14px 28px;text-decoration:none}
     .lf-map-empty-cta:hover{background:var(--gold-pale)}
 
     /* Map popup style — overrides default Leaflet rounded white */
@@ -230,7 +233,7 @@
     .lf-avatar-pin-circle{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;border:2.5px solid #B8975A;box-shadow:0 3px 10px rgba(0,0,0,.45);background-color:#1a2a1a}
     .lf-avatar-pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid #B8975A;margin:-2px auto 0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
     .lf-avatar-pin:hover .lf-avatar-pin-circle{border-color:#F5ECD8;transition:border-color .15s}
-    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:280px;overflow-y:auto}
+    .leaflet-popup-content{margin:14px 18px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15.5px;line-height:1.5;min-width:220px;max-width:300px;max-height:280px;overflow-y:auto}
     /* Mobile popup cap — the map is 360px tall on mobile portrait
        (matching the members map), and a 340px popup leaves no room
        for Leaflet's auto-pan to land the popup fully on screen. The
@@ -243,19 +246,19 @@
     @media(max-width:720px){
       .leaflet-popup-content{max-height:240px}
     }
-    .lf-pop-eyebrow{font-family:'Jost',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:5px;opacity:.85}
-    .lf-pop-title{font-family:'EB Garamond',serif;font-size:19px;color:#F5ECD8;margin:0 0 4px;font-weight:500}
-    .lf-pop-city{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.75);font-style:italic;margin-bottom:9px}
-    .lf-pop-when{font-family:'Jost',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#D4B483;margin-bottom:9px}
-    .lf-pop-host{font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.88);margin-bottom:9px}
+    .lf-pop-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;margin-bottom:5px;opacity:.85}
+    .lf-pop-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:19px;color:#F5ECD8;margin:0 0 4px;font-weight:500}
+    .lf-pop-city{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.75);font-style:italic;margin-bottom:9px}
+    .lf-pop-when{font-family:'Jost','Jost Fallback',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.06em;color:#D4B483;margin-bottom:9px}
+    .lf-pop-host{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.88);margin-bottom:9px}
     .lf-pop-host-name{color:#F5ECD8;font-style:italic}
     .lf-pop-host-row{display:flex;align-items:center;gap:11px;margin-bottom:10px;padding:7px 0;border-top:1px solid rgba(184,151,90,.18);border-bottom:1px solid rgba(184,151,90,.18)}
     .lf-pop-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid #B8975A;flex-shrink:0;background:#1a2a1a}
     .lf-pop-host-stack{display:flex;flex-direction:column;line-height:1.2;min-width:0}
-    .lf-pop-host-label{font-family:'Jost',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;opacity:.85;margin-bottom:3px}
-    .lf-pop-host-full{font-family:'EB Garamond',serif;font-size:16px;color:#F5ECD8;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .lf-pop-msg{font-family:'EB Garamond',serif;font-size:14.5px;color:rgba(215,235,215,.78);font-style:italic;margin-bottom:10px;padding-left:9px;border-left:2px solid rgba(184,151,90,.4)}
-    .lf-pop-attending{font-family:'Jost',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:9px}
+    .lf-pop-host-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:9.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#B8975A;opacity:.85;margin-bottom:3px}
+    .lf-pop-host-full{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;color:#F5ECD8;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .lf-pop-msg{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14.5px;color:rgba(215,235,215,.78);font-style:italic;margin-bottom:10px;padding-left:9px;border-left:2px solid rgba(184,151,90,.4)}
+    .lf-pop-attending{font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#B8975A;margin-bottom:9px}
     /* Action area — primary "Join" link sits flush against a divider,
        secondary "Sign in" link directly under it with no extra border.
        Compact stack keeps the popup short enough that the title stays
@@ -282,20 +285,20 @@
       border-top:1px solid rgba(184,151,90,.25);
       z-index:2;
     }
-    .lf-pop-link{display:block;color:#B8975A;font-family:'Jost',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;margin-bottom:5px}
+    .lf-pop-link{display:block;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;margin-bottom:5px}
     .lf-pop-link:hover{color:#F5ECD8}
-    .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+    .lf-pop-link-2{display:block;color:rgba(215,235,215,.55);font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
     .lf-pop-link-2:hover{color:#B8975A}
-    .lf-pop-reveal{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:#D4B483;background:rgba(184,151,90,.08);border-left:2px solid rgba(184,151,90,.5);padding:6px 10px;margin-bottom:9px;line-height:1.45}
+    .lf-pop-reveal{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:#D4B483;background:rgba(184,151,90,.08);border-left:2px solid rgba(184,151,90,.5);padding:6px 10px;margin-bottom:9px;line-height:1.45}
 
     /* ── HOST CTA SECTION ─────────────────────────────────────────── */
     .lf-host{background:var(--ink-mid);padding:80px 0;border-top:1px solid var(--border)}
     .lf-host-inner{max-width:680px;margin:0 auto;text-align:center}
-    .lf-host-eyebrow{font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
-    .lf-host-title{font-family:'EB Garamond',serif;font-size:clamp(28px,3.6vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.18;margin-bottom:22px;font-style:italic}
-    .lf-host-body{font-family:'EB Garamond',serif;font-size:19px;color:rgba(215,235,215,.82);line-height:1.85;margin-bottom:32px}
+    .lf-host-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:14px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+    .lf-host-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,3.6vw,40px);font-weight:400;color:var(--gold-pale);line-height:1.18;margin-bottom:22px;font-style:italic}
+    .lf-host-body{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:19px;color:rgba(215,235,215,.82);line-height:1.85;margin-bottom:32px}
     .lf-host-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-    .lf-host-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:15px 32px;text-decoration:none;transition:background .15s}
+    .lf-host-cta{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:12.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:15px 32px;text-decoration:none;transition:background .15s}
     .lf-host-cta:hover{background:var(--gold-pale)}
     .lf-host-cta-ghost{background:transparent;color:var(--gold-light);border:1px solid var(--gold-strong);padding:14px 31px}
     .lf-host-cta-ghost:hover{border-color:var(--gold);color:var(--ink);background:var(--gold)}
@@ -328,7 +331,7 @@
 <!-- NAV -->
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin" style="height:40px;width:auto;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="/membership" class="nav-link">Membership</a>
       <a href="/join" class="nav-link">Why Join</a>
@@ -458,7 +461,7 @@
         <div class="footer-heading">Contact</div>
         <ul class="footer-links">
           <li><a href="mailto:clan@ocomain.org">clan@ocomain.org</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
         </ul>
       </div>
     </div>

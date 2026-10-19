@@ -7,6 +7,8 @@
 <title>Pedigree — Clan Ó Comáin</title>
 <meta name="description" content="The full documented pedigree and history of Clan Ó Comáin — from ancient Ireland to the present day. Royal pedigree, the Chiefdom of Tulach Commáin, Cahercommane, DNA, and the modern clan revival.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="shared.css">
 <style>
 .history-body{font-size:15px;font-weight:300;line-height:1.95;color:var(--ink-soft);max-width:740px}
@@ -19,12 +21,12 @@ sup a:hover{text-decoration:underline}
 .chapter{padding:72px 0;border-bottom:1px solid var(--border);scroll-margin-top:72px}
 .chapter:last-of-type{border-bottom:none}
 .chapter-num{font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
-.chapter-title{font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2}
-.chapter-subtitle{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-bottom:24px}
+.chapter-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.2}
+.chapter-subtitle{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;font-style:italic;color:var(--ink-muted);margin-bottom:24px}
 .chapter-layout{display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:start}
 .chapter-img{width:100%;border-radius:2px;border:1px solid var(--border);display:block;margin-bottom:10px;object-fit:cover}
 .annal-quote{border-left:2px solid var(--gold);padding:16px 22px;margin:24px 0;background:rgba(15,31,15,.03)}
-.annal-quote p{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:var(--ink-mid);line-height:1.55;margin-bottom:6px}
+.annal-quote p{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:var(--ink-mid);line-height:1.55;margin-bottom:6px}
 .annal-quote cite{font-size:10px;letter-spacing:.06em;color:var(--ink-muted);font-style:normal;font-weight:500}
 .footnotes-section{background:var(--cream-dark);padding:60px 0;margin-top:0}
 .footnote-list{list-style:none;display:flex;flex-direction:column;gap:12px;max-width:740px}
@@ -131,7 +133,7 @@ sup a:hover{text-decoration:underline}
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img width="459" height="526" src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img width="192" height="220" src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link active">Pedigree</a>
@@ -163,7 +165,7 @@ sup a:hover{text-decoration:underline}
 .endorsement-portrait{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:14px}
 .endorsement-photo{width:120px;height:120px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);padding:3px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0}
 .endorsement-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
-.endorsement-caption{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink-mid);line-height:1.45}
+.endorsement-caption{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;color:var(--ink-mid);line-height:1.45}
 .endorsement-quote{flex:1 1 320px;min-width:0}
 .caption-desktop{display:block}
 .caption-mobile{display:none}
@@ -272,9 +274,9 @@ sup a:hover{text-decoration:underline}
 }
 .endorsement-card-photo{width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid var(--gold);padding:3px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);flex-shrink:0;margin-bottom:16px}
 .endorsement-card-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
-.endorsement-card-quote{font-family:'EB Garamond',serif;font-size:17px;line-height:1.55;color:var(--ink);font-style:italic;margin:0 0 18px;flex:1 1 auto}
+.endorsement-card-quote{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.55;color:var(--ink);font-style:italic;margin:0 0 18px;flex:1 1 auto}
 .endorsement-card-name{font-size:15px;line-height:1.4;color:var(--ink);font-weight:600;margin-top:16px;margin-bottom:4px}
-.endorsement-card-creds{font-family:'EB Garamond',serif;font-size:13.5px;line-height:1.5;color:var(--ink-muted);font-style:italic}
+.endorsement-card-creds{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13.5px;line-height:1.5;color:var(--ink-muted);font-style:italic}
 .endorsement-card-creds a{color:var(--ink-muted);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.18)}
 @media(max-width:600px){
   .endorsements-strip{
@@ -307,7 +309,7 @@ sup a:hover{text-decoration:underline}
     margin-top:14px;
   }
   .swipe-hint{
-    font-family:'EB Garamond',serif;
+    font-family:'EB Garamond','EB Garamond Fallback',serif;
     font-size:14px;
     color:var(--ink-muted);
     font-style:italic;
@@ -344,7 +346,7 @@ sup a:hover{text-decoration:underline}
 .endorsement-card-expandable .endorsement-card-quote{margin-bottom:0}
 .endorsement-card-full{
   display:none;
-  font-family:'EB Garamond',serif;
+  font-family:'EB Garamond','EB Garamond Fallback',serif;
   font-size:15.5px;
   line-height:1.65;
   color:var(--ink);
@@ -357,7 +359,7 @@ sup a:hover{text-decoration:underline}
 .endorsement-card-expandable.open .endorsement-card-quote{display:none}
 .endorsement-card-expandable.open .endorsement-card-full{display:block}
 .endorsement-card-expand-cue{
-  font-family:'Jost',sans-serif;
+  font-family:'Jost','Jost Fallback',sans-serif;
   font-size:11px;
   letter-spacing:.1em;
   text-transform:uppercase;
@@ -378,15 +380,15 @@ sup a:hover{text-decoration:underline}
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <!-- Mobile two-bar strip -->
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -423,20 +425,20 @@ function toggleMenu(){
 <div style="background:var(--ink);padding:72px 0 56px;border-bottom:2px solid var(--gold)">
   <div class="si">
     <div class="eyebrow">Documented pedigree & history</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,60px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:10px">History of Clan Ó Comáin</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6);margin-bottom:0">The story of an ancient Gaelic kindred — fully evidenced</p>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(36px,5vw,60px);font-weight:400;color:var(--gold-pale);line-height:1.05;margin-bottom:10px">History of Clan Ó Comáin</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6);margin-bottom:0">The story of an ancient Gaelic kindred — fully evidenced</p>
   </div>
 </div>
 
 <section id="foreword" style="padding:56px 0 0">
   <div class="si">
     <div style="max-width:780px;margin:0 auto">
-      <p style="font-family:'EB Garamond',serif;font-size:21px;line-height:1.55;color:var(--ink);margin-bottom:22px">Clan Ó Comáin is one of the older Gaelic kindreds of early medieval Ireland — a sept whose documented royal pedigree, preserved in the medieval Irish genealogical manuscripts of both Munster and Connacht, is now corroborated by an unbroken Y-DNA male line in Ireland stretching back over four thousand years.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">The clan's documented story spans two of the ancient royal kingdoms of Ireland. In Munster, the royal line of the <strong>Déisi Muman</strong> bore the Comáin name as early as 658 AD. In Connacht, the medieval Irish genealogists preserved a separate line of chiefs as its own named segment, <em>Clann Comáin</em>, within the royal pedigree of <strong>Uí Maine</strong> — the great kingdom of east Galway and south Roscommon. The clan's patron is <strong>Saint Commán</strong>, founder of Roscommon and of the ancient church at Kinvara on the southern edge of the Burren.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">The ancestral capital, <strong>Cahercommane</strong>, stands today on the Burren in County Clare: a triple-ring stone fort, occupied through the 7th to 9th centuries, and one of the great early-medieval high-status sites of western Ireland. A short distance away rises the ceremonial mound where chiefs were formally inaugurated. Together they were the seat of a Déisi Muman sept holding the <strong>Chiefdom of Tulach Commáin</strong> on the Burren frontier — before it was overshadowed by the rise of the Dál gCais, the dynasty of Brian Boru and the O'Briens of Thomond, into which Clan Ó Comáin did not descend.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">Clan Ó Comáin belongs to the older Munster peoples of Clare — pre-Dalcassian kindreds politically eclipsed by the rise of the Dál gCais in the 10th and 11th centuries. Without status in the new order, descendants of the clan scattered across Ireland and the clan's name appears in the later records most often as <strong>Comyn</strong> rather than Ó Comáin and towards the Victorian era as <strong>Cummins</strong> or <strong>Hurley</strong>. Edward MacLysaght, the first Chief Herald of Ireland, identified the Comyns as also Gaelic-anglicised rather than Norman-descended — a position now corroborated by Y-DNA testing, which places the Ó Comáin male line on a deep Irish patriline alongside other Munster families bearing Norman-era surnames.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:16px;line-height:1.65;color:var(--ink-muted);margin-bottom:18px;padding-top:14px;border-top:1px solid var(--border);font-style:italic">This page presents, for the first time in a single integrated treatment, the documentary, archaeological and genetic evidence for the Ó Comáin kindred. It draws on the foundational work of Séamus Pender on the Déisi genealogies, Claire Cotter on Cahercommane, Blair Gibson on the Tulach Commáin chiefdom, and Edward MacLysaght on the Munster Comyn-anglicisation; it adds Big-Y DNA evidence not previously available; and it follows an evidence-based methodology — separating what is well evidenced from what should be treated as plausible tradition or as an open scholarly question. Two primary-source traditions — a Connacht / Uí Maine manuscript pedigree and a Munster / Déisi Muman annalistic record — are treated as parallel inheritances of the modern clan, not as a single unified line. Footnotes carry the primary sources and the principal modern scholarship.</p>
-      <p style="font-family:'EB Garamond',serif;font-size:17px;line-height:1.65;color:var(--ink);margin-bottom:0;font-style:italic;text-align:center">The story belongs to all who support and cherish Irish heritage. A Gaelic clan was never the bloodline alone — a sept gathered kin and ally, soldier and friend, all who stood with the chief and the cause. Clan Ó Comáin opens its hearth to them still.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:21px;line-height:1.55;color:var(--ink);margin-bottom:22px">Clan Ó Comáin is one of the older Gaelic kindreds of early medieval Ireland — a sept whose documented royal pedigree, preserved in the medieval Irish genealogical manuscripts of both Munster and Connacht, is now corroborated by an unbroken Y-DNA male line in Ireland stretching back over four thousand years.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">The clan's documented story spans two of the ancient royal kingdoms of Ireland. In Munster, the royal line of the <strong>Déisi Muman</strong> bore the Comáin name as early as 658 AD. In Connacht, the medieval Irish genealogists preserved a separate line of chiefs as its own named segment, <em>Clann Comáin</em>, within the royal pedigree of <strong>Uí Maine</strong> — the great kingdom of east Galway and south Roscommon. The clan's patron is <strong>Saint Commán</strong>, founder of Roscommon and of the ancient church at Kinvara on the southern edge of the Burren.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">The ancestral capital, <strong>Cahercommane</strong>, stands today on the Burren in County Clare: a triple-ring stone fort, occupied through the 7th to 9th centuries, and one of the great early-medieval high-status sites of western Ireland. A short distance away rises the ceremonial mound where chiefs were formally inaugurated. Together they were the seat of a Déisi Muman sept holding the <strong>Chiefdom of Tulach Commáin</strong> on the Burren frontier — before it was overshadowed by the rise of the Dál gCais, the dynasty of Brian Boru and the O'Briens of Thomond, into which Clan Ó Comáin did not descend.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:18px">Clan Ó Comáin belongs to the older Munster peoples of Clare — pre-Dalcassian kindreds politically eclipsed by the rise of the Dál gCais in the 10th and 11th centuries. Without status in the new order, descendants of the clan scattered across Ireland and the clan's name appears in the later records most often as <strong>Comyn</strong> rather than Ó Comáin and towards the Victorian era as <strong><a href="/cummins-heritage" class="sn-link">Cummins</a></strong> or <strong><a href="/hurley-heritage" class="sn-link">Hurley</a></strong>. Edward MacLysaght, the first Chief Herald of Ireland, identified the Comyns as also Gaelic-anglicised rather than Norman-descended — a position now corroborated by Y-DNA testing, which places the Ó Comáin male line on a deep Irish patriline alongside other Munster families bearing Norman-era surnames.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.65;color:var(--ink-muted);margin-bottom:18px;padding-top:14px;border-top:1px solid var(--border);font-style:italic">This page presents, for the first time in a single integrated treatment, the documentary, archaeological and genetic evidence for the Ó Comáin kindred. It draws on the foundational work of Séamus Pender on the Déisi genealogies, Claire Cotter on Cahercommane, Blair Gibson on the Tulach Commáin chiefdom, and Edward MacLysaght on the Munster Comyn-anglicisation; it adds Big-Y DNA evidence not previously available; and it follows an evidence-based methodology — separating what is well evidenced from what should be treated as plausible tradition or as an open scholarly question. Two primary-source traditions — a Connacht / Uí Maine manuscript pedigree and a Munster / Déisi Muman annalistic record — are treated as parallel inheritances of the modern clan, not as a single unified line. Footnotes carry the primary sources and the principal modern scholarship.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;line-height:1.65;color:var(--ink);margin-bottom:0;font-style:italic;text-align:center">The story belongs to all who support and cherish Irish heritage. A Gaelic clan was never the bloodline alone — a sept gathered kin and ally, soldier and friend, all who stood with the chief and the cause. Clan Ó Comáin opens its hearth to them still.</p>
     </div>
   </div>
 </section>
@@ -448,7 +450,7 @@ function toggleMenu(){
       <div class="endorsements-strip">
         <div class="endorsement-card">
           <div class="endorsement-card-photo">
-            <img width="600" height="600" src="images/people/nugent.jpg" alt="Rev Dr Patrick Nugent, historical geographer and foremost authority on the Gaelic clans of Clare">
+            <img width="600" height="600" src="images/people/nugent.jpg" alt="Rev Dr Patrick Nugent, historical geographer and foremost authority on the Gaelic clans of Clare" decoding="async">
           </div>
           <div class="endorsement-card-expandable" onclick="this.classList.toggle('open');" role="button" tabindex="0" aria-expanded="false">
             <div class="endorsement-card-expand-cue"><span class="label">Tap to read full endorsement</span> <span class="arrow">▾</span></div>
@@ -460,7 +462,7 @@ function toggleMenu(){
         </div>
         <div class="endorsement-card">
           <div class="endorsement-card-photo">
-            <img width="600" height="600" src="images/people/martin_breen.jpg" alt="Martin Breen, historian of Clare">
+            <img width="600" height="600" src="/.netlify/images?url=/images/people/martin_breen.jpg&w=600" alt="Martin Breen, historian of Clare" srcset="/.netlify/images?url=/images/people/martin_breen.jpg&w=480 480w, /.netlify/images?url=/images/people/martin_breen.jpg&w=600 600w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
           </div>
           <p class="endorsement-card-quote">"Worthy of a great endorsement. The depth of scholarship and academic research is astounding. Any Gaelic clan would be proud to have this as an interrogation of their Gaelic roots — a solid foundation of erudite material on which later researchers can expand."</p>
           <div class="endorsement-card-name">Martin Breen</div>
@@ -468,7 +470,7 @@ function toggleMenu(){
         </div>
         <div class="endorsement-card">
           <div class="endorsement-card-photo">
-            <img width="342" height="386" src="images/people/dick_cronin.jpg" alt="Risteárd Ua Cróinín (Dick Cronin)">
+            <img width="342" height="386" src="images/people/dick_cronin.jpg" alt="Risteárd Ua Cróinín (Dick Cronin)" loading="lazy" decoding="async">
           </div>
           <p class="endorsement-card-quote">"Fantastic, professional and most impressive, based on proven authentic historical sources. A well researched and detailed piece of work. It covers the genealogical, ecclesiastical, historical and archaeological aspects of this ancient clan linked to both the Connacht Uí Maine and Munster Déisi royal families. Expertly compiled and designed to appeal to the more learned and academic members of the diaspora."</p>
           <div class="endorsement-card-name">Risteárd Ua Cróinín <span style="font-weight:400;color:var(--ink-mid)">(Dick Cronin)</span></div>
@@ -527,8 +529,8 @@ function toggleMenu(){
 <section style="padding:48px 0 0">
   <div class="si">
     <div style="max-width:580px;margin:0 auto;text-align:center">
-      <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:16px;line-height:1.5;color:var(--ink-mid);margin-bottom:10px">Continue to the Pedigree — twelve chapters, a 30-minute read of the documentary, archaeological and genetic evidence.</div>
-      <div style="font-family:'Jost',sans-serif;font-size:24px;color:var(--gold-deep);margin-top:6px" aria-hidden="true">↓</div>
+      <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-style:italic;font-size:16px;line-height:1.5;color:var(--ink-mid);margin-bottom:10px">Continue to the Pedigree — twelve chapters, a 30-minute read of the documentary, archaeological and genetic evidence.</div>
+      <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:24px;color:var(--gold-deep);margin-top:6px" aria-hidden="true">↓</div>
     </div>
   </div>
 </section>
@@ -604,7 +606,7 @@ function toggleMenu(){
   background:#F5F2EA;
   border-left:2px solid var(--gold);
   padding:18px 10px 18px 14px;
-  font-family:'EB Garamond',serif;
+  font-family:'EB Garamond','EB Garamond Fallback',serif;
   box-shadow:-2px 0 6px rgba(0,0,0,.04);
   border-radius:2px;
   transition:opacity .3s;
@@ -614,7 +616,7 @@ function toggleMenu(){
 #chapterSidebar::-webkit-scrollbar{width:4px}
 #chapterSidebar::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:2px}
 .cs-title{
-  font-family:'Jost',sans-serif;
+  font-family:'Jost','Jost Fallback',sans-serif;
   font-size:10px;
   font-weight:600;
   letter-spacing:.18em;
@@ -675,7 +677,7 @@ function toggleMenu(){
   border:2px solid var(--gold);
   border-radius:30px;
   padding:11px 18px 11px 14px;
-  font-family:'Jost',sans-serif;
+  font-family:'Jost','Jost Fallback',sans-serif;
   font-size:12px;
   font-weight:600;
   letter-spacing:.08em;
@@ -717,7 +719,7 @@ function toggleMenu(){
   border-bottom:1px solid rgba(255,255,255,.15);
 }
 .co-title{
-  font-family:'Jost',sans-serif;
+  font-family:'Jost','Jost Fallback',sans-serif;
   font-size:11px;
   font-weight:600;
   letter-spacing:.18em;
@@ -744,7 +746,7 @@ function toggleMenu(){
 .co-list a{
   display:block;
   padding:16px 0;
-  font-family:'EB Garamond',serif;
+  font-family:'EB Garamond','EB Garamond Fallback',serif;
   font-size:17px;
   line-height:1.4;
   color:var(--cream);
@@ -761,7 +763,7 @@ function toggleMenu(){
    column. */
 .co-num{
   display:inline-block;
-  font-family:'Jost',sans-serif;
+  font-family:'Jost','Jost Fallback',sans-serif;
   font-size:13px;
   font-weight:600;
   color:inherit;
@@ -945,7 +947,7 @@ function toggleMenu(){
         </div>
       </div>
       <div>
-        <img width="640" height="426" class="chapter-img" style="height:280px" src="images/heritage/cahercommane_aerial.png" alt="Aerial view of Cahercommane — the Burren, County Clare" alt="Cahercommane 3D remodel">
+        <img width="640" height="426" class="chapter-img" style="height:280px" src="/.netlify/images?url=/images/heritage/cahercommane_aerial.png&w=640" alt="Aerial view of Cahercommane — the Burren, County Clare" alt="Cahercommane 3D remodel" srcset="/.netlify/images?url=/images/heritage/cahercommane_aerial.png&w=480 480w, /.netlify/images?url=/images/heritage/cahercommane_aerial.png&w=640 640w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Cahercommane — the ancestral capital of the Chiefdom of Tulach Commáin</div>
       </div>
     </div>
@@ -965,9 +967,9 @@ function toggleMenu(){
           <p>The Uí Maine pedigree of the Ó Comáin line is preserved in the <strong>Book of Lecan</strong> (Royal Irish Academy MS 23 P 2, fol. 90–92), within the Uí Maine tract. The pedigree was first published in modern critical edition by John O'Donovan as <em>The Tribes and Customs of Hy-Many, commonly called O'Kelly's Country</em> (Dublin: Irish Archaeological Society, 1843), and was subsequently carried into John O'Hart's <em>Irish Pedigrees</em> (1892). It traces the family's documented descent through the kings of Uí Maine in Connacht.<sup><a href="#fn5">5</a></sup></p>
           <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:24px;margin:24px 0;text-align:center">
             <div class="eyebrow" style="font-size:9px;margin-bottom:14px;text-align:left">From the manuscript</div>
-            <img width="796" height="242" src="images/archive/clann_comain_odonovan_1843_irish.png" alt="Clann Chomáin pedigree segment in Irish (Gaelic typography), from O'Donovan's edition of the Book of Lecan, 1843" style="width:100%;height:auto;max-width:480px;display:block;border:1px solid var(--border);margin:0 auto 6px">
+            <img width="796" height="242" src="images/archive/clann_comain_odonovan_1843_irish.png" alt="Clann Chomáin pedigree segment in Irish (Gaelic typography), from O'Donovan's edition of the Book of Lecan, 1843" style="width:100%;height:auto;max-width:480px;display:block;border:1px solid var(--border);margin:0 auto 6px" loading="lazy" decoding="async">
             <div style="font-size:10px;color:var(--ink-muted);font-style:italic;margin-bottom:18px">Clann Chomáin — Irish text in Gaelic typography</div>
-            <img width="780" height="238" src="images/archive/clann_comain_odonovan_1843_english.png" alt="The Clann Comáin pedigree segment, English translation, from O'Donovan's edition of the Book of Lecan, 1843" style="width:100%;height:auto;max-width:480px;display:block;border:1px solid var(--border);margin:0 auto 6px">
+            <img width="780" height="238" src="images/archive/clann_comain_odonovan_1843_english.png" alt="The Clann Comáin pedigree segment, English translation, from O'Donovan's edition of the Book of Lecan, 1843" style="width:100%;height:auto;max-width:480px;display:block;border:1px solid var(--border);margin:0 auto 6px" loading="lazy" decoding="async">
             <div style="font-size:10px;color:var(--ink-muted);font-style:italic">The Clann Comáin — English translation</div>
             <div style="font-size:10px;color:var(--ink-muted);margin-top:14px;padding-top:10px;border-top:1px solid var(--border);text-align:left">From John O'Donovan, <em>The Tribes and Customs of Hy-Many, commonly called O'Kelly's Country</em> (Dublin: Irish Archaeological Society, 1843), pp. 26–27 — printing the Clann Comáin pedigree segment from the Book of Lecan.</div>
           </div>
@@ -981,7 +983,7 @@ function toggleMenu(){
       <div>
         <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:28px;margin-bottom:20px">
           <div class="eyebrow" style="font-size:9px">Pedigree extract</div>
-          <div style="font-family:'EB Garamond',serif;font-size:14px;line-height:2;color:var(--ink-soft)">
+          <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;line-height:2;color:var(--ink-soft)">
             Máine Mór mac Eochaidh (c. 357 AD)<br>
             <span style="color:var(--ink-faint);padding-left:12px">↓</span><br>
             <span style="padding-left:12px">...Kings of Uí Maine...</span><br>
@@ -1030,7 +1032,7 @@ function toggleMenu(){
           <p>This carries a direct implication for the chiefdom site itself. Pender's evidence is that the Déisi Muman were not a single line but a federation of dozens of named septs, each with its own recognised territory and each electing kings in rotation. On that model, the Chiefdom of Tulach Commáin — adjacent to Corcu Mruad, with its capital at <strong>Cahercommane</strong>, "Commán's stone fort" — is most readily explained as the territorial seat of a Déisi-Muman sept of the Commán line: the kindred to which Suibne and Congal belonged, and within whose ambit Célechair and Colmán plausibly stood. The annalistic record of named Commán-line kings in the Déisi tradition, the Pender attestation of the Uí Cormaic among the Déisi septs, the documented Déisi political reach into north-west Clare by 765 AD, and the place-name evidence of Cahercommane and Tulach Commáin all point in the same direction: a Déisi-Muman sept holding its own chiefdom on the Burren frontier, its caput a stone fort bearing the eponymous ancestor's name.<sup><a href="#fn13c">13c</a></sup></p>
           <p>The annalistic evidence from the Déisi Genealogies, written in the Book of Lecan, Rawlinson B 502, and the Book of Leinster, establishes the family's presence across both the Connacht and Munster traditions from the earliest recorded period.<sup><a href="#fn12">12</a></sup> Whether these represent one family or two independent lines sharing the personal name Comáin remains an open scholarly question — both traditions are presented here honestly.</p>
 
-          <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin:36px 0 14px;line-height:1.25">Could name-giver Coman of Uí Maine be the father of King Suibne of the Déisi Muman?</h3>
+          <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin:36px 0 14px;line-height:1.25">Could name-giver Coman of Uí Maine be the father of King Suibne of the Déisi Muman?</h3>
 
           <p>The precise relationship between these two figures — Coman mac Breanan Dall and Suibne mac Comáin — has not been directly addressed by published scholarship. The primary sources are silent on any link between them. The chronology is, however, such that a connection cannot be ruled out: Coman's floruit of c. 620–650 AD places him in the generation immediately preceding Suibne's kingship (d. 658 AD), and the Déisi king's patronymic — literally <em>"son of Comán"</em> — would, on the common reading, identify simply an unrelated Comán within the Déisi lineage itself.</p>
 
@@ -1044,9 +1046,9 @@ function toggleMenu(){
         </div>
       </div>
       <div>
-        <img width="911" height="683" class="chapter-img" style="height:240px" src="images/heritage/rock_of_cashel.png" alt="Rock of Cashel — seat of the Eóganacht, County Tipperary">
+        <img width="911" height="683" class="chapter-img" style="height:240px" src="/.netlify/images?url=/images/heritage/rock_of_cashel.png&w=911" alt="Rock of Cashel — seat of the Eóganacht, County Tipperary" srcset="/.netlify/images?url=/images/heritage/rock_of_cashel.png&w=480 480w, /.netlify/images?url=/images/heritage/rock_of_cashel.png&w=768 768w, /.netlify/images?url=/images/heritage/rock_of_cashel.png&w=911 911w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Rock of Cashel, St Patrick's Rock — seat of the Eóganacht, overlords of the Déisi Muman. The Chiefdom of Tulach Commáin was probably a vassal of the Kingdom of Cashel according to historians.</div>
-        <img width="436" height="1000" src="images/editorial/irish_king_sword.png" alt="Early Irish king — Gaelic warrior nobility" style="max-width:150px;width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border);margin:20px auto 8px">
+        <img width="436" height="1000" src="/.netlify/images?url=/images/editorial/irish_king_sword.png&w=436" alt="Early Irish king — Gaelic warrior nobility" style="max-width:150px;width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border);margin:20px auto 8px" loading="lazy" decoding="async">
         <div class="img-cap">A Gaelic king of the early medieval period — the world of Suibne mac Comáin, king of the Déisi Muman, 658 AD</div>
       </div>
     </div>
@@ -1069,9 +1071,9 @@ function toggleMenu(){
         <p>The family name is also preserved in <strong>Ferchess mac Commán</strong> — a fian warrior and poet in early Irish mythology, a member of the household of King Ailill who ruled southern Ireland, recorded in the ancient sagas as having avenged the death of Ailill's son.<sup><a href="#fn18">18</a></sup></p>
       </div>
       <div>
-        <img width="490" height="750" class="chapter-img" style="height:280px;object-fit:cover;object-position:center top;border:2px solid #B8975A" src="images/archive/saint_comman_manuscript.png" alt="Early Irish saint — 9th century Irish manuscript illumination in the insular tradition">
+        <img width="490" height="750" class="chapter-img" style="height:280px;object-fit:cover;object-position:center top;border:2px solid #B8975A" src="/.netlify/images?url=/images/archive/saint_comman_manuscript.png&w=490" alt="Early Irish saint — 9th century Irish manuscript illumination in the insular tradition" srcset="/.netlify/images?url=/images/archive/saint_comman_manuscript.png&w=480 480w, /.netlify/images?url=/images/archive/saint_comman_manuscript.png&w=490 490w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Saint in the insular manuscript tradition · 9th century Irish</div>
-        <img width="1280" height="719" class="chapter-img" style="height:200px;margin-top:16px" src="images/heritage/holy_well_newhall.png" alt="Holy Well of St John the Baptist, Newhall Estate">
+        <img width="1280" height="719" class="chapter-img" style="height:200px;margin-top:16px" src="/.netlify/images?url=/images/heritage/holy_well_newhall.png&w=1280" alt="Holy Well of St John the Baptist, Newhall Estate" srcset="/.netlify/images?url=/images/heritage/holy_well_newhall.png&w=480 480w, /.netlify/images?url=/images/heritage/holy_well_newhall.png&w=768 768w, /.netlify/images?url=/images/heritage/holy_well_newhall.png&w=1024 1024w, /.netlify/images?url=/images/heritage/holy_well_newhall.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Holy Well of St John the Baptist, Newhall Estate</div>
       </div>
     </div>
@@ -1094,28 +1096,28 @@ function toggleMenu(){
           <p>The 1585 deed of Queen Elizabeth I references <strong>"Tullagh Coman"</strong> as a place name — confirming the persistence of the Comáin name in the Burren landscape into the Elizabethan period, centuries after the chiefdom had faded from political life.<sup><a href="#fn21">21</a></sup> Thomas Johnson Westropp, the Irish antiquarian and president of the Royal Society of Antiquaries of Ireland, documented the site in his early 20th century surveys, noting that the personal name Commán was likely the root of both the fort and the townland names.<sup><a href="#fn22">22</a></sup></p>
           <p>As late as the 19th century, Tulach Commáin — the burial and inauguration site of the chieftains — was regarded as a supernaturally potent spot by local tradition. A local told an archaeologist: <em>"it has more fairies than all the other forts of the hill."</em><sup><a href="#fn23">23</a></sup></p>
 
-          <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.4vw,26px);font-weight:400;color:var(--ink);margin-top:36px;margin-bottom:14px;line-height:1.2">Scholarly recognition: the 1990 UCLA doctoral dissertation</h3>
+          <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.4vw,26px);font-weight:400;color:var(--ink);margin-top:36px;margin-bottom:14px;line-height:1.2">Scholarly recognition: the 1990 UCLA doctoral dissertation</h3>
           <p>In 1990, the American anthropologist <strong>Dr. David Blair Gibson</strong> submitted his doctoral dissertation to the Department of Anthropology, University of California, Los Angeles. His committee chair was <strong>Prof. Timothy Earle</strong> — one of the foremost authorities on chiefdom archaeology. The dissertation's title alone is significant: <em>Tulach Commáin: A View of an Irish Chiefdom</em>.<sup><a href="#fn-gibson1990">GS</a></sup></p>
           <p>Gibson reconstructed, on archaeological and territorial grounds, a north-Clare polity centred on the stone fort of Cahercommane (<em>Cathair Commáin</em> — "the Dwelling of Commán"). Its companion prehistoric mound, Tulach Commáin ("Mound of Commán"), stands a short distance away and gives its name to the townland of Tullycommon, still shown on Ordnance Survey maps. Both the settlement and the mound bear Commán's name. Gibson identified the mound as the probable inauguration cairn of the chiefdom's chiefs — the place where each new chief was invested with office, in the ancient Gaelic kingship tradition.</p>
           <p>Gibson reconstructed Cahercommane as the political centre of an early medieval chiefdom whose name and territorial extent are preserved in the local placenames <em>Cathair Chommáin</em> and <em>Tulach Commáin</em>. His work was later expanded into the Cambridge University Press monograph <em>From Chiefdom to State in Early Ireland</em> (2012). The 1990 dissertation remains the foundational scholarly treatment of the chiefdom — and it carries Commán's name in its very title.</p>
 
           <!-- Member Library call-out -->
           <div style="margin-top:36px;padding:28px;border:1.5px solid var(--gold);background:var(--cream-mid);text-align:center">
-            <img width="459" height="526" src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin shield" style="width:56px;height:auto;display:inline-block;margin-bottom:8px">
-            <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Clan Member Library</div>
-            <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.2">Private access to primary scholarship</h3>
-            <p style="max-width:620px;margin:0 auto 14px;font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink)">Members of Clan Ó Comáin receive private access to scanned primary scholarship on the clan — including Gibson's full 1990 UCLA doctoral dissertation <em>Tulach Commáin</em>, his 2008 peer-reviewed journal article on Irish chiefdoms, and Cotter's 1999 Discovery Programme re-assessment of Cahercommane Fort.</p>
-            <p style="max-width:620px;margin:0 auto 24px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.65;color:var(--ink-muted);font-style:italic">These documents are not freely available elsewhere online. The clan members' library preserves and makes them accessible for genealogy and heritage research.</p>
-            <div onclick="location.href='membership'" style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px 28px;border-radius:1px;cursor:pointer;margin-right:6px">Apply for Membership &rarr;</div>
-            <div style="margin-top:14px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink-muted)">Already a member? <a href="members/login" style="color:var(--gold-deep);text-decoration:underline">Sign in &rarr;</a></div>
+            <img width="192" height="220" src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin shield" style="width:56px;height:auto;display:inline-block;margin-bottom:8px" decoding="async">
+            <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Clan Member Library</div>
+            <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.2">Private access to primary scholarship</h3>
+            <p style="max-width:620px;margin:0 auto 14px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.7;color:var(--ink)">Members of Clan Ó Comáin receive private access to scanned primary scholarship on the clan — including Gibson's full 1990 UCLA doctoral dissertation <em>Tulach Commáin</em>, his 2008 peer-reviewed journal article on Irish chiefdoms, and Cotter's 1999 Discovery Programme re-assessment of Cahercommane Fort.</p>
+            <p style="max-width:620px;margin:0 auto 24px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;line-height:1.65;color:var(--ink-muted);font-style:italic">These documents are not freely available elsewhere online. The clan members' library preserves and makes them accessible for genealogy and heritage research.</p>
+            <div onclick="location.href='membership'" style="display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px 28px;border-radius:1px;cursor:pointer;margin-right:6px">Apply for Membership &rarr;</div>
+            <div style="margin-top:14px;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink-muted)">Already a member? <a href="members/login" style="color:var(--gold-deep);text-decoration:underline">Sign in &rarr;</a></div>
           </div>
         </div>
       </div>
       <div>
-        <img width="750" height="469" class="chapter-img" style="height:280px" src="images/heritage/cahercommaun_3d.jpeg" alt="Cahercommane 3D remodel">
+        <img width="750" height="469" class="chapter-img" style="height:280px" src="images/heritage/cahercommaun_3d.jpeg" alt="Cahercommane 3D remodel" loading="lazy" decoding="async">
         <div class="img-cap">3D remodel of Cahercommane at the height of the chiefdom</div>
 
-        <img width="1481" height="2081" class="chapter-img" style="height:auto;width:100%;margin-top:20px;background:#fff;border:1px solid var(--border)" src="images/heritage/tulach_commain_chiefdom_map.jpg" alt="Reconstruction map of the Chiefdom of Tulach Commáin, bordered by Corcu Mruad, Uí Fiachrach Aidne, Uí Flánchadha, and Uí Dedaid — with Caher Commáin and the Mound of Commán at the centre">
+        <img width="1481" height="2081" class="chapter-img" style="height:auto;width:100%;margin-top:20px;background:#fff;border:1px solid var(--border)" src="/.netlify/images?url=/images/heritage/tulach_commain_chiefdom_map.jpg&w=1400" alt="Reconstruction map of the Chiefdom of Tulach Commáin, bordered by Corcu Mruad, Uí Fiachrach Aidne, Uí Flánchadha, and Uí Dedaid — with Caher Commáin and the Mound of Commán at the centre" srcset="/.netlify/images?url=/images/heritage/tulach_commain_chiefdom_map.jpg&w=480 480w, /.netlify/images?url=/images/heritage/tulach_commain_chiefdom_map.jpg&w=768 768w, /.netlify/images?url=/images/heritage/tulach_commain_chiefdom_map.jpg&w=1024 1024w, /.netlify/images?url=/images/heritage/tulach_commain_chiefdom_map.jpg&w=1400 1400w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Reconstruction of the Chiefdom of Tulach Commáin — bordered by Corcu Mruad, Uí Fiachrach Aidne, Uí Flánchadha, and Uí Dedaid, with Caher Commáin and the Mound of Commán at the centre and the chieftain's demesne territory shaded. Source: Gibson, D.B., <em>Tulach Commáin: A View of an Irish Chiefdom</em>, UCLA Ph.D. dissertation, 1990, Figure 11.1, p. 344.</div>
       </div>
     </div>
@@ -1142,9 +1144,9 @@ function toggleMenu(){
 
           <figure style="margin:24px 0 28px;max-width:580px">
             <div style="background:var(--white);border:1px solid var(--border);padding:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)">
-              <img width="1818" height="1232" src="images/heritage/cahercommane_satellite.jpg" alt="Cahercommane satellite view from Google Maps showing the fort facing north-west defensively, with the cliff face dropping away to the north and north-west and multivallate ringed earthworks extending south-east into Tulach Commáin chiefdom territory" style="width:100%;height:auto;display:block">
+              <img width="1818" height="1232" src="/.netlify/images?url=/images/heritage/cahercommane_satellite.jpg&w=1400" alt="Cahercommane satellite view from Google Maps showing the fort facing north-west defensively, with the cliff face dropping away to the north and north-west and multivallate ringed earthworks extending south-east into Tulach Commáin chiefdom territory" style="width:100%;height:auto;display:block" srcset="/.netlify/images?url=/images/heritage/cahercommane_satellite.jpg&w=480 480w, /.netlify/images?url=/images/heritage/cahercommane_satellite.jpg&w=768 768w, /.netlify/images?url=/images/heritage/cahercommane_satellite.jpg&w=1024 1024w, /.netlify/images?url=/images/heritage/cahercommane_satellite.jpg&w=1400 1400w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
             </div>
-            <figcaption style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);font-style:italic;margin-top:10px;line-height:1.45">Cahercommane (Cathair Commáin) — satellite view via Google Maps. The fort faces north-west defensively: the inner stone fort sits on the south-eastern edge of the cliff feature, with the cliff dropping away to the north and north-west, and the outer ringed earthworks extending south-east. The defended (cliff-protected) approach faces the Corcu Mruad core territory mapped by Gibson 1990 (Fig. 11.1). <span style="font-style:normal">Imagery: Google Maps / Airbus / Maxar Technologies, 2026.</span></figcaption>
+            <figcaption style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;color:var(--ink-muted);font-style:italic;margin-top:10px;line-height:1.45">Cahercommane (Cathair Commáin) — satellite view via Google Maps. The fort faces north-west defensively: the inner stone fort sits on the south-eastern edge of the cliff feature, with the cliff dropping away to the north and north-west, and the outer ringed earthworks extending south-east. The defended (cliff-protected) approach faces the Corcu Mruad core territory mapped by Gibson 1990 (Fig. 11.1). <span style="font-style:normal">Imagery: Google Maps / Airbus / Maxar Technologies, 2026.</span></figcaption>
           </figure>
 
           <p>There are no signs of occupation past the 10th century — the chiefdom appears to have dissolved, with its territory passing under the expanding Dál Cais confederacy under the O'Brien dynasty to the Ó Dea of Cenél Fearmaic, who would hold the Inchiquin territory under O'Brien overlordship. The site itself was abandoned, but the name survived, embedded in the landscape in both the place name Cahercommane and the nearby townland of Tullycommon (Tulach Commáin).<sup><a href="#fn27">27</a></sup></p>
@@ -1153,15 +1155,15 @@ function toggleMenu(){
           <div style="background:var(--white);border:1px solid var(--border);border-top:2px solid var(--gold);padding:24px">
             <div class="eyebrow" style="font-size:9px">The name — two spellings</div>
             <div style="margin-bottom:16px">
-              <div style="font-family:'EB Garamond',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:4px">Cahercommaun</div>
+              <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:4px">Cahercommaun</div>
               <div style="font-size:11px;color:var(--ink-muted)">Used by Hencken (1938) and the Harvard expedition. The standard modern archaeological spelling.</div>
             </div>
             <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px">
-              <div style="font-family:'EB Garamond',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:4px">Cahircommane</div>
+              <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:4px">Cahircommane</div>
               <div style="font-size:11px;color:var(--ink-muted)">Used on the Ordnance Survey 6-inch map. Noted by Hencken as an alternate form.</div>
             </div>
             <div style="border-top:1px solid var(--border);padding-top:16px">
-              <div style="font-family:'EB Garamond',serif;font-size:18px;font-weight:400;color:var(--gold);margin-bottom:4px">Cathair Chomáin</div>
+              <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-weight:400;color:var(--gold);margin-bottom:4px">Cathair Chomáin</div>
               <div style="font-size:11px;color:var(--ink-muted)">The original Irish: "Fort of Commán" — the personal name of the chief from whom both the fort and the chiefdom took their name.</div>
             </div>
           </div>
@@ -1188,7 +1190,7 @@ function toggleMenu(){
         </div>
       </div>
       <div>
-        <img width="564" height="420" src="images/editorial/norman_invasion.png" alt="The Anglo-Norman invasion of Ireland" style="width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border);margin-top:20px;margin-bottom:8px">
+        <img width="564" height="420" src="/.netlify/images?url=/images/editorial/norman_invasion.png&w=564" alt="The Anglo-Norman invasion of Ireland" style="width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border);margin-top:20px;margin-bottom:8px" srcset="/.netlify/images?url=/images/editorial/norman_invasion.png&w=480 480w, /.netlify/images?url=/images/editorial/norman_invasion.png&w=564 564w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">The Anglo-Norman conquest — the force that dispossessed Conall O'Comáin and ended centuries of chiefly rule in 1225</div>
       </div>
     </div>
@@ -1219,17 +1221,17 @@ function toggleMenu(){
 
       <!-- Member CTA: DNA & Family Tree Specialists -->
       <div style="margin-top:36px;padding:28px;border:1.5px solid var(--gold);background:var(--cream-mid);text-align:center">
-        <img width="459" height="526" src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin shield" style="width:56px;height:auto;display:inline-block;margin-bottom:8px">
-        <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Confirm your lineage</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.2">DNA and family tree specialist for clan members</h3>
-        <p style="max-width:620px;margin:0 auto 14px;font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:var(--ink)">Members of Clan Ó Comáin receive private access to a DNA and genealogy specialist who can help confirm whether your patriline descends from the Gaelic Ó Comáin lineage or from one of the Anglo-Norman Comyn lines — and trace your family tree against the documented Clare and Munster records.</p>
-        <p style="max-width:620px;margin:0 auto 24px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.65;color:var(--ink-muted);font-style:italic">The clan looks after its own. We guide you through the Y-DNA testing options, interpret the results, and place your line in the context of the clan's documented genealogy.</p>
-        <div onclick="location.href='membership'" style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px 28px;border-radius:1px;cursor:pointer;margin-right:6px">Apply for Membership &rarr;</div>
-        <div style="margin-top:14px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink-muted)">Already a member? <a href="members/login" style="color:var(--gold-deep);text-decoration:underline">Sign in &rarr;</a></div>
+        <img width="192" height="220" src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin shield" style="width:56px;height:auto;display:inline-block;margin-bottom:8px" decoding="async">
+        <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Confirm your lineage</div>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.2">DNA and family tree specialist for clan members</h3>
+        <p style="max-width:620px;margin:0 auto 14px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.7;color:var(--ink)">Members of Clan Ó Comáin receive private access to a DNA and genealogy specialist who can help confirm whether your patriline descends from the Gaelic Ó Comáin lineage or from one of the Anglo-Norman Comyn lines — and trace your family tree against the documented Clare and Munster records.</p>
+        <p style="max-width:620px;margin:0 auto 24px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;line-height:1.65;color:var(--ink-muted);font-style:italic">The clan looks after its own. We guide you through the Y-DNA testing options, interpret the results, and place your line in the context of the clan's documented genealogy.</p>
+        <div onclick="location.href='membership'" style="display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px 28px;border-radius:1px;cursor:pointer;margin-right:6px">Apply for Membership &rarr;</div>
+        <div style="margin-top:14px;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink-muted)">Already a member? <a href="members/login" style="color:var(--gold-deep);text-decoration:underline">Sign in &rarr;</a></div>
       </div>
       </div>
       <div>
-        <img width="2200" height="1228" src="images/heritage/newhall_dusk_aerial.webp" alt="Newhall House at dusk — clan seat" style="width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border);margin-bottom:8px">
+        <img width="2200" height="1228" src="/.netlify/images?url=/images/heritage/newhall_dusk_aerial.webp&w=1400" alt="Newhall House at dusk — clan seat" style="width:100%;height:auto;display:block;border-radius:2px;border:1px solid var(--border);margin-bottom:8px" srcset="/.netlify/images?url=/images/heritage/newhall_dusk_aerial.webp&w=480 480w, /.netlify/images?url=/images/heritage/newhall_dusk_aerial.webp&w=768 768w, /.netlify/images?url=/images/heritage/newhall_dusk_aerial.webp&w=1024 1024w, /.netlify/images?url=/images/heritage/newhall_dusk_aerial.webp&w=1400 1400w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">17th-century Newhall House — the modern clan seat, within the ancient landscape of the chiefdom</div>
       </div>
     </div>
@@ -1250,16 +1252,16 @@ function toggleMenu(){
 
           <figure style="margin:24px 0 28px;max-width:380px">
             <div style="background:var(--white);border:1px solid var(--border);padding:8px;box-shadow:0 1px 2px rgba(0,0,0,.04)">
-              <img width="844" height="770" src="images/archive/tithe_applotment_killone_1828.jpg" alt="Tithe Applotment Book entry showing John Commane of Ballyea, Killone parish, 1828" style="width:100%;height:auto;display:block">
+              <img width="844" height="770" src="/.netlify/images?url=/images/archive/tithe_applotment_killone_1828.jpg&w=844" alt="Tithe Applotment Book entry showing John Commane of Ballyea, Killone parish, 1828" style="width:100%;height:auto;display:block" srcset="/.netlify/images?url=/images/archive/tithe_applotment_killone_1828.jpg&w=480 480w, /.netlify/images?url=/images/archive/tithe_applotment_killone_1828.jpg&w=768 768w, /.netlify/images?url=/images/archive/tithe_applotment_killone_1828.jpg&w=844 844w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
             </div>
-            <figcaption style="font-family:'EB Garamond',serif;font-size:13px;color:var(--ink-muted);font-style:italic;margin-top:10px;line-height:1.45">Occupiers of land Ballyea, Parish of Killone 1828. <span style="font-style:normal">John Commane is recorded with 6¾ acres; his neighbour in the same townland is Mich'l Hehir.</span></figcaption>
+            <figcaption style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;color:var(--ink-muted);font-style:italic;margin-top:10px;line-height:1.45">Occupiers of land Ballyea, Parish of Killone 1828. <span style="font-style:normal">John Commane is recorded with 6¾ acres; his neighbour in the same townland is Mich'l Hehir.</span></figcaption>
           </figure>
 
           <p>John Commane is absent from Griffith's Valuation of 1855 for Killone parish. A common scholarly reading is that he either died during the Great Famine of 1845–1852 or emigrated in the Famine period — as so many Clare families did. A Commane Road in Baldwinsville, New York (Onondaga County) testifies to Famine-era emigration of the family to upstate New York, where the family left a road name as their legacy in the American landscape.<sup><a href="#fn37">37</a></sup></p>
 
           <p>It is also worth noting, however, that absence from a 19th-century government survey is not in itself proof of death or emigration. A third possibility, preserved in the family's own oral tradition, is that some Commane households were simply not recorded. Mistrust of British administrative surveys ran deep among the Gaelic tenantry of Clare — born of fear of eviction, rent increases, conscription, and the long memory of the Penal Laws — and it was not uncommon for heads of household to quietly instruct their families not to give their names when officials came to the door. Stories of this practice survive in the living Commane line to the present day. Continuity in place therefore remains a possibility alongside the death and emigration readings of the 1855 record.</p>
 
-          <h3 style="font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin:36px 0 10px;line-height:1.3">The Clare Comyns — erenaghs, poets and French nobility</h3>
+          <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;font-weight:400;color:var(--ink);margin:36px 0 10px;line-height:1.3">The Clare Comyns — erenaghs, poets and French nobility</h3>
           <div class="gold-rule"></div>
           <p>MacLysaght's <em>Irish Families</em> (1972) records a branch of the Clare Comyn family of particular distinction. <strong>Michael Comyn (1688–1760)</strong>, of Kilcorcoran, County Clare, was one of the most celebrated Gaelic poets of the 18th century, composing in the classical Irish tradition at a time when the Gaelic literary order had been largely destroyed by the Penal Laws.<sup><a href="#fn41">41</a></sup></p>
 
@@ -1273,9 +1275,9 @@ function toggleMenu(){
         </div>
       </div>
       <div>
-        <img width="1280" height="791" class="chapter-img" style="height:200px" src="images/heritage/newhall_estate_morning.png" alt="Newhall House & Estate in morning light, County Clare">
+        <img width="1280" height="791" class="chapter-img" style="height:200px" src="/.netlify/images?url=/images/heritage/newhall_estate_morning.png&w=1280" alt="Newhall House & Estate in morning light, County Clare" srcset="/.netlify/images?url=/images/heritage/newhall_estate_morning.png&w=480 480w, /.netlify/images?url=/images/heritage/newhall_estate_morning.png&w=768 768w, /.netlify/images?url=/images/heritage/newhall_estate_morning.png&w=1024 1024w, /.netlify/images?url=/images/heritage/newhall_estate_morning.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">17th-century Newhall House & Estate, Newhall, Co. Clare — clan seat of Clan Ó Comáin</div>
-        <img width="1280" height="719" class="chapter-img" style="height:180px;margin-top:14px" src="images/heritage/killone_abbey_lake.png" alt="Killone Abbey with lake, Newhall Estate">
+        <img width="1280" height="719" class="chapter-img" style="height:180px;margin-top:14px" src="/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280" alt="Killone Abbey with lake, Newhall Estate" srcset="/.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=480 480w, /.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=768 768w, /.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1024 1024w, /.netlify/images?url=/images/heritage/killone_abbey_lake.png&w=1280 1280w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Killone Abbey — 12th century Augustinian priory, Newhall Estate</div>
       </div>
     </div>
@@ -1296,13 +1298,13 @@ function toggleMenu(){
       <p>The Big-Y match cluster also corroborates the <strong style="color:var(--gold-light)">Comyn-anglicisation</strong> pattern documented in <a href="#endures" style="color:var(--gold-light)">Chapter VIII</a>. The Ó Comáin patriline sits in a deep Irish Y-line cluster that includes families bearing Norman-era surnames — Burke and Walsh among them. Their shared ancestors with the Ó Comáin line lived in Ireland over a thousand years before the Normans arrived. The Big-Y data is therefore direct genetic confirmation that families today bearing apparently-Norman Irish surnames often descend from much older Gaelic Irish lineages, with the Norman-era surnames adopted after the 12th century. The same pattern explains the Comyn name in Clare: not Norman descent, but Gaelic descent under an anglicised form, exactly as MacLysaght (first Chief Herald of Ireland) read it from the documentary record.</p>
       <!-- Member CTA: White Paper -->
       <div style="margin-top:36px;padding:28px;border:1.5px solid var(--gold);background:rgba(184,151,90,.06);text-align:center">
-        <img width="459" height="526" src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin shield" style="width:56px;height:auto;display:inline-block;margin-bottom:8px;filter:brightness(1.1)">
-        <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-light);margin-bottom:10px">Clan Member Library</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:rgba(245,240,220,.95);margin-bottom:14px;line-height:1.2">The full Y-DNA white paper</h3>
-        <p style="max-width:620px;margin:0 auto 14px;font-family:'EB Garamond',serif;font-size:16px;line-height:1.7;color:rgba(215,235,215,.85)">Members of Clan Ó Comáin receive private access to the full scholarly Y-DNA white paper — including the complete haplogroup chain, the Big-Y match cluster analysis, FT100195 founder dating, and proper scholarly hedging on cluster size and probabilistic inference.</p>
-        <p style="max-width:620px;margin:0 auto 24px;font-family:'EB Garamond',serif;font-size:15px;line-height:1.65;color:rgba(215,235,215,.6);font-style:italic">The academic apparatus has its proper home in the members' library — alongside Gibson 1990, Cotter 1999, and the supporting primary scholarship.</p>
-        <div onclick="location.href='membership'" style="display:inline-block;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px 28px;border-radius:1px;cursor:pointer;margin-right:6px">Apply for Membership &rarr;</div>
-        <div style="margin-top:14px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.08em;color:rgba(215,235,215,.55)">Already a member? <a href="members/login" style="color:var(--gold-light);text-decoration:underline">Sign in &rarr;</a></div>
+        <img width="192" height="220" src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin shield" style="width:56px;height:auto;display:inline-block;margin-bottom:8px;filter:brightness(1.1)" decoding="async">
+        <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-light);margin-bottom:10px">Clan Member Library</div>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(20px,2.3vw,26px);font-weight:400;color:rgba(245,240,220,.95);margin-bottom:14px;line-height:1.2">The full Y-DNA white paper</h3>
+        <p style="max-width:620px;margin:0 auto 14px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;line-height:1.7;color:rgba(215,235,215,.85)">Members of Clan Ó Comáin receive private access to the full scholarly Y-DNA white paper — including the complete haplogroup chain, the Big-Y match cluster analysis, FT100195 founder dating, and proper scholarly hedging on cluster size and probabilistic inference.</p>
+        <p style="max-width:620px;margin:0 auto 24px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;line-height:1.65;color:rgba(215,235,215,.6);font-style:italic">The academic apparatus has its proper home in the members' library — alongside Gibson 1990, Cotter 1999, and the supporting primary scholarship.</p>
+        <div onclick="location.href='membership'" style="display:inline-block;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:14px 28px;border-radius:1px;cursor:pointer;margin-right:6px">Apply for Membership &rarr;</div>
+        <div style="margin-top:14px;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;letter-spacing:.08em;color:rgba(215,235,215,.55)">Already a member? <a href="members/login" style="color:var(--gold-light);text-decoration:underline">Sign in &rarr;</a></div>
       </div>
     </div>
   </div>
@@ -1326,9 +1328,9 @@ function toggleMenu(){
         </div>
       </div>
       <div>
-        <img width="923" height="1228" class="chapter-img" style="height:auto;border:2px solid #D4A840;padding:4px;background:#fff" src="images/archive/clans_of_ireland_cert.png" alt="Clans of Ireland Certificate of Recognition — Ó Comáin / Clan Commane, Register of Clans 2025">
+        <img width="923" height="1228" class="chapter-img" style="height:auto;border:2px solid #D4A840;padding:4px;background:#fff" src="/.netlify/images?url=/images/archive/clans_of_ireland_cert.png&w=923" alt="Clans of Ireland Certificate of Recognition — Ó Comáin / Clan Commane, Register of Clans 2025" srcset="/.netlify/images?url=/images/archive/clans_of_ireland_cert.png&w=480 480w, /.netlify/images?url=/images/archive/clans_of_ireland_cert.png&w=768 768w, /.netlify/images?url=/images/archive/clans_of_ireland_cert.png&w=923 923w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Certificate of Recognition — Finte na hÉireann / Clans of Ireland, 2025. Signed by Micheál Ó Cnuaóhlaoich, Cathaoirleach.</div>
-        <img width="2048" height="1376" class="chapter-img" style="height:180px;margin-top:14px" src="images/events/clans_dublin_2026.jpg" alt="Clans of Ireland gathering Dublin 2026">
+        <img width="2048" height="1376" class="chapter-img" style="height:180px;margin-top:14px" src="/.netlify/images?url=/images/events/clans_dublin_2026.jpg&w=1400" alt="Clans of Ireland gathering Dublin 2026" srcset="/.netlify/images?url=/images/events/clans_dublin_2026.jpg&w=480 480w, /.netlify/images?url=/images/events/clans_dublin_2026.jpg&w=768 768w, /.netlify/images?url=/images/events/clans_dublin_2026.jpg&w=1024 1024w, /.netlify/images?url=/images/events/clans_dublin_2026.jpg&w=1400 1400w" sizes="(max-width: 900px) 100vw, 1120px" loading="lazy" decoding="async">
         <div class="img-cap">Clan Ó Comáin at the Clans of Ireland gathering, Dublin 2026</div>
       </div>
     </div>
@@ -1344,13 +1346,13 @@ function toggleMenu(){
       <p class="chapter-subtitle" style="text-align:center">An ancient Gaelic royal house</p>
       <div class="gold-rule" style="margin:0 auto 32px;width:80px"></div>
 
-      <p style="font-family:'EB Garamond',serif;font-size:19px;line-height:1.65;color:var(--ink);margin-bottom:20px">What this body of evidence establishes is that <strong>Clan Ó Comáin is an ancient Gaelic royal house</strong> with a documented place in the early-medieval Irish political order — preserved in the manuscript genealogies, attested in the royal annals of the 7th and 8th centuries, anchored to a high-status fort and inauguration site at the political frontier of north Clare, and confirmed in continuous male descent by Y-DNA evidence in Ireland stretching back four millennia.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:19px;line-height:1.65;color:var(--ink);margin-bottom:20px">What this body of evidence establishes is that <strong>Clan Ó Comáin is an ancient Gaelic royal house</strong> with a documented place in the early-medieval Irish political order — preserved in the manuscript genealogies, attested in the royal annals of the 7th and 8th centuries, anchored to a high-status fort and inauguration site at the political frontier of north Clare, and confirmed in continuous male descent by Y-DNA evidence in Ireland stretching back four millennia.</p>
 
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:20px">The Ó Comáin name appears in pedigree tracts under its own segment, <em>Clann Comáin</em>, within the royal line of <strong>Uí Maine</strong> in Connacht — descent traced in the Book of Lecan through ten generations from Conall O'Comáin back to Coman, son of Breanan Dall, twelfth king of Uí Maine.<sup><a href="#fn5">5</a></sup><sup><a href="#fn8">8</a></sup> In Munster, <strong>three Commán-line Kings</strong> of the Déisi Muman frame Commán mac Cobthaig — the likely namesake of Cahercommane: his father Cobthach (d. 632 AD),<sup><a href="#fn8a">8a</a></sup> his son Suibne (d. 658 AD),<sup><a href="#fn9">9</a></sup> and his grandson Congal (d. 701 AD, guarantor of the <em>Cáin Adamnáin</em> in 697).<sup><a href="#fn10">10</a></sup><sup><a href="#fn13b">13b</a></sup> The chiefly line of the sept continues in Pender's <em>Déisi Genealogies</em> into the late 8th to 9th century.<sup><a href="#fn29">29</a></sup> The chiefdom of <strong>Tulach Commáin</strong> held its capital at Cahercommane on the eastern edge of the Burren, from the 7th to the 9th centuries — a triple-ring stone fort whose archaeological scale and inauguration site place it firmly within the high-status royal-tier polities of early-medieval Ireland (Cotter 2012). <strong>Y-DNA testing</strong> places the modern male line on the deep Munster substratum, on a branch parallel to but distinct from the Dál gCais — confirming a continuous Irish patriline that pre-dates every named medieval Irish dynasty.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:20px">The Ó Comáin name appears in pedigree tracts under its own segment, <em>Clann Comáin</em>, within the royal line of <strong>Uí Maine</strong> in Connacht — descent traced in the Book of Lecan through ten generations from Conall O'Comáin back to Coman, son of Breanan Dall, twelfth king of Uí Maine.<sup><a href="#fn5">5</a></sup><sup><a href="#fn8">8</a></sup> In Munster, <strong>three Commán-line Kings</strong> of the Déisi Muman frame Commán mac Cobthaig — the likely namesake of Cahercommane: his father Cobthach (d. 632 AD),<sup><a href="#fn8a">8a</a></sup> his son Suibne (d. 658 AD),<sup><a href="#fn9">9</a></sup> and his grandson Congal (d. 701 AD, guarantor of the <em>Cáin Adamnáin</em> in 697).<sup><a href="#fn10">10</a></sup><sup><a href="#fn13b">13b</a></sup> The chiefly line of the sept continues in Pender's <em>Déisi Genealogies</em> into the late 8th to 9th century.<sup><a href="#fn29">29</a></sup> The chiefdom of <strong>Tulach Commáin</strong> held its capital at Cahercommane on the eastern edge of the Burren, from the 7th to the 9th centuries — a triple-ring stone fort whose archaeological scale and inauguration site place it firmly within the high-status royal-tier polities of early-medieval Ireland (Cotter 2012). <strong>Y-DNA testing</strong> places the modern male line on the deep Munster substratum, on a branch parallel to but distinct from the Dál gCais — confirming a continuous Irish patriline that pre-dates every named medieval Irish dynasty.</p>
 
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:20px">Few Gaelic kindreds in modern Ireland can show a documentary record reaching the 7th-century annals, an archaeological seat of recognised early-medieval status, and Y-DNA confirmation of unbroken male descent from before the historical period. The Ó Comáin are one of those few. The clan was overshadowed in the standard histories — eclipsed by the rising Dál gCais in the 10th century, dispossessed of territorial authority in the 13th, and subsequently recorded across Munster under the anglicised forms <em>Comyn</em>, <em>Coman</em>, and <em>Cummins</em> rather than Ó Comáin. The modern standardised Irish-language form <em>Ó Comáin</em> dates to the <em>Caighdeán Oifigiúil</em> of 1958; before that the name appeared in <a href="surname-variants" style="color:var(--ink);text-decoration:underline">many spelling variations</a> in both Gaelic and anglicised forms — and in the formal documentary record most often, in Clare, as <em>Comyn</em> — which is why a search of the late-medieval Thomond record under "Ó Comáin" alone returns little, while the same record under "Comyn" returns recognised landholders and armigerous families across the period.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:20px">Few Gaelic kindreds in modern Ireland can show a documentary record reaching the 7th-century annals, an archaeological seat of recognised early-medieval status, and Y-DNA confirmation of unbroken male descent from before the historical period. The Ó Comáin are one of those few. The clan was overshadowed in the standard histories — eclipsed by the rising Dál gCais in the 10th century, dispossessed of territorial authority in the 13th, and subsequently recorded across Munster under the anglicised forms <em>Comyn</em>, <em>Coman</em>, and <em>Cummins</em> rather than Ó Comáin. The modern standardised Irish-language form <em>Ó Comáin</em> dates to the <em>Caighdeán Oifigiúil</em> of 1958; before that the name appeared in <a href="surname-variants" style="color:var(--ink);text-decoration:underline">many spelling variations</a> in both Gaelic and anglicised forms — and in the formal documentary record most often, in Clare, as <em>Comyn</em> — which is why a search of the late-medieval Thomond record under "Ó Comáin" alone returns little, while the same record under "Comyn" returns recognised landholders and armigerous families across the period.</p>
 
-      <p style="font-family:'EB Garamond',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:0">The pedigree set out on this page is the first integrated treatment of the surviving evidence — documentary, archaeological and genetic. The case is set out; the reader can weigh it.</p>
+      <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;line-height:1.65;color:var(--ink-mid);margin-bottom:0">The pedigree set out on this page is the first integrated treatment of the surviving evidence — documentary, archaeological and genetic. The case is set out; the reader can weigh it.</p>
     </div>
   </div>
 </section>
@@ -1363,12 +1365,12 @@ function toggleMenu(){
      Same shape as the CTAs on / and /clan-stories. -->
 <section style="background:var(--cream);padding:64px 24px 56px;text-align:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
   <div style="max-width:720px;margin:0 auto">
-    <p style="font-family:'EB Garamond',serif;font-size:clamp(24px,2.8vw,34px);font-style:italic;color:var(--ink);line-height:1.3;margin:0 0 28px">Your family belongs in <em style="font-style:italic">this story</em>.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,2.8vw,34px);font-style:italic;color:var(--ink);line-height:1.3;margin:0 0 28px">Your family belongs in <em style="font-style:italic">this story</em>.</p>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
       <a href="/membership" class="btn-p">Join the revival — from €49/year</a>
       <a href="/membership#tiers" class="btn-g">See membership tiers</a>
     </div>
-    <p style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:22px auto 0;max-width:540px;line-height:1.55">In the Brehon tradition, kin was chosen as much as born. The doors of Ó Comáin are still open — whatever name you carry.</p>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin:22px auto 0;max-width:540px;line-height:1.55">In the Brehon tradition, kin was chosen as much as born. The doors of Ó Comáin are still open — whatever name you carry.</p>
   </div>
 </section>
 
@@ -1376,7 +1378,7 @@ function toggleMenu(){
 <section class="footnotes-section" id="footnotes">
   <div class="si">
     <div class="eyebrow">Sources & footnotes</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:24px;line-height:1.2">References</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:24px;line-height:1.2">References</h2>
     <div class="gold-rule" style="margin-bottom:32px"></div>
     <ol class="footnote-list">
       <li id="fn1"><span class="fn-num">1</span><span>Family Tree DNA, Big-Y 700 test results, Kit No. IN143661. Haplogroup R-BY14247 confirmed. R-L21 block tree verified via FTDNA block tree viewer, April 2026.</span></li>
@@ -1390,7 +1392,7 @@ function toggleMenu(){
       <li id="fn8"><span class="fn-num">8</span><span>Death of Breanan Dall, 12th King of Uí Maine: Annals of Ulster, 597 AD (also noted at 601 AD in some recensions). Mac Airt, Seán and Mac Niocaill, Gearóid (eds.). <em>The Annals of Ulster</em>. Dublin: DIAS, 1983.</span></li>
       <li id="fn8a"><span class="fn-num">8a</span><span>Cobthach, king of the Déisi, died 632 AD. <strong>Annals of Inisfallen</strong> s.a. 632 — <em>Mors Cobthaig rig na nDési</em>. Pender (ed.), <em>The Déssi Genealogies</em> (Dublin: Irish Manuscripts Commission / Stationery Office, 1937), Index s.n. Cobthach, identifies the annalistic king with the Cobthach who appears in the Déisi genealogies as father of Cóemán / Commán (Index s.v. Coman; Cumán) — the kindred preserved across all three manuscript witnesses (Book of Lecan §§55–59, Book of Leinster §§17–40, Book of Ballymote §§36–42) under the Uí Fhir Gair / Uí Fhothaid sub-tract of the Genelach na nDéisi. Cobthach is the first king of the Déisi Muman whose obit is recorded in any chronicle tradition, and through his son Commán mac Cobthaig — the clan-anchor of the Munster Ó Comáin line — is the documented head of the dynastic chain that produces the kings Suibne mac Commáin (d. 658) and Congal mac Suibne mac Commáin (d. 701).</span></li>
       <li id="fn9"><span class="fn-num">9</span><span>Suibne mac Comáin, in the succession of kings of Déisi Muman, died 658 AD. <strong>Annals of Inisfallen</strong> s.a. 658 (Mac Airt, ed., <em>The Annals of Inisfallen</em>, Dublin: DIAS, 1951, p. 94). His death was preserved as a marginal entry in a contemporary Easter-table, analysed in Ó Cróinín, 'Early Irish Annals from Easter-Tables: A Case Restated', <em>Peritia</em> 2 (1983), 74–86, at p. 83. Genealogical placement: Pender (ed.), <em>The Déssi Genealogies</em> (Dublin: Irish Manuscripts Commission / Stationery Office, 1937), §§57–59 (Book of Lecan 101r°c); §§38–40 (Book of Leinster 328c).</span></li>
-      <li id="fn9a"><span class="fn-num">9a</span><span>The Old Irish personal name. Pender (1937) preserves the clan-anchor's name in the form <em>Cóemán</em> across his three-manuscript collation, with <em>Comán</em>, <em>Caemán</em> and <em>Cumán</em> recorded as scribal variants (Index s.v. Coman; Cumán). The root <em>cóem</em> in Old Irish carries the meaning "dear, beloved, gentle, fair" (Royal Irish Academy, <em>Dictionary of the Irish Language</em>, eDIL, <a href="https://dil.ie/9911" target="_blank" style="color:var(--gold-deep)">dil.ie/9911</a>) — the same root that produces Caoimhín (Kevin), Caoimhe and the modern name Caomhán. The diminutive <em>Cóemán</em> carries the affectionate sense "little dear one" or "gentle, fair little one." The older Woulfe (1923) etymology from <em>cam</em> ("crooked, bent") is not supported by the manuscript record: a personal-trait nickname does not appear as a named ancestral position across multiple royal-house genealogies, as Comán demonstrably does. The <em>cam</em> etymology is also the source of the rare Hurley anglicisation (<em>cam</em> → <em>camán</em>, a hurley stick), discussed further on the <a href="surname-variants" style="color:var(--gold-deep)">Surname Variants</a> page.</span></li>
+      <li id="fn9a"><span class="fn-num">9a</span><span>The Old Irish personal name. Pender (1937) preserves the clan-anchor's name in the form <em>Cóemán</em> across his three-manuscript collation, with <em>Comán</em>, <em>Caemán</em> and <em>Cumán</em> recorded as scribal variants (Index s.v. Coman; Cumán). The root <em>cóem</em> in Old Irish carries the meaning "dear, beloved, gentle, fair" (Royal Irish Academy, <em>Dictionary of the Irish Language</em>, eDIL, <a href="https://dil.ie/9911" target="_blank" style="color:var(--gold-deep)" rel="noopener">dil.ie/9911</a>) — the same root that produces Caoimhín (Kevin), Caoimhe and the modern name Caomhán. The diminutive <em>Cóemán</em> carries the affectionate sense "little dear one" or "gentle, fair little one." The older Woulfe (1923) etymology from <em>cam</em> ("crooked, bent") is not supported by the manuscript record: a personal-trait nickname does not appear as a named ancestral position across multiple royal-house genealogies, as Comán demonstrably does. The <em>cam</em> etymology is also the source of the rare Hurley anglicisation (<em>cam</em> → <em>camán</em>, a hurley stick), discussed further on the <a href="surname-variants" style="color:var(--gold-deep)">Surname Variants</a> page.</span></li>
       <li id="fn10"><span class="fn-num">10</span><span>Congal mac Suibne, king of the Déisi, died 701 AD. <strong>Annals of Ulster</strong> s.a. 700 (<em>recte</em> 701), Annals of Tigernach, Chronicon Scotorum, Annals of Roscrea. The reader will encounter both spellings of this individual's first name in the primary sources: the Annals of Ulster record him as "<strong>Conall</strong> mac Suibne," while the <em>Cáin Adamnáin</em> guarantor list (697) and the medieval genealogies in the Book of Lecan and Book of Leinster name him "<strong>Congal</strong> mac Suibne." This is a well-known and unproblematic manuscript variation — a single individual recorded under two closely related Old Irish forms across the surviving sources, not two separate persons. Modern scholarship treats them as the same man (cf. Pender 1937; Ó Cróinín 1995). Cáin Adamnáin guarantor list: Meyer (ed.), <em>Cáin Adamnáin</em>, Oxford: Clarendon Press, 1905, §28, p. 18.</span></li>
       <li id="fn11"><span class="fn-num">11</span><span>Célechair mac Commáin, killed at the battle of Corcu Modruad in north-west Clare. <strong>Annals of Ulster</strong> s.a. 704 (<em>recte</em> 705), Annals of Tigernach, Annals of the Four Masters. Colmán mac Commáin, died on the Aran Islands: <strong>Annals of Inisfallen</strong> s.a. 751 (Mac Airt, 1951). Commemorated as a bishop and one of the four sages of Ireland in <em>Félire Óengusso</em> and <em>Leabhar Breac</em>.</span></li>
       <li id="fn12"><span class="fn-num">12</span><span><strong>Pender, Séamus (ed.).</strong> <em>The Déssi Genealogies.</em> Dublin: Irish Manuscripts Commission / Stationery Office, 1937. The standard critical edition, drawing together the Déisi Muman genealogical tracts preserved in the Book of Ballymote, Book of Leinster, Book of Lecan, Rawlinson B 502, the Book of Uí Maine, the Book of Genealogies of Dubhaltach Mac Fhirbhisigh, and the Book of Genealogies of Mícheál Ó Cléirigh (RIA MS 23 D 17).</span></li>
@@ -1405,7 +1407,7 @@ function toggleMenu(){
       <li id="fn15"><span class="fn-num">15</span><span>Dictionary of National Biography (1887), entry for Commán of Roscommon: "also founded the church of Ceann Mara, now Kinvara." Oxford Dictionary of National Biography confirms death date 747 AD.</span></li>
       <li id="fn16"><span class="fn-num">16</span><span>Death of Colmán mac Commáin on the Aran Islands 751 AD: Annals of Inisfallen. Mac Airt, Seán (ed.). <em>The Annals of Inisfallen</em>. Dublin: DIAS, 1951.</span></li>
       <li id="fn17"><span class="fn-num">17</span><span>Gilla Cómáin mac Gilla Samthainde, fl. c. 1072 AD, poet. Works incorporated in the Lebor Gabála Érenn. Mac Alister, R.A.S. (ed. and trans.). <em>Lebor Gabála Érenn</em>. Irish Texts Society, 1938–1956.</span></li>
-      <li id="fn18"><span class="fn-num">18</span><span><strong>Ferchess mac Commáin</strong> (also Ferches, Forchess) — poet, seer and warrior of the household of Ailill Aulom, king of Munster, in two related early Irish sagas: <em>Cath Maige Mucrama</em> ("The Battle of Mag Mucrama") and the older <em>Scéla Moshauluim ocus Maic Con ocus Luigdech</em> ("The Story of Moshaulum and Mac Con and Luigith"), 9th century, surviving in Oxford Bodleian Library MS Laud Misc. 610. Both texts record Ferchess as the agent of Ailill's vengeance against Lugaid Mac Con, who had slain Ailill's seven sons at Mag Mucrama; in <em>Cath Maige Mucrama</em> §72 Ferchess casts the spear that kills Lugaid, and <em>Scéla Moshauluim</em> adds the detail that Fionn mac Cumhaill avenged Mac Conn by slaying Ferchess seven years later at the Pool of Ferchess on the Bann (or at Ess Mage). The <em>Cath Maige Mucrama</em> text is online at the Mary Jones Celtic Literature Collective: <a href="https://www.maryjones.us/ctexts/mucrama.html" target="_blank">maryjones.us/ctexts/mucrama.html</a>. Standard critical edition of both texts together: O Daly, Máirín (ed.), <em>Cath Maige Mucrama: The Battle of Mag Mucrama</em>, Irish Texts Society 50 (Dublin, 1975). The earlier <em>Scéla Moshauluim</em> text was first edited by Meyer, Kuno, "Ailill Aulom, Mac Con, and Find ua Báiscne", in <em>Fianaigecht</em>, Todd Lecture Series 16 (London: Hodges, Figgis, 1910), pp. 28–41. Modern summary of the narrative: Try, Rebecca, <em>Leadership and Virtue: A Character Analysis of Fionn mac Cumhaill and King Arthur in the Later Medieval Period</em>, PhD thesis, Queen's University Belfast (2020), Appendix B (Fionn Material Text Summaries), text 130, available at <a href="https://pureadmin.qub.ac.uk/ws/portalfiles/portal/220068381/Leadership_and_virtue.pdf" target="_blank">QUB Pure Research Portal</a>.</span></li>
+      <li id="fn18"><span class="fn-num">18</span><span><strong>Ferchess mac Commáin</strong> (also Ferches, Forchess) — poet, seer and warrior of the household of Ailill Aulom, king of Munster, in two related early Irish sagas: <em>Cath Maige Mucrama</em> ("The Battle of Mag Mucrama") and the older <em>Scéla Moshauluim ocus Maic Con ocus Luigdech</em> ("The Story of Moshaulum and Mac Con and Luigith"), 9th century, surviving in Oxford Bodleian Library MS Laud Misc. 610. Both texts record Ferchess as the agent of Ailill's vengeance against Lugaid Mac Con, who had slain Ailill's seven sons at Mag Mucrama; in <em>Cath Maige Mucrama</em> §72 Ferchess casts the spear that kills Lugaid, and <em>Scéla Moshauluim</em> adds the detail that Fionn mac Cumhaill avenged Mac Conn by slaying Ferchess seven years later at the Pool of Ferchess on the Bann (or at Ess Mage). The <em>Cath Maige Mucrama</em> text is online at the Mary Jones Celtic Literature Collective: <a href="https://www.maryjones.us/ctexts/mucrama.html" target="_blank" rel="noopener">maryjones.us/ctexts/mucrama.html</a>. Standard critical edition of both texts together: O Daly, Máirín (ed.), <em>Cath Maige Mucrama: The Battle of Mag Mucrama</em>, Irish Texts Society 50 (Dublin, 1975). The earlier <em>Scéla Moshauluim</em> text was first edited by Meyer, Kuno, "Ailill Aulom, Mac Con, and Find ua Báiscne", in <em>Fianaigecht</em>, Todd Lecture Series 16 (London: Hodges, Figgis, 1910), pp. 28–41. Modern summary of the narrative: Try, Rebecca, <em>Leadership and Virtue: A Character Analysis of Fionn mac Cumhaill and King Arthur in the Later Medieval Period</em>, PhD thesis, Queen's University Belfast (2020), Appendix B (Fionn Material Text Summaries), text 130, available at <a href="https://pureadmin.qub.ac.uk/ws/portalfiles/portal/220068381/Leadership_and_virtue.pdf" target="_blank" rel="noopener">QUB Pure Research Portal</a>.</span></li>
       <li id="fn19"><span class="fn-num">19</span><span>Gibson, D. Blair. <em>From Chiefdom to State in Early Ireland</em>. Cambridge: Cambridge University Press, 2012. Chapter 4: "An Early Medieval Chiefdom of Northern Clare."</span></li>
       <li id="fn20"><span class="fn-num">20</span><span>Gibson (2012), p. 89–147. The chiefdom characterised as "important but not dominant" within the Kingdom of Cashel's political sphere.</span></li>
       <li id="fn21"><span class="fn-num">21</span><span>1585 Elizabethan deed referencing "Tullagh Coman": noted by Thomas Johnson Westropp in his surveys. Westropp, T.J. <em>Archaeology of the Burren</em>. Proceedings of the Royal Irish Academy, 1900–1902.</span></li>
@@ -1461,6 +1463,7 @@ function toggleMenu(){
                 <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="pedigree">Pedigree</a></li>
           <li><a href="timeline">Timeline</a></li>
           <li><a href="heartlands">Heartlands</a></li>
@@ -1476,8 +1479,8 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

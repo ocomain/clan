@@ -7,12 +7,14 @@
 <title>Coat of Arms — Clan Ó Comáin</title>
 <meta name="description" content="The coat of arms of Clan Ó Comáin — the mermaid of Newhall Lake playing an Irish harp. Setting the record straight on commercial Commane arms and the 1650 Ulster King of Arms shield.">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="shared.css">
 <style>
 .heraldry-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin:40px 0}@media(max-width:700px){.heraldry-grid{grid-template-columns:1fr}}
 .heraldry-card{background:var(--white);border:1px solid var(--border);padding:28px;text-align:center}
 .heraldry-card img{max-height:280px;width:auto;max-width:100%;display:block;margin:0 auto 16px}
-.heraldry-card-title{font-family:'EB Garamond',serif;font-size:17px;font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.3}
+.heraldry-card-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-weight:400;color:var(--ink);margin-bottom:6px;line-height:1.3}
 .heraldry-card-sub{font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--ink-muted);margin-bottom:10px;font-style:italic}
 .heraldry-card-text{font-size:12px;font-weight:300;line-height:1.7;color:var(--ink-soft)}
 .heraldry-card a{font-size:10.5px;color:var(--gold);text-decoration:none;letter-spacing:.04em;display:inline-block;margin-top:10px;border-bottom:1px solid rgba(184,151,90,.3)}
@@ -144,7 +146,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -181,15 +183,15 @@
 <!-- Desktop gift strip -->
 <div id="giftStrip">
   <div class="si" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
-    <p style="font-family:'EB Garamond',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
-    <div onclick="location.href='gift'" style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;font-style:italic;color:#2C3E2C;margin:0">&#127873; &nbsp;Buying this as a gift? Give the gift of belonging to an ancient Irish clan &#8212; signed by the Chief, posted worldwide.</p>
+    <div onclick="location.href='gift'" style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C1A0C;white-space:nowrap;background:#B8975A;padding:9px 20px;border-radius:1px;flex-shrink:0;cursor:pointer">Gift a membership &#8594;</div>
   </div>
 </div>
 
 <!-- Mobile two-bar strip -->
 <div id="mobileActions">
-  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
-  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
+  <div onclick="location.href='membership'" style="display:block;width:100%;background:#B8975A;color:#0C1A0C;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:13px 16px;box-sizing:border-box;cursor:pointer">Join the clan &#8594;</div>
+  <div onclick="location.href='gift'" style="display:block;width:100%;background:#0C1A0C;color:#B8975A;font-family:'Jost','Jost Fallback',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:11px 16px;border-top:1px solid rgba(184,151,90,.3);box-sizing:border-box;cursor:pointer">&#127873; &nbsp;Gift someone their Irish heritage &#8594;</div>
 </div>
 
 <script>(function(){
@@ -227,8 +229,8 @@ function toggleMenu(){
 <div style="background:var(--ink);padding:72px 0 56px;text-align:center;border-bottom:2px solid var(--gold)">
   <div class="si">
     <div class="eyebrow">Heraldry</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Coat of Arms</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">House of Ó Comáin · Setting the record straight</p>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(36px,5vw,58px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:10px">Coat of Arms</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-style:italic;color:rgba(160,210,160,.6)">House of Ó Comáin · Setting the record straight</p>
   </div>
 </div>
 
@@ -237,8 +239,8 @@ function toggleMenu(){
   <div class="si">
     <div class="two-col" style="align-items:center;gap:80px">
       <div style="text-align:center">
-        <img src="images/brand/coat_of_arms.png" alt="Ó Comáin" style="max-width:320px;width:100%;display:inline-block">
-        <div style="font-family:'EB Garamond',serif;font-size:clamp(32px,3.6vw,44px);font-weight:400;color:var(--gold);letter-spacing:.02em;margin-top:22px;line-height:1">Ó Comáin</div>
+        <img src="/images/brand/coat_of_arms_192.png" alt="Ó Comáin" style="max-width:320px;width:100%;display:inline-block" width="192" height="220" decoding="async">
+        <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(32px,3.6vw,44px);font-weight:400;color:var(--gold);letter-spacing:.02em;margin-top:22px;line-height:1">Ó Comáin</div>
         <!-- HERALDIC MOTTO BANNER — single flowing ribbon, Gaelic primary -->
         <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg" style="width:min(460px,96%);height:auto;display:block;margin:18px auto 0" aria-label="Caithfidh an stair a bheith i réim — History must prevail">
           <defs>
@@ -259,11 +261,11 @@ function toggleMenu(){
           <path d="M 60 72 Q 270 85, 480 72" stroke="#5D471F" stroke-width="0.3" fill="none" opacity=".35"/>
           <text x="270" y="66" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="19" font-style="italic" fill="#1E0F05" letter-spacing="1.5">CAITHFIDH AN STAIR A BHEITH I RÉIM</text>
         </svg>
-        <div style="font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:10px;letter-spacing:.04em">History must prevail</div>
+        <div style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:var(--ink-muted);margin-top:10px;letter-spacing:.04em">History must prevail</div>
       </div>
       <div>
         <div class="eyebrow">The arms of Clan Ó Comáin</div>
-        <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">The mermaid of Newhall Lake</h2>
+        <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">The mermaid of Newhall Lake</h2>
         <div class="gold-rule"></div>
         <p class="body-text" style="margin-bottom:18px">The arms of Clan Ó Comáin feature the mystical <a href="/library/mermaid-of-newhall-lake" style="color:var(--gold);border-bottom:1px solid rgba(184,151,90,.3)">mermaid of Newhall Lake</a>, playing an Irish harp — symbolising traditional Irish music in the clan's heritage. The mermaid is surrounded by shamrocks representing the protection of the Holy Trinity, the clan's patron saint, and its deep ecclesiastical heritage.</p>
         <p class="body-text" style="margin-bottom:18px">The harp — Ireland's oldest heraldic symbol — reflects the clan's deep roots in the Gaelic musical and cultural tradition of County Clare, a county renowned throughout the world for its traditional music. The shamrock border binds the design to the clan's spiritual patron, Saint Commán — founder of Roscommon and Kinvara.</p>
@@ -280,21 +282,21 @@ function toggleMenu(){
 <section style="padding:80px 0;background:var(--white)">
   <div class="si">
     <div class="eyebrow">Setting the record straight</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Three garbs — and why they matter</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(26px,3vw,38px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">Three garbs — and why they matter</h2>
     <div class="gold-rule"></div>
-    <p class="body-text" style="margin-bottom:8px;max-width:760px">Three coats of arms are associated with the Commane / Comyn / Cummins name. Understanding what each one actually is — and which belongs to the Irish Clan Ó Comáin — is essential for any clan member researching their heraldic heritage.</p>
+    <p class="body-text" style="margin-bottom:8px;max-width:760px">Three coats of arms are associated with the Commane / Comyn / <a href="/cummins-heritage" class="sn-link">Cummins</a> name. Understanding what each one actually is — and which belongs to the Irish Clan Ó Comáin — is essential for any clan member researching their heraldic heritage.</p>
 
     <div class="heraldry-grid">
 
       <!-- Shield 1: Ulster King of Arms Comen p83 -->
       <div class="heraldry-card">
-        <img src="images/archive/ulster_comen_p83.png" alt="Comen arms — Ulster King of Arms manuscript page 83, c.1650">
+        <img src="images/archive/ulster_comen_p83.png" alt="Comen arms — Ulster King of Arms manuscript page 83, c.1650" width="332" height="303" decoding="async">
         <div class="heraldry-card-title">"Comen" — Ulster King of Arms</div>
         <div class="heraldry-card-sub">Page 83, c. 1650 · National Library of Ireland</div>
         <p class="heraldry-card-text">A shield labelled <strong>"Comen"</strong> appears on page 83 of an Ulster King of Arms manuscript dated approximately 1650, within the alphabetical sequence of C-surnames in the volume. This is the document most often cited as evidence of a Commane coat of arms.</p>
-        <p class="heraldry-card-text" style="margin-top:8px"><em>Comen</em> is not a documented Irish surname — it appears in none of the standard registers (MacLysaght, Woulfe, O'Hart). The standard 17th-century anglicisations of the Gaelic <em>Ó Comáin</em> in active use in Clare were <em>Coman</em>, <em>Cowman</em>, <em>Commane</em>, <em>Commin</em>, <em>Commyn</em> and <em>Comyn</em>. The most plausible reading is therefore that the scribe misspelt or idiosyncratically rendered one of these — most likely <strong>Coman</strong> or <strong>Comyn</strong>, both phonetically and visually close to <em>Comen</em>. Heraldic visitation books of this period were compiled by English-speaking heralds working from oral information, often through interpreters, and surname-spelling drift across folios is well documented.</p>
+        <p class="heraldry-card-text" style="margin-top:8px"><em>Comen</em> is not a documented Irish surname — it appears in none of the standard registers (MacLysaght, Woulfe, O'Hart). The standard 17th-century anglicisations of the Gaelic <em>Ó Comáin</em> in active use in Clare were <em><a href="/coman-heritage" class="sn-link">Coman</a></em>, <em>Cowman</em>, <em>Commane</em>, <em>Commin</em>, <em>Commyn</em> and <em>Comyn</em>. The most plausible reading is therefore that the scribe misspelt or idiosyncratically rendered one of these — most likely <strong>Coman</strong> or <strong>Comyn</strong>, both phonetically and visually close to <em>Comen</em>. Heraldic visitation books of this period were compiled by English-speaking heralds working from oral information, often through interpreters, and surname-spelling drift across folios is well documented.</p>
         <p class="heraldry-card-text" style="margin-top:8px">On careful examination, the arms drawn on the shield are visually similar to the standard Comyn garb arms. Two readings of this are possible. The conservative reading is that a 17th-century clerk assigned the well-known Norman Comyn arms to a phonetically similar Gaelic name without further investigation. The alternative reading — strengthened by recent Y-DNA evidence corroborating MacLysaght's identification of the Clare Comyns as Gaelic-anglicised rather than Norman-descended — is that the Clare Ó Comáin / Coman line had itself adopted late-medieval armorial practice within the broader Comyn heraldic tradition during the centuries between the 13th-century dispossession and the 17th-century manuscript. Either reading sits within the wider pattern of Gaelic Irish kindreds adapting to the late-medieval Anglo-Norman heraldic world.</p>
-        <a href="https://catalogue.nli.ie/Record/vtls000540616" target="_blank">NLI catalogue · vtls000540616 ↗</a>
+        <a href="https://catalogue.nli.ie/Record/vtls000540616" target="_blank" rel="noopener">NLI catalogue · vtls000540616 ↗</a>
       </div>
 
       <!-- Shield 2: House of Comyn Scotland -->
@@ -305,12 +307,12 @@ function toggleMenu(){
         <div class="heraldry-card-sub">Scotland · Norman origin · de Comines, Flanders</div>
         <p class="heraldry-card-text">The arms of the House of Comyn — Lords of Badenoch and Earls of Buchan — bear Azure, three garbs Or (blue field, three golden sheaves of wheat). This is the great Scottish-Norman dynasty descended from the de Comines family of Flanders. Their arms have nothing to do with the Gaelic Ó Comáin clan.</p>
         <p class="heraldry-card-text" style="margin-top:8px">The garbs are in fact sheaves of cumin herb — a visual pun (canting arms) on the name Comyn/Cumin. The similarity of name to the Gaelic Comáin is purely phonetic; the families are entirely unrelated.</p>
-        <a href="https://wappenwiki.org/index.php/House_of_Comyn" target="_blank">House of Comyn · WappenWiki ↗</a>
+        <a href="https://wappenwiki.org/index.php/House_of_Comyn" target="_blank" rel="noopener">House of Comyn · WappenWiki ↗</a>
       </div>
 
       <!-- Shield 3: Micheal O Comain arms -->
       <div class="heraldry-card">
-        <img src="images/archive/micheal_o_comain_arms.png" alt="Arms of Micheál Ó Comáin, Herald of Arms at the Office of the Chief Herald of Ireland — featuring garbs">
+        <img src="/.netlify/images?url=/images/archive/micheal_o_comain_arms.png&w=452" alt="Arms of Micheál Ó Comáin, Herald of Arms at the Office of the Chief Herald of Ireland — featuring garbs" width="452" height="891" loading="lazy" decoding="async">
         <div class="heraldry-card-title">Arms of Micheál Ó Comáin</div>
         <div class="heraldry-card-sub">Herald of Arms · Office of the Chief Herald of Ireland</div>
         <p class="heraldry-card-text">The personal arms of Micheál Ó Comáin (born Michael Comyns) — who served as Herald of Arms at the Office of the Chief Herald of Ireland and bore the Ó Comáin name in its Irish form. His arms feature garbs, consistent with the broader Comyn heraldic tradition.</p>
@@ -323,14 +325,14 @@ function toggleMenu(){
     <!-- Micheal O Comain herald -->
     <div id="micheal" style="background:var(--cream-mid);border:1px solid var(--border);border-left:3px solid var(--gold);padding:32px 36px;margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:start" class="herald-grid">
       <div style="text-align:center;min-width:160px">
-        <img src="images/archive/micheal_o_comain_herald.webp"
+        <img src="/.netlify/images?url=/images/archive/micheal_o_comain_herald.webp&w=965"
           alt="Micheál Ó Comáin, Herald of Arms at the Office of the Chief Herald of Ireland"
-          style="max-width:160px;width:100%;border-radius:2px;border:1px solid var(--border);display:block;margin:0 auto 10px">
+          style="max-width:160px;width:100%;border-radius:2px;border:1px solid var(--border);display:block;margin:0 auto 10px" srcset="/.netlify/images?url=/images/archive/micheal_o_comain_herald.webp&w=480 480w, /.netlify/images?url=/images/archive/micheal_o_comain_herald.webp&w=768 768w, /.netlify/images?url=/images/archive/micheal_o_comain_herald.webp&w=965 965w" sizes="(max-width: 900px) 100vw, 160px" width="965" height="1800" loading="lazy" decoding="async">
         <div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-muted)">Micheál Ó Comáin</div>
       </div>
       <div>
         <div class="eyebrow">A notable connection</div>
-        <h3 style="font-family:'EB Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:10px">Micheál Ó Comáin (born Michael Comyns) — Herald of Arms</h3>
+        <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:10px">Micheál Ó Comáin (born Michael Comyns) — Herald of Arms</h3>
         <p class="body-text" style="margin-bottom:12px">Micheál Ó Comáin served as Herald of Arms at the Office of the Chief Herald of Ireland — the national authority on heraldry — and as a consultant herald who devised arms for other Irish families, including the Genealogical Society of Ireland. His family had rendered the name variously as Comyns, Cummins and Ó Comáin.</p>
         <p class="body-text">Notably, Micheál Ó Comáin himself bore arms featuring garbs — consistent with the Comyn heraldic tradition — reflecting the centuries-long blurring of the Gaelic and Norman traditions that makes the heraldic question of the Ó Comáin name so complex. He also confirmed to researchers that the Office's records prior to 1691 are incomplete, making definitive statements about pre-1691 Gaelic arms particularly difficult.</p>
       </div>
@@ -342,7 +344,7 @@ function toggleMenu(){
 <section id="verdict" style="padding:80px 0;background:var(--cream-mid)">
   <div class="si" style="max-width:860px">
     <div class="eyebrow">Our conclusion</div>
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">No surviving Gaelic-period arms — but a late-medieval armigerous tradition</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(24px,3vw,36px);font-weight:400;color:var(--ink);margin-bottom:10px;line-height:1.2">No surviving Gaelic-period arms — but a late-medieval armigerous tradition</h2>
     <div class="gold-rule"></div>
 
     <p class="body-text" style="margin-bottom:18px">A historically important point first: coats of arms did not exist during the period when the Ó Comáin sept was at the height of its power. The Chiefdom of Tulach Commáin flourished in the <strong>8th and 9th centuries AD</strong>. Coats of arms as a formal heraldic system did not begin to develop anywhere in Europe until the <strong>12th century</strong>, arriving in Ireland only with the Norman invasion after 1169. There can therefore be no surviving authentic Gaelic-period arms for the Clan Ó Comáin chiefdom, because none existed.</p>
@@ -355,13 +357,13 @@ function toggleMenu(){
     <!-- Commercial arms note -->
     <div style="background:#fff8f0;border:1px solid #e8d4a0;border-left:3px solid #c0842a;padding:24px 28px;margin-top:12px">
       <div style="font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#854F0B;margin-bottom:8px">Warning</div>
-      <h3 style="font-family:'EB Garamond',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:12px">Commercial arms sold under the Commane / Cummins name</h3>
-      <img src="images/brand/family-crest-coat-of-arms.png" alt="Commercial Commane coat of arms sold online — not authentic Gaelic Ó Comáin arms" style="max-width:180px;display:block;border:1px solid #e8d4a0;border-radius:2px;margin-bottom:12px" loading="lazy">
+      <h3 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:12px">Commercial arms sold under the Commane / Cummins name</h3>
+      <img src="/.netlify/images?url=/images/brand/family-crest-coat-of-arms.png&w=247" alt="Commercial Commane coat of arms sold online — not authentic Gaelic Ó Comáin arms" style="max-width:180px;display:block;border:1px solid #e8d4a0;border-radius:2px;margin-bottom:12px" loading="lazy" width="247" height="392" decoding="async">
       <p class="body-text" style="font-size:13px;margin-bottom:8px">Numerous commercial heraldry websites sell prints, plaques and jewellery bearing a variation of the Norman Comyn arms — blue and gold sheaves — labelled as the "Commane," "Cummins" or "Comyn" family coat of arms. These have no authentic connection to the Irish Clan Ó Comáin and are Norman heraldry incorrectly attributed on the basis of phonetic name similarity alone.</p>
       <p class="body-text" style="font-size:13px">Members of Clan Ó Comáin are asked not to purchase these products. The clan's authentic arms are currently pending a formal application to the Chief Herald of Ireland.</p>
     </div>
 
-    <h2 style="font-family:'EB Garamond',serif;font-size:clamp(22px,2.5vw,30px);font-weight:400;color:var(--ink);margin:48px 0 10px;line-height:1.2">The right approach — a grant of arms from the Chief Herald</h2>
+    <h2 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(22px,2.5vw,30px);font-weight:400;color:var(--ink);margin:48px 0 10px;line-height:1.2">The right approach — a grant of arms from the Chief Herald</h2>
     <div class="gold-rule"></div>
     <p class="body-text" style="margin-bottom:18px">Clan Ó Comáin is pending application with the Office of the Chief Herald of Ireland for a new grant of arms. This is the correct, most prestigious and most historically honest course of action available to the clan — a living heraldic document with full legal standing, grounded in one of the most thoroughly researched Gaelic pedigrees presented to the Chief Herald's office in recent years.</p>
     <p class="body-text" style="margin-bottom:18px">The grant will incorporate elements drawn from the ancient Gaelic Ó Comáin heritage — among them the mythical mermaid of Newhall Lake, the Irish harp, and the shamrocks of the clan's patron saint. The Office of the Chief Herald recognises the concept of clan or sept arms, under which any member of the clan may display the arms — not merely the individual grantee. A grant to the Chief therefore provides a heraldic identity accessible to all members of Clan Ó Comáin worldwide.</p>
@@ -375,7 +377,7 @@ function toggleMenu(){
 
     <div style="margin-top:32px;display:flex;gap:14px;flex-wrap:wrap">
       <a href="membership" class="btn-p">Join the clan</a>
-      <a href="https://catalogue.nli.ie/Record/vtls000540616" target="_blank" class="btn-g">NLI manuscript · vtls000540616</a>
+      <a href="https://catalogue.nli.ie/Record/vtls000540616" target="_blank" class="btn-g" rel="noopener">NLI manuscript · vtls000540616</a>
     </div>
   </div>
 </section>
@@ -394,6 +396,7 @@ function toggleMenu(){
                 <ul class="footer-links">
           <li><a href="/">Home</a></li>
           <li><a href="surname-variants">Variants</a></li>
+          <li><a href="/cummins-heritage">Cummins</a> &middot; <a href="/commins-ireland">Commins</a> &middot; <a href="/commons-ireland">Commons</a> &middot; <a href="/coman-heritage">Coman</a> &middot; <a href="/hurley-heritage">Hurley</a></li>
           <li><a href="pedigree">Pedigree</a></li>
           <li><a href="timeline">Timeline</a></li>
           <li><a href="heartlands">Heartlands</a></li>
@@ -409,8 +412,8 @@ function toggleMenu(){
         <div class="footer-heading">Clan</div>
         <ul class="footer-links">
           <li style="margin-bottom:4px"><a href="membership" class="btn-p" style="padding:10px 22px;font-size:10px;display:inline-block;color:var(--ink)">Join the clan</a></li>
-          <li><a href="https://www.clansofireland.ie" target="_blank">clansofireland.ie</a></li>
-          <li><a href="https://www.newhall.ie" target="_blank">newhall.ie</a></li>
+          <li><a href="https://www.clansofireland.ie" target="_blank" rel="noopener">clansofireland.ie</a></li>
+          <li><a href="https://www.newhall.ie" target="_blank" rel="noopener">newhall.ie</a></li>
         </ul>
       </div>
       <div>

@@ -4,9 +4,11 @@
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gift a Clan Membership — Clan Ó Comáin</title>
+  <title>Gift a Clan Membership — Order Form · Clan Ó Comáin</title>
   <meta name="description" content="Give the gift of belonging to an ancient Irish clan. A membership certificate signed by the Chief — posted to their door.">
   <link rel="stylesheet" href="/fonts/fonts.css">
+  <link rel="preload" href="/fonts/EBGaramond-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Jost-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="shared.css">
   <link rel="icon" href="/favicon.ico">
   <style>
@@ -24,30 +26,30 @@
     .tier-opt:hover{border-color:rgba(184,151,90,.5)}
     .tier-opt.selected{border-color:var(--gold);background:rgba(184,151,90,.08)}
     .tier-opt.selected::after{content:'✓';position:absolute;top:8px;right:10px;font-size:11px;color:var(--gold)}
-    .tier-name{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-    .tier-price{font-family:'EB Garamond',serif;font-size:26px;color:var(--gold-pale);line-height:1;margin-bottom:2px}
-    .tier-cadence{font-family:'Jost',sans-serif;font-size:9px;font-weight:300;color:rgba(184,151,90,.5);letter-spacing:.06em}
-    .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px;white-space:nowrap}
+    .tier-name{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+    .tier-price{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:26px;color:var(--gold-pale);line-height:1;margin-bottom:2px}
+    .tier-cadence{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:300;color:rgba(184,151,90,.5);letter-spacing:.06em}
+    .tier-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px;white-space:nowrap}
 
     /* FAMILY TOGGLE */
     .family-toggle-wrap{margin-bottom:32px;display:flex;align-items:center;gap:14px}
-    .family-toggle-label{font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.7)}
+    .family-toggle-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.7)}
     .toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
     .toggle-switch input{opacity:0;width:0;height:0}
     .toggle-slider{position:absolute;inset:0;background:rgba(184,151,90,.15);border:1px solid rgba(184,151,90,.3);border-radius:12px;transition:.2s}
     .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:rgba(184,151,90,.5);border-radius:50%;transition:.2s}
     input:checked+.toggle-slider{background:rgba(184,151,90,.2);border-color:var(--gold)}
     input:checked+.toggle-slider::before{transform:translateX(20px);background:var(--gold)}
-    .family-note{font-family:'EB Garamond',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6)}
+    .family-note{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;font-style:italic;color:rgba(184,151,90,.6)}
 
     /* FORM FIELDS */
     .form-section{margin-bottom:32px}
-    .form-section-title{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(184,151,90,.2)}
+    .form-section-title{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(184,151,90,.2)}
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
     .form-row.full{grid-template-columns:1fr}
     .form-group{display:flex;flex-direction:column;gap:6px}
-    .form-label{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.65)}
-    .form-input{background:rgba(24,40,24,.6);border:1px solid rgba(184,151,90,.2);padding:12px 14px;color:var(--cream);font-family:'EB Garamond',serif;font-size:16px;outline:none;transition:border .2s;border-radius:1px}
+    .form-label{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(184,151,90,.65)}
+    .form-input{background:rgba(24,40,24,.6);border:1px solid rgba(184,151,90,.2);padding:12px 14px;color:var(--cream);font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:16px;outline:none;transition:border .2s;border-radius:1px}
     .form-input:focus{border-color:rgba(184,151,90,.6)}
     .form-input::placeholder{color:rgba(184,151,90,.25);font-style:italic}
     select.form-input{cursor:pointer}
@@ -56,39 +58,39 @@
 
     /* SUMMARY BOX */
     .summary-box{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.2);border-top:2px solid var(--gold);padding:24px;margin-bottom:28px}
-    .summary-row{display:flex;justify-content:space-between;align-items:center;font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.8);margin-bottom:8px}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.8);margin-bottom:8px}
     .summary-row:last-child{margin-bottom:0;padding-top:12px;border-top:1px solid rgba(184,151,90,.2);font-size:18px;color:var(--gold-pale)}
     .summary-label{color:rgba(184,151,90,.6)}
 
     /* SUBMIT */
-    .submit-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;padding:18px 24px;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:background .2s;margin-bottom:12px}
+    .submit-btn{display:block;width:100%;background:var(--gold);color:var(--ink);border:none;padding:18px 24px;font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;border-radius:1px;transition:background .2s;margin-bottom:12px}
     .submit-btn:hover{background:var(--gold-pale)}
     .submit-btn:disabled{opacity:.5;cursor:not-allowed}
-    .submit-note{font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.5);text-align:center;line-height:1.6}
+    .submit-note{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.5);text-align:center;line-height:1.6}
 
     /* Gift mode chooser — one-time vs renewing */
     .gift-mode-wrap{margin-bottom:36px}
-    .gift-mode-eyebrow{font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+    .gift-mode-eyebrow{font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
     .gift-mode-opt{display:flex;align-items:flex-start;gap:14px;border:1px solid rgba(184,151,90,.25);padding:18px 18px;cursor:pointer;transition:all .2s;margin-bottom:10px;border-radius:1px}
     .gift-mode-opt:hover{border-color:rgba(184,151,90,.5)}
     .gift-mode-opt.selected{border-color:var(--gold);background:rgba(184,151,90,.08)}
     .gift-mode-opt input[type="radio"]{margin-top:5px;flex-shrink:0;accent-color:var(--gold);width:16px;height:16px;cursor:pointer}
     .gift-mode-content{flex:1}
-    .gift-mode-title{font-family:'EB Garamond',serif;font-size:18px;color:var(--gold-pale);margin-bottom:6px;line-height:1.2}
-    .gift-mode-default{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;margin-left:8px;vertical-align:middle;border-radius:1px}
-    .gift-mode-desc{font-family:'EB Garamond',serif;font-size:14px;color:rgba(215,235,215,.72);line-height:1.5}
+    .gift-mode-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:18px;color:var(--gold-pale);margin-bottom:6px;line-height:1.2}
+    .gift-mode-default{display:inline-block;background:var(--gold);color:var(--ink);font-family:'Jost','Jost Fallback',sans-serif;font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;margin-left:8px;vertical-align:middle;border-radius:1px}
+    .gift-mode-desc{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;color:rgba(215,235,215,.72);line-height:1.5}
 
     /* STEP 2 — payment redirect */
     .payment-step{display:none;text-align:center;padding:48px 24px;animation:fadeIn .4s ease}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .payment-step.show{display:block}
     .payment-icon{font-size:48px;margin-bottom:20px}
-    .payment-title{font-family:'EB Garamond',serif;font-size:32px;color:var(--gold-pale);margin-bottom:12px}
-    .payment-sub{font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:32px;line-height:1.7}
-    .payment-btn{display:inline-block;background:var(--gold);color:var(--ink);padding:18px 48px;font-family:'Jost',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
+    .payment-title{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:32px;color:var(--gold-pale);margin-bottom:12px}
+    .payment-sub{font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.7);margin-bottom:32px;line-height:1.7}
+    .payment-btn{display:inline-block;background:var(--gold);color:var(--ink);padding:18px 48px;font-family:'Jost','Jost Fallback',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:1px;transition:background .2s}
     .payment-btn:hover{background:var(--gold-pale)}
     .payment-details{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.2);padding:20px;margin:24px 0;text-align:left}
-    .payment-detail-row{display:flex;gap:8px;font-family:'EB Garamond',serif;font-size:14px;color:rgba(215,235,215,.75);margin-bottom:6px}
+    .payment-detail-row{display:flex;gap:8px;font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:14px;color:rgba(215,235,215,.75);margin-bottom:6px}
     .payment-detail-row:last-child{margin-bottom:0}
     .payment-detail-label{color:rgba(184,151,90,.6);min-width:100px}
 
@@ -101,14 +103,14 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.ocomain.org/gift-form">
-  <meta property="og:title" content="Gift a Clan Membership — Clan Ó Comáin">
+  <meta property="og:title" content="Gift a Clan Membership — Order Form · Clan Ó Comáin">
   <meta property="og:description" content="Give the gift of belonging to an ancient Irish clan. A membership certificate signed by the Chief — posted to their door.">
   <meta property="og:image" content="https://www.ocomain.org/images/brand/coat_of_arms.png">
   <meta property="og:site_name" content="Clan Ó Comáin">
   <meta property="og:locale" content="en_IE">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Gift a Clan Membership — Clan Ó Comáin">
+  <meta name="twitter:title" content="Gift a Clan Membership — Order Form · Clan Ó Comáin">
   <meta name="twitter:description" content="Give the gift of belonging to an ancient Irish clan. A membership certificate signed by the Chief — posted to their door.">
   <meta name="twitter:image" content="https://www.ocomain.org/images/brand/coat_of_arms.png">
 <!-- Umami analytics — privacy-friendly, no cookies, GDPR-compliant. Skip rule: not loaded on /members/admin/* (own-team browsing pollutes data). -->
@@ -123,7 +125,7 @@
 
 <nav class="nav">
   <div class="si" style="height:58px;display:flex;align-items:center;justify-content:space-between">
-    <a href="/" class="nav-brand"><img src="images/brand/coat_of_arms.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;">Clan <em>Ó Comáin</em></a>
+    <a href="/" class="nav-brand"><img src="/images/brand/coat_of_arms_192.png" alt="Clan Ó Comáin crest" style="height:40px;width:auto;display:inline-block;vertical-align:middle;margin-right:12px;" width="192" height="220" decoding="async">Clan <em>Ó Comáin</em></a>
     <div class="nav-links">
       <a href="surname-variants" class="nav-link">Variants</a>
       <a href="pedigree" class="nav-link">Pedigree</a>
@@ -161,9 +163,9 @@
 <!-- HERO STRIP -->
 <div class="form-hero">
   <div class="form-hero-inner">
-    <div style="font-family:'Jost',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Gift a clan membership</div>
-    <h1 style="font-family:'EB Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:12px">Give the gift of belonging.</h1>
-    <p style="font-family:'EB Garamond',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.65);line-height:1.65;max-width:520px">Tell us who you're gifting and we'll take care of everything — the Chief will write to them personally.</p>
+    <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Gift a clan membership</div>
+    <h1 style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:clamp(28px,4vw,44px);font-weight:400;color:var(--gold-pale);line-height:1.1;margin-bottom:12px">Give the gift of belonging.</h1>
+    <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:17px;font-style:italic;color:rgba(215,235,215,.65);line-height:1.65;max-width:520px">Tell us who you're gifting and we'll take care of everything — the Chief will write to them personally.</p>
   </div>
 </div>
 
@@ -173,7 +175,7 @@
   <div id="formStep">
 
     <!-- TIER SELECTOR -->
-    <div style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Choose a membership tier</div>
+    <div style="font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Choose a membership tier</div>
     <div class="tier-selector">
       <div class="tier-opt" id="tier-clan" onclick="selectTier('clan')">
         <div class="tier-name">Clan Member</div>
@@ -245,7 +247,7 @@
         <div class="form-group">
           <label class="form-label">Recipient's full name *</label>
           <input class="form-input" type="text" id="recipientName" placeholder="The person you're gifting to" required>
-          <p style="font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.7);margin:6px 0 0;line-height:1.5">One name only — the person who will receive the gift.</p>
+          <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.7);margin:6px 0 0;line-height:1.5">One name only — the person who will receive the gift.</p>
         </div>
         <div class="form-group">
           <label class="form-label">Recipient's email *</label>
@@ -259,8 +261,8 @@
            children themselves in their members' area when they
            confirm and seal their certificate. -->
       <div class="fam-only" style="display:none;background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 4px;border-radius:0 2px 2px 0">
-        <p style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">About the family membership</p>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.85);line-height:1.7;margin:0">Your recipient will add their <strong style="color:var(--gold-pale);font-weight:500">partner and children's first names</strong> themselves when they accept the gift, in their members' area. You only need to enter one name above — the person you're sending this to.</p>
+        <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">About the family membership</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.85);line-height:1.7;margin:0">Your recipient will add their <strong style="color:var(--gold-pale);font-weight:500">partner and children's first names</strong> themselves when they accept the gift, in their members' area. You only need to enter one name above — the person you're sending this to.</p>
       </div>
 
       <!-- Postal address note — for tiers that include a physical cert
@@ -270,8 +272,8 @@
            and also avoids data being captured/stored with the gift order
            when the recipient is the eventual user of it. -->
       <div id="postalNote" style="background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.25);border-left:3px solid #B8975A;padding:18px 22px;margin:0 0 4px;border-radius:0 2px 2px 0">
-        <p style="font-family:'Jost',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">About the physical certificate</p>
-        <p style="font-family:'EB Garamond',serif;font-size:15px;color:rgba(215,235,215,.85);line-height:1.7;margin:0">A hand-printed certificate signed by the Chief is included with this tier. <strong style="color:var(--gold-pale);font-weight:500">Your recipient will enter their own postal address</strong> when they accept the gift, in their members' area — so you don't need to know or guess it.</p>
+        <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#B8975A;margin:0 0 10px">About the physical certificate</p>
+        <p style="font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:15px;color:rgba(215,235,215,.85);line-height:1.7;margin:0">A hand-printed certificate signed by the Chief is included with this tier. <strong style="color:var(--gold-pale);font-weight:500">Your recipient will enter their own postal address</strong> when they accept the gift, in their members' area — so you don't need to know or guess it.</p>
       </div>
     </div>
 
@@ -282,7 +284,7 @@
         <div class="form-group">
           <label class="form-label">Message to the recipient</label>
           <textarea class="form-input" id="message" placeholder="e.g. 'For Mum — who always carried Ireland with her…'" maxlength="300"></textarea>
-          <span style="font-family:'Jost',sans-serif;font-size:9px;color:rgba(184,151,90,.4);letter-spacing:.06em" id="charCount">0 / 300</span>
+          <span style="font-family:'Jost','Jost Fallback',sans-serif;font-size:9px;color:rgba(184,151,90,.4);letter-spacing:.06em" id="charCount">0 / 300</span>
         </div>
       </div>
     </div>
@@ -312,7 +314,7 @@
     <!-- Seller disclosure — gift form skips the Step 2 confirmation in normal flow,
          going directly to Stripe after submitForm(). Disclosure must therefore
          sit on Step 1, beneath the actual button users click. -->
-    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.04em;line-height:1.6;margin:14px auto 0;max-width:520px;text-align:center">
+    <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.04em;line-height:1.6;margin:14px auto 0;max-width:520px;text-align:center">
       Sold by Moohane LLC, operator of the Clan Ó Comáin membership platform.
       By proceeding you agree to the
       <a href="/terms" style="color:rgba(184,151,90,.6);text-decoration:underline">Terms of Service</a>
@@ -329,11 +331,11 @@
     <p class="payment-sub">The clan has your gift details. Now complete your secure payment to confirm the membership — the Chief will be in touch with your recipient shortly after.</p>
     <div class="payment-details" id="paymentDetails"></div>
     <a href="#" class="payment-btn" id="stripeBtn">Complete payment →</a>
-    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:16px">Your recipient will be welcomed by name by the Chief of Ó Comáin</p>
+    <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.08em;margin-top:16px">Your recipient will be welcomed by name by the Chief of Ó Comáin</p>
     <!-- Seller disclosure — appears beneath the pay button so the contracting party
          is identifiable at the point of payment. Discreet small print, distinct
          from the Stripe trust block which speaks to payment processing. -->
-    <p style="font-family:'Jost',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.04em;line-height:1.6;margin:10px auto 0;max-width:480px">
+    <p style="font-family:'Jost','Jost Fallback',sans-serif;font-size:10px;font-weight:300;color:rgba(184,151,90,.4);letter-spacing:.04em;line-height:1.6;margin:10px auto 0;max-width:480px">
       Sold by Moohane LLC, operator of the Clan Ó Comáin membership platform.
       By proceeding you agree to the
       <a href="/terms" style="color:rgba(184,151,90,.6);text-decoration:underline">Terms of Service</a>
@@ -696,7 +698,7 @@ async function submitForm() {
       const note = document.createElement('p');
       note.id = 'giverEmailHandoffNote';
       note.textContent = 'Using your member account email — sponsorship credit will be applied here.';
-      note.style.cssText = "font-family:'EB Garamond',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.85);margin:6px 0 0;line-height:1.5";
+      note.style.cssText = "font-family:'EB Garamond','EB Garamond Fallback',serif;font-size:13px;font-style:italic;color:rgba(184,151,90,.85);margin:6px 0 0;line-height:1.5";
       giverEmail.insertAdjacentElement('afterend', note);
     }
   } catch (e) {
