@@ -45,6 +45,11 @@ html{
 }
 body{font-family:'Jost','Jost Fallback',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
+/* Inline link to one of the surname pages (Cummins, Commins, Commons, Coman,
+   Hurley) from body prose and the variant chips. The global rule above hides
+   links, so these carry the site's readable dark gold with a quiet underline. */
+.sn-link{color:var(--gold-deep);text-decoration:underline;text-decoration-color:rgba(184,151,90,.45);text-underline-offset:3px}
+.sn-link:hover{text-decoration-color:var(--gold-deep)}
 /* Every <img> now carries its intrinsic width/height attributes so the
    browser can reserve the right box before the file arrives (no layout
    shift while images load). height:auto keeps those attributes as an
