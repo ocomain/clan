@@ -43,14 +43,28 @@
 <script>
   (function(){
     var reveal = function(){ document.documentElement.classList.add('hero-fonts-ready'); };
+    // Only mark as revealed once .hero actually exists. This script runs
+    // in <head>, so fonts.ready can resolve before the body is parsed;
+    // the old version set revealed=true with no .hero found, which made
+    // the failsafe a no-op and left the hero permanently invisible on
+    // phones (blank tartan screen). Now: retry on DOMContentLoaded and
+    // on the timer until the element is there.
     var revealed = false;
-    var go = function(){ if (revealed) return; revealed = true;
-      var h = document.querySelector('.hero'); if (h) h.classList.add('hero-reveal'); };
+    var go = function(){ if (revealed) return;
+      var h = document.querySelector('.hero'); if (!h) return;
+      revealed = true; h.classList.add('hero-reveal'); };
     if (document.fonts && document.fonts.ready && document.fonts.ready.then){
       document.fonts.ready.then(go);
     }
+    document.addEventListener('DOMContentLoaded', function(){
+      if (document.fonts && document.fonts.ready && document.fonts.ready.then){
+        document.fonts.ready.then(go);
+      } else { go(); }
+    });
     // Failsafe: reveal after 1.5s even if fonts.ready never resolves.
     setTimeout(go, 1500);
+    setTimeout(go, 3000);
+    window.addEventListener('load', go);
   })();
 </script>
 <!-- JS-disabled fallback: if the script never runs, the hero stays
@@ -160,7 +174,11 @@ body{font-family:'Jost','Jost Fallback',sans-serif;background:var(--cream);color
 .hero-year,
 .hero-div,
 .hero-desc,
-.hero-ctas{opacity:0;transform:translateY(12px);transition:opacity .7s cubic-bezier(.2,.65,.3,1),transform .7s cubic-bezier(.2,.65,.3,1)}
+.hero-ctas{opacity:0;transform:translateY(12px);transition:opacity .7s cubic-bezier(.2,.65,.3,1),transform .7s cubic-bezier(.2,.65,.3,1);animation:heroFailsafe .6s ease 3s forwards}
+/* CSS-only failsafe: whatever happens to the reveal script, the hero
+   text and join buttons become visible 3s after load. Never again a
+   blank hero. */
+@keyframes heroFailsafe{to{opacity:1;transform:none}}
 .hero-reveal .hero-eyebrow{opacity:1;transform:none;transition-delay:0ms}
 .hero-reveal .hero-title{opacity:1;transform:none;transition-delay:180ms}
 .hero-reveal .hero-irish{opacity:1;transform:none;transition-delay:340ms}
