@@ -16,6 +16,8 @@ const {
 const { evaluateSponsorTitles, recordConversion, highestAwardedTitle } = require('./lib/sponsor-service');
 const { ensurePatent } = require('./lib/patent-service');
 const { sendTitleAwardLetter, sendSponsorLetter } = require('./lib/sponsor-email');
+const { sendPurchase: sendMetaCapiPurchase } = require('./lib/meta-capi');
+const { sendOrderCreated: sendOpenAICapiOrder } = require('./lib/openai-capi');
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLAN_EMAIL = 'clan@ocomain.org';
@@ -95,6 +97,19 @@ exports.handler = async (event) => {
     const amount = (session.amount_total / 100).toFixed(2);
     const currency = session.currency.toUpperCase();
     const isGift = session.metadata?.is_gift === 'true' || /gift/i.test(productName);
+
+    // ── Meta Conversions API (additive, fire-and-forget) ──────────────
+    // Started here so it runs in parallel with everything below; awaited
+    // at the end of this block only so the function isn't frozen before
+    // the request leaves. sendMetaCapiPurchase never throws, is a no-op
+    // when META_CAPI_TOKEN is unset, and is capped at 2.5 s — it cannot
+    // change the webhook response or block member / gift / email logic.
+    const metaCapiPurchase = sendMetaCapiPurchase(session);
+    // ── OpenAI (ChatGPT ads) Conversions API — same contract as above ──
+    // Never throws, no-op unless OPENAI_CAPI_KEY and OPENAI_PIXEL_ID are
+    // both set, capped at 2.5 s. Same id ('purchase_' + session.id) as
+    // the browser order_created, so OpenAI deduplicates.
+    const openaiCapiOrder = sendOpenAICapiOrder(session);
 
     // ── Record in Supabase ──────────────────────────────────────────────────
     // Upsert a member row (or a gift row), close the matching application,
@@ -958,6 +973,9 @@ exports.handler = async (event) => {
     // Always notify the clan. preferredName is correctly resolved for
     // both gift (= buyer) and non-gift (= member) flows above.
     await notifyClan(customerEmail, preferredName, productName, amount, currency, isGift, session);
+
+    // Let the (already running, time-capped) CAPI requests finish.
+    await Promise.all([metaCapiPurchase, openaiCapiOrder]);
   }
 
   // ── ABANDONED CHECKOUT ──
