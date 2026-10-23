@@ -86,6 +86,18 @@ exports.handler = async (event) => {
     inviteToken = '';
   }
 
+  // Campaign attribution (first-touch UTM tags + fbclid, captured by
+  // js/analytics-deferred.js) and the Meta _fbp / _fbc cookies. Added
+  // to the session metadata so the Stripe dashboard shows which
+  // campaign and ad produced each payment, and so the webhook's
+  // Conversions API call can match the browser. Additive keys only.
+  const attribution = {};
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'fbclid', 'landing_page', 'fbp', 'fbc']) {
+    const raw = qs[key] != null ? qs[key] : body[key];
+    const val = String(raw == null ? '' : raw).replace(/[\u0000-\u001f]/g, '').trim().slice(0, 200);
+    if (val) attribution[key] = val;
+  }
+
   if (!tier || !TIER_PRICES_CENTS[tier]) {
     return {
       statusCode: 400,
@@ -191,6 +203,8 @@ exports.handler = async (event) => {
         // email), giving the inviter sponsorship credit regardless
         // of which email the buyer paid with.
         ...(inviteToken ? { invite_token: inviteToken } : {}),
+        // Campaign attribution + Meta browser ids (see above).
+        ...attribution,
       },
       // Carry metadata onto the subscription too for annual tiers, so
       // renewal invoice events have tier context.

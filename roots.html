@@ -216,8 +216,10 @@
               // Replace the form contents with a friendly confirmation message.
               form.innerHTML = '<div class="ok"><strong>Please check your inbox.</strong>We have sent a confirmation email to <em>' + email.replace(/[<>&"]/g, '') + '</em>. Click the link in that email and the starter guide will arrive moments later.<br><br>If you do not see it, please check your spam folder.<br><br><a href="/" style="display:inline-block;margin-top:14px;font-family:\'EB Garamond\',\'EB Garamond Fallback\',serif;font-size:17px;color:var(--gold-deep);text-decoration:underline;font-weight:500">&larr; Continue exploring the clan</a></div>';
 
-              // Fire Meta Pixel Lead event for ad attribution.
-              if (window.fbq) { try { window.fbq('track', 'Lead'); } catch(e){} }
+              // Fire Meta Pixel Lead event for ad attribution. ocmTrack queues
+              // the event on the fbq stub if the Pixel script hasn't loaded yet
+              // (the old `if (window.fbq)` guard silently dropped it).
+              if (window.ocmTrack) { window.ocmTrack('Lead'); }
             }
           } else {
             msg.innerHTML = '<p class="err">Something went wrong on our end. Please try again, or write to clan@ocomain.org.</p>';

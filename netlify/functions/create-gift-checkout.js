@@ -74,6 +74,16 @@ exports.handler = async (event) => {
     giftId,            // Supabase gifts row ID (uuid), from submit-gift.js response
   } = body;
 
+  // Campaign attribution (first-touch UTM tags + fbclid) and the Meta
+  // _fbp / _fbc cookies, sent by gift-form.html. Stored in the session
+  // metadata so the Stripe dashboard shows which campaign and ad
+  // produced each gift. Additive keys only.
+  const attribution = {};
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'fbclid', 'landing_page', 'fbp', 'fbc']) {
+    const val = String(body[key] == null ? '' : body[key]).replace(/[\u0000-\u001f]/g, '').trim().slice(0, 200);
+    if (val) attribution[key] = val;
+  }
+
   // Basic validation
   if (!tier || !GIFT_PRICE_CENTS[tier]) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid or missing tier' }) };
@@ -180,6 +190,8 @@ exports.handler = async (event) => {
         recipient_name: recipientName || '',
         personal_message: msg,
         product_name: productName,
+        // Campaign attribution + Meta browser ids (see above).
+        ...attribution,
       },
       // Also attach metadata to the subscription itself for recurring gifts,
       // so future renewal events carry context.

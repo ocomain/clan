@@ -119,7 +119,7 @@
      interaction so iOS Safari doesn't surface its 'Reduce Privacy
      Protections' banner on initial paint. See /js/analytics-deferred.js
      for the loader, rationale, and failsafe behaviour. -->
-<script defer src="/js/analytics-deferred.js"></script>
+<script defer src="/js/analytics-deferred.js" data-pixel="immediate"></script>
 </head>
 <body>
 
@@ -542,6 +542,31 @@ async function submitForm() {
     }
   } catch (e) { /* never break the gift submit */ }
 
+  // Meta InitiateCheckout — fired before the API round-trips and the
+  // redirect to Stripe, so the Pixel request has time to leave.
+  // Values mirror GIFT_PRICE_CENTS in create-gift-checkout.js.
+  const GIFT_VALUE_EUR = {
+    'clan-ind': 49, 'clan-fam': 79,
+    'guardian-ind': 150, 'guardian-fam': 220,
+    'life-ind': 750, 'life-fam': 1100,
+  };
+  try {
+    if (typeof window.ocmTrack === 'function') {
+      window.ocmTrack('InitiateCheckout', {
+        value: GIFT_VALUE_EUR[tierKey] || 0,
+        currency: 'EUR',
+        content_name: tierKey + '-gift',
+      });
+    }
+  } catch (e) { /* never break the gift submit */ }
+
+  // Campaign attribution (first-touch UTM tags + fbclid) and the Meta
+  // _fbp / _fbc cookies, stored in the Stripe session metadata.
+  let attribution = {};
+  try {
+    if (typeof window.ocmAttribution === 'function') attribution = window.ocmAttribution() || {};
+  } catch (e) { /* never break the gift submit */ }
+
   // Step 1: Write the gift row + notify clan inbox; capture gift ID for metadata linking.
   let giftId = null;
   try {
@@ -571,6 +596,7 @@ async function submitForm() {
         recipientEmail: data.recipientEmail,
         personalMessage: data.message,
         giftId,
+        ...attribution,
       })
     });
     const j2 = await r2.json().catch(() => ({}));

@@ -318,7 +318,7 @@ img{height:auto}
      interaction so iOS Safari doesn't surface its 'Reduce Privacy
      Protections' banner on initial paint. See /js/analytics-deferred.js
      for the loader, rationale, and failsafe behaviour. -->
-<script defer src="/js/analytics-deferred.js"></script>
+<script defer src="/js/analytics-deferred.js" data-pixel="immediate"></script>
 </head>
 <body>
 
@@ -571,6 +571,12 @@ function sendMessage() {
   addUserBubble(text);
   collected[step.field] = text;
 
+  // Meta Lead: once per page load, when the Herald has a valid email.
+  if (step.field === 'email' && !window.__ocmHeraldLeadFired) {
+    window.__ocmHeraldLeadFired = true;
+    try { if (typeof window.ocmTrack === 'function') window.ocmTrack('Lead', { content_name: 'herald_application' }); } catch (e) { /* ignore */ }
+  }
+
   currentStep++;
   updateProgress(currentStep);
 
@@ -802,8 +808,23 @@ function showCompletion() {
     if (collected.email) params.push('email=' + encodeURIComponent(collected.email));
     if (collected.name)  params.push('name='  + encodeURIComponent(collected.name));
     if (inviteToken)     params.push('invite=' + encodeURIComponent(inviteToken));
-    return '/api/create-checkout?' + params.join('&');
+    const url = '/api/create-checkout?' + params.join('&');
+    // Campaign attribution (first-touch UTM tags + fbclid) and the Meta
+    // _fbp / _fbc cookies → Stripe session metadata. See
+    // js/analytics-deferred.js. No-op if the loader isn't present.
+    return (typeof window.ocmDecorateCheckoutUrl === 'function')
+      ? window.ocmDecorateCheckoutUrl(url)
+      : url;
   }
+
+  // Euro value per tier for the Meta InitiateCheckout event. Mirrors
+  // TIER_PRICES_CENTS in netlify/functions/create-checkout.js.
+  const TIER_VALUE_EUR = {
+    'clan-ind': 49, 'clan-fam': 79,
+    'guardian-ind': 150, 'guardian-fam': 220,
+    'steward-ind': 350, 'steward-fam': 480,
+    'life-ind': 750, 'life-fam': 1100,
+  };
 
   // Analytics: fire signup_completed when the user actually clicks
   // the Stripe button. We don't wait for Stripe-side success because
@@ -814,9 +835,15 @@ function showCompletion() {
   // to actual paid signups is high because abandoning at the Stripe
   // page itself is rare (the user has just typed in a form and is
   // on the final step).
+  //
+  // Meta InitiateCheckout fires on the same click. The button is a
+  // plain link, so for an ordinary left-click we hold navigation for
+  // 300 ms to let the Pixel request leave, then ALWAYS navigate.
+  // Modified clicks (new tab / window) keep the browser default.
   function attachAnalyticsToPayButton(btn, getTierKey) {
     if (!btn) return;
-    btn.addEventListener('click', () => {
+    let navigating = false;
+    btn.addEventListener('click', (ev) => {
       try {
         if (typeof umami !== 'undefined' && umami.track) {
           const tk = getTierKey() || '';
@@ -827,6 +854,26 @@ function showCompletion() {
           });
         }
       } catch (e) { /* never break the click */ }
+
+      if (navigating) { ev.preventDefault(); return; }
+      let tierKey = '';
+      try { tierKey = getTierKey() || ''; } catch (e) { /* ignore */ }
+      try {
+        if (typeof window.ocmTrack === 'function') {
+          window.ocmTrack('InitiateCheckout', {
+            value: TIER_VALUE_EUR[tierKey] || 0,
+            currency: 'EUR',
+            content_name: tierKey,
+          });
+        }
+      } catch (e) { /* never break the click */ }
+
+      const plainClick = ev.button === 0 && !ev.metaKey && !ev.ctrlKey && !ev.shiftKey && !ev.altKey;
+      const href = btn.getAttribute('href') || '';
+      if (!plainClick || !href || href === '#') return;
+      ev.preventDefault();
+      navigating = true;
+      setTimeout(() => { window.location.href = btn.href; }, 300);
     });
   }
 
