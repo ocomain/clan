@@ -17,6 +17,7 @@ const { evaluateSponsorTitles, recordConversion, highestAwardedTitle } = require
 const { ensurePatent } = require('./lib/patent-service');
 const { sendTitleAwardLetter, sendSponsorLetter } = require('./lib/sponsor-email');
 const { sendPurchase: sendMetaCapiPurchase } = require('./lib/meta-capi');
+const { sendOrderCreated: sendOpenAICapiOrder } = require('./lib/openai-capi');
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const CLAN_EMAIL = 'clan@ocomain.org';
@@ -104,6 +105,11 @@ exports.handler = async (event) => {
     // when META_CAPI_TOKEN is unset, and is capped at 2.5 s — it cannot
     // change the webhook response or block member / gift / email logic.
     const metaCapiPurchase = sendMetaCapiPurchase(session);
+    // ── OpenAI (ChatGPT ads) Conversions API — same contract as above ──
+    // Never throws, no-op unless OPENAI_CAPI_KEY and OPENAI_PIXEL_ID are
+    // both set, capped at 2.5 s. Same id ('purchase_' + session.id) as
+    // the browser order_created, so OpenAI deduplicates.
+    const openaiCapiOrder = sendOpenAICapiOrder(session);
 
     // ── Record in Supabase ──────────────────────────────────────────────────
     // Upsert a member row (or a gift row), close the matching application,
@@ -968,8 +974,8 @@ exports.handler = async (event) => {
     // both gift (= buyer) and non-gift (= member) flows above.
     await notifyClan(customerEmail, preferredName, productName, amount, currency, isGift, session);
 
-    // Let the (already running, time-capped) CAPI request finish.
-    await metaCapiPurchase;
+    // Let the (already running, time-capped) CAPI requests finish.
+    await Promise.all([metaCapiPurchase, openaiCapiOrder]);
   }
 
   // ── ABANDONED CHECKOUT ──

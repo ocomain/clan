@@ -47,7 +47,11 @@ function buildPayload(session) {
   const payload = {
     data: [{
       event_name: 'Purchase',
-      event_time: Math.floor((Number(session.created) || Date.now() / 1000)),
+      // Time of payment: the webhook runs when Stripe confirms the
+      // completed checkout. (session.created is when checkout STARTED,
+      // which can be minutes or hours earlier.) "Now" is also always
+      // inside Meta's 7-day window, even when Stripe retries.
+      event_time: Math.floor(Date.now() / 1000),
       event_id: 'purchase_' + session.id,
       action_source: 'website',
       event_source_url: sourceUrlFrom(session),
@@ -60,12 +64,6 @@ function buildPayload(session) {
       },
     }],
   };
-  // event_time must be within the last 7 days; checkout.session.completed
-  // can be retried by Stripe, so use "now" if the session is older.
-  const nowSec = Math.floor(Date.now() / 1000);
-  if (nowSec - payload.data[0].event_time > 6 * 24 * 3600 || payload.data[0].event_time > nowSec) {
-    payload.data[0].event_time = nowSec;
-  }
   if (process.env.META_TEST_EVENT_CODE) payload.test_event_code = process.env.META_TEST_EVENT_CODE;
   return payload;
 }

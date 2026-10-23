@@ -52,8 +52,28 @@
 // Stripe Checkout Session metadata so the owner can see which campaign
 // and ad produced each payment.
 //
+// ── OPENAI (CHATGPT ADS) MEASUREMENT PIXEL ───────────────────────
+// Docs: https://developers.openai.com/ads/measurement-pixel
+// The Pixel ID is NOT in this file. It is read at runtime from
+// /api/ads-config (netlify/functions/ads-config.js), which returns the
+// Netlify env var OPENAI_PIXEL_ID. With no ID set, nothing from OpenAI
+// is created or downloaded — a silent no-op. With an ID, the official
+// oaiq stub is created and init queued (no network), and the SDK
+// (bzrcdn.openai.com/sdk/oaiq.min.js) downloads on the same schedule
+// as the Meta Pixel script: on load for data-pixel="immediate" pages,
+// otherwise on first interaction / 8 s failsafe.
+// window.ocmTrackOpenAI(eventName, data, eventId) is queue-safe: calls
+// made before the config arrives wait for it, and are dropped if no
+// ID is configured.
+// The OpenAI click reference (oppref) is captured from the landing URL
+// separately from the first-touch UTM record: the latest oppref wins
+// and is kept 30 days (matching the Pixel's own __oppref cookie), so a
+// visitor first tagged by another campaign still carries the ChatGPT
+// click into Stripe. ocmAttribution() also returns the Pixel's __obref
+// browser reference when present, for the server-side Conversions API.
+//
 // ── CONSENT ──────────────────────────────────────────────────────
-// Everything marketing-related (Pixel, ocmTrack, attribution capture)
+// Everything marketing-related (both Pixels, ocmTrack, attribution capture)
 // sits behind hasMarketingConsent(). It returns true for now (the
 // privacy notice discloses the Pixel, CAPI and UTM storage). A consent
 // banner later is a one-line change there.
@@ -123,6 +143,37 @@ const META_PIXEL_ID = '2218274272324729'; // Clan Ó Comáin pixel, used by ad a
     try { window.localStorage.setItem(ATTR_KEY, JSON.stringify(found)); } catch (e) { /* private mode etc. */ }
   }
 
+  // OpenAI click reference: latest click wins (not first touch), 30 days.
+  var OPPREF_KEY = 'ocm_oppref';
+  var OPPREF_MAX_LEN = 500; // Stripe metadata value limit
+
+  // oppref / obref are opaque: pass them on unmodified or not at all.
+  function opaque(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (!s || s.length > OPPREF_MAX_LEN || /[\u0000-\u001f]/.test(s)) return '';
+    return s;
+  }
+
+  function readStoredOppref() {
+    try {
+      var raw = window.localStorage.getItem(OPPREF_KEY);
+      if (!raw) return '';
+      var obj = JSON.parse(raw);
+      if (!obj || !obj.v || !obj.ts || (Date.now() - obj.ts) > ATTR_TTL_MS) {
+        window.localStorage.removeItem(OPPREF_KEY);
+        return '';
+      }
+      return opaque(obj.v);
+    } catch (e) { return ''; }
+  }
+
+  function captureOppref() {
+    var v = '';
+    try { v = opaque(new URLSearchParams(window.location.search).get('oppref')); } catch (e) { return; }
+    if (!v) return;
+    try { window.localStorage.setItem(OPPREF_KEY, JSON.stringify({ v: v, ts: Date.now() })); } catch (e) { /* private mode etc. */ }
+  }
+
   function readCookie(name) {
     try {
       var m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
@@ -131,7 +182,7 @@ const META_PIXEL_ID = '2218274272324729'; // Clan Ó Comáin pixel, used by ad a
   }
 
   // Returns { utm_source, utm_medium, utm_campaign, utm_content, fbclid,
-  // landing_page, fbp, fbc } — only keys that have values.
+  // landing_page, fbp, fbc, oppref, obref } — only keys that have values.
   function ocmAttribution() {
     var out = {};
     if (!hasMarketingConsent()) return out;
@@ -146,6 +197,11 @@ const META_PIXEL_ID = '2218274272324729'; // Clan Ó Comáin pixel, used by ad a
     if (!fbc && stored.fbclid) fbc = clean('fb.1.' + (stored.ts || Date.now()) + '.' + stored.fbclid);
     if (fbp) out.fbp = fbp;
     if (fbc) out.fbc = fbc;
+    // OpenAI: our stored click reference, else the Pixel's own cookie.
+    var oppref = readStoredOppref() || opaque(readCookie('__oppref'));
+    var obref = opaque(readCookie('__obref'));
+    if (oppref) out.oppref = oppref;
+    if (obref) out.obref = obref;
     return out;
   }
   window.ocmAttribution = ocmAttribution;
@@ -225,6 +281,96 @@ const META_PIXEL_ID = '2218274272324729'; // Clan Ó Comáin pixel, used by ad a
   }
   window.ocmTrack = ocmTrack;
 
+  // ── OpenAI (ChatGPT ads) Measurement Pixel ──────────────────────
+  var OPENAI_CONFIG_URL = '/api/ads-config';
+  var OPENAI_CONFIG_CACHE = 'ocm_ads_cfg';
+  var openaiState = 'pending'; // 'pending' | 'on' | 'off'
+  var openaiPending = [];      // measure calls made before the config arrived
+  var openaiWantScript = false;
+  var openaiScriptLoaded = false;
+
+  // Official installation snippet (developers.openai.com/ads/measurement-pixel),
+  // split like the Meta one: the stub (no network) now, the SDK download
+  // later. Consent is set before init, as the docs require.
+  function ensureOpenAIStub(pixelId) {
+    if (!hasMarketingConsent() || !pixelId) return false;
+    if (!window.oaiq) {
+      var q = function () { q.q.push(arguments); };
+      q.q = [];
+      window.oaiq = q;
+    }
+    window.oaiq('consent', true);
+    window.oaiq('init', { pixelId: pixelId });
+    return true;
+  }
+
+  function loadOpenAIScript() {
+    openaiWantScript = true;
+    if (openaiState !== 'on' || openaiScriptLoaded) return;
+    openaiScriptLoaded = true;
+    var t = document.createElement('script');
+    t.async = true;
+    t.src = 'https://bzrcdn.openai.com/sdk/oaiq.min.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  }
+
+  function openaiReady(pixelId) {
+    if (openaiState !== 'pending') return;
+    if (pixelId && ensureOpenAIStub(pixelId)) {
+      openaiState = 'on';
+      openaiPending.forEach(function (args) {
+        try { window.oaiq.apply(null, args); } catch (e) { /* ignore */ }
+      });
+      if (openaiWantScript) loadOpenAIScript();
+    } else {
+      openaiState = 'off';
+    }
+    openaiPending = [];
+  }
+
+  function cleanPixelId(v) {
+    var s = String(v == null ? '' : v).trim();
+    return /^[A-Za-z0-9_-]{1,128}$/.test(s) ? s : '';
+  }
+
+  // Reads OPENAI_PIXEL_ID via /api/ads-config, memoised per tab session.
+  function fetchOpenAIConfig() {
+    try {
+      var cached = window.sessionStorage.getItem(OPENAI_CONFIG_CACHE);
+      if (cached) {
+        var c = JSON.parse(cached);
+        if (c && (Date.now() - (c.ts || 0)) < 30 * 60 * 1000) {
+          openaiReady(cleanPixelId(c.id));
+          return;
+        }
+      }
+    } catch (e) { /* fall through to fetch */ }
+    if (typeof window.fetch !== 'function') { openaiReady(''); return; }
+    window.fetch(OPENAI_CONFIG_URL, { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (cfg) {
+        var id = cleanPixelId(cfg && cfg.openai_pixel_id);
+        try { window.sessionStorage.setItem(OPENAI_CONFIG_CACHE, JSON.stringify({ id: id, ts: Date.now() })); } catch (e) { /* ignore */ }
+        openaiReady(id);
+      })
+      .catch(function () { openaiReady(''); });
+  }
+
+  // Queue-safe OpenAI measure helper. eventId (optional) lets OpenAI
+  // deduplicate the browser event against the same server (CAPI) event.
+  function ocmTrackOpenAI(eventName, data, eventId) {
+    try {
+      if (!hasMarketingConsent()) return;
+      var args = ['measure', eventName, data || {}];
+      if (eventId) args.push({ event_id: String(eventId) });
+      if (openaiState === 'on') window.oaiq.apply(null, args);
+      else if (openaiState === 'pending') openaiPending.push(args);
+      // 'off': no Pixel ID configured — silently do nothing.
+    } catch (e) { /* never break the page */ }
+  }
+  window.ocmTrackOpenAI = ocmTrackOpenAI;
+
   // ── Clarity ──────────────────────────────────────────────────────
   var clarityLoaded = false;
   function loadClarity() {
@@ -245,19 +391,25 @@ const META_PIXEL_ID = '2218274272324729'; // Clan Ó Comáin pixel, used by ad a
     deferredDone = true;
     loadClarity();
     loadPixelScript();
+    loadOpenAIScript();
   }
 
   // ── Boot ─────────────────────────────────────────────────────────
   if (hasMarketingConsent()) {
     captureAttribution();
+    captureOppref();
     ensurePixelStub(); // queues init + the one PageView; no network yet
+    fetchOpenAIConfig(); // OpenAI stub only if OPENAI_PIXEL_ID is set
     if (pixelImmediate) {
+      var loadImmediate = function () { loadPixelScript(); loadOpenAIScript(); };
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadPixelScript, { once: true });
+        document.addEventListener('DOMContentLoaded', loadImmediate, { once: true });
       } else {
-        loadPixelScript();
+        loadImmediate();
       }
     }
+  } else {
+    openaiState = 'off';
   }
 
   // Events that count as user interaction. scroll/touchstart catch

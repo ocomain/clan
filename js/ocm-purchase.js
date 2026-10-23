@@ -1,6 +1,7 @@
 // js/ocm-purchase.js
 //
-// Fires the Meta Pixel Purchase event on the post-payment pages
+// Fires the Meta Pixel Purchase event, and the OpenAI (ChatGPT ads)
+// Pixel order_created event, on the post-payment pages
 // (welcome.html, gift-confirmed.html). Include AFTER the analytics
 // loader, both deferred, so window.ocmTrack exists when this runs:
 //
@@ -12,7 +13,8 @@
 // are enabled, so the list price can be wrong.
 //
 // event_id = 'purchase_' + session.id, the same id the webhook sends
-// to the Conversions API, so Meta counts browser + server as one.
+// to the Meta and OpenAI Conversions APIs, so each platform counts
+// browser + server as one.
 //
 // Fires at most once per Stripe session per browser: a marker is kept
 // in localStorage['ocm_purchase_' + session_id] and checked first, so
@@ -47,6 +49,27 @@
           content_name: s.content_name || '',
           content_type: 'product',
         }, s.event_id);
+        // OpenAI (ChatGPT ads) order_created, same event_id as Meta's
+        // Purchase and as the server-side Conversions API event, so
+        // OpenAI deduplicates browser + server. amount is an integer in
+        // minor units (cents), as the OpenAI Pixel requires. A silent
+        // no-op unless OPENAI_PIXEL_ID is configured.
+        try {
+          if (typeof window.ocmTrackOpenAI === 'function') {
+            var cents = Math.round(value * 100);
+            window.ocmTrackOpenAI('order_created', {
+              type: 'contents',
+              amount: cents,
+              currency: s.currency,
+              contents: [{
+                id: String(s.content_name || 'membership'),
+                name: String(s.content_name || 'Clan Ó Comáin membership'),
+                content_type: 'product',
+                quantity: 1,
+              }],
+            }, s.event_id);
+          }
+        } catch (e) { /* never break the page */ }
         try { window.localStorage.setItem(markerKey, String(Date.now())); } catch (e) { /* ignore */ }
       })
       .catch(function () { /* never break the page */ });

@@ -84,6 +84,17 @@ exports.handler = async (event) => {
     if (val) attribution[key] = val;
   }
 
+  // OpenAI (ChatGPT ads) click reference (oppref) and the OpenAI Pixel's
+  // browser reference (obref, from the __obref cookie). Opaque strings
+  // that must be passed on unmodified, so they are only checked, never
+  // trimmed to fit: anything over Stripe's 500-character metadata limit
+  // or containing control characters is dropped. Additive keys only.
+  for (const key of ['oppref', 'obref']) {
+    const raw = body[key];
+    const val = raw == null ? '' : String(raw).trim();
+    if (val && val.length <= 500 && !/[\u0000-\u001f]/.test(val)) attribution[key] = val;
+  }
+
   // Basic validation
   if (!tier || !GIFT_PRICE_CENTS[tier]) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid or missing tier' }) };
